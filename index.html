@@ -267,6 +267,9 @@ p,span,div,input,button{
 @media(max-width:768px){.tf-bar{padding:7px 12px;top:50px}.tf-bar-sub{display:none}}
 @media(max-width:480px){.tf-bar-label{display:none}.entry-btn-label{display:none}}
 </style>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div class="root">
@@ -592,13 +595,53 @@ let showBal=true, activeCoinTab="gainers", activeSetup=0, activeTF="1H";
 let currentSymbol='BTCUSDT', currentBase='BTC', currentCgId='bitcoin';
 let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
 
-/* ── Persist positions to localStorage ── */
-function savePositions(){
-  try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
+/* ── Firebase Firestore sync ── */
+const _fbConfig = {
+  apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
+  authDomain: "quant-dashboard-1405b.firebaseapp.com",
+  projectId: "quant-dashboard-1405b",
+  storageBucket: "quant-dashboard-1405b.firebasestorage.app",
+  messagingSenderId: "1013979996177",
+  appId: "1:1013979996177:web:7274da6d71ef702e3011b0"
+};
+let _db = null;
+let _posRef = null;
+function _getSyncId(){
+  let id = localStorage.getItem('vf_sync_id');
+  if(!id){ id='dash_'+Math.random().toString(36).slice(2,10); localStorage.setItem('vf_sync_id',id); }
+  return id;
 }
-(function loadPositions(){
-  try{ const raw=localStorage.getItem('vf_positions'); if(raw) positions=JSON.parse(raw); }catch(_){ positions=[]; }
-})();
+const SYNC_ID = _getSyncId();
+
+function savePositions(){
+  /* Save to localStorage as instant fallback */
+  try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
+  /* Save to Firestore if ready */
+  if(_posRef) _posRef.set({ list: positions }).catch(e => console.error('Firestore save:', e));
+}
+
+function initFirestore(){
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(_fbConfig);
+    _db = firebase.firestore();
+    _posRef = _db.collection('positions').doc(SYNC_ID);
+    /* Real-time listener — fires on any device that writes */
+    _posRef.onSnapshot(doc => {
+      if(doc && doc.exists){
+        const remote = doc.data().list || [];
+        positions = remote;
+        renderPositions(); renderPerfChart();
+      }
+    }, err => console.error('Firestore listen:', err));
+  } catch(e){
+    console.error('Firebase init:', e);
+    /* Fall back to localStorage */
+    try{ const raw=localStorage.getItem('vf_positions'); if(raw) positions=JSON.parse(raw); }catch(_){}
+  }
+}
+
+/* Load from localStorage immediately so there's no blank flash on load */
+(function(){ try{ const r=localStorage.getItem('vf_positions'); if(r) positions=JSON.parse(r); }catch(_){} })();
 
 /* ══ 7 COIN DATA ══ */
 const COINS_DATA = {
@@ -1447,6 +1490,7 @@ renderSetupsList();
 renderConfChart(TF_DATA['1H'].confHistory);
 renderPositions();
 renderPerfChart();
+initFirestore();
 
 /* ══ AUTO-REFRESH every 60s ══ */
 (function(){
