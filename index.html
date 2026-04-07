@@ -1498,9 +1498,25 @@ const ENTRY_COINS = [
 ];
 let selectedCoin = ENTRY_COINS[0];
 
+/* ── Sync ENTRY_COINS prices from live data before opening panel ── */
+function syncEntryCoinPrices(){
+  ENTRY_COINS.forEach(c => {
+    if(c.sym === currentBase){
+      c.price = PRICE; /* use live global */
+    } else {
+      const cached = _marketPrices[c.sym+'USDT'];
+      if(cached && cached.price) c.price = parseFloat(cached.price);
+    }
+  });
+  /* Default to current market coin */
+  const match = ENTRY_COINS.find(c => c.sym === currentBase);
+  if(match) selectedCoin = match;
+}
+
 /* ── Panel open/close ── */
 window.openPanel = function(dir='long'){
   entryDir = dir;
+  syncEntryCoinPrices();
   const overlay = document.createElement("div");
   overlay.className = "panel-overlay";
   overlay.id = "panel-overlay";
@@ -1688,6 +1704,9 @@ window.setDir = function(dir){
 
 window.selectCoin = function(sym){
   selectedCoin = ENTRY_COINS.find(c => c.sym === sym) || ENTRY_COINS[0];
+  /* Refresh price from live data */
+  if(sym === currentBase) selectedCoin.price = PRICE;
+  else { const c = _marketPrices[sym+'USDT']; if(c?.price) selectedCoin.price = parseFloat(c.price); }
   document.querySelectorAll(".coin-opt").forEach(el => {
     el.classList.toggle("selected", el.dataset.sym === sym);
   });
