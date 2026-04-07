@@ -1434,6 +1434,32 @@ renderSessionLog();
 renderSetupsList();
 renderConfChart(TF_DATA['1H'].confHistory);
 
+/* ══ AUTO-REFRESH every 60s ══ */
+(function(){
+  const INTERVAL = 60;
+  let countdown = INTERVAL;
+  const spanEl = () => document.querySelector('#refresh-btn span');
+
+  function tick(){
+    countdown--;
+    const sp = spanEl();
+    if(sp && !document.getElementById('refresh-btn').disabled){
+      sp.textContent = `Auto ${countdown}s`;
+    }
+    if(countdown <= 0){
+      countdown = INTERVAL;
+      fetchLiveData();
+    }
+  }
+
+  /* Start countdown after 5s so initial page paint settles */
+  setTimeout(() => {
+    const sp = spanEl();
+    if(sp) sp.textContent = `Auto ${countdown}s`;
+    setInterval(tick, 1000);
+  }, 5000);
+})();
+
 /* ══ EYE TOGGLE ══ */
 window.toggleBal = function(){
   showBal = !showBal;
