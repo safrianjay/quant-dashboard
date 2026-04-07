@@ -590,6 +590,15 @@ p,span,div,input,button{
 let PRICE=68957.00, HIGH=69050.00, LOW=68715.00, CHG="+0.51", VOL=523.84, MA10=448.62, CONF=7.2;
 let showBal=true, activeCoinTab="gainers", activeSetup=0, activeTF="1H";
 let currentSymbol='BTCUSDT', currentBase='BTC', currentCgId='bitcoin';
+let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
+
+/* ── Persist positions to localStorage ── */
+function savePositions(){
+  try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
+}
+(function loadPositions(){
+  try{ const raw=localStorage.getItem('vf_positions'); if(raw) positions=JSON.parse(raw); }catch(_){ positions=[]; }
+})();
 
 /* ══ 7 COIN DATA ══ */
 const COINS_DATA = {
@@ -1478,18 +1487,6 @@ window.toggleBal = function(){
    ENTRY PANEL + POSITIONS + PERF CHART
 ══════════════════════════════════════════ */
 let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
-
-/* ── Persist positions to localStorage ── */
-function savePositions(){
-  try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
-}
-function loadPositions(){
-  try{
-    const raw = localStorage.getItem('vf_positions');
-    if(raw) positions = JSON.parse(raw);
-  }catch(_){ positions=[]; }
-}
-loadPositions();
 
 const ENTRY_COINS = [
   { sym:"BTC",  price:68746.10 },
