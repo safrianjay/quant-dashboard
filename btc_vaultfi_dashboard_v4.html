@@ -1492,6 +1492,9 @@ renderPositions();
 renderPerfChart();
 initFirestore();
 
+/* ══ FETCH LIVE DATA ON PAGE LOAD ══ */
+fetchLiveData();
+
 /* ══ AUTO-REFRESH every 60s ══ */
 (function(){
   const INTERVAL = 60;
