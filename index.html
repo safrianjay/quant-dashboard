@@ -1365,7 +1365,10 @@ window.fetchLiveData = async function(){
     const tbDate = document.getElementById('topbar-date');
     if(tbDate) tbDate.textContent = `CoinGecko · ${utcTs}`;
 
-    renderKPIs(); renderLevelsSB();
+    /* Update currentPrice for any open positions matching this coin */
+    positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=newPrice; });
+    savePositions();
+    renderKPIs(); renderLevelsSB(); renderPositions(); renderPerfChart();
 
     /* Success state */
     icon.style.animation = '';
@@ -1433,6 +1436,8 @@ renderLevelsSB();
 renderSessionLog();
 renderSetupsList();
 renderConfChart(TF_DATA['1H'].confHistory);
+renderPositions();
+renderPerfChart();
 
 /* ══ AUTO-REFRESH every 60s ══ */
 (function(){
@@ -1473,6 +1478,18 @@ window.toggleBal = function(){
    ENTRY PANEL + POSITIONS + PERF CHART
 ══════════════════════════════════════════ */
 let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
+
+/* ── Persist positions to localStorage ── */
+function savePositions(){
+  try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
+}
+function loadPositions(){
+  try{
+    const raw = localStorage.getItem('vf_positions');
+    if(raw) positions = JSON.parse(raw);
+  }catch(_){ positions=[]; }
+}
+loadPositions();
 
 const ENTRY_COINS = [
   { sym:"BTC",  price:68746.10 },
@@ -1815,7 +1832,7 @@ function renderPositions(){
   }).join("");
   updateSummaryStats();
 }
-window.closePosition=function(id){positions=positions.filter(p=>p.id!==id);renderPositions();renderPerfChart();};
+window.closePosition=function(id){positions=positions.filter(p=>p.id!==id);savePositions();renderPositions();renderPerfChart();};
 function updateSummaryStats(){
   const pnls=positions.map(p=>(p.currentPrice-p.entry)*p.qty*(p.dir==="long"?1:-1));
   const totalPnl=pnls.reduce((a,b)=>a+b,0),wins=pnls.filter(v=>v>0).length;
@@ -1879,6 +1896,7 @@ window.submitEntry=function(dir){
   let rr=null;if(tp&&sl){const reward=Math.abs(tp-entry),risk=Math.abs(sl-entry);if(risk>0) rr=(reward/risk).toFixed(2);}
   const pos={id:Date.now(),symbol:selectedCoin.sym,dir:entryDir,entry,qty,exposure,tp,sl,rr,note,time:now.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false}),date:now.toLocaleDateString("en-US",{month:"short",day:"numeric"}),status:"open",currentPrice:selectedCoin.price};
   positions.unshift(pos);
+  savePositions();
   /* Flash the clicked button */
   const btnId=entryDir==="long"?"btn-submit-long":"btn-submit-short";
   const btn=document.getElementById(btnId);
