@@ -149,7 +149,7 @@ p,span,div,input,button{
 }
 @media(max-width:768px){
   /* Sidebar becomes a slide-in drawer — override desktop width/collapse behavior */
-  .sidebar{display:flex!important;position:fixed;top:0;left:0;bottom:0;z-index:60;width:224px!important;transform:translateX(-100%);transition:transform .3s cubic-bezier(.22,1,.36,1)!important;box-shadow:4px 0 24px rgba(0,0,0,.12)}
+  .sidebar{display:flex!important;position:fixed;top:0;left:0;bottom:0;z-index:60;width:224px!important;transform:translateX(-100%);transition:transform .3s cubic-bezier(.22,1,.36,1)!important;box-shadow:4px 0 24px rgba(0,0,0,.12);animation:none!important}
   .sidebar.open{transform:translateX(0)}
   .sidebar.collapsed{width:224px!important}
   /* On mobile the toggle is inside the sidebar; expand tab handles opening */
@@ -270,7 +270,7 @@ p,span,div,input,button{
 </head>
 <body>
 <div class="root">
-<div class="mob-overlay" id="mob-overlay" onclick="closeSidebar()"></div>
+<div class="mob-overlay" id="mob-overlay" onclick="closeSidebar()" ontouchend="closeSidebar()"></div>
 <!-- Expand tab: only shown on desktop when sidebar is collapsed -->
 <button class="sidebar-expand-tab" id="sidebar-expand-tab" onclick="toggleSidebar()" title="Expand sidebar" style="display:none">
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -584,12 +584,64 @@ p,span,div,input,button{
 </div><!-- /main -->
 </div><!-- /root -->
 
+<!-- Firebase (loaded here so it doesn't block initial HTML render) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 /* ══ CONSTANTS ══ */
 let PRICE=68957.00, HIGH=69050.00, LOW=68715.00, CHG="+0.51", VOL=523.84, MA10=448.62, CONF=7.2;
 let showBal=true, activeCoinTab="gainers", activeSetup=0, activeTF="1H";
 let currentSymbol='BTCUSDT', currentBase='BTC', currentCgId='bitcoin';
+let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
+
+/* ── Firebase Firestore sync ── */
+const _fbConfig = {
+  apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
+  authDomain: "quant-dashboard-1405b.firebaseapp.com",
+  projectId: "quant-dashboard-1405b",
+  storageBucket: "quant-dashboard-1405b.firebasestorage.app",
+  messagingSenderId: "1013979996177",
+  appId: "1:1013979996177:web:7274da6d71ef702e3011b0"
+};
+let _db = null;
+let _posRef = null;
+function _getSyncId(){
+  let id = localStorage.getItem('vf_sync_id');
+  if(!id){ id='dash_'+Math.random().toString(36).slice(2,10); localStorage.setItem('vf_sync_id',id); }
+  return id;
+}
+const SYNC_ID = _getSyncId();
+
+function savePositions(){
+  /* Save to localStorage as instant fallback */
+  try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
+  /* Save to Firestore if ready */
+  if(_posRef) _posRef.set({ list: positions }).catch(e => console.error('Firestore save:', e));
+}
+
+function initFirestore(){
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(_fbConfig);
+    _db = firebase.firestore();
+    _posRef = _db.collection('positions').doc(SYNC_ID);
+    /* Real-time listener — fires on any device that writes */
+    _posRef.onSnapshot(doc => {
+      if(doc && doc.exists){
+        const remote = doc.data().list || [];
+        positions = remote;
+        renderPositions(); renderPerfChart();
+      }
+    }, err => console.error('Firestore listen:', err));
+  } catch(e){
+    console.error('Firebase init:', e);
+    /* Fall back to localStorage */
+    try{ const raw=localStorage.getItem('vf_positions'); if(raw) positions=JSON.parse(raw); }catch(_){}
+  }
+}
+
+/* Load from localStorage immediately so there's no blank flash on load */
+(function(){ try{ const r=localStorage.getItem('vf_positions'); if(r) positions=JSON.parse(r); }catch(_){} })();
 
 /* ══ 7 COIN DATA ══ */
 const COINS_DATA = {
@@ -1365,7 +1417,10 @@ window.fetchLiveData = async function(){
     const tbDate = document.getElementById('topbar-date');
     if(tbDate) tbDate.textContent = `CoinGecko · ${utcTs}`;
 
-    renderKPIs(); renderLevelsSB();
+    /* Update currentPrice for any open positions matching this coin */
+    positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=newPrice; });
+    savePositions();
+    renderKPIs(); renderLevelsSB(); renderPositions(); renderPerfChart();
 
     /* Success state */
     icon.style.animation = '';
@@ -1433,6 +1488,35 @@ renderLevelsSB();
 renderSessionLog();
 renderSetupsList();
 renderConfChart(TF_DATA['1H'].confHistory);
+renderPositions();
+renderPerfChart();
+initFirestore();
+
+/* ══ AUTO-REFRESH every 60s ══ */
+(function(){
+  const INTERVAL = 60;
+  let countdown = INTERVAL;
+  const spanEl = () => document.querySelector('#refresh-btn span');
+
+  function tick(){
+    countdown--;
+    const sp = spanEl();
+    if(sp && !document.getElementById('refresh-btn').disabled){
+      sp.textContent = `Auto ${countdown}s`;
+    }
+    if(countdown <= 0){
+      countdown = INTERVAL;
+      fetchLiveData();
+    }
+  }
+
+  /* Start countdown after 5s so initial page paint settles */
+  setTimeout(() => {
+    const sp = spanEl();
+    if(sp) sp.textContent = `Auto ${countdown}s`;
+    setInterval(tick, 1000);
+  }, 5000);
+})();
 
 /* ══ EYE TOGGLE ══ */
 window.toggleBal = function(){
@@ -1446,8 +1530,6 @@ window.toggleBal = function(){
 /* ══════════════════════════════════════════
    ENTRY PANEL + POSITIONS + PERF CHART
 ══════════════════════════════════════════ */
-let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
-
 const ENTRY_COINS = [
   { sym:"BTC",  price:68746.10 },
   { sym:"ETH",  price:3421.18  },
@@ -1460,9 +1542,25 @@ const ENTRY_COINS = [
 ];
 let selectedCoin = ENTRY_COINS[0];
 
+/* ── Sync ENTRY_COINS prices from live data before opening panel ── */
+function syncEntryCoinPrices(){
+  ENTRY_COINS.forEach(c => {
+    if(c.sym === currentBase){
+      c.price = PRICE; /* use live global */
+    } else {
+      const cached = _marketPrices[c.sym+'USDT'];
+      if(cached && cached.price) c.price = parseFloat(cached.price);
+    }
+  });
+  /* Default to current market coin */
+  const match = ENTRY_COINS.find(c => c.sym === currentBase);
+  if(match) selectedCoin = match;
+}
+
 /* ── Panel open/close ── */
 window.openPanel = function(dir='long'){
   entryDir = dir;
+  syncEntryCoinPrices();
   const overlay = document.createElement("div");
   overlay.className = "panel-overlay";
   overlay.id = "panel-overlay";
@@ -1650,6 +1748,9 @@ window.setDir = function(dir){
 
 window.selectCoin = function(sym){
   selectedCoin = ENTRY_COINS.find(c => c.sym === sym) || ENTRY_COINS[0];
+  /* Refresh price from live data */
+  if(sym === currentBase) selectedCoin.price = PRICE;
+  else { const c = _marketPrices[sym+'USDT']; if(c?.price) selectedCoin.price = parseFloat(c.price); }
   document.querySelectorAll(".coin-opt").forEach(el => {
     el.classList.toggle("selected", el.dataset.sym === sym);
   });
@@ -1789,7 +1890,7 @@ function renderPositions(){
   }).join("");
   updateSummaryStats();
 }
-window.closePosition=function(id){positions=positions.filter(p=>p.id!==id);renderPositions();renderPerfChart();};
+window.closePosition=function(id){positions=positions.filter(p=>p.id!==id);savePositions();renderPositions();renderPerfChart();};
 function updateSummaryStats(){
   const pnls=positions.map(p=>(p.currentPrice-p.entry)*p.qty*(p.dir==="long"?1:-1));
   const totalPnl=pnls.reduce((a,b)=>a+b,0),wins=pnls.filter(v=>v>0).length;
@@ -1853,6 +1954,7 @@ window.submitEntry=function(dir){
   let rr=null;if(tp&&sl){const reward=Math.abs(tp-entry),risk=Math.abs(sl-entry);if(risk>0) rr=(reward/risk).toFixed(2);}
   const pos={id:Date.now(),symbol:selectedCoin.sym,dir:entryDir,entry,qty,exposure,tp,sl,rr,note,time:now.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false}),date:now.toLocaleDateString("en-US",{month:"short",day:"numeric"}),status:"open",currentPrice:selectedCoin.price};
   positions.unshift(pos);
+  savePositions();
   /* Flash the clicked button */
   const btnId=entryDir==="long"?"btn-submit-long":"btn-submit-short";
   const btn=document.getElementById(btnId);
@@ -1898,12 +2000,19 @@ window.closeSidebar = function(){
 /* Auto-collapse sidebar based on viewport width */
 function autoCollapseSidebar(){
   const sb = document.querySelector('.sidebar');
+  const ov = document.getElementById('mob-overlay');
   if(window.innerWidth <= 768){
+    /* Mobile: always start as closed drawer */
     sb.classList.remove('collapsed');
+    sb.classList.remove('open');
+    if(ov) ov.classList.remove('show');
+    document.body.style.overflow = '';
   } else if(window.innerWidth <= 1100){
     sb.classList.add('collapsed');
+    sb.classList.remove('open');
   } else {
     sb.classList.remove('collapsed');
+    sb.classList.remove('open');
   }
   updateSidebarUI();
 }
