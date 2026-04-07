@@ -1281,8 +1281,8 @@ const TF_DATA = {
       {time:'Jan W3',type:'warn',msg:'Weekly RSI overbought signal. Prior highs acted as resistance — range forming.'}]}
 };
 
-/* ══ API — Binance (CORS-friendly public REST) ══ */
-const BINANCE = 'https://api.binance.com/api/v3';
+/* ══ API — CoinGecko ══ */
+const CG = 'https://api.coingecko.com/api/v3';
 
 /* ══ MARKET SELECTOR ══ */
 
@@ -1386,12 +1386,13 @@ function renderMarketGrid(list){
 
 async function fetchAllMarketPrices(){
   try {
-    const syms = MARKET_LIST.map(m => `"${m.sym}"`).join(',');
-    const res = await fetch(`${BINANCE}/ticker/24hr?symbols=[${syms}]`);
+    const ids = MARKET_LIST.map(m => m.cgId).join(',');
+    const res = await fetch(`${CG}/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=false`);
     if(!res.ok) return;
     const all = await res.json();
     all.forEach(t => {
-      _marketPrices[t.symbol] = { price: parseFloat(t.lastPrice), chg: parseFloat(t.priceChangePercent) };
+      const m = MARKET_LIST.find(x => x.cgId === t.id);
+      if(m) _marketPrices[m.sym] = { price: t.current_price, chg: t.price_change_percentage_24h };
     });
     const modal = document.getElementById('market-modal');
     if(modal && modal.style.display !== 'none'){
@@ -1415,25 +1416,30 @@ window.selectMarket = async function(sym, base, name){
   if(btn){ btn.disabled = true; btn.style.opacity='0.7'; icon.style.animation='spin 0.8s linear infinite'; }
 
   try {
-    /* Fetch ticker + daily klines in parallel via Binance */
-    const [tickRes, klinesRes] = await Promise.all([
-      fetch(`${BINANCE}/ticker/24hr?symbol=${sym}`),
-      fetch(`${BINANCE}/klines?symbol=${sym}&interval=1d&limit=100`)
+    /* Fetch ticker + daily chart in parallel via CoinGecko */
+    const cgId = MARKET_LIST.find(m => m.sym === sym)?.cgId || sym.replace('USDT','').toLowerCase();
+    currentCgId = cgId;
+    const [mktRes, chartRes] = await Promise.all([
+      fetch(`${CG}/coins/markets?vs_currency=usd&ids=${cgId}&sparkline=false`),
+      fetch(`${CG}/coins/${cgId}/market_chart?vs_currency=usd&days=99&interval=daily`)
     ]);
-    if(!tickRes.ok)   throw new Error(`Ticker API ${tickRes.status}`);
-    if(!klinesRes.ok) throw new Error(`Klines API ${klinesRes.status}`);
-    const tick   = await tickRes.json();
-    const klines = await klinesRes.json();
+    if(!mktRes.ok)   throw new Error(`Markets API ${mktRes.status}`);
+    if(!chartRes.ok) throw new Error(`Chart API ${chartRes.status}`);
+    const mktJson = await mktRes.json();
+    const chart   = await chartRes.json();
+    if(!Array.isArray(mktJson) || !mktJson[0]) throw new Error('Empty market data');
+    if(!chart.prices) throw new Error('Empty chart data');
+    const [mkt] = mktJson;
 
-    const newPrice  = parseFloat(tick.lastPrice);
-    const newHigh   = parseFloat(tick.highPrice);
-    const newLow    = parseFloat(tick.lowPrice);
-    const newChgPct = parseFloat(tick.priceChangePercent);
-    const newVol    = parseFloat(tick.volume);
+    const newPrice  = mkt.current_price;
+    const newHigh   = mkt.high_24h;
+    const newLow    = mkt.low_24h;
+    const newChgPct = mkt.price_change_percentage_24h;
+    const newVol    = mkt.total_volume;
     const newChg    = (newChgPct>=0?'+':'')+newChgPct.toFixed(2);
 
-    /* Calculate MAs from daily closes (kline index 4 = close) */
-    const closes = klines.map(k => parseFloat(k[4]));
+    /* Calculate MAs from daily closes */
+    const closes = chart.prices.map(p => p[1]);
     const sma = (n) => {
       const slice = closes.slice(-n);
       return slice.length ? slice.reduce((a,b)=>a+b,0)/slice.length : newPrice;
@@ -1442,14 +1448,14 @@ window.selectMarket = async function(sym, base, name){
     const gap  = (ma) => ((newPrice/ma-1)*100);
 
     /* Derive display volume (K units of base token) */
-    const volK = parseFloat((newVol / 1000).toFixed(2));
+    const volK = parseFloat((newVol / newPrice / 1000).toFixed(2));
     const ma10volK = parseFloat((volK * (0.7 + Math.random()*0.3)).toFixed(2));
 
     /* Build 1D conf history from recent closes */
     const recent7 = closes.slice(-10);
     const confLong  = recent7.map((_,i) => parseFloat((4+i*0.3+(Math.random()-.4)).toFixed(1)));
     const confShort = recent7.map((_,i) => parseFloat((7-i*0.3+(Math.random()-.4)).toFixed(1)));
-    const confLabels= klines.slice(-10).map(k=>{ const d=new Date(k[0]); return (d.getMonth()+1)+'/'+(d.getDate()); });
+    const confLabels= chart.prices.slice(-10).map(p=>{ const d=new Date(p[0]); return (d.getMonth()+1)+'/'+(d.getDate()); });
 
     /* Generic setups scaled to new price */
     const longEntry  = [+(newPrice*0.988).toFixed(2), +(newPrice*0.992).toFixed(2)];
@@ -1563,15 +1569,17 @@ window.fetchLiveData = async function(){
   icon.style.animation = 'spin 0.8s linear infinite';
 
   try {
-    const res = await fetch(`${BINANCE}/ticker/24hr?symbol=${currentSymbol}`);
+    const res = await fetch(`${CG}/simple/price?ids=${currentCgId}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_high_24h=true&include_low_24h=true`);
     if(!res.ok) throw new Error(`API ${res.status}`);
-    const d = await res.json();
+    const json = await res.json();
+    const d = json[currentCgId];
+    if(!d) throw new Error('Empty response');
 
-    const newPrice = parseFloat(d.lastPrice);
-    const newHigh  = parseFloat(d.highPrice);
-    const newLow   = parseFloat(d.lowPrice);
-    const newChg   = parseFloat(d.priceChangePercent);
-    const newVol   = parseFloat(d.volume) / 1000; /* display in K base token */
+    const newPrice = d.usd;
+    const newHigh  = d.usd_24h_high ?? HIGH;
+    const newLow   = d.usd_24h_low  ?? LOW;
+    const newChg   = d.usd_24h_change;
+    const newVol   = (d.usd_24h_vol ?? 0) / newPrice / 1000; /* K base token */
 
     /* Update globals for current TF */
     PRICE = newPrice; HIGH = newHigh; LOW = newLow;
@@ -1588,12 +1596,12 @@ window.fetchLiveData = async function(){
     /* Update timestamp */
     const now   = new Date();
     const utcTs = now.toUTCString().replace('GMT','UTC').slice(5,25);
-    const tfSub = `Binance · ${activeTF} · ${utcTs}`;
+    const tfSub = `CoinGecko · ${activeTF} · ${utcTs}`;
     TF_DATA[activeTF].subtitle = tfSub;
     const subEl = document.getElementById('tf-subtitle');
     if(subEl) subEl.textContent = tfSub;
     const tbDate = document.getElementById('topbar-date');
-    if(tbDate) tbDate.textContent = `Binance · ${utcTs}`;
+    if(tbDate) tbDate.textContent = `CoinGecko · ${utcTs}`;
 
     /* Update currentPrice for any open positions matching this coin */
     positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=newPrice; });
