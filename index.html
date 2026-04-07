@@ -1315,8 +1315,16 @@ const TF_DATA = {
       {time:'Jan W3',type:'warn',msg:'Weekly RSI overbought signal. Prior highs acted as resistance — range forming.'}]}
 };
 
-/* ══ API — CoinGecko ══ */
-const CG = 'https://api.coingecko.com/api/v3';
+/* ══ API — CoinGecko (proxied via Netlify function to avoid CORS) ══ */
+const _isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+function _cgUrl(type, params) {
+  if (_isLocal) {
+    if (type === 'market') return `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${params.ids}&sparkline=false`;
+    if (type === 'chart')  return `https://api.coingecko.com/api/v3/coins/${params.id}/market_chart?vs_currency=usd&days=${params.days||99}&interval=daily`;
+  }
+  if (type === 'market') return `/.netlify/functions/cg?type=market&ids=${encodeURIComponent(params.ids)}`;
+  if (type === 'chart')  return `/.netlify/functions/cg?type=chart&id=${encodeURIComponent(params.id)}&days=${params.days||99}`;
+}
 
 /* ══ MARKET SELECTOR ══ */
 
@@ -1421,7 +1429,7 @@ function renderMarketGrid(list){
 async function fetchAllMarketPrices(){
   try {
     const ids = MARKET_LIST.map(m => m.cgId).join(',');
-    const res = await fetch(`${CG}/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=false`);
+    const res = await fetch(_cgUrl('market', { ids }));
     if(!res.ok) return;
     const all = await res.json();
     all.forEach(t => {
@@ -1454,8 +1462,8 @@ window.selectMarket = async function(sym, base, name){
     const cgId = MARKET_LIST.find(m => m.sym === sym)?.cgId || sym.replace('USDT','').toLowerCase();
     currentCgId = cgId;
     const [mktRes, chartRes] = await Promise.all([
-      fetch(`${CG}/coins/markets?vs_currency=usd&ids=${cgId}&sparkline=false`),
-      fetch(`${CG}/coins/${cgId}/market_chart?vs_currency=usd&days=99&interval=daily`)
+      fetch(_cgUrl('market', { ids: cgId })),
+      fetch(_cgUrl('chart',  { id: cgId, days: 99 }))
     ]);
     if(!mktRes.ok)   throw new Error(`Markets API ${mktRes.status}`);
     if(!chartRes.ok) throw new Error(`Chart API ${chartRes.status}`);
@@ -1604,7 +1612,7 @@ window.fetchLiveData = async function(){
 
   try {
     /* Use /coins/markets — free tier, always has CORS headers */
-    const res = await fetch(`${CG}/coins/markets?vs_currency=usd&ids=${currentCgId}&sparkline=false`);
+    const res = await fetch(_cgUrl('market', { ids: currentCgId }));
     if(!res.ok) throw new Error(`API ${res.status}`);
     const json = await res.json();
     if(!Array.isArray(json) || !json[0]) throw new Error('Empty response');
