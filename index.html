@@ -266,9 +266,77 @@ p,span,div,input,button{
 .tf-bar-sub{font-size:10px;color:#94A3B8;font-family:var(--font-body);margin-left:auto;white-space:nowrap}
 @media(max-width:768px){.tf-bar{padding:7px 12px;top:50px}.tf-bar-sub{display:none}}
 @media(max-width:480px){.tf-bar-label{display:none}.entry-btn-label{display:none}}
+
+/* ═══ AUTH SCREEN ═══ */
+#auth-screen{position:fixed;inset:0;z-index:200;background:linear-gradient(135deg,#0F172A 0%,#1E293B 60%,#0F2027 100%);display:flex;align-items:center;justify-content:center;padding:16px;transition:opacity .4s ease}
+#auth-screen.hidden{opacity:0;pointer-events:none}
+.auth-card{background:white;border-radius:20px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 32px 80px rgba(0,0,0,.4)}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;justify-content:center}
+.auth-logo-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#F7931A,#FBBF24);display:flex;align-items:center;justify-content:center}
+.auth-title{font-family:var(--font-heading);font-size:22px;font-weight:700;color:#0F172A;letter-spacing:-.5px}
+.auth-sub{font-family:var(--font-body);font-size:13px;color:#64748B;text-align:center;margin-bottom:24px}
+.auth-tabs{display:flex;background:#F1F5F9;border-radius:10px;padding:3px;margin-bottom:24px}
+.auth-tab{flex:1;padding:8px;border:none;background:none;cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:600;color:#64748B;border-radius:8px;transition:all .15s}
+.auth-tab.active{background:white;color:#0F172A;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.auth-field{margin-bottom:14px}
+.auth-field label{display:block;font-family:var(--font-body);font-size:11px;font-weight:600;color:#64748B;letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px}
+.auth-field input{width:100%;padding:10px 12px;border:1px solid #E2E8F0;border-radius:9px;font-family:var(--font-body);font-size:13px;color:#0F172A;outline:none;transition:border .15s;box-sizing:border-box}
+.auth-field input:focus{border-color:#0F172A}
+.auth-btn{width:100%;padding:11px;border:none;border-radius:9px;background:#0F172A;color:white;font-family:var(--font-heading);font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;margin-top:4px}
+.auth-btn:hover{opacity:.85}
+.auth-btn:disabled{opacity:.5;cursor:default}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:#CBD5E1;font-size:11px;font-family:var(--font-body)}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:#E2E8F0}
+.auth-google{width:100%;padding:10px;border:1.5px solid #E2E8F0;border-radius:9px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;font-family:var(--font-body);font-size:13px;font-weight:600;color:#334155;transition:all .15s}
+.auth-google:hover{border-color:#CBD5E1;background:#F8FAFC}
+.auth-error{background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:9px 12px;font-size:12px;color:#DC2626;font-family:var(--font-body);margin-bottom:12px;display:none}
+.user-chip{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:20px;border:1px solid #E2E8F0;background:white;cursor:pointer;transition:all .15s}
+.user-chip:hover{background:#F8FAFC;border-color:#CBD5E1}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#F7931A,#FBBF24);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;font-family:var(--font-heading);flex-shrink:0;overflow:hidden}
+.user-avatar img{width:100%;height:100%;object-fit:cover}
+.user-email{font-size:10px;font-weight:600;color:#334155;font-family:var(--font-body);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:480px){.user-email{display:none}}
 </style>
 </head>
 <body>
+<!-- ═══ AUTH SCREEN ═══ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+      <span class="auth-title">Quant Dashboard</span>
+    </div>
+    <p class="auth-sub">Sign in to sync your trades across all devices</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-signin" onclick="authSwitchTab('signin')">Sign In</button>
+      <button class="auth-tab" id="tab-register" onclick="authSwitchTab('register')">Register</button>
+    </div>
+
+    <div id="auth-error" class="auth-error"></div>
+
+    <div class="auth-field">
+      <label>Email</label>
+      <input type="email" id="auth-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')authSubmit()">
+    </div>
+    <div class="auth-field">
+      <label>Password</label>
+      <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')authSubmit()">
+    </div>
+
+    <button class="auth-btn" id="auth-submit-btn" onclick="authSubmit()">Sign In</button>
+
+    <div class="auth-divider">or</div>
+
+    <button class="auth-google" onclick="authGoogle()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+</div>
+
 <div class="root">
 <div class="mob-overlay" id="mob-overlay" onclick="closeSidebar()" ontouchend="closeSidebar()"></div>
 <!-- Expand tab: only shown on desktop when sidebar is collapsed -->
@@ -396,6 +464,10 @@ p,span,div,input,button{
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
         <span class="entry-btn-label">Short</span>
       </button>
+      <div id="user-chip" class="user-chip" onclick="doSignOut()" title="Sign out">
+        <div class="user-avatar" id="user-avatar"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <span class="user-email" id="user-email">Account</span>
+      </div>
     </div>
   </div>
 
@@ -586,6 +658,7 @@ p,span,div,input,button{
 
 <!-- Firebase (loaded here so it doesn't block initial HTML render) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
@@ -595,7 +668,7 @@ let showBal=true, activeCoinTab="gainers", activeSetup=0, activeTF="1H";
 let currentSymbol='BTCUSDT', currentBase='BTC', currentCgId='bitcoin';
 let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
 
-/* ── Firebase Firestore sync ── */
+/* ── Firebase config ── */
 const _fbConfig = {
   apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
   authDomain: "quant-dashboard-1405b.firebaseapp.com",
@@ -604,44 +677,148 @@ const _fbConfig = {
   messagingSenderId: "1013979996177",
   appId: "1:1013979996177:web:7274da6d71ef702e3011b0"
 };
-let _db = null;
-let _posRef = null;
-function _getSyncId(){
-  let id = localStorage.getItem('vf_sync_id');
-  if(!id){ id='dash_'+Math.random().toString(36).slice(2,10); localStorage.setItem('vf_sync_id',id); }
-  return id;
-}
-const SYNC_ID = _getSyncId();
+let _db = null, _posRef = null, _posUnsubscribe = null;
+let currentUser = null;
+let _authTab = 'signin';
+
+/* ── Persist positions locally as fallback ── */
+(function(){ try{ const r=localStorage.getItem('vf_positions'); if(r) positions=JSON.parse(r); }catch(_){} })();
 
 function savePositions(){
-  /* Save to localStorage as instant fallback */
   try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
-  /* Save to Firestore if ready */
   if(_posRef) _posRef.set({ list: positions }).catch(e => console.error('Firestore save:', e));
 }
 
-function initFirestore(){
+/* ── Firestore listener tied to user UID ── */
+function initFirestoreForUser(uid){
   try{
-    if(!firebase.apps.length) firebase.initializeApp(_fbConfig);
     _db = firebase.firestore();
-    _posRef = _db.collection('positions').doc(SYNC_ID);
-    /* Real-time listener — fires on any device that writes */
-    _posRef.onSnapshot(doc => {
+    _posRef = _db.collection('users').doc(uid).collection('data').doc('positions');
+    if(_posUnsubscribe) _posUnsubscribe();
+    _posUnsubscribe = _posRef.onSnapshot(doc => {
       if(doc && doc.exists){
-        const remote = doc.data().list || [];
-        positions = remote;
+        positions = doc.data().list || [];
         renderPositions(); renderPerfChart();
       }
     }, err => console.error('Firestore listen:', err));
   } catch(e){
-    console.error('Firebase init:', e);
-    /* Fall back to localStorage */
+    console.error('Firestore init:', e);
     try{ const raw=localStorage.getItem('vf_positions'); if(raw) positions=JSON.parse(raw); }catch(_){}
   }
 }
 
-/* Load from localStorage immediately so there's no blank flash on load */
-(function(){ try{ const r=localStorage.getItem('vf_positions'); if(r) positions=JSON.parse(r); }catch(_){} })();
+/* ── Auth ── */
+function initAuth(){
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(_fbConfig);
+    firebase.auth().onAuthStateChanged(user => {
+      if(user){
+        currentUser = user;
+        _updateUserChip(user);
+        _hideAuthScreen();
+        initFirestoreForUser(user.uid);
+      } else {
+        currentUser = null;
+        _posRef = null;
+        _showAuthScreen();
+      }
+    });
+  } catch(e){
+    console.error('Auth init:', e);
+    _hideAuthScreen(); /* fallback: show dashboard without auth */
+  }
+}
+
+function _showAuthScreen(){
+  const s = document.getElementById('auth-screen');
+  if(s){ s.style.display='flex'; requestAnimationFrame(()=>s.classList.remove('hidden')); }
+}
+function _hideAuthScreen(){
+  const s = document.getElementById('auth-screen');
+  if(s){ s.classList.add('hidden'); setTimeout(()=>{ s.style.display='none'; }, 420); }
+}
+function _updateUserChip(user){
+  const emailEl = document.getElementById('user-email');
+  const avatarEl = document.getElementById('user-avatar');
+  if(emailEl) emailEl.textContent = user.displayName || user.email.split('@')[0];
+  if(avatarEl){
+    if(user.photoURL){
+      avatarEl.innerHTML = `<img src="${user.photoURL}" alt="">`;
+    } else {
+      const initials = (user.displayName||user.email).slice(0,1).toUpperCase();
+      avatarEl.innerHTML = `<span style="font-size:11px;font-weight:700;color:white;font-family:var(--font-heading)">${initials}</span>`;
+    }
+  }
+}
+
+window.authSwitchTab = function(tab){
+  _authTab = tab;
+  document.getElementById('tab-signin').classList.toggle('active', tab==='signin');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  document.getElementById('auth-submit-btn').textContent = tab==='signin' ? 'Sign In' : 'Create Account';
+  _authError('');
+};
+
+function _authError(msg){
+  const el = document.getElementById('auth-error');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+window.authSubmit = async function(){
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  const btn   = document.getElementById('auth-submit-btn');
+  if(!email || !pass){ _authError('Please enter your email and password.'); return; }
+  btn.disabled = true;
+  btn.textContent = 'Please wait…';
+  _authError('');
+  try{
+    const auth = firebase.auth();
+    if(_authTab === 'signin'){
+      await auth.signInWithEmailAndPassword(email, pass);
+    } else {
+      await auth.createUserWithEmailAndPassword(email, pass);
+    }
+  } catch(e){
+    _authError(_friendlyAuthError(e.code));
+    btn.disabled = false;
+    btn.textContent = _authTab==='signin' ? 'Sign In' : 'Create Account';
+  }
+};
+
+window.authGoogle = async function(){
+  try{
+    const provider = new firebase.auth.GoogleAuthProvider();
+    await firebase.auth().signInWithPopup(provider);
+  } catch(e){
+    _authError(_friendlyAuthError(e.code));
+  }
+};
+
+window.doSignOut = async function(){
+  if(!confirm('Sign out of your account?')) return;
+  try{
+    if(_posUnsubscribe){ _posUnsubscribe(); _posUnsubscribe=null; }
+    _posRef = null;
+    await firebase.auth().signOut();
+  } catch(e){ console.error('Sign out error:', e); }
+};
+
+function _friendlyAuthError(code){
+  const map = {
+    'auth/invalid-email':          'Invalid email address.',
+    'auth/user-not-found':         'No account found with this email.',
+    'auth/wrong-password':         'Incorrect password.',
+    'auth/email-already-in-use':   'This email is already registered. Try signing in.',
+    'auth/weak-password':          'Password must be at least 6 characters.',
+    'auth/too-many-requests':      'Too many attempts. Please try again later.',
+    'auth/popup-closed-by-user':   'Google sign-in was cancelled.',
+    'auth/invalid-credential':     'Incorrect email or password.',
+  };
+  return map[code] || 'Something went wrong. Please try again.';
+}
 
 /* ══ 7 COIN DATA ══ */
 const COINS_DATA = {
@@ -1490,7 +1667,7 @@ renderSetupsList();
 renderConfChart(TF_DATA['1H'].confHistory);
 renderPositions();
 renderPerfChart();
-initFirestore();
+initAuth();
 
 /* ══ FETCH LIVE DATA ON PAGE LOAD ══ */
 fetchLiveData();
