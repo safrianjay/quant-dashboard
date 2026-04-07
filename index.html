@@ -270,7 +270,7 @@ p,span,div,input,button{
 </head>
 <body>
 <div class="root">
-<div class="mob-overlay" id="mob-overlay" onclick="closeSidebar()"></div>
+<div class="mob-overlay" id="mob-overlay" onclick="closeSidebar()" ontouchend="closeSidebar()"></div>
 <!-- Expand tab: only shown on desktop when sidebar is collapsed -->
 <button class="sidebar-expand-tab" id="sidebar-expand-tab" onclick="toggleSidebar()" title="Expand sidebar" style="display:none">
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1898,12 +1898,19 @@ window.closeSidebar = function(){
 /* Auto-collapse sidebar based on viewport width */
 function autoCollapseSidebar(){
   const sb = document.querySelector('.sidebar');
+  const ov = document.getElementById('mob-overlay');
   if(window.innerWidth <= 768){
+    /* Mobile: always start as closed drawer */
     sb.classList.remove('collapsed');
+    sb.classList.remove('open');
+    if(ov) ov.classList.remove('show');
+    document.body.style.overflow = '';
   } else if(window.innerWidth <= 1100){
     sb.classList.add('collapsed');
+    sb.classList.remove('open');
   } else {
     sb.classList.remove('collapsed');
+    sb.classList.remove('open');
   }
   updateSidebarUI();
 }
