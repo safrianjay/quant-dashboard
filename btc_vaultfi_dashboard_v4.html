@@ -888,10 +888,9 @@ window.authSubmit = async function(){
     if(_authTab === 'signin'){
       await auth.signInWithEmailAndPassword(email, pass);
     } else {
-      const cred = await auth.createUserWithEmailAndPassword(email, pass);
-      /* Send verification email — actionCodeSettings tells Firebase where to
-         redirect after the link is clicked (must be in Authorized Domains) */
-      await cred.user.sendEmailVerification({ url: 'https://quantichy.netlify.app', handleCodeInApp: false });
+      await auth.createUserWithEmailAndPassword(email, pass);
+      /* onAuthStateChanged will fire and call _showVerifyView, which sends
+         the verification email after the session is fully established */
     }
   } catch(e){
     _authError(_friendlyAuthError(e.code));
@@ -954,13 +953,23 @@ window.authShowMain = function(){
 };
 
 /* ── Email verification ── */
-function _showVerifyView(email){
+async function _showVerifyView(email){
   _showAuthScreen();
   document.getElementById('auth-main-view').style.display   = 'none';
   document.getElementById('auth-fp-view').style.display     = 'none';
   document.getElementById('auth-verify-view').style.display = 'block';
   document.getElementById('auth-verify-email').textContent  = email || '';
-  document.getElementById('auth-verify-error').style.display = 'none';
+  const errEl = document.getElementById('auth-verify-error');
+  errEl.style.display = 'none';
+  /* Send verification email now — session is fully ready at this point */
+  try{
+    await firebase.auth().currentUser.sendEmailVerification();
+  } catch(e){
+    errEl.textContent = e.code === 'auth/too-many-requests'
+      ? 'Too many attempts. Please wait a few minutes, then use Resend.'
+      : 'Could not send verification email (' + e.code + '). Use Resend below.';
+    errEl.style.display = 'block';
+  }
 }
 
 window.authCheckVerified = async function(){
@@ -987,10 +996,21 @@ window.authCheckVerified = async function(){
 };
 
 window.authResendVerification = async function(){
-  const btn = document.getElementById('auth-resend-btn');
-  btn.disabled = true; btn.textContent = 'Sent!';
-  try{ await firebase.auth().currentUser.sendEmailVerification({ url: 'https://quantichy.netlify.app', handleCodeInApp: false }); }catch(_){}
-  setTimeout(() => { btn.disabled = false; btn.textContent = 'Resend verification email'; }, 30000);
+  const btn   = document.getElementById('auth-resend-btn');
+  const errEl = document.getElementById('auth-verify-error');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  errEl.style.display = 'none';
+  try{
+    await firebase.auth().currentUser.sendEmailVerification();
+    btn.textContent = 'Sent ✓';
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Resend verification email'; }, 30000);
+  } catch(e){
+    errEl.textContent = e.code === 'auth/too-many-requests'
+      ? 'Too many attempts. Please wait a few minutes before resending.'
+      : 'Send failed (' + e.code + '). Please try again.';
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Resend verification email';
+  }
 };
 
 window.authSendReset = async function(){
