@@ -1431,11 +1431,17 @@ function renderMarketGrid(list){
   }).join('');
 }
 
+let _lastMarketFetch = 0;
+const _MARKET_THROTTLE = 45000; /* 45s — matches server-side cache TTL */
+
 async function fetchAllMarketPrices(){
+  const now = Date.now();
+  if(now - _lastMarketFetch < _MARKET_THROTTLE) return; /* already fresh */
+  _lastMarketFetch = now;
   try {
     const ids = MARKET_LIST.map(m => m.cgId).join(',');
     const res = await fetch(_cgUrl('market', { ids }));
-    if(!res.ok) return;
+    if(!res.ok){ _lastMarketFetch = 0; return; } /* reset on failure so next call retries */
     const all = await res.json();
     all.forEach(t => {
       const m = MARKET_LIST.find(x => x.cgId === t.id);
