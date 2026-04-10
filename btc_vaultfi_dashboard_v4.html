@@ -1755,45 +1755,58 @@ renderPositions();
 renderPerfChart();
 initAuth();
 
-/* ══ REFRESH ALL COINS (batch) + UPDATE CURRENT VIEW ══ */
+/* ══ REFRESH ALL COINS (batch) + UPDATE CURRENT VIEW ══
+   API_INTERVAL: how often we actually call CoinGecko (ms) — respects free-tier rate limit
+   UI is updated every tick from the in-memory cache so the display feels live           */
+const API_INTERVAL_MS = 30000; /* 30s between real API calls */
+let _lastApiCall = 0;
+
+function _applyMarketCache(){
+  const c = _marketPrices[currentSymbol];
+  if(!c) return;
+  PRICE = c.price;
+  HIGH  = c.high;
+  LOW   = c.low;
+  CHG   = (c.chg >= 0 ? '+' : '') + parseFloat(c.chg).toFixed(2);
+  VOL   = parseFloat((c.vol / c.price / 1000).toFixed(2));
+  ['1H','4H','1D','1W'].forEach(tf => {
+    TF_DATA[tf].price = PRICE;
+    TF_DATA[tf].high  = HIGH;
+    TF_DATA[tf].low   = LOW;
+    TF_DATA[tf].chg   = CHG;
+    TF_DATA[tf].vol   = VOL;
+  });
+  const utcTs = new Date().toUTCString().replace('GMT','UTC').slice(5,25);
+  const tfSub = `CoinGecko · ${activeTF} · ${utcTs}`;
+  TF_DATA[activeTF].subtitle = tfSub;
+  const subEl = document.getElementById('tf-subtitle');
+  if(subEl) subEl.textContent = tfSub;
+  const tbDate = document.getElementById('topbar-date');
+  if(tbDate) tbDate.textContent = `CoinGecko · ${utcTs}`;
+  positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=PRICE; });
+  savePositions();
+  renderKPIs(); renderLevelsSB(); renderPositions(); renderPerfChart();
+}
+
 async function refreshAllCoins(){
   if(_selectMarketBusy) return;
+  const now = Date.now();
+  if(now - _lastApiCall < API_INTERVAL_MS){
+    /* API call too soon — just update display from cached prices */
+    _applyMarketCache();
+    return;
+  }
+  _lastApiCall = now;
   try {
-    await fetchAllMarketPrices(); /* one batch call for every coin */
-    const c = _marketPrices[currentSymbol];
-    if(!c) return;
-    PRICE = c.price;
-    HIGH  = c.high;
-    LOW   = c.low;
-    CHG   = (c.chg >= 0 ? '+' : '') + parseFloat(c.chg).toFixed(2);
-    VOL   = parseFloat((c.vol / c.price / 1000).toFixed(2));
-    /* Keep all TF_DATA in sync */
-    ['1H','4H','1D','1W'].forEach(tf => {
-      TF_DATA[tf].price = PRICE;
-      TF_DATA[tf].high  = HIGH;
-      TF_DATA[tf].low   = LOW;
-      TF_DATA[tf].chg   = CHG;
-      TF_DATA[tf].vol   = VOL;
-    });
-    /* Update timestamp */
-    const utcTs = new Date().toUTCString().replace('GMT','UTC').slice(5,25);
-    const tfSub = `CoinGecko · ${activeTF} · ${utcTs}`;
-    TF_DATA[activeTF].subtitle = tfSub;
-    const subEl = document.getElementById('tf-subtitle');
-    if(subEl) subEl.textContent = tfSub;
-    const tbDate = document.getElementById('topbar-date');
-    if(tbDate) tbDate.textContent = `CoinGecko · ${utcTs}`;
-    /* Re-render */
-    positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=PRICE; });
-    savePositions();
-    renderKPIs(); renderLevelsSB(); renderPositions(); renderPerfChart();
+    await fetchAllMarketPrices(); /* one batched call updates every coin */
+    _applyMarketCache();
   } catch(_){}
 }
 
 /* ══ FETCH LIVE DATA ON PAGE LOAD ══ */
 refreshAllCoins();
 
-/* ══ AUTO-REFRESH every 10s ══ */
+/* ══ AUTO-REFRESH every 10s (display) / 30s (API) ══ */
 (function(){
   const INTERVAL = 10;
   let countdown = INTERVAL;
