@@ -1090,17 +1090,22 @@ window.authResendVerification = async function(){
 let _phoneConfirmResult = null;
 let _recaptchaVerifier  = null;
 
+function _initRecaptcha(){
+  /* Destroy old verifier and clear the container before re-rendering */
+  if(_recaptchaVerifier){ try{ _recaptchaVerifier.clear(); }catch(_){} _recaptchaVerifier = null; }
+  const el = document.getElementById('auth-recaptcha');
+  if(el) el.innerHTML = '';
+  _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('auth-recaptcha', { size: 'invisible' });
+  _recaptchaVerifier.render().catch(e => console.warn('reCAPTCHA render error:', e));
+}
+
 window.authShowPhone = function(){
   document.getElementById('auth-main-view').style.display    = 'none';
   document.getElementById('auth-phone-view').style.display   = 'block';
   document.getElementById('auth-phone-step1').style.display  = 'block';
   document.getElementById('auth-phone-step2').style.display  = 'none';
   document.getElementById('auth-phone-error').style.display  = 'none';
-  /* Set up invisible reCAPTCHA on the send button */
-  if(!_recaptchaVerifier){
-    _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('auth-recaptcha', { size: 'invisible' });
-    _recaptchaVerifier.render();
-  }
+  _initRecaptcha();
   setTimeout(() => document.getElementById('auth-phone-num').focus(), 50);
 };
 
@@ -1128,7 +1133,7 @@ window.authSendSms = async function(){
     err.style.display = 'block';
     btn.disabled = false; btn.textContent = 'Send Code';
     /* Reset reCAPTCHA on failure so it can retry */
-    _recaptchaVerifier.clear(); _recaptchaVerifier = null;
+    _initRecaptcha();
   }
 };
 
@@ -1158,9 +1163,7 @@ window.authPhoneResend = async function(){
   document.getElementById('auth-phone-error').style.display = 'none';
   document.getElementById('auth-phone-send-btn').disabled   = false;
   document.getElementById('auth-phone-send-btn').textContent = 'Send Code';
-  if(_recaptchaVerifier){ try{ _recaptchaVerifier.clear(); }catch(_){} _recaptchaVerifier = null; }
-  _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('auth-recaptcha', { size: 'invisible' });
-  _recaptchaVerifier.render();
+  _initRecaptcha();
 };
 
 /* OTP box keyboard navigation */
