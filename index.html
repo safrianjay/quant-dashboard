@@ -695,7 +695,11 @@ p,span,div,input,button{
 /* ══ CONSTANTS ══ */
 let PRICE=68957.00, HIGH=69050.00, LOW=68715.00, CHG="+0.51", VOL=523.84, MA10=448.62, CONF=7.2;
 let showBal=true, activeCoinTab="gainers", activeSetup=0, activeTF="1H";
-let currentSymbol='BTCUSDT', currentBase='BTC', currentCgId='bitcoin';
+/* Restore last selected coin from localStorage */
+const _savedCoin = (()=>{ try{ return JSON.parse(localStorage.getItem('q_coin')||'null'); }catch(_){return null;} })();
+let currentSymbol = _savedCoin?.sym || 'BTCUSDT';
+let currentBase   = _savedCoin?.base || 'BTC';
+let currentCgId   = _savedCoin?.cgId || 'bitcoin';
 let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
 
 /* ── Firebase config ── */
@@ -1355,6 +1359,7 @@ const MARKET_LIST = [
   { sym:'OPUSDT',   base:'OP',   name:'Optimism',        cgId:'optimism',               cat:'Layer2', grad:'linear-gradient(135deg,#FF0420,#F87171)', letter:'O' },
   { sym:'DOGEUSDT', base:'DOGE', name:'Dogecoin',        cgId:'dogecoin',               cat:'Meme',   grad:'linear-gradient(135deg,#C2A633,#FCD34D)', letter:'D' },
   { sym:'SHIBUSDT', base:'SHIB', name:'Shiba Inu',       cgId:'shiba-inu',              cat:'Meme',   grad:'linear-gradient(135deg,#E36D26,#F97316)', letter:'S' },
+  { sym:'PEPEUSDT', base:'PEPE', name:'Pepe',            cgId:'pepe',                   cat:'Meme',   grad:'linear-gradient(135deg,#3D9900,#86EFAC)', letter:'P' },
   { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'AI',     grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W' },
 ];
 
@@ -1465,6 +1470,9 @@ window.selectMarket = async function(sym, base, name){
   closeMarketSelector();
   currentSymbol = sym;
   currentBase   = base;
+
+  /* Persist selection so it survives page reload */
+  try { localStorage.setItem('q_coin', JSON.stringify({ sym, base, cgId: MARKET_LIST.find(m=>m.sym===sym)?.cgId || sym.replace('USDT','').toLowerCase() })); } catch(_){}
 
   /* Update topbar title immediately */
   const titleEl = document.getElementById('market-title');
@@ -1749,6 +1757,8 @@ window.switchTF = function(tf){
 };
 
 /* ══ INIT ══ */
+/* Restore topbar title for saved coin */
+(function(){ const el = document.getElementById('market-title'); if(el) el.textContent = currentBase+'/USDT — Live Analysis'; })();
 renderKPIs();
 renderCoinStrip();
 renderLadder();
