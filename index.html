@@ -979,7 +979,7 @@ window.switchCoinTab = function(tab){
 
 /* ══ KPI CARDS ══ */
 const KPIS = [
-  { title:"Price",      val:()=> maskBal("$"+PRICE.toLocaleString("en-US",{maximumFractionDigits:PRICE<10?4:PRICE<1000?2:0})), sub:()=>`${CHG}% chg`, pos:true,  acc:"#10B981", path:"M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z" },
+  { title:"Price",      val:()=> maskBal("$"+PRICE.toLocaleString("en-US",{maximumFractionDigits:PRICE<10?4:PRICE<1000?2:0})), sub:()=>`${CHG}% chg`, pos:()=>!String(CHG).startsWith('-'),  acc:"#10B981", path:"M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z" },
   { title:"Confidence", val:()=> CONF+"/10",                                                           sub:()=>"Long thesis active",        pos:true,  acc:"#3B82F6", path:"M22 12h-4l-3 9L9 3l-3 9H2" },
   { title:"Volume",     val:()=> VOL.toFixed(0)+" "+currentBase,                                       sub:()=>`+${Math.round((VOL/MA10-1)*100)}% vs MA`, pos:true, acc:"#F59E0B", path:"M18 20V10M12 20V4M6 20v-6" },
   { title:"Range",      val:()=> maskBal(pFmt(HIGH-LOW)), sub:()=>`${pFmt(LOW)} – ${pFmt(HIGH)}`, pos:false, acc:"#8B5CF6", path:"M22 2L11 13M22 2l-5 20-4-9-9-4 20-5z" },
@@ -995,7 +995,9 @@ const aUp = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke=
 const aDn = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 7 7 7 17"/></svg>`;
 
 function renderKPIs(){
-  document.getElementById("kpi-grid").innerHTML = KPIS.map((k, i) => `
+  document.getElementById("kpi-grid").innerHTML = KPIS.map((k, i) => {
+    const isPos = typeof k.pos === 'function' ? k.pos() : k.pos;
+    return `
   <div class="kpi-card" style="animation-delay:${.05 + i * .05}s">
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${k.acc};border-radius:13px 13px 0 0"></div>
     <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -1005,13 +1007,14 @@ function renderKPIs(){
         <!-- Space Mono value -->
         <div class="val" id="kv${i}">${k.val()}</div>
         <!-- Inter sub -->
-        <div class="sub" style="color:${k.pos ? "#16A34A" : "#DC2626"}">${k.pos ? aUp : aDn}${k.sub()}</div>
+        <div class="sub" style="color:${isPos ? "#16A34A" : "#DC2626"}">${isPos ? aUp : aDn}${k.sub()}</div>
       </div>
       <div class="icon-wrap" style="background:${k.acc}14">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${k.acc}" stroke-width="2" stroke-linecap="round"><path d="${k.path}"/></svg>
       </div>
     </div>
-  </div>`).join("");
+  </div>`;
+  }).join("");
 }
 
 /* ══ SIDEBAR LEVELS ══ */
@@ -1355,7 +1358,9 @@ const MARKET_LIST = [
   { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'AI',     grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W' },
 ];
 
-let _marketPrices = {}; /* cache: { BTCUSDT: { price, chg } } */
+let _marketPrices = {}; /* cache: { BTCUSDT: { price, chg, high, low, vol } } */
+let _chartCache   = {}; /* cache: { cgId: closes[] } — avoid re-fetching same coin chart */
+let _selectMarketBusy = false; /* guard against concurrent coin-switch calls */
 
 window.openMarketSelector = function(){
   const overlay = document.getElementById('market-overlay');
@@ -1447,6 +1452,10 @@ async function fetchAllMarketPrices(){
 }
 
 window.selectMarket = async function(sym, base, name){
+  /* Prevent 429 from concurrent or rapid calls */
+  if(_selectMarketBusy) return;
+  _selectMarketBusy = true;
+
   closeMarketSelector();
   currentSymbol = sym;
   currentBase   = base;
@@ -1464,13 +1473,23 @@ window.selectMarket = async function(sym, base, name){
     const cgId = MARKET_LIST.find(m => m.sym === sym)?.cgId || sym.replace('USDT','').toLowerCase();
     currentCgId = cgId;
 
-    /* Use cached market data if available (from fetchAllMarketPrices),
-       only fetch chart data for MAs — halves API calls, avoids 429 */
-    const cached = _marketPrices[sym];
-    const chartRes = await fetch(_cgUrl('chart', { id: cgId, days: 99 }));
-    if(!chartRes.ok) throw new Error(`Chart API ${chartRes.status}`);
-    const chart = await chartRes.json();
-    if(!chart.prices) throw new Error('Empty chart data');
+    /* Pre-populate market cache if empty (first load without opening selector) */
+    if(!_marketPrices[sym]) await fetchAllMarketPrices();
+
+    /* Use cached chart data if available — avoids re-fetching same coin repeatedly */
+    let closes, confLabels;
+    if(_chartCache[cgId]) {
+      closes = _chartCache[cgId].closes;
+      confLabels = _chartCache[cgId].labels;
+    } else {
+      const chartRes = await fetch(_cgUrl('chart', { id: cgId, days: 99 }));
+      if(!chartRes.ok) throw new Error(`Chart API ${chartRes.status}`);
+      const chart = await chartRes.json();
+      if(!chart.prices) throw new Error('Empty chart data');
+      closes = chart.prices.map(p => p[1]);
+      confLabels = chart.prices.slice(-10).map(p=>{ const d=new Date(p[0]); return (d.getMonth()+1)+'/'+(d.getDate()); });
+      _chartCache[cgId] = { closes, labels: confLabels };
+    }
 
     /* If cache missing, fetch market data as fallback */
     let newPrice, newHigh, newLow, newChgPct, newVol;
@@ -1488,8 +1507,7 @@ window.selectMarket = async function(sym, base, name){
     }
     const newChg = (newChgPct>=0?'+':'')+newChgPct.toFixed(2);
 
-    /* Calculate MAs from daily closes */
-    const closes = chart.prices.map(p => p[1]);
+    /* Calculate MAs from daily closes (already populated from cache or fetch above) */
     const sma = (n) => {
       const slice = closes.slice(-n);
       return slice.length ? slice.reduce((a,b)=>a+b,0)/slice.length : newPrice;
@@ -1505,7 +1523,7 @@ window.selectMarket = async function(sym, base, name){
     const recent7 = closes.slice(-10);
     const confLong  = recent7.map((_,i) => parseFloat((4+i*0.3+(Math.random()-.4)).toFixed(1)));
     const confShort = recent7.map((_,i) => parseFloat((7-i*0.3+(Math.random()-.4)).toFixed(1)));
-    const confLabels= chart.prices.slice(-10).map(p=>{ const d=new Date(p[0]); return (d.getMonth()+1)+'/'+(d.getDate()); });
+    /* confLabels already set from cache/fetch above */
 
     /* Generic setups scaled to new price */
     const longEntry  = [+(newPrice*0.988).toFixed(2), +(newPrice*0.992).toFixed(2)];
@@ -1593,6 +1611,8 @@ window.selectMarket = async function(sym, base, name){
     }
     /* Show toast */
     showToast('Failed to load '+base+' data: '+err.message, 'error');
+  } finally {
+    _selectMarketBusy = false;
   }
 };
 
@@ -1637,12 +1657,14 @@ window.fetchLiveData = async function(){
     CHG   = (newChg >= 0 ? '+' : '') + newChg.toFixed(2);
     VOL   = parseFloat(newVol.toFixed(2));
 
-    /* Patch active TF_DATA so switchTF re-reads correct values */
-    TF_DATA[activeTF].price = newPrice;
-    TF_DATA[activeTF].high  = newHigh;
-    TF_DATA[activeTF].low   = newLow;
-    TF_DATA[activeTF].chg   = CHG;
-    TF_DATA[activeTF].vol   = VOL;
+    /* Patch ALL TF_DATA so switching timeframe always shows fresh values */
+    ['1H','4H','1D','1W'].forEach(tf => {
+      TF_DATA[tf].price = newPrice;
+      TF_DATA[tf].high  = newHigh;
+      TF_DATA[tf].low   = newLow;
+      TF_DATA[tf].chg   = CHG;
+      TF_DATA[tf].vol   = VOL;
+    });
 
     /* Update timestamp */
     const now   = new Date();
