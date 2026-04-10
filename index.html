@@ -889,8 +889,9 @@ window.authSubmit = async function(){
       await auth.signInWithEmailAndPassword(email, pass);
     } else {
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
-      /* Send verification email immediately after registration */
-      await cred.user.sendEmailVerification();
+      /* Send verification email — actionCodeSettings tells Firebase where to
+         redirect after the link is clicked (must be in Authorized Domains) */
+      await cred.user.sendEmailVerification({ url: 'https://quantichy.netlify.app', handleCodeInApp: false });
     }
   } catch(e){
     _authError(_friendlyAuthError(e.code));
@@ -988,7 +989,7 @@ window.authCheckVerified = async function(){
 window.authResendVerification = async function(){
   const btn = document.getElementById('auth-resend-btn');
   btn.disabled = true; btn.textContent = 'Sent!';
-  try{ await firebase.auth().currentUser.sendEmailVerification(); }catch(_){}
+  try{ await firebase.auth().currentUser.sendEmailVerification({ url: 'https://quantichy.netlify.app', handleCodeInApp: false }); }catch(_){}
   setTimeout(() => { btn.disabled = false; btn.textContent = 'Resend verification email'; }, 30000);
 };
 
@@ -1001,7 +1002,7 @@ window.authSendReset = async function(){
   btn.disabled = true;
   btn.textContent = 'Sending…';
   try {
-    await firebase.auth().sendPasswordResetEmail(email);
+    await firebase.auth().sendPasswordResetEmail(email, { url: 'https://quantichy.netlify.app', handleCodeInApp: false });
     document.getElementById('auth-fp-form').style.display = 'none';
     document.getElementById('auth-fp-sent-email').textContent = email;
     document.getElementById('auth-fp-sent').style.display = 'block';
