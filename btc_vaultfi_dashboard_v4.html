@@ -334,30 +334,65 @@ p,span,div,input,button{
     </div>
     <p class="auth-sub">Sign in to sync your trades across all devices</p>
 
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-signin" onclick="authSwitchTab('signin')">Sign In</button>
-      <button class="auth-tab" id="tab-register" onclick="authSwitchTab('register')">Register</button>
+    <!-- ── Main sign-in / register view ── -->
+    <div id="auth-main-view">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-signin" onclick="authSwitchTab('signin')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="authSwitchTab('register')">Register</button>
+      </div>
+
+      <div id="auth-error" class="auth-error"></div>
+
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="auth-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')authSubmit()">
+      </div>
+      <div class="auth-field">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <label>Password</label>
+          <button id="auth-fp-link" onclick="authShowForgot()" style="background:none;border:none;cursor:pointer;font-size:11px;font-weight:600;color:#3B82F6;font-family:var(--font-body);padding:0">Forgot password?</button>
+        </div>
+        <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')authSubmit()">
+      </div>
+
+      <button class="auth-btn" id="auth-submit-btn" onclick="authSubmit()">Sign In</button>
+
+      <div class="auth-divider">or</div>
+
+      <button class="auth-google" onclick="authGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
     </div>
 
-    <div id="auth-error" class="auth-error"></div>
+    <!-- ── Forgot password view ── -->
+    <div id="auth-fp-view" style="display:none">
+      <!-- Sent state (hidden until email is sent) -->
+      <div id="auth-fp-sent" style="display:none;text-align:center;padding:8px 0 16px">
+        <div style="width:52px;height:52px;border-radius:50%;background:#F0FDF4;display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div style="font-family:var(--font-heading);font-size:16px;font-weight:700;color:#0F172A;margin-bottom:6px">Check your inbox</div>
+        <div style="font-size:13px;color:#64748B;font-family:var(--font-body);line-height:1.5">A password reset link has been sent to<br><strong id="auth-fp-sent-email" style="color:#0F172A"></strong></div>
+      </div>
 
-    <div class="auth-field">
-      <label>Email</label>
-      <input type="email" id="auth-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')authSubmit()">
+      <!-- Input state -->
+      <div id="auth-fp-form">
+        <div style="font-family:var(--font-heading);font-size:17px;font-weight:700;color:#0F172A;margin-bottom:6px">Reset password</div>
+        <div style="font-size:13px;color:#64748B;font-family:var(--font-body);margin-bottom:20px;line-height:1.5">Enter your email and we'll send a reset link.</div>
+
+        <div id="auth-fp-error" class="auth-error"></div>
+
+        <div class="auth-field">
+          <label>Email</label>
+          <input type="email" id="auth-fp-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')authSendReset()">
+        </div>
+
+        <button class="auth-btn" id="auth-fp-btn" onclick="authSendReset()">Send Reset Link</button>
+      </div>
+
+      <button onclick="authShowMain()" style="display:block;width:100%;margin-top:14px;background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#64748B;font-family:var(--font-body);text-align:center">← Back to Sign In</button>
     </div>
-    <div class="auth-field">
-      <label>Password</label>
-      <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')authSubmit()">
-    </div>
-
-    <button class="auth-btn" id="auth-submit-btn" onclick="authSubmit()">Sign In</button>
-
-    <div class="auth-divider">or</div>
-
-    <button class="auth-google" onclick="authGoogle()">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Continue with Google
-    </button>
   </div>
 </div>
 
@@ -804,6 +839,8 @@ window.authSwitchTab = function(tab){
   document.getElementById('tab-signin').classList.toggle('active', tab==='signin');
   document.getElementById('tab-register').classList.toggle('active', tab==='register');
   document.getElementById('auth-submit-btn').textContent = tab==='signin' ? 'Sign In' : 'Create Account';
+  const fpLink = document.getElementById('auth-fp-link');
+  if(fpLink) fpLink.style.display = tab==='signin' ? 'inline' : 'none';
   _authError('');
 };
 
@@ -867,6 +904,45 @@ function _friendlyAuthError(code){
   };
   return map[code] || 'Something went wrong. Please try again.';
 }
+
+/* ── Forgot password flow ── */
+window.authShowForgot = function(){
+  document.getElementById('auth-main-view').style.display = 'none';
+  document.getElementById('auth-fp-view').style.display   = 'block';
+  document.getElementById('auth-fp-form').style.display   = 'block';
+  document.getElementById('auth-fp-sent').style.display   = 'none';
+  /* Pre-fill email if already typed */
+  const existingEmail = document.getElementById('auth-email').value.trim();
+  if(existingEmail) document.getElementById('auth-fp-email').value = existingEmail;
+  document.getElementById('auth-fp-error').style.display = 'none';
+  setTimeout(() => document.getElementById('auth-fp-email').focus(), 50);
+};
+
+window.authShowMain = function(){
+  document.getElementById('auth-fp-view').style.display   = 'none';
+  document.getElementById('auth-main-view').style.display = 'block';
+};
+
+window.authSendReset = async function(){
+  const email = document.getElementById('auth-fp-email').value.trim();
+  const btn   = document.getElementById('auth-fp-btn');
+  const errEl = document.getElementById('auth-fp-error');
+  errEl.style.display = 'none';
+  if(!email){ errEl.textContent = 'Please enter your email.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  try {
+    await firebase.auth().sendPasswordResetEmail(email);
+    document.getElementById('auth-fp-form').style.display = 'none';
+    document.getElementById('auth-fp-sent-email').textContent = email;
+    document.getElementById('auth-fp-sent').style.display = 'block';
+  } catch(e) {
+    errEl.textContent = _friendlyAuthError(e.code);
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Send Reset Link';
+  }
+};
 
 /* ══ 7 COIN DATA ══ */
 const COINS_DATA = {
