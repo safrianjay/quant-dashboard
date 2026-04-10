@@ -867,13 +867,13 @@ function initAuth(){
       if(user){
         currentUser = user;
         _updateUserChip(user);
+        /* Grant dashboard access immediately — email verification is optional */
+        _hideAuthScreen();
+        initFirestoreForUser(user.uid);
+        /* Silently attempt to send verification for unverified email accounts */
         const isEmailProvider = user.providerData.some(p => p.providerId === 'password');
         if(isEmailProvider && !user.emailVerified){
-          /* Show verification gate — don't grant dashboard access yet */
-          _showVerifyView(user.email);
-        } else {
-          _hideAuthScreen();
-          initFirestoreForUser(user.uid);
+          firebase.auth().currentUser.sendEmailVerification().catch(()=>{});
         }
       } else {
         currentUser = null;
