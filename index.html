@@ -365,6 +365,20 @@ p,span,div,input,button{
       </button>
     </div>
 
+    <!-- ── Email verification view ── -->
+    <div id="auth-verify-view" style="display:none;text-align:center;padding:4px 0">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </div>
+      <div style="font-family:var(--font-heading);font-size:17px;font-weight:700;color:#0F172A;margin-bottom:6px">Verify your email</div>
+      <div style="font-size:13px;color:#64748B;font-family:var(--font-body);margin-bottom:4px;line-height:1.5">We sent a verification link to</div>
+      <div id="auth-verify-email" style="font-size:13px;font-weight:700;color:#0F172A;font-family:var(--font-body);margin-bottom:20px"></div>
+      <div id="auth-verify-error" class="auth-error" style="text-align:left"></div>
+      <button class="auth-btn" id="auth-verify-btn" onclick="authCheckVerified()" style="margin-bottom:10px">I've verified my email ✓</button>
+      <button id="auth-resend-btn" onclick="authResendVerification()" style="width:100%;padding:10px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;font-size:12px;font-weight:600;color:#64748B;cursor:pointer;font-family:var(--font-body)">Resend verification email</button>
+      <button onclick="doSignOut()" style="display:block;width:100%;margin-top:12px;background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#94A3B8;font-family:var(--font-body);text-align:center">Use a different account</button>
+    </div>
+
     <!-- ── Forgot password view ── -->
     <div id="auth-fp-view" style="display:none">
       <!-- Sent state (hidden until email is sent) -->
@@ -764,15 +778,19 @@ function initFirestoreForUser(uid){
     _db = firebase.firestore();
     _posRef = _db.collection('users').doc(uid).collection('data').doc('positions');
     if(_posUnsubscribe) _posUnsubscribe();
+
+    /* Always clear in-memory and localStorage positions before loading this
+       user's data — prevents previous account's data from bleeding through */
+    positions = [];
+    try{ localStorage.removeItem('vf_positions'); }catch(_){}
+    renderPositions(); renderPerfChart();
+
     _posUnsubscribe = _posRef.onSnapshot(doc => {
-      if(doc && doc.exists){
-        positions = doc.data().list || [];
-        renderPositions(); renderPerfChart();
-      }
+      positions = (doc && doc.exists) ? (doc.data().list || []) : [];
+      renderPositions(); renderPerfChart();
     }, err => console.error('Firestore listen:', err));
   } catch(e){
     console.error('Firestore init:', e);
-    try{ const raw=localStorage.getItem('vf_positions'); if(raw) positions=JSON.parse(raw); }catch(_){}
   }
 }
 
@@ -784,8 +802,14 @@ function initAuth(){
       if(user){
         currentUser = user;
         _updateUserChip(user);
-        _hideAuthScreen();
-        initFirestoreForUser(user.uid);
+        const isEmailProvider = user.providerData.some(p => p.providerId === 'password');
+        if(isEmailProvider && !user.emailVerified){
+          /* Show verification gate — don't grant dashboard access yet */
+          _showVerifyView(user.email);
+        } else {
+          _hideAuthScreen();
+          initFirestoreForUser(user.uid);
+        }
       } else {
         currentUser = null;
         _posRef = null;
@@ -864,7 +888,9 @@ window.authSubmit = async function(){
     if(_authTab === 'signin'){
       await auth.signInWithEmailAndPassword(email, pass);
     } else {
-      await auth.createUserWithEmailAndPassword(email, pass);
+      const cred = await auth.createUserWithEmailAndPassword(email, pass);
+      /* Send verification email immediately after registration */
+      await cred.user.sendEmailVerification();
     }
   } catch(e){
     _authError(_friendlyAuthError(e.code));
@@ -887,6 +913,8 @@ window.doSignOut = async function(){
   try{
     if(_posUnsubscribe){ _posUnsubscribe(); _posUnsubscribe=null; }
     _posRef = null;
+    positions = [];
+    try{ localStorage.removeItem('vf_positions'); }catch(_){}
     await firebase.auth().signOut();
   } catch(e){ console.error('Sign out error:', e); }
 };
@@ -919,8 +947,49 @@ window.authShowForgot = function(){
 };
 
 window.authShowMain = function(){
-  document.getElementById('auth-fp-view').style.display   = 'none';
-  document.getElementById('auth-main-view').style.display = 'block';
+  document.getElementById('auth-fp-view').style.display    = 'none';
+  document.getElementById('auth-verify-view').style.display= 'none';
+  document.getElementById('auth-main-view').style.display  = 'block';
+};
+
+/* ── Email verification ── */
+function _showVerifyView(email){
+  _showAuthScreen();
+  document.getElementById('auth-main-view').style.display   = 'none';
+  document.getElementById('auth-fp-view').style.display     = 'none';
+  document.getElementById('auth-verify-view').style.display = 'block';
+  document.getElementById('auth-verify-email').textContent  = email || '';
+  document.getElementById('auth-verify-error').style.display = 'none';
+}
+
+window.authCheckVerified = async function(){
+  const btn = document.getElementById('auth-verify-btn');
+  const err = document.getElementById('auth-verify-error');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  err.style.display = 'none';
+  try{
+    await firebase.auth().currentUser.reload();
+    if(firebase.auth().currentUser.emailVerified){
+      /* Verification confirmed — proceed to dashboard */
+      _hideAuthScreen();
+      initFirestoreForUser(firebase.auth().currentUser.uid);
+    } else {
+      err.textContent = 'Email not verified yet. Please click the link in your inbox, then try again.';
+      err.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'I\'ve verified my email ✓';
+    }
+  } catch(e){
+    err.textContent = 'Could not check verification status. Try again.';
+    err.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'I\'ve verified my email ✓';
+  }
+};
+
+window.authResendVerification = async function(){
+  const btn = document.getElementById('auth-resend-btn');
+  btn.disabled = true; btn.textContent = 'Sent!';
+  try{ await firebase.auth().currentUser.sendEmailVerification(); }catch(_){}
+  setTimeout(() => { btn.disabled = false; btn.textContent = 'Resend verification email'; }, 30000);
 };
 
 window.authSendReset = async function(){
