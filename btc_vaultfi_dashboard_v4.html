@@ -1473,8 +1473,9 @@ window.selectMarket = async function(sym, base, name){
     const cgId = MARKET_LIST.find(m => m.sym === sym)?.cgId || sym.replace('USDT','').toLowerCase();
     currentCgId = cgId;
 
-    /* Pre-populate market cache if empty (first load without opening selector) */
+    /* Pre-populate market cache if this specific coin is missing */
     if(!_marketPrices[sym]) await fetchAllMarketPrices();
+    const cached = _marketPrices[sym]; /* may still be undefined if API failed */
 
     /* Use cached chart data if available — avoids re-fetching same coin repeatedly */
     let closes, confLabels;
@@ -1629,6 +1630,9 @@ function showToast(msg, type='info'){
 
 /* ══ LIVE DATA REFRESH ══ */
 window.fetchLiveData = async function(){
+  /* Skip if a coin switch is already making API calls */
+  if(_selectMarketBusy) return;
+
   const btn  = document.getElementById('refresh-btn');
   const icon = document.getElementById('refresh-icon');
   if(!btn) return;
