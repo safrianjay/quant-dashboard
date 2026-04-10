@@ -867,13 +867,15 @@ function initAuth(){
       if(user){
         currentUser = user;
         _updateUserChip(user);
-        /* Grant dashboard access immediately — email verification is optional */
-        _hideAuthScreen();
-        initFirestoreForUser(user.uid);
-        /* Silently attempt to send verification for unverified email accounts */
         const isEmailProvider = user.providerData.some(p => p.providerId === 'password');
         if(isEmailProvider && !user.emailVerified){
-          firebase.auth().currentUser.sendEmailVerification().catch(()=>{});
+          /* Block dashboard — show verification screen.
+             Firestore is NOT initialised until user verifies or skips. */
+          _showVerifyView(user.email);
+        } else {
+          /* Verified (or Google/Phone sign-in) — grant full access */
+          _hideAuthScreen();
+          initFirestoreForUser(user.uid);
         }
       } else {
         currentUser = null;
