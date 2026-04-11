@@ -1691,8 +1691,8 @@ async function fetchAllMarketPrices(){
   if(now - _lastMarketFetch < _MARKET_THROTTLE) return;
   _lastMarketFetch = now;
   try {
-    const symbols = encodeURIComponent(JSON.stringify(MARKET_LIST.map(m => m.sym)));
-    const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${symbols}`);
+    const symbols = JSON.stringify(MARKET_LIST.map(m => m.sym));
+    const res = await fetch(`/.netlify/functions/cg?type=binance-ticker&symbols=${encodeURIComponent(symbols)}`);
     if(!res.ok){ _lastMarketFetch = 0; return; }
     const all = await res.json();
     all.forEach(t => {
@@ -1761,7 +1761,7 @@ window.selectMarket = async function(sym, base, name){
       newPrice = cached.price; newHigh = cached.high; newLow = cached.low;
       newChgPct = cached.chg; newVol = cached.vol;
     } else {
-      const mktRes = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}`);
+      const mktRes = await fetch(`/.netlify/functions/cg?type=binance-single&symbol=${sym}`);
       if(!mktRes.ok) throw new Error(`Binance API ${mktRes.status}`);
       const mkt = await mktRes.json();
       newPrice = parseFloat(mkt.lastPrice); newHigh = parseFloat(mkt.highPrice);
