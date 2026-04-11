@@ -1683,49 +1683,53 @@ function renderMarketGrid(list){
   }).join('');
 }
 
-/* ══ COINCAP WEBSOCKET — VWAP prices (Binance-weighted, not geo-blocked) ══ */
-const _ccIdMap = {
-  'BTCUSDT':'bitcoin','ETHUSDT':'ethereum','BNBUSDT':'binance-coin',
-  'SOLUSDT':'solana','XRPUSDT':'ripple','ADAUSDT':'cardano',
-  'LTCUSDT':'litecoin','AVAXUSDT':'avalanche','DOTUSDT':'polkadot',
-  'ATOMUSDT':'cosmos','NEARUSDT':'near-protocol','SUIUSDT':'sui',
-  'APTUSDT':'aptos','ICPUSDT':'internet-computer','INJUSDT':'injective-protocol',
-  'LINKUSDT':'chainlink','UNIUSDT':'uniswap','AAVEUSDT':'aave',
-  'MATICUSDT':'matic-network','ARBUSDT':'arbitrum','OPUSDT':'optimism',
-  'DOGEUSDT':'dogecoin','SHIBUSDT':'shiba-inu','PEPEUSDT':'pepe',
-  'WLDUSDT':'worldcoin'
-};
-let _ccWs = null;
-let _ccActive = false;
+/* ══ OKX WEBSOCKET — exact same source as TradingView OKX chart ══ */
+/* OKX instId uses dash: BTC-USDT. Exception: POL is still MATIC on OKX */
+const _okxBaseMap = { 'POL':'MATIC' }; /* base overrides for OKX naming */
+function _okxInstId(sym){ return sym.replace('USDT','-USDT'); }
+function _tvOkxSymbol(sym){ return 'OKX:' + sym; }
 
-function _startCoinCapWs(){
-  if(_ccWs) return;
-  const assets = Object.values(_ccIdMap).join(',');
+let _okxWs = null;
+let _okxActive = false;
+
+function _startOKXWs(){
+  if(_okxWs) return;
   try {
-    _ccWs = new WebSocket(`wss://ws.coincap.io/prices?assets=${assets}`);
-    _ccWs.onopen = () => {
-      _ccActive = true;
-      console.log('CoinCap WS connected');
+    _okxWs = new WebSocket('wss://ws.okx.com:8443/ws/v5/public');
+    _okxWs.onopen = () => {
+      _okxActive = true;
+      const args = MARKET_LIST.map(m => ({
+        channel: 'tickers',
+        instId: _okxInstId(m.sym)
+      }));
+      _okxWs.send(JSON.stringify({ op: 'subscribe', args }));
     };
-    _ccWs.onmessage = (evt) => {
+    _okxWs.onmessage = (evt) => {
       try {
-        const prices = JSON.parse(evt.data); /* { bitcoin: "72771.31", ... } */
-        Object.entries(prices).forEach(([ccId, priceStr]) => {
-          const sym = Object.keys(_ccIdMap).find(k => _ccIdMap[k] === ccId);
-          if(!sym) return;
-          const price = parseFloat(priceStr);
-          const existing = _marketPrices[sym] || {};
-          _marketPrices[sym] = { ...existing, price };
-        });
-        if(!_selectMarketBusy) _applyMarketCache();
+        const msg = JSON.parse(evt.data);
+        if(!msg.data || msg.arg?.channel !== 'tickers') return;
+        const t   = msg.data[0];
+        const sym = msg.arg.instId.replace('-',''); /* BTC-USDT → BTCUSDT */
+        const price = parseFloat(t.last);
+        const open  = parseFloat(t.open24h) || price;
+        const existing = _marketPrices[sym] || {};
+        _marketPrices[sym] = {
+          ...existing,
+          price,
+          high: parseFloat(t.high24h),
+          low:  parseFloat(t.low24h),
+          chg:  open > 0 ? ((price - open) / open) * 100 : (existing.chg || 0),
+          vol:  parseFloat(t.volCcy24h) /* USDT volume */
+        };
+        if(sym === currentSymbol && !_selectMarketBusy) _applyMarketCache();
       } catch(_){}
     };
-    _ccWs.onerror = () => { _ccActive = false; _ccWs = null; };
-    _ccWs.onclose = () => {
-      _ccActive = false; _ccWs = null;
-      setTimeout(_startCoinCapWs, 10000);
+    _okxWs.onerror = () => { _okxActive = false; _okxWs = null; };
+    _okxWs.onclose = () => {
+      _okxActive = false; _okxWs = null;
+      setTimeout(_startOKXWs, 10000);
     };
-  } catch(_){ _ccWs = null; }
+  } catch(_){ _okxWs = null; }
 }
 
 let _lastMarketFetch = 0;
@@ -2012,7 +2016,7 @@ function _buildTVScript(containerId, base, interval, showSideToolbar){
   script.async = true;
   script.innerHTML = JSON.stringify({
     autosize: true,
-    symbol: base + 'USDT',
+    symbol: _tvOkxSymbol(base + 'USDT'),
     interval: interval,
     timezone: 'Etc/UTC',
     theme: 'light',
@@ -2121,7 +2125,7 @@ function _applyMarketCache(){
     TF_DATA[tf].vol   = VOL;
   });
   const utcTs = new Date().toUTCString().replace('GMT','UTC').slice(5,25);
-  const src   = _ccActive ? 'CoinCap·Live' : 'CoinGecko';
+  const src   = _okxActive ? 'OKX·Live' : 'CoinGecko';
   const tfSub = `${src} · ${activeTF} · ${utcTs}`;
   TF_DATA[activeTF].subtitle = tfSub;
   const subEl = document.getElementById('tf-subtitle');
@@ -2149,7 +2153,7 @@ async function refreshAllCoins(){
 }
 
 /* ══ FETCH LIVE DATA ON PAGE LOAD ══ */
-_startCoinCapWs();
+_startOKXWs();
 refreshAllCoins();
 
 /* ══ AUTO-REFRESH every 10s (display) / 30s (API) ══ */
