@@ -2119,7 +2119,7 @@ function initTVWidget(base, interval){
   const b = base || currentBase;
   const lbl = document.getElementById('tv-chart-label');
   if(lbl) lbl.textContent = b + '/USDT';
-  _buildTVScript('tv-chart-widget', b, interval, false);
+  _buildTVScript('tv-chart-widget', b, interval, true);
 }
 
 function _buildTVScript(containerId, base, interval, showSideToolbar){
