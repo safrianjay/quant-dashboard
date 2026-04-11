@@ -2059,62 +2059,6 @@ initAuth();
 const API_INTERVAL_MS = 30000; /* 30s between real API calls */
 let _lastApiCall = 0;
 
-/* ══ BINANCE WEBSOCKET — real-time prices matching TradingView ══ */
-let _binanceWs = null;
-let _wsActive  = false;
-
-function _startBinanceWs(){
-  if(_binanceWs) return; /* already connected */
-  const streams = MARKET_LIST.map(m => m.sym.toLowerCase() + '@miniTicker').join('/');
-  try {
-    _binanceWs = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
-
-    _binanceWs.onopen = () => {
-      _wsActive = true;
-      console.log('Binance WS connected — real-time prices active');
-    };
-
-    _binanceWs.onmessage = (evt) => {
-      try {
-        const { data } = JSON.parse(evt.data);
-        if(!data || !data.s) return;
-        const sym = data.s; /* e.g. "BTCUSDT" */
-        const existing = _marketPrices[sym] || {};
-        _marketPrices[sym] = {
-          price: parseFloat(data.c),
-          high:  parseFloat(data.h),
-          low:   parseFloat(data.l),
-          chg:   existing.chg  || 0, /* % change comes from open: (c-o)/o*100 */
-          vol:   parseFloat(data.q)  /* quote volume in USDT */
-        };
-        /* Compute 24h change % from open price */
-        if(data.o) {
-          const o = parseFloat(data.o);
-          const c = parseFloat(data.c);
-          _marketPrices[sym].chg = o > 0 ? ((c - o) / o) * 100 : 0;
-        }
-        /* Live-update KPIs if this is the active coin */
-        if(sym === currentSymbol && !_selectMarketBusy) _applyMarketCache();
-      } catch(_){}
-    };
-
-    _binanceWs.onerror = () => {
-      _wsActive = false;
-      _binanceWs = null;
-      console.log('Binance WS unavailable — using CoinGecko fallback');
-    };
-
-    _binanceWs.onclose = () => {
-      _wsActive = false;
-      _binanceWs = null;
-      /* Reconnect after 10s if page still active */
-      setTimeout(() => { if(!_wsActive) _startBinanceWs(); }, 10000);
-    };
-  } catch(e){
-    _binanceWs = null;
-    console.log('Binance WS not available:', e.message);
-  }
-}
 
 function _applyMarketCache(){
   const c = _marketPrices[currentSymbol];
@@ -2132,7 +2076,7 @@ function _applyMarketCache(){
     TF_DATA[tf].vol   = VOL;
   });
   const utcTs = new Date().toUTCString().replace('GMT','UTC').slice(5,25);
-  const src   = _wsActive ? 'Binance' : 'CoinGecko';
+  const src   = 'CoinGecko';
   const tfSub = `${src} · ${activeTF} · ${utcTs}`;
   TF_DATA[activeTF].subtitle = tfSub;
   const subEl = document.getElementById('tf-subtitle');
@@ -2160,8 +2104,7 @@ async function refreshAllCoins(){
 }
 
 /* ══ FETCH LIVE DATA ON PAGE LOAD ══ */
-_startBinanceWs(); /* try real-time WebSocket first */
-refreshAllCoins(); /* CoinGecko as initial/fallback data */
+refreshAllCoins();
 
 /* ══ AUTO-REFRESH every 10s (display) / 30s (API) ══ */
 (function(){
