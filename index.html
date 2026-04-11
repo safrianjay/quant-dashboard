@@ -889,7 +889,7 @@ const _fbConfig = {
   messagingSenderId: "1013979996177",
   appId: "1:1013979996177:web:7274da6d71ef702e3011b0"
 };
-let _db = null, _posRef = null, _posUnsubscribe = null;
+let _db = null, _posRef = null, _posUnsubscribe = null, _firestoreUid = null;
 let currentUser = null;
 let _authTab = 'signin';
 
@@ -908,11 +908,14 @@ function initFirestoreForUser(uid){
     _posRef = _db.collection('users').doc(uid).collection('data').doc('positions');
     if(_posUnsubscribe) _posUnsubscribe();
 
-    /* Always clear in-memory and localStorage positions before loading this
-       user's data — prevents previous account's data from bleeding through */
-    positions = [];
-    try{ localStorage.removeItem('vf_positions'); }catch(_){}
-    renderPositions(); renderPerfChart();
+    /* Only clear positions when switching to a different user account.
+       On same-user page refresh, keep existing data until snapshot arrives. */
+    if(_firestoreUid && _firestoreUid !== uid){
+      positions = [];
+      try{ localStorage.removeItem('vf_positions'); }catch(_){}
+      renderPositions(); renderPerfChart();
+    }
+    _firestoreUid = uid;
 
     _posUnsubscribe = _posRef.onSnapshot(doc => {
       positions = (doc && doc.exists) ? (doc.data().list || []) : [];
