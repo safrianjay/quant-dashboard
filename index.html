@@ -304,8 +304,6 @@ p,span,div,input,button{
 .auth-google{width:100%;padding:10px;border:1.5px solid #E2E8F0;border-radius:9px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;font-family:var(--font-body);font-size:13px;font-weight:600;color:#334155;transition:all .15s}
 .auth-google:hover{border-color:#CBD5E1;background:#F8FAFC}
 .auth-error{background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:9px 12px;font-size:12px;color:#DC2626;font-family:var(--font-body);margin-bottom:12px;display:none}
-.otp-box{width:42px;height:48px;border:1.5px solid #E2E8F0;border-radius:10px;text-align:center;font-size:20px;font-family:var(--font-mono);font-weight:700;color:#0F172A;outline:none;transition:border .15s}
-.otp-box:focus{border-color:#0F172A}
 .user-chip{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:20px;border:1px solid #E2E8F0;background:white;cursor:pointer;transition:all .15s}
 .user-chip:hover{background:#F8FAFC;border-color:#CBD5E1}
 .user-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#F7931A,#FBBF24);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;font-family:var(--font-heading);flex-shrink:0;overflow:hidden}
@@ -370,69 +368,8 @@ p,span,div,input,button{
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Continue with Google
       </button>
-      <button class="auth-google" onclick="authShowPhone()" style="margin-top:8px">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        Continue with Phone
-      </button>
     </div>
 
-    <!-- ── Phone auth view ── -->
-    <div id="auth-phone-view" style="display:none">
-      <!-- Step 1: phone number -->
-      <div id="auth-phone-step1">
-        <div style="font-family:var(--font-heading);font-size:17px;font-weight:700;color:#0F172A;margin-bottom:6px">Sign in with Phone</div>
-        <div style="font-size:13px;color:#64748B;font-family:var(--font-body);margin-bottom:20px">We'll send a 6-digit code to your number.</div>
-        <div id="auth-phone-error" class="auth-error"></div>
-        <div class="auth-field">
-          <label>Phone number</label>
-          <div style="display:flex;gap:8px">
-            <select id="auth-phone-cc" style="padding:10px 8px;border:1px solid #E2E8F0;border-radius:10px;font-size:13px;font-family:var(--font-body);color:#334155;background:white;cursor:pointer;flex-shrink:0">
-              <option value="+62">🇮🇩 +62</option>
-              <option value="+1">🇺🇸 +1</option>
-              <option value="+44">🇬🇧 +44</option>
-              <option value="+61">🇦🇺 +61</option>
-              <option value="+65">🇸🇬 +65</option>
-              <option value="+60">🇲🇾 +60</option>
-              <option value="+63">🇵🇭 +63</option>
-              <option value="+66">🇹🇭 +66</option>
-              <option value="+81">🇯🇵 +81</option>
-              <option value="+82">🇰🇷 +82</option>
-              <option value="+86">🇨🇳 +86</option>
-              <option value="+91">🇮🇳 +91</option>
-              <option value="+49">🇩🇪 +49</option>
-              <option value="+33">🇫🇷 +33</option>
-            </select>
-            <input type="tel" id="auth-phone-num" placeholder="812 3456 7890" onkeydown="if(event.key==='Enter')authSendSms()" style="flex:1;padding:10px 14px;border:1px solid #E2E8F0;border-radius:10px;font-size:13px;font-family:var(--font-body);color:#334155;outline:none">
-          </div>
-        </div>
-        <!-- invisible reCAPTCHA anchor -->
-        <div id="auth-recaptcha"></div>
-        <button class="auth-btn" id="auth-phone-send-btn" onclick="authSendSms()">Send Code</button>
-      </div>
-
-      <!-- Step 2: OTP entry -->
-      <div id="auth-phone-step2" style="display:none;text-align:center">
-        <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#F0FDF4,#DCFCE7);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        </div>
-        <div style="font-family:var(--font-heading);font-size:17px;font-weight:700;color:#0F172A;margin-bottom:4px">Enter the code</div>
-        <div id="auth-phone-sent-to" style="font-size:12px;color:#64748B;font-family:var(--font-body);margin-bottom:20px"></div>
-        <div id="auth-otp-error" class="auth-error" style="text-align:left"></div>
-        <!-- 6-digit OTP boxes -->
-        <div id="auth-otp-boxes" style="display:flex;gap:8px;justify-content:center;margin-bottom:20px">
-          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)">
-          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)">
-          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)">
-          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)">
-          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,4)" onkeydown="otpKey(event,4)">
-          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,5)" onkeydown="otpKey(event,5)">
-        </div>
-        <button class="auth-btn" id="auth-otp-verify-btn" onclick="authVerifyOtp()">Verify & Sign In</button>
-        <button onclick="authPhoneResend()" style="display:block;width:100%;margin-top:10px;background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#3B82F6;font-family:var(--font-body)">Resend code</button>
-      </div>
-
-      <button onclick="authShowMain()" style="display:block;width:100%;margin-top:14px;background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#64748B;font-family:var(--font-body);text-align:center">← Back to Sign In</button>
-    </div>
 
     <!-- ── Email verification view ── -->
     <div id="auth-verify-view" style="display:none;text-align:center;padding:4px 0">
@@ -1083,7 +1020,7 @@ window.authShowForgot = function(){
 window.authShowMain = function(){
   document.getElementById('auth-fp-view').style.display     = 'none';
   document.getElementById('auth-verify-view').style.display = 'none';
-  document.getElementById('auth-phone-view').style.display  = 'none';
+
   document.getElementById('auth-main-view').style.display   = 'block';
 };
 
@@ -1153,110 +1090,6 @@ window.authResendVerification = async function(){
   }
 };
 
-/* ══ PHONE / SMS AUTH ══ */
-let _phoneConfirmResult = null;
-let _recaptchaVerifier  = null;
-
-function _initRecaptcha(){
-  /* Destroy old verifier and clear the container before re-rendering */
-  if(_recaptchaVerifier){ try{ _recaptchaVerifier.clear(); }catch(_){} _recaptchaVerifier = null; }
-  const el = document.getElementById('auth-recaptcha');
-  if(el) el.innerHTML = '';
-  _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('auth-recaptcha', { size: 'invisible' });
-  _recaptchaVerifier.render().catch(e => console.warn('reCAPTCHA render error:', e));
-}
-
-window.authShowPhone = function(){
-  document.getElementById('auth-main-view').style.display    = 'none';
-  document.getElementById('auth-phone-view').style.display   = 'block';
-  document.getElementById('auth-phone-step1').style.display  = 'block';
-  document.getElementById('auth-phone-step2').style.display  = 'none';
-  document.getElementById('auth-phone-error').style.display  = 'none';
-  _initRecaptcha();
-  setTimeout(() => document.getElementById('auth-phone-num').focus(), 50);
-};
-
-window.authSendSms = async function(){
-  const cc  = document.getElementById('auth-phone-cc').value;
-  const num = document.getElementById('auth-phone-num').value.trim().replace(/[\s\-\(\)]/g,'');
-  const btn = document.getElementById('auth-phone-send-btn');
-  const err = document.getElementById('auth-phone-error');
-  err.style.display = 'none';
-  if(!num){ err.textContent = 'Please enter your phone number.'; err.style.display = 'block'; return; }
-  const fullNumber = cc + (num.startsWith('0') ? num.slice(1) : num);
-  btn.disabled = true; btn.textContent = 'Sending…';
-  try{
-    _phoneConfirmResult = await firebase.auth().signInWithPhoneNumber(fullNumber, _recaptchaVerifier);
-    /* Show OTP step */
-    document.getElementById('auth-phone-step1').style.display = 'none';
-    document.getElementById('auth-phone-step2').style.display = 'block';
-    document.getElementById('auth-phone-sent-to').textContent = 'Code sent to ' + fullNumber;
-    document.getElementById('auth-otp-error').style.display = 'none';
-    /* Clear OTP boxes and focus first */
-    document.querySelectorAll('.otp-box').forEach(b => b.value = '');
-    setTimeout(() => document.querySelectorAll('.otp-box')[0].focus(), 50);
-  } catch(e){
-    err.textContent = _friendlyPhoneError(e.code);
-    err.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Send Code';
-    /* Reset reCAPTCHA on failure so it can retry */
-    _initRecaptcha();
-  }
-};
-
-window.authVerifyOtp = async function(){
-  const code = [...document.querySelectorAll('.otp-box')].map(b => b.value).join('');
-  const btn  = document.getElementById('auth-otp-verify-btn');
-  const err  = document.getElementById('auth-otp-error');
-  err.style.display = 'none';
-  if(code.length < 6){ err.textContent = 'Please enter all 6 digits.'; err.style.display = 'block'; return; }
-  btn.disabled = true; btn.textContent = 'Verifying…';
-  try{
-    await _phoneConfirmResult.confirm(code);
-    /* onAuthStateChanged will fire and hide the auth screen */
-  } catch(e){
-    err.textContent = e.code === 'auth/invalid-verification-code'
-      ? 'Incorrect code. Please check and try again.'
-      : _friendlyPhoneError(e.code);
-    err.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Verify & Sign In';
-  }
-};
-
-window.authPhoneResend = async function(){
-  /* Go back to step 1 and reset reCAPTCHA */
-  document.getElementById('auth-phone-step2').style.display = 'none';
-  document.getElementById('auth-phone-step1').style.display = 'block';
-  document.getElementById('auth-phone-error').style.display = 'none';
-  document.getElementById('auth-phone-send-btn').disabled   = false;
-  document.getElementById('auth-phone-send-btn').textContent = 'Send Code';
-  _initRecaptcha();
-};
-
-/* OTP box keyboard navigation */
-window.otpInput = function(el, idx){
-  el.value = el.value.replace(/\D/g,'').slice(-1);
-  if(el.value && idx < 5) document.querySelectorAll('.otp-box')[idx+1].focus();
-  /* Auto-submit when all filled */
-  const code = [...document.querySelectorAll('.otp-box')].map(b=>b.value).join('');
-  if(code.length === 6) authVerifyOtp();
-};
-window.otpKey = function(e, idx){
-  if(e.key === 'Backspace' && !e.target.value && idx > 0)
-    document.querySelectorAll('.otp-box')[idx-1].focus();
-};
-
-function _friendlyPhoneError(code){
-  const map = {
-    'auth/invalid-phone-number':          'Invalid phone number. Include country code (e.g. +62812…).',
-    'auth/too-many-requests':             'Too many attempts. Please wait before trying again.',
-    'auth/captcha-check-failed':          'reCAPTCHA check failed. Please refresh and try again.',
-    'auth/quota-exceeded':                'SMS quota exceeded. Try again later.',
-    'auth/user-disabled':                 'This account has been disabled.',
-    'auth/missing-phone-number':          'Please enter a phone number.',
-  };
-  return map[code] || 'Something went wrong (' + code + '). Please try again.';
-}
 
 window.authSendReset = async function(){
   const email = document.getElementById('auth-fp-email').value.trim();
