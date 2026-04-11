@@ -445,7 +445,6 @@ p,span,div,input,button{
       <div id="auth-verify-error" class="auth-error" style="text-align:left"></div>
       <button class="auth-btn" id="auth-verify-btn" onclick="authCheckVerified()" style="margin-bottom:10px">I've verified my email ✓</button>
       <button id="auth-resend-btn" onclick="authResendVerification()" style="width:100%;padding:10px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;font-size:12px;font-weight:600;color:#64748B;cursor:pointer;font-family:var(--font-body);margin-bottom:8px">Resend verification email</button>
-      <button onclick="authSkipVerification()" style="width:100%;padding:10px;background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#94A3B8;font-family:var(--font-body)">Skip for now →</button>
       <button onclick="doSignOut()" style="display:block;width:100%;margin-top:4px;background:none;border:none;cursor:pointer;font-size:11px;font-weight:500;color:#CBD5E1;font-family:var(--font-body);text-align:center">Use a different account</button>
     </div>
 
@@ -981,13 +980,13 @@ window.authGoogle = async function(){
 };
 
 window.doSignOut = async function(){
-  if(!confirm('Sign out of your account?')) return;
   try{
     if(_posUnsubscribe){ _posUnsubscribe(); _posUnsubscribe=null; }
     _posRef = null;
     positions = [];
     try{ localStorage.removeItem('vf_positions'); }catch(_){}
     await firebase.auth().signOut();
+    _showAuthScreen();
   } catch(e){ console.error('Sign out error:', e); }
 };
 
