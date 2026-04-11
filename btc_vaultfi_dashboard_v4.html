@@ -637,6 +637,15 @@ p,span,div,input,button{
     <!-- KPI Grid -->
     <div class="kpi-grid" id="kpi-grid"></div>
 
+    <!-- ══ TRADINGVIEW CANDLESTICK CHART ══ -->
+    <div id="tv-chart-card" style="background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease .1s both">
+      <div style="height:380px;width:100%">
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+          <div id="tv-chart-widget" style="height:100%;width:100%"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ══ POSITIONS PERFORMANCE CHART ══ -->
     <div class="perf-chart-card" id="perf-chart-card">
       <div class="card-head" style="padding-bottom:8px">
@@ -1958,6 +1967,7 @@ window.selectMarket = async function(sym, base, name){
 
     renderKPIs(); renderMAStack(); renderLadder(); renderSessionLog();
     renderSetupsList(); renderConfChart(TF_DATA[activeTF].confHistory); renderLevelsSB();
+    initTVWidget(base);
 
     /* Success feedback */
     if(btn){
@@ -2049,9 +2059,37 @@ window.switchTF = function(tf){
   renderSetupsList();
 };
 
+/* ══ TRADINGVIEW WIDGET ══ */
+function initTVWidget(base){
+  const container = document.getElementById('tv-chart-widget');
+  if(!container) return;
+  container.innerHTML = '';
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    autosize: true,
+    symbol: 'BINANCE:' + base + 'USDT',
+    interval: '60',
+    timezone: 'Etc/UTC',
+    theme: 'light',
+    style: '1',
+    locale: 'en',
+    hide_top_toolbar: false,
+    hide_legend: false,
+    allow_symbol_change: false,
+    save_image: false,
+    calendar: false,
+    hide_volume: false,
+    support_host: 'https://www.tradingview.com'
+  });
+  container.appendChild(script);
+}
+
 /* ══ INIT ══ */
 /* Restore topbar title for saved coin */
 (function(){ const el = document.getElementById('market-title'); if(el) el.textContent = currentBase+'/USDT — Live Analysis'; })();
+initTVWidget(currentBase);
 renderKPIs();
 renderCoinStrip();
 renderLadder();
