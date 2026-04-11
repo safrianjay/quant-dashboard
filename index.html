@@ -241,6 +241,11 @@ p,span,div,input,button{
 .field-prefix input{flex:1;border:none;background:transparent;outline:none;padding:11px 14px;font-size:15px;font-weight:700;color:#0F172A;font-family:var(--font-mono);width:100%}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .coin-select-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:2px}
+.coin-select-wrap{max-height:168px;overflow-y:auto;border-radius:10px;scrollbar-width:thin}
+.coin-select-wrap::-webkit-scrollbar{width:4px}.coin-select-wrap::-webkit-scrollbar-track{background:transparent}.coin-select-wrap::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px}
+.coin-search-inp{width:100%;padding:8px 10px 8px 32px;border-radius:8px;border:1.5px solid #E2E8F0;background:#F8FAFC;font-size:12px;font-family:var(--font-body);color:#0F172A;outline:none;box-sizing:border-box;transition:border-color .15s}
+.coin-search-inp:focus{border-color:#3B82F6;background:white}
+.coin-search-wrap{position:relative;margin-bottom:6px}
 .coin-opt{padding:7px 4px;border-radius:8px;border:1.5px solid #E2E8F0;cursor:pointer;text-align:center;transition:all .15s;background:white}
 .coin-opt:hover{border-color:#94A3B8}
 .coin-opt.selected{border-color:#3B82F6;background:#EFF6FF}
@@ -440,7 +445,6 @@ p,span,div,input,button{
       <div id="auth-verify-error" class="auth-error" style="text-align:left"></div>
       <button class="auth-btn" id="auth-verify-btn" onclick="authCheckVerified()" style="margin-bottom:10px">I've verified my email ✓</button>
       <button id="auth-resend-btn" onclick="authResendVerification()" style="width:100%;padding:10px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;font-size:12px;font-weight:600;color:#64748B;cursor:pointer;font-family:var(--font-body);margin-bottom:8px">Resend verification email</button>
-      <button onclick="authSkipVerification()" style="width:100%;padding:10px;background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#94A3B8;font-family:var(--font-body)">Skip for now →</button>
       <button onclick="doSignOut()" style="display:block;width:100%;margin-top:4px;background:none;border:none;cursor:pointer;font-size:11px;font-weight:500;color:#CBD5E1;font-family:var(--font-body);text-align:center">Use a different account</button>
     </div>
 
@@ -632,6 +636,15 @@ p,span,div,input,button{
 
     <!-- KPI Grid -->
     <div class="kpi-grid" id="kpi-grid"></div>
+
+    <!-- ══ TRADINGVIEW CANDLESTICK CHART ══ -->
+    <div id="tv-chart-card" style="background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease .1s both">
+      <div style="height:380px;width:100%">
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+          <div id="tv-chart-widget" style="height:100%;width:100%"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- ══ POSITIONS PERFORMANCE CHART ══ -->
     <div class="perf-chart-card" id="perf-chart-card">
@@ -976,13 +989,13 @@ window.authGoogle = async function(){
 };
 
 window.doSignOut = async function(){
-  if(!confirm('Sign out of your account?')) return;
   try{
     if(_posUnsubscribe){ _posUnsubscribe(); _posUnsubscribe=null; }
     _posRef = null;
     positions = [];
     try{ localStorage.removeItem('vf_positions'); }catch(_){}
     await firebase.auth().signOut();
+    _showAuthScreen();
   } catch(e){ console.error('Sign out error:', e); }
 };
 
@@ -1954,6 +1967,7 @@ window.selectMarket = async function(sym, base, name){
 
     renderKPIs(); renderMAStack(); renderLadder(); renderSessionLog();
     renderSetupsList(); renderConfChart(TF_DATA[activeTF].confHistory); renderLevelsSB();
+    initTVWidget(base);
 
     /* Success feedback */
     if(btn){
@@ -2045,9 +2059,37 @@ window.switchTF = function(tf){
   renderSetupsList();
 };
 
+/* ══ TRADINGVIEW WIDGET ══ */
+function initTVWidget(base){
+  const container = document.getElementById('tv-chart-widget');
+  if(!container) return;
+  container.innerHTML = '';
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    autosize: true,
+    symbol: 'BINANCE:' + base + 'USDT',
+    interval: '60',
+    timezone: 'Etc/UTC',
+    theme: 'light',
+    style: '1',
+    locale: 'en',
+    hide_top_toolbar: false,
+    hide_legend: false,
+    allow_symbol_change: false,
+    save_image: false,
+    calendar: false,
+    hide_volume: false,
+    support_host: 'https://www.tradingview.com'
+  });
+  container.appendChild(script);
+}
+
 /* ══ INIT ══ */
 /* Restore topbar title for saved coin */
 (function(){ const el = document.getElementById('market-title'); if(el) el.textContent = currentBase+'/USDT — Live Analysis'; })();
+initTVWidget(currentBase);
 renderKPIs();
 renderCoinStrip();
 renderLadder();
@@ -2149,16 +2191,8 @@ window.toggleBal = function(){
 /* ══════════════════════════════════════════
    ENTRY PANEL + POSITIONS + PERF CHART
 ══════════════════════════════════════════ */
-const ENTRY_COINS = [
-  { sym:"BTC",  price:68746.10 },
-  { sym:"ETH",  price:3421.18  },
-  { sym:"SOL",  price:142.30   },
-  { sym:"BNB",  price:412.50   },
-  { sym:"AVAX", price:38.92    },
-  { sym:"LINK", price:18.43    },
-  { sym:"MATIC",price:0.891    },
-  { sym:"UNI",  price:10.82    },
-];
+/* Build from MARKET_LIST so all coins are searchable */
+const ENTRY_COINS = MARKET_LIST.map(m => ({ sym: m.base, name: m.name, price: 0 }));
 let selectedCoin = ENTRY_COINS[0];
 
 /* ── Sync ENTRY_COINS prices from live data before opening panel ── */
@@ -2167,7 +2201,8 @@ function syncEntryCoinPrices(){
     if(c.sym === currentBase){
       c.price = PRICE; /* use live global */
     } else {
-      const cached = _marketPrices[c.sym+'USDT'];
+      const mSym = MARKET_LIST.find(m => m.base === c.sym)?.sym;
+      const cached = mSym ? _marketPrices[mSym] : null;
       if(cached && cached.price) c.price = parseFloat(cached.price);
     }
   });
@@ -2221,12 +2256,14 @@ function buildPanelHTML(){
     <!-- Coin selector -->
     <div class="field-group">
       <span class="field-label">Select asset</span>
-      <div class="coin-select-grid" id="coin-select-grid">
-        ${ENTRY_COINS.map(c => `
-          <div class="coin-opt${selectedCoin.sym===c.sym?" selected":""}" onclick="selectCoin('${c.sym}')" data-sym="${c.sym}">
-            <div class="co-sym">${c.sym}</div>
-            <div class="co-chg" style="color:#94A3B8">$${c.price < 10 ? c.price.toFixed(3) : c.price.toFixed(0)}</div>
-          </div>`).join("")}
+      <div class="coin-search-wrap">
+        <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="coin-search-inp" id="entry-coin-search" placeholder="Search coin…" oninput="filterEntryCoins(this.value)" autocomplete="off">
+      </div>
+      <div class="coin-select-wrap">
+        <div class="coin-select-grid" id="coin-select-grid">
+          ${renderEntryCoinGrid()}
+        </div>
       </div>
     </div>
 
@@ -2236,8 +2273,8 @@ function buildPanelHTML(){
       <div class="field-prefix" id="wrap-entry">
         <span class="field-prefix-label">$</span>
         <input id="inp-entry" class="field-input" style="border:none;box-shadow:none;background:transparent;padding:11px 14px"
-          type="number" step="0.01" placeholder="${selectedCoin.price.toFixed(selectedCoin.price<10?3:2)}"
-          value="${selectedCoin.price.toFixed(selectedCoin.price<10?3:2)}">
+          type="number" step="any" placeholder="${(p=>{const d=p<0.00001?8:p<0.0001?7:p<0.001?6:p<0.01?5:p<1?4:p<10?3:2;return p>0?p.toFixed(d):'0'})(selectedCoin.price)}"
+          value="${(p=>{const d=p<0.00001?8:p<0.0001?7:p<0.001?6:p<0.01?5:p<1?4:p<10?3:2;return p>0?p.toFixed(d):''})(selectedCoin.price)}">
       </div>
       <div class="err-msg" id="err-entry" style="display:none">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -2339,11 +2376,35 @@ function buildPanelHTML(){
   </div>`;
 }
 
+function fmtEntryPrice(p){
+  if(p <= 0) return '—';
+  if(p < 0.00001) return '$' + p.toFixed(8);
+  if(p < 0.0001)  return '$' + p.toFixed(7);
+  if(p < 0.001)   return '$' + p.toFixed(6);
+  if(p < 0.01)    return '$' + p.toFixed(5);
+  if(p < 1)       return '$' + p.toFixed(4);
+  if(p < 10)      return '$' + p.toFixed(3);
+  if(p < 1000)    return '$' + p.toFixed(2);
+  return '$' + Math.round(p).toLocaleString();
+}
+
+function renderEntryCoinGrid(filter=''){
+  const q = filter.trim().toLowerCase();
+  const list = q ? ENTRY_COINS.filter(c => c.sym.toLowerCase().includes(q) || (c.name||'').toLowerCase().includes(q)) : ENTRY_COINS;
+  if(!list.length) return `<div style="grid-column:1/-1;text-align:center;padding:16px;font-size:12px;color:#94A3B8">No coins found</div>`;
+  return list.map(c => `
+    <div class="coin-opt${selectedCoin.sym===c.sym?' selected':''}" onclick="selectCoin('${c.sym}')" data-sym="${c.sym}">
+      <div class="co-sym">${c.sym}</div>
+      <div class="co-chg" style="color:#94A3B8">${fmtEntryPrice(c.price)}</div>
+    </div>`).join('');
+}
+
+window.filterEntryCoins = function(val){
+  const grid = document.getElementById('coin-select-grid');
+  if(grid) grid.innerHTML = renderEntryCoinGrid(val);
+};
+
 function bindPanelEvents(){
-  /* coin grid click — re-bind since it's dynamic HTML */
-  document.querySelectorAll(".coin-opt").forEach(el => {
-    el.onclick = () => selectCoin(el.dataset.sym);
-  });
   updatePreview();
   ["inp-entry","inp-qty","inp-amt","inp-tp","inp-sl"].forEach(id => {
     const el = document.getElementById(id);
@@ -2369,13 +2430,20 @@ window.selectCoin = function(sym){
   selectedCoin = ENTRY_COINS.find(c => c.sym === sym) || ENTRY_COINS[0];
   /* Refresh price from live data */
   if(sym === currentBase) selectedCoin.price = PRICE;
-  else { const c = _marketPrices[sym+'USDT']; if(c?.price) selectedCoin.price = parseFloat(c.price); }
-  document.querySelectorAll(".coin-opt").forEach(el => {
-    el.classList.toggle("selected", el.dataset.sym === sym);
-  });
+  else {
+    const mSym = MARKET_LIST.find(m => m.base === sym)?.sym;
+    const c = mSym ? _marketPrices[mSym] : null;
+    if(c?.price) selectedCoin.price = parseFloat(c.price);
+  }
+  /* Re-render grid to update selected state */
+  const searchVal = document.getElementById('entry-coin-search')?.value || '';
+  const grid = document.getElementById('coin-select-grid');
+  if(grid) grid.innerHTML = renderEntryCoinGrid(searchVal);
   const ep = document.getElementById("inp-entry");
   const qs = document.getElementById("qty-sym");
-  if(ep) ep.value = selectedCoin.price.toFixed(selectedCoin.price < 10 ? 3 : 2);
+  const p = selectedCoin.price;
+  const dec = p < 0.00001 ? 8 : p < 0.0001 ? 7 : p < 0.001 ? 6 : p < 0.01 ? 5 : p < 1 ? 4 : p < 10 ? 3 : 2;
+  if(ep) ep.value = p > 0 ? p.toFixed(dec) : '';
   if(qs) qs.textContent = selectedCoin.sym;
   syncAmount();
   updatePreview();
