@@ -1683,6 +1683,51 @@ function renderMarketGrid(list){
   }).join('');
 }
 
+/* ══ COINCAP WEBSOCKET — VWAP prices (Binance-weighted, not geo-blocked) ══ */
+const _ccIdMap = {
+  'BTCUSDT':'bitcoin','ETHUSDT':'ethereum','BNBUSDT':'binance-coin',
+  'SOLUSDT':'solana','XRPUSDT':'ripple','ADAUSDT':'cardano',
+  'LTCUSDT':'litecoin','AVAXUSDT':'avalanche','DOTUSDT':'polkadot',
+  'ATOMUSDT':'cosmos','NEARUSDT':'near-protocol','SUIUSDT':'sui',
+  'APTUSDT':'aptos','ICPUSDT':'internet-computer','INJUSDT':'injective-protocol',
+  'LINKUSDT':'chainlink','UNIUSDT':'uniswap','AAVEUSDT':'aave',
+  'MATICUSDT':'matic-network','ARBUSDT':'arbitrum','OPUSDT':'optimism',
+  'DOGEUSDT':'dogecoin','SHIBUSDT':'shiba-inu','PEPEUSDT':'pepe',
+  'WLDUSDT':'worldcoin'
+};
+let _ccWs = null;
+let _ccActive = false;
+
+function _startCoinCapWs(){
+  if(_ccWs) return;
+  const assets = Object.values(_ccIdMap).join(',');
+  try {
+    _ccWs = new WebSocket(`wss://ws.coincap.io/prices?assets=${assets}`);
+    _ccWs.onopen = () => {
+      _ccActive = true;
+      console.log('CoinCap WS connected');
+    };
+    _ccWs.onmessage = (evt) => {
+      try {
+        const prices = JSON.parse(evt.data); /* { bitcoin: "72771.31", ... } */
+        Object.entries(prices).forEach(([ccId, priceStr]) => {
+          const sym = Object.keys(_ccIdMap).find(k => _ccIdMap[k] === ccId);
+          if(!sym) return;
+          const price = parseFloat(priceStr);
+          const existing = _marketPrices[sym] || {};
+          _marketPrices[sym] = { ...existing, price };
+        });
+        if(!_selectMarketBusy) _applyMarketCache();
+      } catch(_){}
+    };
+    _ccWs.onerror = () => { _ccActive = false; _ccWs = null; };
+    _ccWs.onclose = () => {
+      _ccActive = false; _ccWs = null;
+      setTimeout(_startCoinCapWs, 10000);
+    };
+  } catch(_){ _ccWs = null; }
+}
+
 let _lastMarketFetch = 0;
 const _MARKET_THROTTLE = 45000; /* 45s — matches server-side cache TTL */
 
@@ -1967,7 +2012,7 @@ function _buildTVScript(containerId, base, interval, showSideToolbar){
   script.async = true;
   script.innerHTML = JSON.stringify({
     autosize: true,
-    symbol: 'BINANCE:' + base + 'USDT',
+    symbol: base + 'USDT',
     interval: interval,
     timezone: 'Etc/UTC',
     theme: 'light',
@@ -2076,7 +2121,7 @@ function _applyMarketCache(){
     TF_DATA[tf].vol   = VOL;
   });
   const utcTs = new Date().toUTCString().replace('GMT','UTC').slice(5,25);
-  const src   = 'CoinGecko';
+  const src   = _ccActive ? 'CoinCap·Live' : 'CoinGecko';
   const tfSub = `${src} · ${activeTF} · ${utcTs}`;
   TF_DATA[activeTF].subtitle = tfSub;
   const subEl = document.getElementById('tf-subtitle');
@@ -2104,6 +2149,7 @@ async function refreshAllCoins(){
 }
 
 /* ══ FETCH LIVE DATA ON PAGE LOAD ══ */
+_startCoinCapWs();
 refreshAllCoins();
 
 /* ══ AUTO-REFRESH every 10s (display) / 30s (API) ══ */
