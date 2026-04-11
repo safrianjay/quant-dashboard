@@ -646,18 +646,54 @@ p,span,div,input,button{
           <span id="tv-chart-label" style="font-family:'Proxima Nova','Montserrat',sans-serif;font-size:13px;font-weight:700;color:#0F172A;letter-spacing:-.01em">BTC/USDT</span>
           <span style="font-size:10px;font-weight:500;color:#94A3B8;font-family:'Inter',sans-serif">Binance · Candlestick</span>
         </div>
-        <!-- TF pills -->
-        <div style="display:flex;gap:4px" id="tv-tf-tabs">
-          <button onclick="setTVInterval('15')"  class="tv-tf-btn" data-tf="15"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">15m</button>
-          <button onclick="setTVInterval('60')"  class="tv-tf-btn" data-tf="60"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#10B981;color:white;transition:all .15s">1H</button>
-          <button onclick="setTVInterval('240')" class="tv-tf-btn" data-tf="240" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">4H</button>
-          <button onclick="setTVInterval('D')"   class="tv-tf-btn" data-tf="D"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1D</button>
-          <button onclick="setTVInterval('W')"   class="tv-tf-btn" data-tf="W"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1W</button>
+        <!-- TF pills + fullscreen -->
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="display:flex;gap:4px" id="tv-tf-tabs">
+            <button onclick="setTVInterval('15')"  class="tv-tf-btn" data-tf="15"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">15m</button>
+            <button onclick="setTVInterval('60')"  class="tv-tf-btn" data-tf="60"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#10B981;color:white;transition:all .15s">1H</button>
+            <button onclick="setTVInterval('240')" class="tv-tf-btn" data-tf="240" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">4H</button>
+            <button onclick="setTVInterval('D')"   class="tv-tf-btn" data-tf="D"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1D</button>
+            <button onclick="setTVInterval('W')"   class="tv-tf-btn" data-tf="W"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1W</button>
+          </div>
+          <button onclick="openTVFullscreen()" title="Full screen" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;border:1px solid #E2E8F0;background:white;cursor:pointer;flex-shrink:0;transition:all .15s" onmouseover="this.style.borderColor='#10B981';this.style.background='#F0FDF4'" onmouseout="this.style.borderColor='#E2E8F0';this.style.background='white'">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          </button>
         </div>
       </div>
       <!-- Widget container -->
       <div style="height:360px;width:100%">
         <div id="tv-chart-widget" style="height:100%;width:100%"></div>
+      </div>
+    </div>
+
+    <!-- ══ TV FULLSCREEN MODAL ══ -->
+    <div id="tv-fs-overlay" onclick="closeTVFullscreen()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:1000;backdrop-filter:blur(4px)"></div>
+    <div id="tv-fs-modal" style="display:none;position:fixed;inset:16px;z-index:1001;background:white;border-radius:16px;border:1px solid #F1F5F9;box-shadow:0 24px 64px rgba(0,0,0,.18);overflow:hidden;flex-direction:column">
+      <!-- Modal header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #F1F5F9;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></div>
+          <span id="tv-fs-label" style="font-family:'Proxima Nova','Montserrat',sans-serif;font-size:14px;font-weight:700;color:#0F172A;letter-spacing:-.01em">BTC/USDT</span>
+          <span style="font-size:10px;font-weight:500;color:#94A3B8;font-family:'Inter',sans-serif">Binance · Candlestick</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <!-- TF pills -->
+          <div style="display:flex;gap:4px" id="tv-fs-tf-tabs">
+            <button onclick="setTVFsInterval('15')"  class="tv-fs-btn" data-tf="15"  style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">15m</button>
+            <button onclick="setTVFsInterval('60')"  class="tv-fs-btn" data-tf="60"  style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#10B981;color:white;transition:all .15s">1H</button>
+            <button onclick="setTVFsInterval('240')" class="tv-fs-btn" data-tf="240" style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">4H</button>
+            <button onclick="setTVFsInterval('D')"   class="tv-fs-btn" data-tf="D"   style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1D</button>
+            <button onclick="setTVFsInterval('W')"   class="tv-fs-btn" data-tf="W"   style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1W</button>
+          </div>
+          <!-- Close -->
+          <button onclick="closeTVFullscreen()" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;border:1px solid #E2E8F0;background:white;cursor:pointer;margin-left:4px" onmouseover="this.style.borderColor='#EF4444';this.style.background='#FEF2F2'" onmouseout="this.style.borderColor='#E2E8F0';this.style.background='white'">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Full chart with side toolbar -->
+      <div style="flex:1;min-height:0">
+        <div id="tv-fs-widget" style="height:100%;width:100%"></div>
       </div>
     </div>
 
@@ -2080,26 +2116,30 @@ let _tvInterval = '60';
 function initTVWidget(base, interval){
   interval = interval || _tvInterval;
   _tvInterval = interval;
-  const container = document.getElementById('tv-chart-widget');
+  const b = base || currentBase;
+  const lbl = document.getElementById('tv-chart-label');
+  if(lbl) lbl.textContent = b + '/USDT';
+  _buildTVScript('tv-chart-widget', b, interval, false);
+}
+
+function _buildTVScript(containerId, base, interval, showSideToolbar){
+  const container = document.getElementById(containerId);
   if(!container) return;
   container.innerHTML = '';
-  /* Update header label */
-  const lbl = document.getElementById('tv-chart-label');
-  if(lbl) lbl.textContent = (base||currentBase) + '/USDT';
   const script = document.createElement('script');
   script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
   script.async = true;
   script.innerHTML = JSON.stringify({
     autosize: true,
-    symbol: 'BINANCE:' + (base||currentBase) + 'USDT',
+    symbol: 'BINANCE:' + base + 'USDT',
     interval: interval,
     timezone: 'Etc/UTC',
     theme: 'light',
     style: '1',
     locale: 'en',
-    hide_top_toolbar: true,
+    hide_top_toolbar: !showSideToolbar,
     hide_legend: false,
-    hide_side_toolbar: false,
+    hide_side_toolbar: !showSideToolbar,
     allow_symbol_change: false,
     save_image: false,
     calendar: false,
@@ -2114,6 +2154,41 @@ function initTVWidget(base, interval){
   });
   container.appendChild(script);
 }
+
+let _tvFsInterval = '60';
+
+window.openTVFullscreen = function(){
+  _tvFsInterval = _tvInterval;
+  const overlay = document.getElementById('tv-fs-overlay');
+  const modal   = document.getElementById('tv-fs-modal');
+  const lbl     = document.getElementById('tv-fs-label');
+  if(lbl) lbl.textContent = currentBase + '/USDT';
+  overlay.style.display = 'block';
+  modal.style.display   = 'flex';
+  /* Sync active TF pill */
+  document.querySelectorAll('.tv-fs-btn').forEach(btn => {
+    const active = btn.dataset.tf === _tvFsInterval;
+    btn.style.background = active ? '#10B981' : '#F1F5F9';
+    btn.style.color = active ? 'white' : '#64748B';
+  });
+  _buildTVScript('tv-fs-widget', currentBase, _tvFsInterval, true);
+};
+
+window.closeTVFullscreen = function(){
+  document.getElementById('tv-fs-overlay').style.display = 'none';
+  document.getElementById('tv-fs-modal').style.display   = 'none';
+  document.getElementById('tv-fs-widget').innerHTML = '';
+};
+
+window.setTVFsInterval = function(tf){
+  _tvFsInterval = tf;
+  document.querySelectorAll('.tv-fs-btn').forEach(btn => {
+    const active = btn.dataset.tf === tf;
+    btn.style.background = active ? '#10B981' : '#F1F5F9';
+    btn.style.color = active ? 'white' : '#64748B';
+  });
+  _buildTVScript('tv-fs-widget', currentBase, tf, true);
+};
 
 window.setTVInterval = function(tf){
   _tvInterval = tf;
