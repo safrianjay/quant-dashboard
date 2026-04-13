@@ -278,8 +278,8 @@ p,span,div,input,button{
 .tf-bar{display:flex;align-items:center;gap:12px;padding:8px 24px;background:white;border-bottom:1px solid #F1F5F9;position:sticky;top:57px;z-index:9;flex-shrink:0}
 .tf-bar-label{font-size:10px;font-weight:600;color:#94A3B8;letter-spacing:.06em;text-transform:uppercase;font-family:var(--font-body);white-space:nowrap}
 .tf-bar-sub{font-size:10px;color:#94A3B8;font-family:var(--font-body);margin-left:auto;white-space:nowrap}
-@media(max-width:768px){.tf-bar{padding:7px 12px;top:50px}.tf-bar-sub{display:none}}
-@media(max-width:480px){.tf-bar-label{display:none}.entry-btn-label{display:none}}
+@media(max-width:480px){.entry-btn-label{display:none}}
+@media(max-width:768px){#analyst-tf-wrap,#unified-tf-wrap{display:none!important}}
 
 /* ═══ AUTH SCREEN ═══ */
 #auth-screen{position:fixed;inset:0;z-index:200;background:linear-gradient(135deg,#0F172A 0%,#1E293B 60%,#0F2027 100%);display:flex;align-items:center;justify-content:center;padding:16px;transition:opacity .4s ease}
@@ -529,7 +529,7 @@ p,span,div,input,button{
           <div class="topbar-title" id="market-title" style="font-size:16px;font-weight:700;color:#0F172A;line-height:1.2">BTC/USDT — Live Analysis</div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)" id="topbar-date">CoinGecko · Apr 7, 2026 08:24 UTC</div>
+        <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)" id="topbar-date">Live Analysis</div>
       </div>
     </button>
     </div>
@@ -549,13 +549,14 @@ p,span,div,input,button{
         <svg id="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span class="entry-btn-label">Refresh</span>
       </button>
-      <!-- Analyst TF pills -->
-      <div id="analyst-tf-wrap" style="display:flex;gap:2px;background:#F1F5F9;border-radius:7px;padding:3px">
-        <button class="period" id="atf-5m"  onclick="setAnalystTF('5m')">5m</button>
-        <button class="period active" id="atf-15m" onclick="setAnalystTF('15m')">15m</button>
-        <button class="period" id="atf-1h"  onclick="setAnalystTF('1h')">1h</button>
-        <button class="period" id="atf-4h"  onclick="setAnalystTF('4h')">4h</button>
-        <button class="period" id="atf-1d"  onclick="setAnalystTF('1d')">1D</button>
+      <!-- Unified TF pills (analyst + chart combined) -->
+      <div id="unified-tf-wrap" style="display:flex;gap:2px;background:#F1F5F9;border-radius:7px;padding:3px">
+        <button class="period utf" data-tf="5m"  onclick="unifiedTF('5m')">5m</button>
+        <button class="period utf active" data-tf="15m" onclick="unifiedTF('15m')">15m</button>
+        <button class="period utf" data-tf="1H"  onclick="unifiedTF('1H')">1H</button>
+        <button class="period utf" data-tf="4H"  onclick="unifiedTF('4H')">4H</button>
+        <button class="period utf" data-tf="1D"  onclick="unifiedTF('1D')">1D</button>
+        <button class="period utf" data-tf="1W"  onclick="unifiedTF('1W')">1W</button>
       </div>
       <!-- Run Analysis button -->
       <button onclick="runLiveAnalysis()" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ Run Analysis</button>
@@ -566,17 +567,6 @@ p,span,div,input,button{
     </div>
   </div>
 
-  <!-- Timeframe Bar -->
-  <div class="tf-bar">
-    <span class="tf-bar-label">Timeframe</span>
-    <div class="periods" id="tf-tabs">
-      <button class="period active" onclick="switchTF('1H')">1H</button>
-      <button class="period" onclick="switchTF('4H')">4H</button>
-      <button class="period" onclick="switchTF('1D')">1D</button>
-      <button class="period" onclick="switchTF('1W')">1W</button>
-    </div>
-    <span id="tf-subtitle" class="tf-bar-sub">Binance · 1H · Apr 7, 2026 08:24 UTC</span>
-  </div>
 
   <!-- Content -->
   <div class="content">
@@ -2017,15 +2007,26 @@ window.switchTF = function(tf){
   PRICE=d.price; HIGH=d.high; LOW=d.low; CHG=d.chg; VOL=d.vol; MA10=d.ma10; CONF=d.conf;
   MA=d.ma; MA_STATUS=d.maStatus; SETUPS=d.setups; LOG=d.log;
   activeSetup=0;
-  document.querySelectorAll('#tf-tabs .period').forEach(b=>b.classList.toggle('active',b.textContent===tf));
-  const subEl=document.getElementById('tf-subtitle');
-  if(subEl) subEl.textContent=d.subtitle;
   renderKPIs();
   renderConfChart(d.confHistory);
   renderMAStack();
   renderLadder();
   renderSessionLog();
   renderSetupsList();
+};
+
+/* ══ UNIFIED TIMEFRAME (analyst + chart combined) ══ */
+const _tfAnalystMap = {'5m':'5m','15m':'15m','1H':'1h','4H':'4h','1D':'1d','1W':'1d'};
+const _tfTVMap      = {'1H':'60','4H':'240','1D':'D','1W':'W'};
+window.unifiedTF = function(tf){
+  /* Highlight pill */
+  document.querySelectorAll('.utf').forEach(b=>b.classList.toggle('active', b.dataset.tf===tf));
+  /* Update analyst TF */
+  _analystTF = _tfAnalystMap[tf] || '15m';
+  /* Update chart data TF (1H/4H/1D/1W have static TF_DATA) */
+  if(TF_DATA[tf]) window.switchTF(tf);
+  /* Update TradingView interval */
+  if(_tfTVMap[tf]) initTVWidget(currentBase, _tfTVMap[tf]);
 };
 
 /* ══ TRADINGVIEW WIDGET ══ */
@@ -2159,12 +2160,7 @@ function _applyMarketCache(){
   });
   const utcTs = new Date().toUTCString().replace('GMT','UTC').slice(5,25);
   const src   = _okxActive ? 'OKX·Live' : 'CoinGecko';
-  const tfSub = `${src} · ${activeTF} · ${utcTs}`;
-  TF_DATA[activeTF].subtitle = tfSub;
-  const subEl = document.getElementById('tf-subtitle');
-  if(subEl) subEl.textContent = tfSub;
-  const tbDate = document.getElementById('topbar-date');
-  if(tbDate) tbDate.textContent = `${src} · ${utcTs}`;
+  TF_DATA[activeTF].subtitle = `${src} · ${activeTF} · ${utcTs}`;
   positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=PRICE; });
   savePositions();
   renderKPIs(); renderLevelsSB(); renderPositions(); renderPerfChart();
@@ -3212,9 +3208,10 @@ let _autoRefreshTimer=null;
 
 function setAnalystTF(tf){
   _analystTF=tf;
-  document.querySelectorAll("[id^='atf-']").forEach(b=>b.classList.remove("active"));
-  const btn=document.getElementById(`atf-${tf}`);
-  if(btn) btn.classList.add("active");
+  /* sync unified pills — map analyst key back to display key */
+  const rev={'5m':'5m','15m':'15m','1h':'1H','4h':'4H','1d':'1D'};
+  const displayKey = rev[tf] || tf;
+  document.querySelectorAll('.utf').forEach(b=>b.classList.toggle('active', b.dataset.tf===displayKey));
 }
 
 async function runLiveAnalysis(){
@@ -3249,7 +3246,7 @@ async function runLiveAnalysis(){
     /* Update topbar date */
     const utcTs=new Date().toUTCString().replace('GMT','UTC').slice(5,25);
     const tbDate=document.getElementById("topbar-date");
-    if(tbDate) tbDate.textContent=`CoinGecko · ${_analystTF} · ${utcTs}`;
+    if(tbDate) tbDate.textContent=`Live · ${_analystTF.toUpperCase()} · ${utcTs}`;
 
     console.log("✅ QuantAnalyst run:",{asset,bias:analysis.bias,confidence:analysis.confidence,maStack:analysis.maStack.signal});
   } catch(err){
