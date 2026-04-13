@@ -549,6 +549,16 @@ p,span,div,input,button{
         <svg id="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span class="entry-btn-label">Refresh</span>
       </button>
+      <!-- Analyst TF pills -->
+      <div id="analyst-tf-wrap" style="display:flex;gap:2px;background:#F1F5F9;border-radius:7px;padding:3px">
+        <button class="period" id="atf-5m"  onclick="setAnalystTF('5m')">5m</button>
+        <button class="period active" id="atf-15m" onclick="setAnalystTF('15m')">15m</button>
+        <button class="period" id="atf-1h"  onclick="setAnalystTF('1h')">1h</button>
+        <button class="period" id="atf-4h"  onclick="setAnalystTF('4h')">4h</button>
+        <button class="period" id="atf-1d"  onclick="setAnalystTF('1d')">1D</button>
+      </div>
+      <!-- Run Analysis button -->
+      <button onclick="runLiveAnalysis()" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ Run Analysis</button>
       <button onclick="openPanel('long')" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:#0F172A;color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span class="entry-btn-label">Add Entry</span>
@@ -1733,29 +1743,52 @@ function _startOKXWs(){
 }
 
 let _lastMarketFetch = 0;
-const _MARKET_THROTTLE = 45000; /* 45s — matches server-side cache TTL */
+const _MARKET_THROTTLE = 10000; /* 10s — OKX allows frequent polling */
 
 async function fetchAllMarketPrices(){
   const now = Date.now();
   if(now - _lastMarketFetch < _MARKET_THROTTLE) return;
   _lastMarketFetch = now;
   try {
-    const ids = MARKET_LIST.map(m => m.cgId).join(',');
-    const res = await fetch(_cgUrl('market', { ids }));
-    if(!res.ok){ _lastMarketFetch = 0; return; }
-    const all = await res.json();
-    all.forEach(t => {
-      const m = MARKET_LIST.find(x => x.cgId === t.id);
-      if(m) _marketPrices[m.sym] = {
-        price: t.current_price, chg: t.price_change_percentage_24h,
-        high: t.high_24h, low: t.low_24h, vol: t.total_volume
+    /* Try OKX via proxy first — exact same source as TradingView chart */
+    const res = await fetch('/.netlify/functions/cg?type=okx-tickers');
+    if(!res.ok) throw new Error('OKX failed');
+    const json = await res.json();
+    if(!json.data) throw new Error('OKX empty');
+    const syms = new Set(MARKET_LIST.map(m => m.sym));
+    json.data.forEach(t => {
+      const sym = t.instId.replace('-',''); /* BTC-USDT → BTCUSDT */
+      if(!syms.has(sym)) return;
+      const price = parseFloat(t.last);
+      const open  = parseFloat(t.open24h) || price;
+      _marketPrices[sym] = {
+        price,
+        high: parseFloat(t.high24h),
+        low:  parseFloat(t.low24h),
+        chg:  open > 0 ? ((price - open) / open) * 100 : 0,
+        vol:  parseFloat(t.volCcy24h)
       };
     });
-    const modal = document.getElementById('market-modal');
-    if(modal && modal.style.display !== 'none'){
-      filterMarkets(document.getElementById('market-search-input')?.value || '');
-    }
-  } catch(_){ _lastMarketFetch = 0; }
+  } catch(_){
+    /* Fallback: CoinGecko */
+    try {
+      const ids = MARKET_LIST.map(m => m.cgId).join(',');
+      const res = await fetch(_cgUrl('market', { ids }));
+      if(!res.ok){ _lastMarketFetch = 0; return; }
+      const all = await res.json();
+      all.forEach(t => {
+        const m = MARKET_LIST.find(x => x.cgId === t.id);
+        if(m) _marketPrices[m.sym] = {
+          price: t.current_price, chg: t.price_change_percentage_24h,
+          high: t.high_24h, low: t.low_24h, vol: t.total_volume
+        };
+      });
+    } catch(_){ _lastMarketFetch = 0; }
+  }
+  const modal = document.getElementById('market-modal');
+  if(modal && modal.style.display !== 'none'){
+    filterMarkets(document.getElementById('market-search-input')?.value || '');
+  }
 }
 
 window.selectMarket = async function(sym, base, name){
@@ -2722,6 +2755,527 @@ function addTimelineEntry(pos){
   newRow.innerHTML=`<div style="width:34px;height:34px;border-radius:9px;background:${dirBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${dirColor}">${dirIcon}</div><div style="flex:1;min-width:0"><div style="font-size:12px;color:#334155;line-height:1.5"><strong style="font-family:var(--font-heading);color:${dirColor}">${pos.dir.toUpperCase()}</strong> entry — ${pos.qty.toFixed(4)} <strong style="font-family:var(--font-heading)">${pos.symbol}</strong> @ <span style="font-family:var(--font-mono);font-weight:700">$${pos.entry.toLocaleString()}</span> · <span style="font-family:var(--font-mono)">$${pos.exposure.toLocaleString("en-US",{maximumFractionDigits:0})}</span> exposure ${pos.rr?"· R:R 1:"+pos.rr:""} ${pos.note?`<br><span style="font-style:italic;color:#94A3B8">"${pos.note}"</span>`:""}</div><div style="font-size:10px;color:#94A3B8;font-family:var(--font-mono);margin-top:3px">${pos.time} · Jay</div></div>`;
   logEl.insertBefore(newRow,logEl.firstChild);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   QUANT-CLAUDE ANALYST LOGIC ENGINE  v1.0
+   ══════════════════════════════════════════════════════════════ */
+
+const QuantAnalyst = (() => {
+
+  function classifyMAStack(price, ma7, ma25, ma99) {
+    const gapP7   = ((price - ma7)   / ma7)   * 100;
+    const gapP25  = ((price - ma25)  / ma25)  * 100;
+    const gapP99  = ((price - ma99)  / ma99)  * 100;
+    const spread  = Math.abs(ma99 - ma7);
+    const spreadPct = (spread / price) * 100;
+    const aboveMA7  = price > ma7;
+    const aboveMA25 = price > ma25;
+    const aboveMA99 = price > ma99;
+    const ma7AboveMa25 = ma7 > ma25;
+    const ma25AboveMa99 = ma25 > ma99;
+    const compressed = spreadPct < 0.5;
+    let state, signal, bias, biasStrength;
+    if (compressed && aboveMA7 && aboveMA25 && aboveMA99) {
+      state="BULL_COMPRESSION"; signal="Compression — bull coil ↑"; bias="BULLISH"; biasStrength="MODERATE";
+    } else if (compressed && !aboveMA7 && !aboveMA25 && !aboveMA99) {
+      state="BEAR_COMPRESSION"; signal="Compression — bear coil ↓"; bias="BEARISH"; biasStrength="MODERATE";
+    } else if (aboveMA7 && aboveMA25 && aboveMA99 && ma7AboveMa25 && ma25AboveMa99) {
+      state="FULL_BULL"; signal="Full Bullish ✓"; bias="BULLISH"; biasStrength=spreadPct>2?"STRONG":"MODERATE";
+    } else if (!aboveMA7 && !aboveMA25 && !aboveMA99 && !ma7AboveMa25 && !ma25AboveMa99) {
+      state="FULL_BEAR"; signal="Full Bearish ✗"; bias="BEARISH"; biasStrength=spreadPct>2?"STRONG":"MODERATE";
+    } else {
+      state="DECISION_ZONE";
+      if (aboveMA25 && aboveMA99 && !aboveMA7) { signal="Mixed — Below MA7 ⚠️"; bias="BEARISH"; biasStrength="WEAK"; }
+      else if (!aboveMA25 && aboveMA99) { signal="Approaching MA25 — watch"; bias="BEARISH"; biasStrength="WEAK"; }
+      else if (aboveMA7 && !aboveMA25) { signal="Between MA7 & MA25"; bias="NEUTRAL"; biasStrength="WEAK"; }
+      else { signal="Indeterminate — wait"; bias="NEUTRAL"; biasStrength="WEAK"; }
+    }
+    const doubleWall = Math.abs(ma25 - ma99) < 100;
+    return {
+      state, signal, bias, biasStrength, doubleWall, compressed,
+      aboveMA7, aboveMA25, aboveMA99,
+      gapP7: +gapP7.toFixed(3), gapP25: +gapP25.toFixed(3), gapP99: +gapP99.toFixed(3),
+      spreadPct: +spreadPct.toFixed(3), spreadAbs: +spread.toFixed(2),
+      stackOrder: aboveMA7 && aboveMA25 && aboveMA99 ? "Price › MA7 › MA25 › MA99"
+        : !aboveMA7 && !aboveMA25 && !aboveMA99 ? "MA99 › MA25 › MA7 › Price" : "Mixed — see signal",
+    };
+  }
+
+  function analyzeVolume(currentVol, ma5, ma10, candleColor="unknown") {
+    const ratio10 = ma10 > 0 ? currentVol / ma10 : 1;
+    const ratio5  = ma5  > 0 ? currentVol / ma5  : 1;
+    let signal, conviction, type;
+    if (ratio10 < 0.06) {
+      signal="Ghost volume — extreme. Fake move."; conviction="NONE"; type="ghost_extreme";
+    } else if (ratio10 < 0.4) {
+      signal="Ghost volume — no conviction. Do not trade."; conviction="NONE"; type="ghost";
+    } else if (ratio10 >= 1.5) {
+      if (candleColor==="green") { signal="Institutional accumulation — breakout valid"; type="accumulation"; }
+      else if (candleColor==="red") { signal="Institutional distribution — rejection valid"; type="distribution"; }
+      else { signal="Institutional volume — directional move valid"; type="institutional"; }
+      conviction = ratio10 > 2.4 ? "VERY_HIGH" : "HIGH";
+    } else if (ratio10 >= 1.0) {
+      signal="Above average — moderate conviction"; conviction="MEDIUM"; type="above_average";
+    } else {
+      signal="Normal volume — follow MA signal"; conviction="LOW"; type="normal";
+    }
+    return { currentVol, ma5, ma10, ratio10:+ratio10.toFixed(3), ratio5:+ratio5.toFixed(3),
+      signal, conviction, type, isGhost:conviction==="NONE",
+      isInstitutional:conviction==="HIGH"||conviction==="VERY_HIGH" };
+  }
+
+  function identifyKeyLevels(price, mas, stats, extraResistances=[], extraSupports=[]) {
+    const resistances=[], supports=[];
+    if (mas.ma7 > price) resistances.push({label:"MA(7)",  price:mas.ma7,  strength:"strong",type:"ma"});
+    else                 supports.push(   {label:"MA(7)",  price:mas.ma7,  strength:"strong",type:"ma"});
+    if (mas.ma25 > price) resistances.push({label:"MA(25)", price:mas.ma25, strength:"strong",type:"ma"});
+    else                  supports.push(  {label:"MA(25)", price:mas.ma25, strength:"strong",type:"ma"});
+    if (mas.ma99 > price) resistances.push({label:"MA(99)", price:mas.ma99, strength:"strong",type:"ma"});
+    else                  supports.push(  {label:"MA(99)", price:mas.ma99, strength:"strong",type:"ma"});
+    if (stats.high24 && stats.high24>price) resistances.push({label:"24H High",price:stats.high24,strength:"medium",type:"session"});
+    if (stats.low24  && stats.low24<price)  supports.push(   {label:"24H Low", price:stats.low24, strength:"medium",type:"session"});
+    const roundNumbers=[60000,62000,65000,67000,68000,69000,70000,71000,72000,73000,74000,75000,76000,80000,85000,90000,95000,100000];
+    roundNumbers.forEach(rn => {
+      if (Math.abs(rn-price)/price < 0.10) {
+        if (rn>price && rn<price*1.05) resistances.push({label:`$${(rn/1000).toFixed(0)}K psychological`,price:rn,strength:"medium",type:"psychological"});
+        else if (rn<price && rn>price*0.95) supports.push({label:`$${(rn/1000).toFixed(0)}K psychological`,price:rn,strength:"medium",type:"psychological"});
+      }
+    });
+    extraResistances.forEach((p,i)=>{ if(p>price) resistances.push({label:`Chart R${i+1}`,price:p,strength:"weak",type:"chart"}); });
+    extraSupports.forEach((p,i)=>{ if(p<price) supports.push({label:`Chart S${i+1}`,price:p,strength:"weak",type:"chart"}); });
+    resistances.sort((a,b)=>a.price-b.price);
+    supports.sort((a,b)=>b.price-a.price);
+    return { resistances, supports };
+  }
+
+  function scoreConfidence(maStack, volume, macroBias="neutral", extra={}) {
+    const longFactors=[], shortFactors=[];
+    let longScore=0, shortScore=0;
+    if (maStack.state==="FULL_BULL"||maStack.state==="BULL_COMPRESSION") { longScore++; longFactors.push("Full bullish MA stack"); }
+    if (maStack.state==="FULL_BEAR"||maStack.state==="BEAR_COMPRESSION") { shortScore++; shortFactors.push("Full bearish MA stack"); }
+    if (maStack.state==="DECISION_ZONE"&&!maStack.aboveMA7) { shortScore++; shortFactors.push("MA(7) crossed above price — bearish crossover"); }
+    if (maStack.doubleWall) { shortScore++; shortFactors.push("Double wall: MA25 ≈ MA99 — high rejection probability"); }
+    if (volume.isInstitutional&&volume.type==="accumulation") { longScore++; longFactors.push(`Institutional accumulation volume (${volume.ratio10.toFixed(1)}× MA10)`); }
+    if (volume.isInstitutional&&volume.type==="distribution") { shortScore++; shortFactors.push(`Institutional distribution volume (${volume.ratio10.toFixed(1)}× MA10)`); }
+    if (volume.isGhost) { const g=`Ghost volume (${volume.ratio10.toFixed(2)}× MA10) — no confirmation`; longFactors.push(g); shortFactors.push(g); }
+    if (macroBias==="bullish") { longScore+=2; longFactors.push("Macro bullish catalyst (ceasefire / risk-on / ETF inflows)"); }
+    if (macroBias==="bearish") { shortScore+=2; shortFactors.push("Macro bearish catalyst (hot CPI / hawkish FOMC / escalation)"); }
+    if (extra.higherLow)    { longScore++;  longFactors.push("Higher low structure"); }
+    if (extra.lowerHigh)    { shortScore++; shortFactors.push("Lower high structure"); }
+    if (extra.etfInflow)    { longScore++;  longFactors.push("BTC ETF net inflows"); }
+    if (extra.etfOutflow)   { shortScore++; shortFactors.push("BTC ETF net outflows"); }
+    if (extra.aboveKey)     { longScore++;  longFactors.push("Price above key psychological level"); }
+    if (extra.belowKey)     { shortScore++; shortFactors.push("Price below key psychological level"); }
+    if (extra.fearGreedLow) { longScore++;  longFactors.push("Fear & Greed extreme fear → contrarian long"); }
+    if (extra.breakoutVol)  { longScore++;  longFactors.push("Breakout on 2×+ volume — institutional"); }
+    if (extra.rejectionVol) { shortScore++; shortFactors.push("Rejection on 2×+ volume — distribution"); }
+    const toRating = s => {
+      if (s<3)  return {rating:s*1.2, label:"Low — no trade", noTrade:true};
+      if (s===3) return {rating:7.0,  label:"Moderate", noTrade:false};
+      if (s===4) return {rating:7.5,  label:"High", noTrade:false};
+      if (s===5) return {rating:8.0,  label:"High", noTrade:false};
+      if (s===6) return {rating:8.5,  label:"High", noTrade:false};
+      return {rating:9.0, label:"Maximum Conviction", noTrade:false};
+    };
+    const longRating=toRating(longScore), shortRating=toRating(shortScore);
+    const dominantBias=longScore>shortScore?"BULLISH":shortScore>longScore?"BEARISH":"NEUTRAL";
+    const dominantRating=toRating(Math.max(longScore,shortScore));
+    return {
+      longScore, shortScore,
+      longConf:+longRating.rating.toFixed(1), shortConf:+shortRating.rating.toFixed(1),
+      longFactors, shortFactors,
+      noTradeLong:longRating.noTrade, noTradeShort:shortRating.noTrade,
+      dominantBias, confidence:+dominantRating.rating.toFixed(1), confidenceLabel:dominantRating.label,
+    };
+  }
+
+  function generateLongSetup(price, mas, levels, stats) {
+    const nearestSupport=levels.supports[0]?.price||price*0.99;
+    const entryLow=Math.min(price*0.998,nearestSupport*1.002), entryHigh=price*1.001;
+    const secondSupport=levels.supports[1]?.price||price*0.97;
+    const stopLoss=secondSupport*0.997;
+    const r=levels.resistances;
+    const tp1=r[0]?.price||price*1.014, tp2=r[1]?.price||stats.high24||price*1.025, tp3=r[2]?.price||price*1.04;
+    const mid=(entryLow+entryHigh)/2;
+    const reward=tp3-mid, risk=mid-stopLoss, rr=risk>0?reward/risk:0;
+    const trigger=levels.supports[0]?.type==="ma"
+      ?`Pullback to ${levels.supports[0].label} $${Math.round(levels.supports[0].price).toLocaleString()} + bullish close`
+      :`Price holds above $${Math.round(entryLow).toLocaleString()} with volume > 1.5× MA10`;
+    const invalidation=`Close below $${Math.round(stopLoss).toLocaleString()} (${levels.supports[1]?.label||"key support"} breach)`;
+    return {
+      active:rr>=2.0, label:"Long", bias:"bull", accent:"#10B981",
+      entryLow:+entryLow.toFixed(2), entryHigh:+entryHigh.toFixed(2), stopLoss:+stopLoss.toFixed(2),
+      tp1:+tp1.toFixed(2), tp2:+tp2.toFixed(2), tp3:+tp3.toFixed(2),
+      rr:+rr.toFixed(2), rrLabel:`1 : ${rr.toFixed(1)}`, trigger, invalidation,
+      tps:[{l:"TP1",p:tp1,pct:`+${((tp1/price-1)*100).toFixed(1)}%`},{l:"TP2",p:tp2,pct:`+${((tp2/price-1)*100).toFixed(1)}%`},{l:"TP3",p:tp3,pct:`+${((tp3/price-1)*100).toFixed(1)}%`}],
+    };
+  }
+
+  function generateShortSetup(price, mas, levels, stats) {
+    const nearestResistance=levels.resistances[0]?.price||price*1.01;
+    const entryLow=price*0.999, entryHigh=Math.max(price*1.002,nearestResistance*0.998);
+    const secondResistance=levels.resistances[1]?.price||price*1.03;
+    const stopLoss=secondResistance*1.003;
+    const s=levels.supports;
+    const tp1=s[0]?.price||price*0.992, tp2=s[1]?.price||stats.low24||price*0.98, tp3=s[2]?.price||price*0.97;
+    const midEntry=(entryLow+entryHigh)/2;
+    const reward=midEntry-tp3, risk=stopLoss-midEntry, rr=risk>0?reward/risk:0;
+    const trigger=levels.resistances[0]?.type==="ma"
+      ?`Rejection at ${levels.resistances[0].label} $${Math.round(levels.resistances[0].price).toLocaleString()} + bearish close`
+      :`Close below $${Math.round(entryLow).toLocaleString()} with volume > 1.5× MA10`;
+    const invalidation=`Close above $${Math.round(stopLoss).toLocaleString()} (${levels.resistances[1]?.label||"key resistance"} breach)`;
+    return {
+      active:rr>=2.0, label:"Short", bias:"bear", accent:"#EF4444",
+      entryLow:+entryLow.toFixed(2), entryHigh:+entryHigh.toFixed(2), stopLoss:+stopLoss.toFixed(2),
+      tp1:+tp1.toFixed(2), tp2:+tp2.toFixed(2), tp3:+tp3.toFixed(2),
+      rr:+rr.toFixed(2), rrLabel:`1 : ${rr.toFixed(1)}`, trigger, invalidation,
+      tps:[{l:"TP1",p:tp1,pct:`−${((1-tp1/price)*100).toFixed(1)}%`},{l:"TP2",p:tp2,pct:`−${((1-tp2/price)*100).toFixed(1)}%`},{l:"TP3",p:tp3,pct:`−${((1-tp3/price)*100).toFixed(1)}%`}],
+    };
+  }
+
+  function generateLogEntry(analysis, author="Jay") {
+    const {bias,confidence,maStack,volume,price,timeframe}=analysis;
+    const direction=bias==="BULLISH"?"LONG":bias==="BEARISH"?"SHORT":"NEUTRAL";
+    const volNote=volume.isGhost?`Ghost vol (${volume.ratio10.toFixed(2)}× MA10) — wait`
+      :volume.isInstitutional?`${volume.ratio10.toFixed(1)}× MA10 vol — confirmed`
+      :`Normal vol (${volume.ratio10.toFixed(1)}× MA10)`;
+    const time=new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false});
+    return {
+      time, type:bias==="BULLISH"?"bull":bias==="BEARISH"?"bear":"warn",
+      msg:`${direction} signal — ${maStack.signal}. $${Math.round(price).toLocaleString()} · ${volNote}. Conf ${confidence}/10.`,
+      author, timeframe,
+    };
+  }
+
+  function calculateProbability(confidence) {
+    const {longScore,shortScore,dominantBias}=confidence;
+    const total=longScore+shortScore;
+    if(total===0) return {bull:50,bear:50};
+    const bull=Math.round((longScore/total)*100);
+    return {bull, bear:100-bull,
+      keyTell:dominantBias==="BULLISH"?"Volume on next candle — institutional green = confirms long"
+        :dominantBias==="BEARISH"?"Volume on next candle — institutional red = confirms short"
+        :"Next 1H candle close direction relative to MA stack"};
+  }
+
+  function run(marketData) {
+    const {price,ma7,ma25,ma99,currentVol,volMa5,volMa10,high24,low24,
+           changePct=0,timeframe="15m",candleColor="unknown",macroBias="neutral",
+           extraResistances=[],extraSupports=[],extraFactors={}}=marketData;
+    const maStack=classifyMAStack(price,ma7,ma25,ma99);
+    const volume=analyzeVolume(currentVol,volMa5,volMa10,candleColor);
+    const levels=identifyKeyLevels(price,{ma7,ma25,ma99},{high24,low24},extraResistances,extraSupports);
+    const confidence=scoreConfidence(maStack,volume,macroBias,extraFactors);
+    const longSetup=generateLongSetup(price,{ma7,ma25,ma99},levels,{high24,low24});
+    const shortSetup=generateShortSetup(price,{ma7,ma25,ma99},levels,{high24,low24});
+    if(confidence.noTradeLong)  longSetup.active=false;
+    if(confidence.noTradeShort) shortSetup.active=false;
+    const probability=calculateProbability(confidence);
+    const bias=confidence.dominantBias;
+    const fullAnalysis={
+      timestamp:new Date().toISOString(), timeframe, price, bias,
+      biasStrength:confidence.confidenceLabel, confidence:confidence.confidence,
+      longConf:confidence.longConf, shortConf:confidence.shortConf,
+      maStack, volume, levels, longSetup, shortSetup, probability,
+      confidenceFactors:bias==="BULLISH"?confidence.longFactors:confidence.shortFactors,
+      noTradeReason:confidence.noTradeLong&&confidence.noTradeShort?"Insufficient confluence — fewer than 3 aligned factors":null,
+    };
+    fullAnalysis.logEntry=generateLogEntry(fullAnalysis);
+    return fullAnalysis;
+  }
+
+  function pushToCards(analysis) {
+    const {price,bias,confidence,maStack,volume,levels,longSetup,shortSetup,probability,logEntry,timeframe}=analysis;
+
+    /* ── 1. KPI Price ── */
+    const kv0=document.getElementById("kv0");
+    if(kv0) kv0.textContent=`$${Math.round(price).toLocaleString()}`;
+
+    /* ── 2. KPI Confidence ── */
+    const kv1=document.getElementById("kv1");
+    if(kv1) kv1.textContent=`${confidence}/10`;
+
+    /* ── 3. KPI Volume ── */
+    const kv2=document.getElementById("kv2");
+    if(kv2) kv2.textContent=`${Math.round(volume.currentVol)} ${currentBase}`;
+
+    /* ── 4. KPI 24H Range ── */
+    const rangeHigh=levels.resistances.find(r=>r.label==="24H High")?.price;
+    const rangeLow=levels.supports.find(s=>s.label==="24H Low")?.price;
+    const kv3=document.getElementById("kv3");
+    if(kv3&&rangeHigh&&rangeLow) kv3.textContent=`$${Math.round(rangeHigh-rangeLow).toLocaleString()}`;
+
+    /* ── 5. MA STACK ── */
+    const maEl=document.getElementById("ma-stack");
+    if(maEl){
+      const maData=[
+        {label:"MA7",  price:maStack.aboveMA7 ?price/(1+maStack.gapP7/100) :price*(1+Math.abs(maStack.gapP7)/100),  gapPct:maStack.gapP7,  color:"#F59E0B"},
+        {label:"MA25", price:maStack.aboveMA25?price/(1+maStack.gapP25/100):price*(1+Math.abs(maStack.gapP25)/100), gapPct:maStack.gapP25, color:"#D85A30"},
+        {label:"MA99", price:maStack.aboveMA99?price/(1+maStack.gapP99/100):price*(1+Math.abs(maStack.gapP99)/100), gapPct:maStack.gapP99, color:"#A32D2D"},
+      ];
+      maEl.innerHTML=maData.map(m=>{
+        const pos=m.gapPct>=0, pctStr=(pos?"+":"")+m.gapPct.toFixed(2)+"%", barW=Math.min(Math.abs(m.gapPct)/5*100,100);
+        return `<div class="row-item">
+          <div style="width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:${m.color}14;font-family:var(--font-mono);font-size:9px;font-weight:700;color:${m.color};flex-shrink:0">${m.label}</div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="font-size:12px;font-weight:600;font-family:var(--font-mono)">$${Math.round(m.price).toLocaleString()}</span>
+              <span style="font-size:11px;font-weight:700;font-family:var(--font-mono);color:${pos?"#10B981":"#EF4444"}">${pctStr}</span>
+            </div>
+            <div style="height:5px;border-radius:3px;background:#F1F5F9;overflow:hidden">
+              <div style="height:100%;border-radius:3px;background:${m.color};width:${barW}%"></div>
+            </div>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    /* ── 6. QUICK STATS ── */
+    const qsEl=document.getElementById("quick-stats");
+    if(qsEl){
+      qsEl.innerHTML=[
+        {l:"Stack order",v:maStack.stackOrder},{l:"Signal",v:maStack.signal},
+        {l:"Vol ratio",v:`${volume.ratio10.toFixed(2)}× MA10`},{l:"Vol signal",v:volume.conviction},
+      ].map(s=>`<div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;color:#64748B;font-family:var(--font-body)">${s.l}</span>
+        <span style="font-size:11px;font-weight:600;font-family:var(--font-mono)">${s.v}</span>
+      </div>`).join("");
+    }
+
+    /* ── 7. SIDEBAR KEY LEVELS ── */
+    const levelsEl=document.getElementById("levels-list");
+    if(levelsEl){
+      const topRes=levels.resistances.slice(0,2).map(r=>({l:r.label,p:"$"+Math.round(r.price).toLocaleString(),c:"#EF4444"}));
+      const topSup=levels.supports.slice(0,2).map(s=>({l:s.label,p:"$"+Math.round(s.price).toLocaleString(),c:"#10B981"}));
+      levelsEl.innerHTML=[...topRes,...topSup].map(lv=>`
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:7px;height:7px;border-radius:50%;background:${lv.c}"></div>
+            <span style="font-size:12px;color:#64748B;font-family:var(--font-body)">${lv.l}</span>
+          </div>
+          <span style="font-size:10px;font-family:var(--font-mono);color:${lv.c};font-weight:700">${lv.p}</span>
+        </div>`).join("");
+    }
+
+    /* ── 8. PRICE LADDER ── */
+    if(window.SETUPS&&window.renderLadder){
+      window.SETUPS[0]={id:"long",label:"Long",bias:"bull",conf:probability.bull,
+        entry:[longSetup.entryLow,longSetup.entryHigh],sl:longSetup.stopLoss,
+        tps:longSetup.tps,rr:longSetup.rrLabel,trigger:longSetup.trigger,inv:longSetup.invalidation,accent:"#10B981"};
+      window.SETUPS[1]={id:"short",label:"Short",bias:"bear",conf:probability.bear,
+        entry:[shortSetup.entryLow,shortSetup.entryHigh],sl:shortSetup.stopLoss,
+        tps:shortSetup.tps,rr:shortSetup.rrLabel,trigger:shortSetup.trigger,inv:shortSetup.invalidation,accent:"#EF4444"};
+      window.renderLadder();
+    }
+
+    /* ── 9. ACTIVE SETUPS ── */
+    const setupsEl=document.getElementById("setups-list");
+    if(setupsEl&&window.SETUPS){
+      setupsEl.innerHTML=window.SETUPS.map((s,i)=>`
+        <div class="row-item" onclick="window.switchSetup(${i})" style="cursor:pointer">
+          <div style="width:36px;height:36px;border-radius:9px;background:${s.accent}14;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            ${s.bias==="bull"
+              ?`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${s.accent}" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>`
+              :`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${s.accent}" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>`}
+          </div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="font-size:13px;font-weight:700;font-family:var(--font-heading);color:#0F172A">${s.label}</span>
+              <span style="font-size:12px;font-weight:700;font-family:var(--font-mono)">${s.conf}%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="height:5px;border-radius:3px;background:#F1F5F9;overflow:hidden;flex:1">
+                <div style="height:100%;border-radius:3px;background:${s.accent};width:${s.conf}%"></div>
+              </div>
+              <span style="font-size:10px;font-weight:600;color:#64748B;font-family:var(--font-mono);min-width:40px">R:R ${s.rr}</span>
+            </div>
+          </div>
+        </div>`).join("");
+    }
+
+    /* ── 10. CONFIDENCE CHART — append point ── */
+    const confCanv=document.getElementById("confChart");
+    if(confCanv&&window.Chart){
+      const chart=window.Chart.getChart(confCanv);
+      if(chart){
+        const now=new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false});
+        chart.data.labels.push(now);
+        chart.data.datasets[0].data.push(bias==="BULLISH"||bias==="NEUTRAL"?confidence:0);
+        chart.data.datasets[1].data.push(bias==="BEARISH"||bias==="NEUTRAL"?confidence:0);
+        if(chart.data.labels.length>20){
+          chart.data.labels.shift();
+          chart.data.datasets.forEach(d=>d.data.shift());
+        }
+        chart.update("none");
+      }
+    }
+
+    /* ── 11. SESSION LOG ── */
+    const logEl=document.getElementById("session-log");
+    if(logEl&&logEntry){
+      const logColor=logEntry.type==="bull"?"#16A34A":logEntry.type==="bear"?"#DC2626":"#D97706";
+      const logBg=logEntry.type==="bull"?"#F0FDF4":logEntry.type==="bear"?"#FEF2F2":"#FFFBEB";
+      const LI={
+        bull:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+        bear:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>`,
+        warn:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+      };
+      const newRow=document.createElement("div");
+      newRow.className="row-item";
+      Object.assign(newRow.style,{alignItems:"flex-start",gap:"10px",borderLeft:`3px solid ${logColor}`});
+      newRow.innerHTML=`
+        <div style="width:34px;height:34px;border-radius:9px;background:${logBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${logColor}">${LI[logEntry.type]}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;color:#334155;line-height:1.5;font-family:var(--font-body)">${logEntry.msg}</div>
+          <div style="font-size:10px;color:#94A3B8;font-family:var(--font-mono);margin-top:3px">${logEntry.time} · ${logEntry.author} · ${logEntry.timeframe}</div>
+        </div>`;
+      logEl.insertBefore(newRow,logEl.firstChild);
+    }
+  }
+
+  return { run, pushToCards, classifyMAStack, analyzeVolume, identifyKeyLevels, scoreConfidence, generateLongSetup, generateShortSetup, calculateProbability };
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   LIVE ANALYST ORCHESTRATOR
+   ══════════════════════════════════════════════════════════════ */
+
+const CG_IDS = {
+  BTC:"bitcoin",ETH:"ethereum",SOL:"solana",BNB:"binancecoin",AVAX:"avalanche-2",
+  LINK:"chainlink",MATIC:"matic-network",UNI:"uniswap",ADA:"cardano",DOT:"polkadot",
+  DOGE:"dogecoin",SHIB:"shiba-inu",LTC:"litecoin",BCH:"bitcoin-cash",XRP:"ripple",
+  ATOM:"cosmos",NEAR:"near",FTM:"fantom",ARB:"arbitrum",OP:"optimism",
+  TRX:"tron",TON:"the-open-network",PEPE:"pepe",WIF:"dogwifcoin",TRUMP:"official-trump",
+};
+
+async function fetchLiveMarketData(asset="BTC", timeframe="15m") {
+  const cgId=CG_IDS[asset]||"bitcoin";
+  const days=timeframe==="1d"?365:timeframe==="4h"?90:timeframe==="1h"?30:1;
+
+  const [coinRes, ohlcRes]=await Promise.all([
+    fetch(`https://api.coingecko.com/api/v3/coins/${cgId}?localization=false&tickers=false&community_data=false&developer_data=false`),
+    fetch(`https://api.coingecko.com/api/v3/coins/${cgId}/ohlc?vs_currency=usd&days=${days}`)
+  ]);
+  if(!coinRes.ok||!ohlcRes.ok) throw new Error("CoinGecko API error");
+  const coin=await coinRes.json();
+  const ohlc=await ohlcRes.json();
+
+  const price=coin.market_data.current_price.usd;
+  const high24=coin.market_data.high_24h.usd;
+  const low24=coin.market_data.low_24h.usd;
+  const vol24=coin.market_data.total_volume.usd;
+  const chg24=coin.market_data.price_change_percentage_24h||0;
+  const chg7d=coin.market_data.price_change_percentage_7d||0;
+  const chg30d=coin.market_data.price_change_percentage_30d||0;
+
+  const closes=ohlc.map(c=>c[4]).filter(Boolean);
+  const avg=arr=>arr.reduce((a,b)=>a+b,0)/arr.length;
+  const n=Math.min.bind(Math);
+  const ma7 =closes.length>=7  ?avg(closes.slice(-n(7,  closes.length))):price;
+  const ma25=closes.length>=25 ?avg(closes.slice(-n(25, closes.length))):price;
+  const ma99=closes.length>=99 ?avg(closes.slice(-n(99, closes.length))):price;
+
+  const volCoin=vol24/price;
+  const candlesPerDay=timeframe==="1d"?1:timeframe==="4h"?6:timeframe==="1h"?24:timeframe==="15m"?96:288;
+  const volPerCandle=volCoin/candlesPerDay;
+
+  const last=ohlc[ohlc.length-1];
+  const candleColor=last&&last[4]>=last[1]?"green":"red";
+
+  return {
+    asset, price,
+    ma7:+ma7.toFixed(4), ma25:+ma25.toFixed(4), ma99:+ma99.toFixed(4),
+    currentVol:+volPerCandle.toFixed(4), volMa5:+(volPerCandle*0.95).toFixed(4), volMa10:+volPerCandle.toFixed(4),
+    high24, low24, changePct:+chg24.toFixed(3), chg7d:+chg7d.toFixed(3), chg30d:+chg30d.toFixed(3),
+    timeframe, candleColor, macroBias:"neutral",
+    extraResistances:[high24], extraSupports:[low24], extraFactors:{},
+  };
+}
+
+function detectMacroBias() {
+  const now=new Date();
+  const MACRO_EVENTS=[
+    {from:"2026-04-07",to:"2026-04-22",bias:"bullish",label:"US-Iran ceasefire — risk-on"},
+    {from:"2026-04-08",to:"2026-04-09",bias:"bearish",label:"FOMC minutes — hawkish risk"},
+    {from:"2026-04-10",to:"2026-04-10",bias:"bearish",label:"CPI release — inflation risk"},
+  ];
+  const today=now.toISOString().slice(0,10);
+  for(const ev of MACRO_EVENTS){
+    if(today>=ev.from&&today<=ev.to) return {bias:ev.bias,label:ev.label};
+  }
+  return {bias:"neutral",label:""};
+}
+
+let _analystTF="15m";
+let _isAnalysisRunning=false;
+let _autoRefreshTimer=null;
+
+function setAnalystTF(tf){
+  _analystTF=tf;
+  document.querySelectorAll("[id^='atf-']").forEach(b=>b.classList.remove("active"));
+  const btn=document.getElementById(`atf-${tf}`);
+  if(btn) btn.classList.add("active");
+}
+
+async function runLiveAnalysis(){
+  if(_isAnalysisRunning) return;
+  _isAnalysisRunning=true;
+  const btn=document.getElementById("run-analysis-btn");
+  if(btn){btn.textContent="Fetching…";btn.disabled=true;}
+  try {
+    /* Use current dashboard coin if in CG_IDS, else fall back to BTC */
+    const asset=CG_IDS[currentBase]?currentBase:"BTC";
+    const marketData=await fetchLiveMarketData(asset,_analystTF);
+    const macro=detectMacroBias();
+    marketData.macroBias=macro.bias;
+    const analysis=QuantAnalyst.run(marketData);
+    QuantAnalyst.pushToCards(analysis);
+
+    /* Update perf list */
+    const perfEl=document.getElementById("perf-list");
+    if(perfEl){
+      const perfs=[
+        {l:"Today",  v:(marketData.changePct||0).toFixed(2)+"%",b:(marketData.changePct||0)>=0},
+        {l:"7 Days", v:(marketData.chg7d||0).toFixed(2)+"%",    b:(marketData.chg7d||0)>=0},
+        {l:"30 Days",v:(marketData.chg30d||0).toFixed(2)+"%",   b:(marketData.chg30d||0)>=0},
+      ];
+      perfEl.innerHTML=perfs.map(p=>`
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:11px;color:#64748B;font-family:var(--font-body)">${p.l}</span>
+          <span style="font-size:11px;font-weight:700;font-family:var(--font-mono);color:${p.b?"#16A34A":"#DC2626"}">${p.b?"+":""}${p.v}</span>
+        </div>`).join("");
+    }
+
+    /* Update topbar date */
+    const utcTs=new Date().toUTCString().replace('GMT','UTC').slice(5,25);
+    const tbDate=document.getElementById("topbar-date");
+    if(tbDate) tbDate.textContent=`CoinGecko · ${_analystTF} · ${utcTs}`;
+
+    console.log("✅ QuantAnalyst run:",{asset,bias:analysis.bias,confidence:analysis.confidence,maStack:analysis.maStack.signal});
+  } catch(err){
+    console.error("❌ Analysis error:",err.message);
+    const logEl=document.getElementById("session-log");
+    if(logEl){
+      const errRow=document.createElement("div");
+      errRow.className="row-item";
+      errRow.innerHTML=`<div style="flex:1;font-size:11px;color:#DC2626;padding:4px 0">⚠️ Analysis failed: ${err.message}</div>`;
+      logEl.insertBefore(errRow,logEl.firstChild);
+    }
+  }
+  _isAnalysisRunning=false;
+  if(btn){btn.textContent="⚡ Run Analysis";btn.disabled=false;}
+}
+
+function startAutoRefresh(intervalMinutes=15){
+  if(_autoRefreshTimer) clearInterval(_autoRefreshTimer);
+  _autoRefreshTimer=setInterval(()=>runLiveAnalysis(),intervalMinutes*60*1000);
+}
+
+/* Auto-run on page load after existing init settles */
+setTimeout(()=>{
+  runLiveAnalysis();
+  startAutoRefresh(15);
+},2000);
 </script>
 </body>
 </html>
