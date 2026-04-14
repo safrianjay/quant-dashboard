@@ -61,6 +61,23 @@
             .decorative-blob {
                 display: none !important;
             }
+
+            /* Pricing: reset Pro card height/transform on mobile */
+            .pricing-pro {
+                height: auto !important;
+                transform: none !important;
+                margin-top: 1.5rem !important;
+            }
+
+            /* Reduce whitespace around widget badges */
+            .widget-card {
+                margin-bottom: 0.5rem !important;
+            }
+
+            /* Tighten padding on p-8 cards on mobile */
+            .p-8 {
+                padding: 1.25rem !important;
+            }
         }
     </style>
 </head>
@@ -826,7 +843,7 @@
                 </div>
 
                 <!-- Pro -->
-                <div class="bg-navy rounded-3xl p-8 border-2 border-navy shadow-2xl shadow-blue-500/10 relative flex flex-col h-[105%] transform md:-translate-y-2 z-10 text-white">
+                <div class="pricing-pro bg-navy rounded-3xl p-8 border-2 border-navy shadow-2xl shadow-blue-500/10 relative flex flex-col h-[105%] transform md:-translate-y-2 z-10 text-white">
                     <div data-i18n="p2_badge" class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-sky-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-lg">Most Popular</div>
                     <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
                     <p data-i18n="p2_desc" class="text-sm text-sky-100 mb-6">For serious traders who need every edge available.</p>
@@ -918,7 +935,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10 reveal mb-16" style="transition-delay: 0.1s;">
-                <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col items-center text-center">
+                <div class="widget-card bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col items-center text-center">
                     <div class="mb-8 w-full relative">
                         <div class="absolute -top-3 left-4 flex space-x-1.5 z-20">
                             <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
@@ -952,7 +969,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col items-center text-center">
+                <div class="widget-card bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col items-center text-center">
                     <div class="mb-8 w-full relative">
                         <div class="absolute -top-3 left-4 flex space-x-1.5 z-20">
                             <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
