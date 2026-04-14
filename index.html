@@ -801,12 +801,12 @@ p,span,div,input,button{
       </div>
     </div><!-- /demo-paywall-content -->
 
-    <div id="demo-paywall-overlay" style="display:none;position:absolute;inset:0;z-index:10;align-items:center;justify-content:center;background:#F8FAFC;border-radius:24px;border:1px solid #E2E8F0">
-      <div style="background:white;padding:40px;border-radius:24px;box-shadow:0 20px 50px rgba(15,23,42,0.1);text-align:center;max-width:400px;border:1px solid #E2E8F0">
+    <div id="demo-paywall-overlay" style="display:none;position:relative;z-index:10;align-items:center;justify-content:center;width:100%;animation:fadeUp .5s ease both">
+      <div style="background:white;padding:60px 40px;border-radius:24px;box-shadow:0 20px 50px rgba(15,23,42,0.06);text-align:center;width:100%;border:1px solid #F1F5F9">
         <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#0F172A,#1E293B);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px">🔒</div>
-        <h3 style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:12px;font-family:var(--font-heading);letter-spacing:-0.02em">Unlock Professional Insights</h3>
-        <p style="font-size:14px;color:#64748B;line-height:1.6;margin-bottom:28px;font-family:var(--font-body)">Deep analysis widgets including the <b>Price Ladder</b>, <b>MA Stacks</b>, and <b>Risk Calendar</b> are reserved for Pro and Quant members.</p>
-        <a href="/pricing" style="display:block;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;padding:16px 32px;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;transition:transform .15s;font-family:var(--font-heading);box-shadow:0 8px 20px rgba(15,23,42,0.15)" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">Upgrade Plan Now</a>
+        <h3 style="font-size:24px;font-weight:800;color:#0F172A;margin-bottom:12px;font-family:var(--font-heading);letter-spacing:-0.02em">Unlock Professional Insights</h3>
+        <p style="font-size:15px;color:#64748B;line-height:1.6;margin-bottom:32px;font-family:var(--font-body);max-width:500px;margin-left:auto;margin-right:auto">Deep analysis widgets including the <b>Price Ladder</b>, <b>MA Stacks</b>, and <b>Risk Calendar</b> are reserved for Pro and Quant members.</p>
+        <a href="/pricing" style="display:inline-block;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;padding:16px 40px;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;transition:transform .15s;font-family:var(--font-heading);box-shadow:0 8px 20px rgba(15,23,42,0.15)" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">Upgrade Plan Now</a>
       </div>
     </div>
   </div><!-- /demo-paywall-wrapper -->
@@ -3445,14 +3445,9 @@ function initDemoMode(){
   
   if(paywallContent && paywallOverlay && paywallWrapper){
     paywallContent.style.display = 'none'; // Use display:none to remove whitespace
-    paywallWrapper.style.minHeight = '320px'; // Ensure space for the card
-    paywallWrapper.style.marginBottom = '20px';
     paywallOverlay.style.display = 'flex';
-    paywallOverlay.style.background = '#F8FAFC'; 
-    paywallOverlay.style.borderRadius = '24px';
-    paywallOverlay.style.border = '1px solid #E2E8F0';
-    paywallOverlay.style.position = 'relative'; // Change from absolute to relative if content is hidden
-    paywallOverlay.style.minHeight = '320px';
+    paywallOverlay.style.width = '100%';
+    paywallWrapper.style.marginBottom = '40px';
   }
 
   console.log('🎮 Demo mode active — deep analysis features are locked');
