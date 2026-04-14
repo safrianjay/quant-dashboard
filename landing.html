@@ -1,1194 +1,1215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quantichy — Trade Smarter with Live AI Analysis</title>
-<meta name="description" content="Quantichy gives you institutional-grade crypto analysis, live MA signals, confidence scoring, and AI-generated trade setups — all in one dashboard.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-/* ═══════════════════════════════════
-   RESET & BASE
-═══════════════════════════════════ */
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16px}
-body{font-family:'Inter',sans-serif;background:#0A0A0A;color:#FFFFFF;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-img{display:block;max-width:100%}
-a{text-decoration:none;color:inherit}
-button{cursor:pointer;border:none;font-family:inherit}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantichy | AI-Powered Crypto Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafbfa;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* Marquee Animation */
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            animation: marquee 35s linear infinite;
+            display: flex;
+            width: max-content;
+        }
+        /* Hover pause removed as requested */
 
-/* ═══════════════════════════════════
-   CSS VARIABLES
-═══════════════════════════════════ */
-:root{
-  --bg-0:#0A0A0A;
-  --bg-1:#111111;
-  --bg-2:#171717;
-  --bg-3:#1F1F1F;
-  --border:#2A2A2A;
-  --border-light:#333;
-  --text-primary:#FFFFFF;
-  --text-secondary:#A0A0A0;
-  --text-muted:#606060;
-  --green:#00D4AA;
-  --green-dim:#00D4AA22;
-  --blue:#3B82F6;
-  --blue-dim:#3B82F622;
-  --red:#EF4444;
-  --gold:#F59E0B;
-  --radius-sm:8px;
-  --radius-md:14px;
-  --radius-lg:20px;
-  --radius-xl:28px;
-  --shadow-card:0 1px 3px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4);
-  --shadow-glow:0 0 40px rgba(0,212,170,.15);
-}
-
-/* ═══════════════════════════════════
-   SCROLLBAR
-═══════════════════════════════════ */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--bg-0)}
-::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
-
-/* ═══════════════════════════════════
-   ANIMATIONS
-═══════════════════════════════════ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideRight{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes scanline{0%{top:-10%}100%{top:110%}}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-@keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-/* Reveal on scroll */
-.reveal{opacity:0;transform:translateY(40px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
-.reveal-left.visible{opacity:1;transform:translateX(0)}
-.reveal-right{opacity:0;transform:translateX(40px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
-.reveal-right.visible{opacity:1;transform:translateX(0)}
-.reveal-delay-1{transition-delay:.1s}
-.reveal-delay-2{transition-delay:.2s}
-.reveal-delay-3{transition-delay:.3s}
-.reveal-delay-4{transition-delay:.4s}
-
-/* ═══════════════════════════════════
-   NAVBAR
-═══════════════════════════════════ */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 24px;transition:all .3s ease}
-.nav-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
-.nav.scrolled{background:rgba(10,10,10,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;letter-spacing:-.02em;color:#fff}
-.nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--green),#00A888);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0}
-.nav-links{display:flex;align-items:center;gap:4px}
-.nav-link{padding:8px 14px;font-size:14px;font-weight:500;color:var(--text-secondary);border-radius:8px;transition:color .2s,background .2s}
-.nav-link:hover{color:#fff;background:rgba(255,255,255,.06)}
-.nav-actions{display:flex;align-items:center;gap:10px}
-.btn-ghost{padding:9px 18px;font-size:14px;font-weight:600;color:#fff;border-radius:10px;background:transparent;border:1px solid var(--border-light);transition:all .2s}
-.btn-ghost:hover{background:rgba(255,255,255,.07);border-color:#555}
-.btn-primary{padding:9px 20px;font-size:14px;font-weight:700;color:#000;background:#fff;border-radius:10px;transition:all .2s}
-.btn-primary:hover{background:#e5e5e5;transform:translateY(-1px)}
-.btn-green{padding:9px 20px;font-size:14px;font-weight:700;color:#000;background:var(--green);border-radius:10px;transition:all .2s}
-.btn-green:hover{background:#00C09A;transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,212,170,.4)}
-.nav-mob-toggle{display:none;width:36px;height:36px;border-radius:8px;background:var(--bg-3);border:1px solid var(--border);align-items:center;justify-content:center;flex-direction:column;gap:5px}
-.nav-mob-toggle span{width:18px;height:1.5px;background:#fff;border-radius:2px;transition:all .3s}
-
-/* Mobile menu */
-.mob-menu{position:fixed;top:64px;left:0;right:0;background:rgba(10,10,10,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:20px 24px 28px;display:none;z-index:99;flex-direction:column;gap:4px}
-.mob-menu.open{display:flex}
-.mob-link{padding:14px 12px;font-size:16px;font-weight:500;color:var(--text-secondary);border-radius:10px;transition:color .2s,background .2s;border-bottom:1px solid var(--border)}
-.mob-link:last-child{border-bottom:none}
-.mob-link:hover{color:#fff;background:rgba(255,255,255,.05)}
-.mob-cta{margin-top:12px;padding:14px;font-size:15px;font-weight:700;color:#000;background:#fff;border-radius:12px;text-align:center}
-
-/* ═══════════════════════════════════
-   HERO
-═══════════════════════════════════ */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden}
-
-/* Grid background */
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0,black 40%,transparent 100%)}
-
-/* Glow orbs */
-.hero-orb{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none}
-.hero-orb-1{width:600px;height:600px;background:rgba(0,212,170,.08);top:-200px;left:50%;transform:translateX(-50%)}
-.hero-orb-2{width:400px;height:400px;background:rgba(59,130,246,.06);bottom:0;right:-100px}
-.hero-orb-3{width:300px;height:300px;background:rgba(245,158,11,.05);bottom:100px;left:-50px}
-
-.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.25);border-radius:100px;font-size:12px;font-weight:600;color:var(--green);margin-bottom:28px;animation:fadeUp .6s ease both}
-.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease infinite}
-.hero-h1{font-size:clamp(44px,7vw,88px);font-weight:900;letter-spacing:-.04em;line-height:1.0;margin-bottom:24px;animation:fadeUp .6s .1s ease both}
-.hero-h1 .line-green{background:linear-gradient(90deg,var(--green),#4AFFD4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{font-size:clamp(16px,2vw,20px);font-weight:400;color:var(--text-secondary);max-width:560px;line-height:1.65;margin:0 auto 44px;animation:fadeUp .6s .2s ease both}
-.hero-ctas{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;animation:fadeUp .6s .3s ease both}
-.hero-btn-primary{display:flex;align-items:center;gap:8px;padding:14px 28px;font-size:15px;font-weight:700;color:#000;background:#fff;border-radius:12px;transition:all .2s}
-.hero-btn-primary:hover{background:#e5e5e5;transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,255,255,.15)}
-.hero-btn-outline{display:flex;align-items:center;gap:8px;padding:14px 28px;font-size:15px;font-weight:600;color:#fff;background:transparent;border-radius:12px;border:1px solid var(--border-light);transition:all .2s}
-.hero-btn-outline:hover{background:rgba(255,255,255,.06);border-color:#555;transform:translateY(-2px)}
-.hero-note{margin-top:20px;font-size:12px;color:var(--text-muted);animation:fadeUp .6s .4s ease both}
-
-/* Dashboard mockup */
-.hero-mockup{position:relative;margin-top:72px;width:100%;max-width:960px;animation:fadeUp .8s .4s ease both}
-.mockup-frame{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.04);position:relative}
-.mockup-bar{height:40px;background:var(--bg-2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:8px}
-.mockup-dot{width:10px;height:10px;border-radius:50%}
-.mockup-dot.r{background:#EF4444}
-.mockup-dot.y{background:#F59E0B}
-.mockup-dot.g{background:var(--green)}
-.mockup-url{flex:1;max-width:280px;margin:0 auto;height:22px;background:var(--bg-3);border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:10px;color:var(--text-muted)}
-.mockup-body{padding:20px;display:grid;grid-template-columns:200px 1fr;gap:14px;min-height:340px}
-.mockup-sidebar{background:var(--bg-2);border-radius:12px;border:1px solid var(--border);padding:14px;display:flex;flex-direction:column;gap:8px}
-.mockup-nav-item{height:28px;border-radius:6px;background:var(--bg-3);display:flex;align-items:center;gap:8px;padding:0 10px}
-.mockup-nav-item.active{background:rgba(0,212,170,.12);border:1px solid rgba(0,212,170,.2)}
-.mockup-nav-dot{width:6px;height:6px;border-radius:50%;background:var(--text-muted);flex-shrink:0}
-.mockup-nav-dot.green{background:var(--green)}
-.mockup-nav-line{flex:1;height:5px;border-radius:3px;background:var(--bg-0)}
-.mockup-main{display:flex;flex-direction:column;gap:12px}
-.mockup-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.mockup-kpi{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:12px;position:relative;overflow:hidden}
-.mockup-kpi-accent{position:absolute;top:0;left:0;right:0;height:2px;border-radius:4px 4px 0 0}
-.mockup-kpi-label{font-size:8px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
-.mockup-kpi-val{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.mockup-kpi-sub{font-size:9px;font-weight:600;margin-top:3px}
-.mockup-chart-area{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;height:160px;display:flex;align-items:flex-end;padding:16px;gap:2px;overflow:hidden;position:relative}
-.mockup-chart-line{position:absolute;inset:0;padding:16px}
-.mockup-bar-chart{display:flex;align-items:flex-end;gap:3px;width:100%;height:100%}
-.bar{border-radius:3px 3px 0 0;flex:1;min-width:0;transition:opacity .2s}
-.bar.up{background:rgba(0,212,170,.6)}
-.bar.dn{background:rgba(239,68,68,.5)}
-.mockup-signal{background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px}
-.mockup-signal-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;animation:pulse 1.5s ease infinite}
-.mockup-signal-text{font-size:11px;font-weight:700;color:var(--green)}
-.mockup-signal-conf{margin-left:auto;font-size:11px;font-weight:700;color:var(--text-muted)}
-
-/* Floating badge on mockup */
-.mockup-float-badge{position:absolute;background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow-card);animation:float 3s ease infinite;display:flex;align-items:center;gap:8px}
-.mockup-float-1{top:-16px;left:-20px;animation-delay:0s}
-.mockup-float-2{bottom:40px;right:-24px;animation-delay:1.5s}
-
-/* ═══════════════════════════════════
-   STATS BAR
-═══════════════════════════════════ */
-.stats-bar{padding:0 24px;position:relative;z-index:2}
-.stats-inner{max-width:1180px;margin:0 auto;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-xl);padding:40px 48px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;overflow:hidden}
-.stats-inner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(0,212,170,.04),transparent);pointer-events:none}
-.stat-item{text-align:center;padding:0 24px;position:relative}
-.stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:1px;background:var(--border)}
-.stat-num{font-size:clamp(28px,3.5vw,44px);font-weight:900;letter-spacing:-.04em;color:#fff;line-height:1;margin-bottom:6px}
-.stat-num span{color:var(--green)}
-.stat-label{font-size:13px;font-weight:500;color:var(--text-muted);line-height:1.4}
-
-/* ═══════════════════════════════════
-   SECTION LAYOUT
-═══════════════════════════════════ */
-.section{padding:100px 24px}
-.section-inner{max-width:1180px;margin:0 auto}
-.section-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
-.section-eyebrow::before{content:'';width:20px;height:1px;background:var(--green)}
-.section-h2{font-size:clamp(32px,4.5vw,56px);font-weight:900;letter-spacing:-.04em;line-height:1.05;margin-bottom:20px}
-.section-sub{font-size:17px;font-weight:400;color:var(--text-secondary);max-width:520px;line-height:1.65;margin-bottom:56px}
-.section-sub.wide{max-width:700px}
-.text-center{text-align:center}
-.text-center .section-sub{margin:0 auto 56px}
-.text-center .section-eyebrow{margin:0 auto 16px}
-
-/* ═══════════════════════════════════
-   FEATURES — BENTO GRID
-═══════════════════════════════════ */
-.bento-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto;gap:14px}
-.bento-card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;overflow:hidden;position:relative;transition:border-color .3s,transform .3s,box-shadow .3s;cursor:default}
-.bento-card:hover{border-color:var(--border-light);transform:translateY(-3px);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.bento-card.span-2{grid-column:span 2}
-.bento-card.span-3{grid-column:span 3}
-.bento-card.tall{grid-row:span 2}
-.bento-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;font-size:20px;flex-shrink:0}
-.bento-icon.green{background:var(--green-dim)}
-.bento-icon.blue{background:var(--blue-dim)}
-.bento-icon.gold{background:rgba(245,158,11,.12)}
-.bento-icon.red{background:rgba(239,68,68,.1)}
-.bento-title{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
-.bento-desc{font-size:14px;font-weight:400;color:var(--text-secondary);line-height:1.65}
-.bento-tag{display:inline-block;padding:3px 10px;background:var(--green-dim);border:1px solid rgba(0,212,170,.2);border-radius:100px;font-size:11px;font-weight:700;color:var(--green);margin-top:12px}
-.bento-tag.blue{background:var(--blue-dim);border-color:rgba(59,130,246,.2);color:#60A5FA}
-.bento-tag.gold{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.2);color:var(--gold)}
-
-/* Bento visual elements */
-.ma-stack-visual{margin-top:20px;display:flex;flex-direction:column;gap:6px}
-.ma-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg-3);border-radius:8px;border:1px solid var(--border)}
-.ma-label{font-size:11px;font-weight:700;font-family:monospace;width:32px;flex-shrink:0}
-.ma-bar-track{flex:1;height:4px;background:var(--bg-0);border-radius:2px;overflow:hidden}
-.ma-bar-fill{height:100%;border-radius:2px;transition:width 1s cubic-bezier(.22,1,.36,1)}
-.ma-pct{font-size:11px;font-weight:700;font-family:monospace;min-width:40px;text-align:right}
-
-.conf-visual{margin-top:20px}
-.conf-ring{position:relative;width:100px;height:100px;margin:0 auto 12px}
-.conf-ring svg{transform:rotate(-90deg)}
-.conf-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;letter-spacing:-.04em}
-.conf-factors{display:flex;flex-direction:column;gap:5px}
-.conf-factor{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary)}
-.conf-factor-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
-
-.price-ladder-visual{margin-top:20px;display:flex;flex-direction:column;gap:4px}
-.ladder-row{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:6px}
-.ladder-row.tp{background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.15)}
-.ladder-row.entry{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.15)}
-.ladder-row.sl{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.15)}
-.ladder-tag{font-size:9px;font-weight:700;letter-spacing:.05em;min-width:40px;text-align:center;padding:2px 6px;border-radius:4px}
-.ladder-tag.tp{color:var(--green);background:rgba(0,212,170,.12)}
-.ladder-tag.entry{color:var(--gold);background:rgba(245,158,11,.12)}
-.ladder-tag.sl{color:var(--red);background:rgba(239,68,68,.1)}
-.ladder-price{font-size:12px;font-weight:700;font-family:monospace;flex:1}
-.ladder-pct{font-size:11px;font-weight:600;font-family:monospace;color:var(--text-muted)}
-
-.coin-strip-visual{display:flex;gap:8px;margin-top:20px;overflow:hidden}
-.coin-chip{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:10px 12px;flex-shrink:0;display:flex;align-items:center;gap:8px}
-.coin-chip-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
-.coin-chip-info{}
-.coin-chip-sym{font-size:11px;font-weight:700}
-.coin-chip-chg{font-size:10px;font-weight:600}
-
-/* ═══════════════════════════════════
-   HOW IT WORKS
-═══════════════════════════════════ */
-.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;counter-reset:step}
-.how-card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;position:relative;overflow:hidden;transition:all .3s;counter-increment:step}
-.how-card:hover{border-color:var(--border-light);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.how-card::before{content:counter(step,'0'counter(step));font-size:80px;font-weight:900;color:rgba(255,255,255,.03);position:absolute;bottom:-10px;right:16px;line-height:1;letter-spacing:-.04em;pointer-events:none}
-.how-num{width:34px;height:34px;border-radius:10px;background:var(--green-dim);border:1px solid rgba(0,212,170,.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:var(--green);margin-bottom:20px}
-.how-title{font-size:19px;font-weight:700;letter-spacing:-.02em;margin-bottom:10px}
-.how-desc{font-size:14px;color:var(--text-secondary);line-height:1.65}
-.how-connector{display:none}
-
-/* ═══════════════════════════════════
-   ASSET TICKER STRIP
-═══════════════════════════════════ */
-.ticker-section{padding:0 0 100px;overflow:hidden}
-.ticker-label{text-align:center;font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:24px}
-.ticker-track{display:flex;gap:10px;animation:tickerScroll 28s linear infinite}
-.ticker-track:hover{animation-play-state:paused}
-.ticker-wrap{display:flex;gap:10px;overflow:hidden;mask-image:linear-gradient(90deg,transparent,black 15%,black 85%,transparent)}
-@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.ticker-chip{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex-shrink:0;display:flex;align-items:center;gap:12px;transition:border-color .2s}
-.ticker-chip:hover{border-color:var(--border-light)}
-.ticker-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
-.ticker-sym{font-size:13px;font-weight:700}
-.ticker-price{font-size:13px;font-weight:600;font-family:monospace;color:var(--text-secondary)}
-.ticker-chg{font-size:12px;font-weight:700;font-family:monospace}
-.up{color:var(--green)}
-.dn{color:var(--red)}
-
-/* ═══════════════════════════════════
-   TESTIMONIALS
-═══════════════════════════════════ */
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.testi-card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;transition:all .3s}
-.testi-card:hover{border-color:var(--border-light);transform:translateY(-3px)}
-.testi-stars{display:flex;gap:3px;margin-bottom:16px}
-.star{color:var(--gold);font-size:14px}
-.testi-text{font-size:15px;font-weight:400;color:var(--text-secondary);line-height:1.7;margin-bottom:20px;font-style:italic}
-.testi-text::before{content:'"';font-size:32px;font-weight:900;color:var(--border-light);line-height:0;vertical-align:-14px;margin-right:2px}
-.testi-author{display:flex;align-items:center;gap:10px}
-.testi-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
-.testi-name{font-size:14px;font-weight:700}
-.testi-role{font-size:12px;color:var(--text-muted)}
-
-/* ═══════════════════════════════════
-   PRICING
-═══════════════════════════════════ */
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:56px}
-.pricing-card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;transition:all .3s;position:relative;overflow:hidden}
-.pricing-card:hover{border-color:var(--border-light);transform:translateY(-4px)}
-.pricing-card.featured{background:linear-gradient(160deg,var(--bg-3),#1A2A24);border-color:rgba(0,212,170,.3);box-shadow:0 0 0 1px rgba(0,212,170,.1),0 20px 60px rgba(0,0,0,.5),var(--shadow-glow)}
-.pricing-badge{display:inline-block;padding:4px 12px;background:var(--green);color:#000;border-radius:100px;font-size:11px;font-weight:800;margin-bottom:16px}
-.pricing-name{font-size:14px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-.pricing-price{font-size:44px;font-weight:900;letter-spacing:-.04em;line-height:1;margin-bottom:4px}
-.pricing-price sup{font-size:22px;vertical-align:top;margin-top:8px}
-.pricing-period{font-size:13px;color:var(--text-muted);margin-bottom:24px}
-.pricing-divider{height:1px;background:var(--border);margin:24px 0}
-.pricing-feature{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:14px;color:var(--text-secondary)}
-.pricing-feature.active{color:#fff}
-.pricing-check{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.pricing-check.yes{background:var(--green-dim)}
-.pricing-check.no{background:var(--bg-3);opacity:.4}
-.pricing-btn{width:100%;padding:13px;border-radius:12px;font-size:15px;font-weight:700;text-align:center;margin-top:24px;transition:all .2s;display:block}
-.pricing-btn.outline{background:transparent;border:1px solid var(--border-light);color:#fff}
-.pricing-btn.outline:hover{background:rgba(255,255,255,.06)}
-.pricing-btn.filled{background:#fff;color:#000}
-.pricing-btn.filled:hover{background:#e5e5e5;transform:translateY(-1px)}
-.pricing-btn.green{background:var(--green);color:#000}
-.pricing-btn.green:hover{background:#00C09A;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,212,170,.4)}
-
-/* ═══════════════════════════════════
-   CTA SECTION
-═══════════════════════════════════ */
-.cta-section{padding:100px 24px;background:var(--bg-0)}
-.cta-inner{max-width:1180px;margin:0 auto;background:linear-gradient(140deg,var(--bg-2),#0F1F1A);border:1px solid rgba(0,212,170,.2);border-radius:28px;padding:72px 48px;text-align:center;position:relative;overflow:hidden}
-.cta-inner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 50% 50%,rgba(0,212,170,.06),transparent);pointer-events:none}
-.cta-inner::after{content:'';position:absolute;inset:-1px;border-radius:28px;border:1px solid rgba(0,212,170,.06);pointer-events:none}
-.cta-h2{font-size:clamp(32px,5vw,60px);font-weight:900;letter-spacing:-.04em;line-height:1.05;margin-bottom:20px}
-.cta-sub{font-size:18px;color:var(--text-secondary);max-width:480px;margin:0 auto 40px;line-height:1.65}
-.cta-btns{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
-.cta-btn-primary{display:flex;align-items:center;gap:8px;padding:14px 32px;font-size:15px;font-weight:700;color:#000;background:var(--green);border-radius:12px;transition:all .2s}
-.cta-btn-primary:hover{background:#00C09A;transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,212,170,.4)}
-.cta-btn-outline{display:flex;align-items:center;gap:8px;padding:14px 28px;font-size:15px;font-weight:600;color:#fff;background:transparent;border-radius:12px;border:1px solid var(--border-light);transition:all .2s}
-.cta-btn-outline:hover{background:rgba(255,255,255,.06)}
-
-/* ═══════════════════════════════════
-   FOOTER
-═══════════════════════════════════ */
-footer{background:var(--bg-1);border-top:1px solid var(--border);padding:64px 24px 32px}
-.footer-inner{max-width:1180px;margin:0 auto}
-.footer-top{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr 1fr;gap:40px;margin-bottom:56px}
-.footer-brand{}
-.footer-logo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
-.footer-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--green),#00A888);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900}
-.footer-tagline{font-size:14px;color:var(--text-muted);line-height:1.6;max-width:260px;margin-bottom:24px}
-.footer-socials{display:flex;gap:8px}
-.social-btn{width:36px;height:36px;border-radius:9px;background:var(--bg-3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);transition:all .2s;font-size:14px}
-.social-btn:hover{background:var(--bg-2);color:#fff;border-color:var(--border-light)}
-.footer-col-title{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
-.footer-link{display:block;font-size:14px;color:var(--text-muted);margin-bottom:11px;transition:color .2s}
-.footer-link:hover{color:#fff}
-.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:32px;border-top:1px solid var(--border);flex-wrap:wrap;gap:12px}
-.footer-copy{font-size:13px;color:var(--text-muted)}
-.footer-legal{display:flex;gap:20px}
-.footer-legal a{font-size:13px;color:var(--text-muted);transition:color .2s}
-.footer-legal a:hover{color:#fff}
-
-/* ═══════════════════════════════════
-   RESPONSIVE — TABLET
-═══════════════════════════════════ */
-@media(max-width:1024px){
-  .bento-grid{grid-template-columns:repeat(2,1fr)}
-  .bento-card.span-2{grid-column:span 1}
-  .bento-card.span-3{grid-column:span 2}
-  .stats-inner{grid-template-columns:repeat(2,1fr);gap:32px;padding:32px}
-  .stat-item:nth-child(2)::after{display:none}
-  .mockup-body{grid-template-columns:1fr}
-  .mockup-sidebar{display:none}
-  .mockup-kpis{grid-template-columns:repeat(2,1fr)}
-  .footer-top{grid-template-columns:1fr 1fr 1fr;gap:32px}
-  .footer-brand{grid-column:span 3}
-  .pricing-grid{grid-template-columns:repeat(2,1fr)}
-}
-
-@media(max-width:768px){
-  .nav-links{display:none}
-  .nav-actions{display:none}
-  .nav-mob-toggle{display:flex}
-  .section{padding:72px 20px}
-  .hero{padding:100px 20px 64px}
-  .bento-grid{grid-template-columns:1fr}
-  .bento-card.span-2,.bento-card.span-3{grid-column:span 1}
-  .how-grid{grid-template-columns:1fr}
-  .testi-grid{grid-template-columns:1fr}
-  .pricing-grid{grid-template-columns:1fr}
-  .cta-inner{padding:48px 24px}
-  .footer-top{grid-template-columns:1fr 1fr;gap:28px}
-  .footer-brand{grid-column:span 2}
-  .hero-btn-primary,.hero-btn-outline{padding:13px 22px;font-size:14px}
-  .stats-inner{grid-template-columns:repeat(2,1fr);padding:28px 20px;border-radius:var(--radius-lg)}
-  .stat-item:nth-child(2)::after{display:none}
-  .hero-mockup{display:none}
-}
-
-@media(max-width:480px){
-  .stats-inner{grid-template-columns:1fr 1fr;gap:24px 0}
-  .stat-item:nth-child(odd)::after{display:block}
-  .stat-item:nth-child(even)::after{display:none}
-  .footer-top{grid-template-columns:1fr;gap:24px}
-  .footer-brand{grid-column:span 1}
-  .footer-bottom{flex-direction:column;align-items:flex-start}
-  .footer-legal{flex-wrap:wrap;gap:12px}
-  .cta-h2{font-size:clamp(28px,8vw,40px)}
-  .hero-ctas{flex-direction:column;align-items:center}
-  .hero-btn-primary,.hero-btn-outline{width:100%;justify-content:center;max-width:320px}
-}
-</style>
+        /* Strict Black & Blue Theme */
+        .text-navy { color: #001f5c; }
+        .bg-navy { background-color: #001f5c; }
+        .border-navy { border-color: #001f5c; }
+        
+        /* Grid pattern for the interactive widgets */
+        .bg-grid-dark {
+            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* Custom range slider styling */
+        input[type=range] {
+            accent-color: #001f5c;
+        }
+    </style>
 </head>
-<body>
+<body class="antialiased relative">
 
-<!-- ═══════════════════════════════════
-     NAVBAR
-═══════════════════════════════════ -->
-<nav class="nav" id="navbar">
-  <div class="nav-inner">
-    <a href="#" class="nav-logo">
-      <div class="nav-logo-icon">Q</div>
-      Quantichy
-    </a>
-    <div class="nav-links">
-      <a href="#features" class="nav-link">Features</a>
-      <a href="#how" class="nav-link">How it works</a>
-      <a href="#assets" class="nav-link">Markets</a>
-      <a href="#pricing" class="nav-link">Pricing</a>
-    </div>
-    <div class="nav-actions">
-      <a href="/index.html" class="btn-ghost">Sign in</a>
-      <a href="/index.html" class="btn-green">Get started free</a>
-    </div>
-    <button class="nav-mob-toggle" id="mob-toggle" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
+    <div class="absolute w-[500px] h-[500px] bg-sky-100 rounded-full top-0 left-[-100px] blur-[100px] opacity-60 z-0"></div>
+    <div class="absolute w-[600px] h-[600px] bg-blue-100 rounded-full bottom-[-100px] right-[-100px] blur-[120px] opacity-40 z-0"></div>
 
-<!-- Mobile menu -->
-<div class="mob-menu" id="mob-menu">
-  <a href="#features" class="mob-link">Features</a>
-  <a href="#how" class="mob-link">How it works</a>
-  <a href="#assets" class="mob-link">Markets</a>
-  <a href="#pricing" class="mob-link">Pricing</a>
-  <a href="/index.html" class="mob-cta">Get started free →</a>
-</div>
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-black flex items-center justify-center">
+                        <span class="text-white font-bold text-lg leading-none">Q</span>
+                    </div>
+                    <a href="#" class="text-2xl font-black tracking-tighter text-black">Quantichy</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" data-i18n="nav_platform" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Platform</a>
+                    <a href="#" data-i18n="nav_analytics" class="text-sm font-semibold text-slate-700 hover:text-navy transition">AI Analytics</a>
+                    <a href="#" data-i18n="nav_pricing" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Pricing</a>
+                    <a href="#" data-i18n="nav_company" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Company</a>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    
+                    <div class="relative group cursor-pointer mr-2">
+                        <div class="flex items-center space-x-1 text-sm font-bold text-slate-700 hover:text-navy transition py-2">
+                            <span id="current-lang-display">EN</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                        <div class="absolute right-0 top-full mt-0 w-32 bg-white rounded-xl shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
+                            <a href="#" onclick="changeLanguage('en'); return false;" class="block px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-navy transition">English (EN)</a>
+                            <a href="#" onclick="changeLanguage('id'); return false;" class="block px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-navy transition border-t border-slate-50">Indonesia (ID)</a>
+                        </div>
+                    </div>
 
-<!-- ═══════════════════════════════════
-     HERO
-═══════════════════════════════════ -->
-<section class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-orb hero-orb-1"></div>
-  <div class="hero-orb hero-orb-2"></div>
-  <div class="hero-orb hero-orb-3"></div>
-
-  <div class="hero-badge">
-    <span class="hero-badge-dot"></span>
-    Live analysis · 25 markets · AI-powered
-  </div>
-
-  <h1 class="hero-h1">
-    Trade smarter.<br>
-    <span class="line-green">Think like a quant.</span>
-  </h1>
-
-  <p class="hero-sub">
-    Institutional-grade crypto analysis in your browser. Live MA signals, AI confidence scoring, and precise entry/TP/SL setups — built for serious traders.
-  </p>
-
-  <div class="hero-ctas">
-    <a href="/index.html" class="hero-btn-primary">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
-      Open dashboard free
-    </a>
-    <a href="#features" class="hero-btn-outline">
-      See how it works
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </a>
-  </div>
-
-  <p class="hero-note">No credit card required · Free tier always available · 25 assets supported</p>
-
-  <!-- Dashboard Mockup -->
-  <div class="hero-mockup">
-    <!-- Floating badges -->
-    <div class="mockup-float-badge mockup-float-1">
-      <span style="font-size:18px">⚡</span>
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#fff">Run Analysis</div>
-        <div style="font-size:10px;color:var(--text-muted)">Confidence: 8.5/10</div>
-      </div>
-    </div>
-    <div class="mockup-float-badge mockup-float-2">
-      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease infinite;flex-shrink:0"></div>
-      <div>
-        <div style="font-size:12px;font-weight:700;color:var(--green)">Full Bullish ✓</div>
-        <div style="font-size:10px;color:var(--text-muted)">MA Stack Signal</div>
-      </div>
-    </div>
-
-    <div class="mockup-frame">
-      <div class="mockup-bar">
-        <div class="mockup-dot r"></div>
-        <div class="mockup-dot y"></div>
-        <div class="mockup-dot g"></div>
-        <div class="mockup-url">quantichy.netlify.app — Live Analysis</div>
-      </div>
-      <div class="mockup-body">
-        <div class="mockup-sidebar">
-          <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;padding:4px 0 8px">Key Levels</div>
-          <div class="mockup-nav-item"><div class="mockup-nav-dot green"></div><div class="mockup-nav-line" style="background:rgba(0,212,170,.15)"></div><div style="font-size:9px;color:var(--green);font-weight:700;font-family:monospace">$87K</div></div>
-          <div class="mockup-nav-item"><div class="mockup-nav-dot green"></div><div class="mockup-nav-line" style="background:rgba(0,212,170,.1)"></div><div style="font-size:9px;color:var(--green);font-weight:700;font-family:monospace">$85K</div></div>
-          <div class="mockup-nav-item active"><div class="mockup-nav-dot"></div><div class="mockup-nav-line"></div><div style="font-size:9px;color:#fff;font-weight:700;font-family:monospace">NOW</div></div>
-          <div class="mockup-nav-item"><div class="mockup-nav-dot" style="background:#EF4444"></div><div class="mockup-nav-line" style="background:rgba(239,68,68,.1)"></div><div style="font-size:9px;color:#EF4444;font-weight:700;font-family:monospace">$82K</div></div>
-          <div class="mockup-nav-item"><div class="mockup-nav-dot" style="background:#EF4444"></div><div class="mockup-nav-line" style="background:rgba(239,68,68,.08)"></div><div style="font-size:9px;color:#EF4444;font-weight:700;font-family:monospace">$80K</div></div>
-        </div>
-        <div class="mockup-main">
-          <div class="mockup-kpis">
-            <div class="mockup-kpi">
-              <div class="mockup-kpi-accent" style="background:var(--green)"></div>
-              <div class="mockup-kpi-label">Price</div>
-              <div class="mockup-kpi-val">$84,210</div>
-              <div class="mockup-kpi-sub up">↗ +2.4% chg</div>
+                    <a href="#" data-i18n="nav_login" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Log in</a>
+                    <a href="#" data-i18n="nav_cta" class="bg-black text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-slate-800 transition shadow-lg">Join Now</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button class="text-black hover:text-navy focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                </div>
             </div>
-            <div class="mockup-kpi">
-              <div class="mockup-kpi-accent" style="background:#3B82F6"></div>
-              <div class="mockup-kpi-label">Confidence</div>
-              <div class="mockup-kpi-val">8.5/10</div>
-              <div class="mockup-kpi-sub up">↗ High thesis</div>
+        </div>
+    </nav>
+
+    <section class="pt-32 pb-16 lg:pt-48 lg:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col lg:flex-row items-center relative z-10">
+        <div class="lg:w-1/2 reveal">
+            <h1 data-i18n="hero_title" class="text-5xl lg:text-7xl font-black leading-tight tracking-tighter mb-6 text-slate-900">
+                Institutional crypto analysis,<br> <span class="text-navy">democratized.</span>
+            </h1>
+            <p data-i18n="hero_desc" class="text-lg text-slate-600 mb-8 max-w-lg font-medium">
+                Deploy advanced AI to detect hidden order blocks, map on-chain liquidity, and execute high-probability trade setups with institutional precision.
+            </p>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="#" data-i18n="hero_btn1" class="bg-black text-white px-8 py-4 rounded-full text-center font-semibold text-lg hover:bg-slate-800 transition shadow-xl">Deploy Capital</a>
+                <a href="#" data-i18n="hero_btn2" class="bg-white border-2 border-slate-200 text-slate-800 px-8 py-4 rounded-full text-center font-semibold text-lg hover:border-black hover:text-black transition shadow-sm">View Demo</a>
             </div>
-            <div class="mockup-kpi">
-              <div class="mockup-kpi-accent" style="background:#F59E0B"></div>
-              <div class="mockup-kpi-label">Volume</div>
-              <div class="mockup-kpi-val">4.2K</div>
-              <div class="mockup-kpi-sub" style="color:var(--gold)">↗ 1.8× MA10</div>
+        </div>
+        
+        <div class="lg:w-1/2 mt-16 lg:mt-0 relative reveal" style="transition-delay: 0.2s;">
+            <div class="relative w-full max-w-md mx-auto animate-float">
+                <div class="absolute inset-0 bg-sky-100 rounded-3xl transform rotate-3 scale-105 shadow-2xl opacity-70"></div>
+                <div class="relative bg-white rounded-3xl shadow-xl border border-white p-6 overflow-hidden">
+                    <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center text-navy">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900">Active Setup: BTC/USDT</h3>
+                                <p class="text-xs text-slate-500">Live AI Strategy Execution</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-navy uppercase tracking-wider">Triggered</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm border-b border-slate-100 pb-6 mb-6">
+                        <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg"><span class="text-slate-500 font-medium">Entry</span> <span class="font-bold text-slate-900">68,800</span></div>
+                        <div class="flex justify-between items-center bg-red-50 p-3 rounded-lg"><span class="text-red-700 font-medium">Stop Loss</span> <span class="font-bold text-red-900">68,100</span></div>
+                        <div class="flex justify-between items-center bg-blue-50 p-3 rounded-lg col-span-2 text-navy"><span class="font-medium">Targets (TP)</span> <span class="font-bold">69,500 / 70,000 / 70,500</span></div>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-xs text-slate-500 mb-1">Risk:Reward</p>
+                            <p class="text-2xl font-black text-navy">1:3.0</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-slate-500 mb-1">AI Thesis Status</p>
+                            <span class="bg-blue-100 text-navy text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Long thesis active</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mockup-kpi">
-              <div class="mockup-kpi-accent" style="background:#8B5CF6"></div>
-              <div class="mockup-kpi-label">24H Range</div>
-              <div class="mockup-kpi-val">$3,420</div>
-              <div class="mockup-kpi-sub up">↗ Wide range</div>
+        </div>
+    </section>
+
+   <section class="py-8 border-t border-slate-200/50 bg-slate-50/50 overflow-hidden relative z-10 reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-center" data-i18n="preview_title">Live On-Chain Intelligence</h3>
+        </div>
+        
+        <div class="relative w-full overflow-hidden flex">
+            <div class="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#fafbfa] to-transparent z-20 pointer-events-none"></div>
+            <div class="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#fafbfa] to-transparent z-20 pointer-events-none"></div>
+
+            <div class="animate-marquee space-x-4 flex items-center pr-4 cursor-pointer">
+                
+                <div class="w-60 h-36 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex-shrink-0 hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-600 mb-1">Total Portfolio Mapped</p>
+                        <h4 class="text-2xl font-black text-slate-900">$124,592.50</h4>
+                    </div>
+                    <div class="flex items-center space-x-1 text-green-700 bg-green-100 w-fit px-2 py-1 rounded-md mt-auto border border-green-200">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        <span class="text-xs font-bold">+12.5% Alpha Generated</span>
+                    </div>
+                </div>
+
+                <div class="w-60 h-36 bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-lg flex-shrink-0 text-white hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-300 border border-slate-700">
+                            <span class="font-black text-lg font-serif">₿</span>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-400">BTC / USDT</p>
+                    </div>
+                    <div class="flex justify-between items-end mt-auto">
+                        <h4 class="text-2xl font-black text-white">$68,842.20</h4>
+                        <span class="text-[10px] font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded-md border border-green-500/30">+2.4%</span>
+                    </div>
+                </div>
+
+                <div class="w-60 h-36 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex-shrink-0 hover:shadow-md transition flex flex-col justify-between">
+                    <div class="flex items-center space-x-2 mb-2">
+                         <div class="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-slate-800 text-[10px] border border-slate-200">🔥</div>
+                         <p class="text-[10px] font-bold text-slate-700 tracking-wider uppercase">Trending Assets</p>
+                    </div>
+                    <div class="space-y-1.5 mt-auto">
+                        <div class="flex justify-between text-sm font-bold"><span class="text-slate-900">1. $PEPE</span><span class="text-green-600">+14.2%</span></div>
+                        <div class="flex justify-between text-sm font-bold"><span class="text-slate-900">2. $ONDO</span><span class="text-green-600">+11.8%</span></div>
+                        <div class="flex justify-between text-sm font-bold"><span class="text-slate-900">3. $WIF</span><span class="text-green-600">+9.5%</span></div>
+                    </div>
+                </div>
+                
+                <div class="w-60 h-36 bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-lg flex-shrink-0 text-white hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] font-bold text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded border border-sky-500/30">AI EXECUTION</span>
+                        <span class="text-[10px] text-slate-400">T-minus 0s</span>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-white">ETH/USDT Long</h4>
+                        <p class="text-xs text-slate-300 mt-1 leading-relaxed">Algorithmic breakout detected at 3,450. Target mapping to 3,600.</p>
+                    </div>
+                </div>
+                
+                <div class="w-60 h-36 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex-shrink-0 hover:shadow-md transition flex flex-col justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center text-navy border border-blue-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <p class="text-xs font-bold text-slate-800">ETH Gwei Tracker</p>
+                    </div>
+                    <div class="flex justify-between items-end mt-auto">
+                        <h4 class="text-3xl font-black text-slate-900">12 <span class="text-xs font-bold text-slate-600">gwei</span></h4>
+                        <span class="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-1 rounded-full border border-green-200">Optimal</span>
+                    </div>
+                </div>
+
+                <div class="w-60 h-36 bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-lg flex-shrink-0 text-white hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] font-bold text-red-400 bg-red-400/10 px-2 py-0.5 rounded border border-red-500/30">WHALE ALERT</span>
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                        </span>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-black text-white">12,450 <span class="text-sm font-medium text-slate-400">ETH</span></h4>
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 mt-2 font-mono bg-slate-800/50 p-1.5 rounded-lg border border-slate-700/50">
+                            <span class="text-slate-300">Binance</span>
+                            <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            <span class="text-slate-300">Unknown</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-60 h-36 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex-shrink-0 hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-600 mb-1">Automated Grid: SOL/USDT</p>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-black text-slate-900">Status: Deployed</span>
+                            <span class="relative flex h-2.5 w-2.5">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600"></span>
+                            </span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-1.5 mt-1">
+                            <div class="bg-navy h-1.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <p class="text-xs font-black text-navy mt-auto text-right bg-slate-100 p-1.5 rounded-md border border-slate-200">Realized PnL: +$45.20</p>
+                </div>
+                
+                <div class="w-60 h-36 bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-lg flex-shrink-0 text-white hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <p class="text-[10px] font-bold text-slate-400 mb-1 tracking-wider uppercase">Momentum Scanner</p>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="text-2xl font-black text-white">SOL</h4>
+                        <svg class="h-6 w-16 text-green-400" stroke="currentColor" fill="none" viewBox="0 0 100 20"><path stroke-width="2" d="M0,15 L10,12 L20,14 L30,8 L40,10 L50,5 L60,8 L70,3 L80,6 L90,2 L100,0" /></svg>
+                    </div>
+                    <p class="text-sm font-bold text-green-400 mt-auto">+8.4% <span class="text-slate-400 font-normal text-[10px] ml-1">Rolling 24h</span></p>
+                </div>
+
+                <div class="w-60 h-36 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex-shrink-0 hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-600 mb-1">Total Portfolio Mapped</p>
+                        <h4 class="text-2xl font-black text-slate-900">$124,592.50</h4>
+                    </div>
+                    <div class="flex items-center space-x-1 text-green-700 bg-green-100 w-fit px-2 py-1 rounded-md mt-auto border border-green-200">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        <span class="text-xs font-bold">+12.5% Alpha Generated</span>
+                    </div>
+                </div>
+
+                <div class="w-60 h-36 bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-lg flex-shrink-0 text-white hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-300 border border-slate-700">
+                            <span class="font-black text-lg font-serif">₿</span>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-400">BTC / USDT</p>
+                    </div>
+                    <div class="flex justify-between items-end mt-auto">
+                        <h4 class="text-2xl font-black text-white">$68,842.20</h4>
+                        <span class="text-[10px] font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded-md border border-green-500/30">+2.4%</span>
+                    </div>
+                </div>
+
+                <div class="w-60 h-36 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex-shrink-0 hover:shadow-md transition flex flex-col justify-between">
+                    <div class="flex items-center space-x-2 mb-2">
+                         <div class="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-slate-800 text-[10px] border border-slate-200">🔥</div>
+                         <p class="text-[10px] font-bold text-slate-700 tracking-wider uppercase">Trending Assets</p>
+                    </div>
+                    <div class="space-y-1.5 mt-auto">
+                        <div class="flex justify-between text-sm font-bold"><span class="text-slate-900">1. $PEPE</span><span class="text-green-600">+14.2%</span></div>
+                        <div class="flex justify-between text-sm font-bold"><span class="text-slate-900">2. $ONDO</span><span class="text-green-600">+11.8%</span></div>
+                        <div class="flex justify-between text-sm font-bold"><span class="text-slate-900">3. $WIF</span><span class="text-green-600">+9.5%</span></div>
+                    </div>
+                </div>
+                
+                <div class="w-60 h-36 bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-lg flex-shrink-0 text-white hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] font-bold text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded border border-sky-500/30">AI EXECUTION</span>
+                        <span class="text-[10px] text-slate-400">T-minus 0s</span>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-white">ETH/USDT Long</h4>
+                        <p class="text-xs text-slate-300 mt-1 leading-relaxed">Algorithmic breakout detected at 3,450. Target mapping to 3,600.</p>
+                    </div>
+                </div>
+                
+                <div class="w-60 h-36 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex-shrink-0 hover:shadow-md transition flex flex-col justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center text-navy border border-blue-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <p class="text-xs font-bold text-slate-800">ETH Gwei Tracker</p>
+                    </div>
+                    <div class="flex justify-between items-end mt-auto">
+                        <h4 class="text-3xl font-black text-slate-900">12 <span class="text-xs font-bold text-slate-600">gwei</span></h4>
+                        <span class="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-1 rounded-full border border-green-200">Optimal</span>
+                    </div>
+                </div>
+
+                <div class="w-60 h-36 bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-lg flex-shrink-0 text-white hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] font-bold text-red-400 bg-red-400/10 px-2 py-0.5 rounded border border-red-500/30">WHALE ALERT</span>
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                        </span>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-black text-white">12,450 <span class="text-sm font-medium text-slate-400">ETH</span></h4>
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 mt-2 font-mono bg-slate-800/50 p-1.5 rounded-lg border border-slate-700/50">
+                            <span class="text-slate-300">Binance</span>
+                            <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            <span class="text-slate-300">Unknown</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-60 h-36 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex-shrink-0 hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-600 mb-1">Automated Grid: SOL/USDT</p>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-black text-slate-900">Status: Deployed</span>
+                            <span class="relative flex h-2.5 w-2.5">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600"></span>
+                            </span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-1.5 mt-1">
+                            <div class="bg-navy h-1.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <p class="text-xs font-black text-navy mt-auto text-right bg-slate-100 p-1.5 rounded-md border border-slate-200">Realized PnL: +$45.20</p>
+                </div>
+                
+                <div class="w-60 h-36 bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-lg flex-shrink-0 text-white hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <p class="text-[10px] font-bold text-slate-400 mb-1 tracking-wider uppercase">Momentum Scanner</p>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="text-2xl font-black text-white">SOL</h4>
+                        <svg class="h-6 w-16 text-green-400" stroke="currentColor" fill="none" viewBox="0 0 100 20"><path stroke-width="2" d="M0,15 L10,12 L20,14 L30,8 L40,10 L50,5 L60,8 L70,3 L80,6 L90,2 L100,0" /></svg>
+                    </div>
+                    <p class="text-sm font-bold text-green-400 mt-auto">+8.4% <span class="text-slate-400 font-normal text-[10px] ml-1">Rolling 24h</span></p>
+                </div>
             </div>
-          </div>
-          <div class="mockup-chart-area">
-            <div class="mockup-bar-chart">
-              <div class="bar dn" style="height:35%"></div><div class="bar up" style="height:52%"></div><div class="bar up" style="height:60%"></div><div class="bar dn" style="height:45%"></div><div class="bar up" style="height:68%"></div><div class="bar up" style="height:75%"></div><div class="bar dn" style="height:58%"></div><div class="bar up" style="height:82%"></div><div class="bar up" style="height:90%"></div><div class="bar up" style="height:88%"></div><div class="bar dn" style="height:70%"></div><div class="bar up" style="height:95%"></div><div class="bar up" style="height:100%"></div><div class="bar dn" style="height:78%"></div><div class="bar up" style="height:88%"></div><div class="bar up" style="height:92%"></div><div class="bar dn" style="height:72%"></div><div class="bar up" style="height:98%"></div>
+        </div>
+    </section>
+    
+    <section class="py-24 relative z-10 border-t border-slate-200/50 bg-white/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center reveal mb-16">
+                <h2 data-i18n="sec1_title" class="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-6">
+                    Deconstruct Price Action with AI.
+                </h2>
+                <p data-i18n="sec1_desc" class="text-xl text-slate-600 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+                    Our proprietary algorithms map Smart Money Concepts in real-time, visualizing institutional liquidity zones and automating high-probability trade setups directly on your chart.
+                </p>
             </div>
-          </div>
-          <div class="mockup-signal">
-            <div class="mockup-signal-dot"></div>
-            <div class="mockup-signal-text">Full Bullish ✓ — Price › MA7 › MA25 › MA99</div>
-            <div class="mockup-signal-conf">Conf 8.5/10</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- ═══════════════════════════════════
-     STATS BAR
-═══════════════════════════════════ -->
-<div class="stats-bar" id="stats">
-  <div class="stats-inner reveal">
-    <div class="stat-item">
-      <div class="stat-num" data-target="25"><span class="count">25</span></div>
-      <div class="stat-label">Assets tracked<br>across all markets</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num"><span class="count">8.5</span><span>/10</span></div>
-      <div class="stat-label">Average confidence<br>on trending setups</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num"><span style="color:var(--green)">10</span>s</div>
-      <div class="stat-label">Price refresh<br>interval (auto)</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num"><span style="color:var(--green)">0</span></div>
-      <div class="stat-label">API keys needed<br>to get started</div>
-    </div>
-  </div>
-</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 reveal mb-16" style="transition-delay: 0.1s;">
+                <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col items-center text-center">
+                    <div class="mb-8 w-full relative">
+                        <div class="absolute -top-3 left-4 flex space-x-1.5 z-20">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
+                        </div>
+                        <div class="bg-slate-900 p-2 md:p-4 rounded-3xl shadow-lg border border-slate-200/50 ring-1 ring-black/5 w-full relative h-64 overflow-hidden flex flex-col group">
+                            <div class="absolute inset-0 bg-grid-dark z-0"></div>
+                            <div class="absolute top-8 left-0 w-full h-12 bg-red-500/10 border-y border-red-500/30 flex items-center px-4 cursor-pointer hover:bg-red-500/20 transition z-10">
+                                <span class="bg-slate-900 text-red-400 font-mono text-[10px] px-2 py-0.5 rounded border border-red-900/50">BEARISH OB / SUPPLY</span>
+                                <div class="opacity-0 group-hover:opacity-100 absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-1 rounded transition whitespace-nowrap">High probability reversal zone detected</div>
+                            </div>
+                            <div class="absolute bottom-12 left-0 w-full h-16 bg-blue-500/10 border-y border-blue-500/30 flex items-center px-4 cursor-pointer hover:bg-blue-500/20 transition z-10">
+                                <span class="bg-slate-900 text-blue-400 font-mono text-[10px] px-2 py-0.5 rounded border border-blue-900/50">BULLISH OB / DEMAND</span>
+                            </div>
+                            <div class="absolute inset-x-8 bottom-12 top-8 flex items-end justify-between z-0 pb-4">
+                                <div class="w-2 bg-red-500 h-[60%] relative"><div class="absolute w-[2px] bg-red-500 h-[120%] -top-[10%] left-1/2 transform -translate-x-1/2"></div></div>
+                                <div class="w-2 bg-red-500 h-[40%] relative"><div class="absolute w-[2px] bg-red-500 h-[130%] -top-[15%] left-1/2 transform -translate-x-1/2"></div></div>
+                                <div class="w-2 bg-green-500 h-[50%] relative"><div class="absolute w-[2px] bg-green-500 h-[140%] -top-[20%] left-1/2 transform -translate-x-1/2"></div></div>
+                                <div class="w-2 bg-green-500 h-[80%] relative"><div class="absolute w-[2px] bg-green-500 h-[110%] -top-[5%] left-1/2 transform -translate-x-1/2"></div></div>
+                                <div class="w-2 bg-red-500 h-[70%] relative"><div class="absolute w-[2px] bg-red-500 h-[120%] -top-[10%] left-1/2 transform -translate-x-1/2"></div></div>
+                            </div>
+                        </div>
+                        <span class="absolute -bottom-4 right-6 bg-blue-100 text-navy text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider shadow-md">Automated SMC</span>
+                    </div>
+                    <div>
+                        <h4 data-i18n="w1_title" class="text-2xl font-black text-slate-900 tracking-tight mb-3">Automated SMC Detection</h4>
+                        <p data-i18n="w1_desc" class="text-slate-500 text-sm leading-relaxed">
+                            Hover over the chart to interact with mapped Smart Money Concepts. We programmatically identify Rejection Blocks, Fair Value Gaps, and institutional liquidity zones instantly.
+                        </p>
+                    </div>
+                </div>
 
-<!-- ═══════════════════════════════════
-     FEATURES — BENTO
-═══════════════════════════════════ -->
-<section class="section" id="features">
-  <div class="section-inner">
-    <div class="text-center reveal">
-      <div class="section-eyebrow">Features</div>
-      <h2 class="section-h2">Everything a quant trader needs</h2>
-      <p class="section-sub">No noise. No fluff. Every card on the dashboard tells you something actionable about the current market structure.</p>
-    </div>
-
-    <div class="bento-grid">
-      <!-- Card 1: MA Stack -->
-      <div class="bento-card reveal reveal-delay-1">
-        <div class="bento-icon green">📊</div>
-        <h3 class="bento-title">Live MA Stack Analysis</h3>
-        <p class="bento-desc">Real-time MA7 / MA25 / MA99 classification. Detects Full Bullish, Full Bearish, Compression, and Decision Zone states — the same signals institutional desks use.</p>
-        <div class="bento-tag">Auto-updates every 10s</div>
-        <div class="ma-stack-visual">
-          <div class="ma-row">
-            <div class="ma-label" style="color:#F59E0B">MA7</div>
-            <div class="ma-bar-track"><div class="ma-bar-fill" style="width:72%;background:#F59E0B"></div></div>
-            <div class="ma-pct up">+0.72%</div>
-          </div>
-          <div class="ma-row">
-            <div class="ma-label" style="color:#D85A30">MA25</div>
-            <div class="ma-bar-track"><div class="ma-bar-fill" style="width:48%;background:#D85A30"></div></div>
-            <div class="ma-pct up">+1.24%</div>
-          </div>
-          <div class="ma-row">
-            <div class="ma-label" style="color:#A32D2D">MA99</div>
-            <div class="ma-bar-track"><div class="ma-bar-fill" style="width:28%;background:#A32D2D"></div></div>
-            <div class="ma-pct up">+3.18%</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 2: Confidence -->
-      <div class="bento-card reveal reveal-delay-2">
-        <div class="bento-icon blue">🎯</div>
-        <h3 class="bento-title">AI Confidence Scoring</h3>
-        <p class="bento-desc">Every setup gets a 0–10 confidence score based on MA stack state, volume conviction, macro bias, and structure factors. Only trade when the score says so.</p>
-        <div class="bento-tag blue">Requires 4+ aligned factors</div>
-        <div class="conf-visual">
-          <div class="conf-ring">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="#1F1F1F" stroke-width="10"/>
-              <circle cx="50" cy="50" r="42" fill="none" stroke="url(#grad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="40"/>
-              <defs>
-                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color:#00D4AA"/>
-                  <stop offset="100%" style="stop-color:#4AFFD4"/>
-                </linearGradient>
-              </defs>
-            </svg>
-            <div class="conf-ring-num" style="color:var(--green)">8.5</div>
-          </div>
-          <div class="conf-factors">
-            <div class="conf-factor"><div class="conf-factor-dot"></div>Full bullish MA stack</div>
-            <div class="conf-factor"><div class="conf-factor-dot"></div>Institutional accumulation vol</div>
-            <div class="conf-factor"><div class="conf-factor-dot"></div>Macro bullish catalyst</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 3: Price Ladder (tall) -->
-      <div class="bento-card tall reveal reveal-delay-3">
-        <div class="bento-icon gold">📐</div>
-        <h3 class="bento-title">Precise Trade Setups</h3>
-        <p class="bento-desc">Auto-generated Long & Short setups with exact entry zones, three take-profit levels, and stop-loss — all computed from live key levels. R:R calculated automatically.</p>
-        <div class="bento-tag gold">Min 1:2.0 R:R required</div>
-        <div class="price-ladder-visual" style="margin-top:20px">
-          <div class="ladder-row tp"><span class="ladder-tag tp">TP3</span><span class="ladder-price">$89,500</span><span class="ladder-pct up">+6.3%</span></div>
-          <div class="ladder-row tp"><span class="ladder-tag tp">TP2</span><span class="ladder-price">$87,800</span><span class="ladder-pct up">+4.3%</span></div>
-          <div class="ladder-row tp"><span class="ladder-tag tp">TP1</span><span class="ladder-price">$86,200</span><span class="ladder-pct up">+2.4%</span></div>
-          <div class="ladder-row entry"><span class="ladder-tag entry">ENTRY</span><span class="ladder-price">$84,150–210</span><span class="ladder-pct" style="color:var(--gold)">Zone</span></div>
-          <div class="ladder-row sl"><span class="ladder-tag sl">SL</span><span class="ladder-price">$81,600</span><span class="ladder-pct dn">−3.0%</span></div>
-        </div>
-        <div style="margin-top:20px;padding:12px;background:var(--bg-3);border-radius:10px;display:flex;justify-content:space-between;align-items:center">
-          <div style="text-align:center">
-            <div style="font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">R:R</div>
-            <div style="font-size:18px;font-weight:900;color:var(--green)">1 : 3.2</div>
-          </div>
-          <div style="width:1px;height:36px;background:var(--border)"></div>
-          <div style="text-align:center">
-            <div style="font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Bull%</div>
-            <div style="font-size:18px;font-weight:900;color:#fff">73%</div>
-          </div>
-          <div style="width:1px;height:36px;background:var(--border)"></div>
-          <div style="text-align:center">
-            <div style="font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Bear%</div>
-            <div style="font-size:18px;font-weight:900;color:var(--red)">27%</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 4: Multi-asset -->
-      <div class="bento-card span-2 reveal reveal-delay-1">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center">
-          <div>
-            <div class="bento-icon green">🌐</div>
-            <h3 class="bento-title">25 Assets. One Dashboard.</h3>
-            <p class="bento-desc">BTC, ETH, SOL, BNB, PEPE, WIF, TRUMP and 18 more — all with live OKX prices, switchable in one click. No tab juggling, no context switching.</p>
-            <div class="bento-tag">OKX market data · 10s refresh</div>
-          </div>
-          <div class="coin-strip-visual" style="flex-direction:column;gap:6px">
-            <div class="coin-chip">
-              <div class="coin-chip-avatar" style="background:rgba(247,147,26,.15);color:#F7931A">₿</div>
-              <div class="coin-chip-info">
-                <div class="coin-chip-sym">BTC</div>
-                <div class="coin-chip-chg up">+2.4%</div>
-              </div>
-              <div style="margin-left:auto;font-size:12px;font-weight:700;font-family:monospace">$84,210</div>
+                <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col items-center text-center">
+                    <div class="mb-8 w-full relative">
+                        <div class="absolute -top-3 left-4 flex space-x-1.5 z-20">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-3xl shadow-lg border border-slate-200 ring-1 ring-black/5 w-full relative h-64 overflow-hidden flex flex-col justify-between font-mono text-[10px] z-10">
+                            <button data-i18n="sim_btn" onclick="runSimulation()" class="absolute top-4 right-4 bg-navy text-white px-3 py-1.5 rounded-full font-sans font-bold hover:bg-blue-800 transition shadow-md z-30 transform hover:scale-105 active:scale-95 text-xs">Simulate Edge ▶</button>
+                            <div class="w-full flex flex-col justify-between h-full pt-8 pb-4 relative z-0">
+                                <div class="w-full border-t border-dashed border-green-500 text-green-600 text-left relative"><span class="bg-slate-50 pr-2 absolute -top-2 left-0 font-bold">TP 3 (70,500)</span></div>
+                                <div class="w-full border-t border-dashed border-green-400 text-green-500 text-left relative"><span class="bg-slate-50 pr-2 absolute -top-2 left-0 font-bold">TP 2 (70,000)</span></div>
+                                <div class="w-full border-t border-dashed border-green-300 text-green-500 text-left relative"><span class="bg-slate-50 pr-2 absolute -top-2 left-0 font-bold">TP 1 (69,500)</span></div>
+                                <div class="w-full border-t border-solid border-slate-800 text-slate-800 text-left relative"><span class="bg-slate-50 pr-2 absolute -top-2 left-0 font-bold">ENTRY (68,800)</span></div>
+                                <div class="w-full border-t border-solid border-red-500 text-red-600 text-left relative transition-all duration-500" id="sl-line"><span class="bg-slate-50 pr-2 absolute -top-2 left-0 font-bold" id="sl-label">STOP LOSS (68,100)</span></div>
+                                <div id="sim-price" class="absolute left-[30%] bottom-[15%] w-3 h-3 bg-blue-600 rounded-full shadow-[0_0_15px_rgba(37,99,235,0.8)] opacity-0 transition-all ease-in-out"></div>
+                            </div>
+                        </div>
+                        <span class="absolute -bottom-4 right-6 bg-sky-100 text-navy text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider shadow-md">Active Strategies</span>
+                    </div>
+                    <div>
+                        <h4 data-i18n="w2_title" class="text-2xl font-black text-slate-900 tracking-tight mb-3">Algorithmic Setup Visualizer</h4>
+                        <p data-i18n="w2_desc" class="text-slate-500 text-sm leading-relaxed">
+                            Turn complex market geometry into actionable signals. Click <b>"Simulate Edge"</b> to witness how the algorithm dynamically trails stop-losses as profit targets are systematically hit.
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="coin-chip">
-              <div class="coin-chip-avatar" style="background:rgba(98,126,234,.15);color:#627EEA">Ξ</div>
-              <div class="coin-chip-info">
-                <div class="coin-chip-sym">ETH</div>
-                <div class="coin-chip-chg up">+1.8%</div>
-              </div>
-              <div style="margin-left:auto;font-size:12px;font-weight:700;font-family:monospace">$3,241</div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 reveal" style="transition-delay: 0.2s;">
+                <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-12 h-12 bg-sky-100 rounded-2xl flex items-center justify-center text-navy flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        </div>
+                        <div>
+                            <h4 data-i18n="w3_title" class="text-xl font-bold text-slate-900">Stochastic Risk Modeling</h4>
+                            <p data-i18n="w3_desc" class="text-slate-500 text-sm">Simulate 50 automated executions. Uncover how defined risk shapes your equity curve.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1"><span data-i18n="sim_winrate">Win Rate</span>: <span id="wr-val" class="text-navy">40%</span></label>
+                            <input type="range" id="winRate" min="10" max="90" value="40" class="w-full" oninput="updateRiskSim()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1"><span data-i18n="sim_rr">Reward:Risk</span>: <span id="rr-val" class="text-navy">3:1</span></label>
+                            <input type="range" id="rewardRisk" min="1" max="5" step="0.5" value="3" class="w-full" oninput="updateRiskSim()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1"><span data-i18n="sim_risk">Risk per Trade</span>: <span id="risk-val" class="text-navy">2%</span></label>
+                            <input type="range" id="riskPct" min="0.5" max="10" step="0.5" value="2" class="w-full" oninput="updateRiskSim()">
+                        </div>
+                    </div>
+
+                    <div class="w-full h-48 bg-white border border-slate-200 rounded-xl mb-4 relative overflow-hidden">
+                        <canvas id="equityCanvas" class="w-full h-full"></canvas>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mt-auto">
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                            <p data-i18n="sim_balance" class="text-xs text-slate-500 font-semibold mb-1">Projected Equity</p>
+                            <p class="text-xl font-black text-navy" id="sim-balance">$10,000</p>
+                        </div>
+                        <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+                            <p data-i18n="sim_drawdown" class="text-xs text-slate-500 font-semibold mb-1">Peak Drawdown</p>
+                            <p class="text-xl font-black text-red-700" id="sim-drawdown">0.00%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-12 h-12 bg-sky-100 rounded-2xl flex items-center justify-center text-navy flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <h4 data-i18n="w4_title" class="text-xl font-bold text-slate-900">Rule-Based Strategy Builder</h4>
+                            <p data-i18n="w4_desc" class="text-slate-500 text-sm">Architect and backtest strict logic-driven trading directives.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label data-i18n="build_context" class="block text-xs font-bold text-slate-700 mb-1">Market Context (Thesis)</label>
+                            <select id="strat-thesis" onchange="updateStrategy()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-navy focus:border-navy block p-2.5 outline-none font-medium">
+                                <option value="SMC">Smart Money Concepts (Liquidity/OBs)</option>
+                                <option value="Trend">Trend Following (Moving Averages)</option>
+                                <option value="MeanRev">Mean Reversion (Overextended Markets)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label data-i18n="build_entry" class="block text-xs font-bold text-slate-700 mb-1">Entry Trigger</label>
+                                <select id="strat-entry" onchange="updateStrategy()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-navy focus:border-navy block p-2.5 outline-none font-medium">
+                                    <option value="Sweep">Liquidity Sweep + BOS</option>
+                                    <option value="Volume">High Volume Breakout</option>
+                                    <option value="RSI">RSI Divergence</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label data-i18n="build_exit" class="block text-xs font-bold text-slate-700 mb-1">Exit Strategy</label>
+                                <select id="strat-exit" onchange="updateStrategy()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-navy focus:border-navy block p-2.5 outline-none font-medium">
+                                    <option value="Fixed">Fixed 1:3 Target</option>
+                                    <option value="Trail">Trailing Stop Loss</option>
+                                    <option value="Time">Time-Based Exit (End of Day)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto bg-slate-900 rounded-xl p-5 relative border border-slate-800 shadow-inner">
+                        <span class="absolute top-4 right-4 text-xs font-black px-2.5 py-1 rounded-md" id="strat-grade">Grade: A+</span>
+                        <p data-i18n="build_plan" class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Compiled Directive</p>
+                        <p id="strat-output" class="text-slate-300 text-sm leading-relaxed font-medium"></p>
+                    </div>
+                </div>
             </div>
-            <div class="coin-chip">
-              <div class="coin-chip-avatar" style="background:rgba(153,69,255,.15);color:#9945FF">◎</div>
-              <div class="coin-chip-info">
-                <div class="coin-chip-sym">SOL</div>
-                <div class="coin-chip-chg dn">−0.6%</div>
-              </div>
-              <div style="margin-left:auto;font-size:12px;font-weight:700;font-family:monospace">$172.40</div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-white/50 backdrop-blur-sm border-t border-slate-200/50 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center reveal mb-16">
+                <p data-i18n="squad_label" class="text-navy font-bold text-sm tracking-widest uppercase mb-3">Enterprise Vaults</p>
+                <h2 data-i18n="squad_title" class="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-6">
+                    Collaborative <br><span class="text-navy italic font-serif tracking-normal">multi-sig execution.</span>
+                </h2>
+                <p data-i18n="squad_desc" class="text-xl text-slate-600 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+                    Pool capital, share AI-generated signals, and execute group strategies seamlessly via enterprise-grade multi-signature vaults. Optimize collective portfolio risk on-chain.
+                </p>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Card 5: Volume analysis -->
-      <div class="bento-card reveal reveal-delay-2">
-        <div class="bento-icon red">📈</div>
-        <h3 class="bento-title">Volume Intelligence</h3>
-        <p class="bento-desc">Ghost volume detection, institutional accumulation signals, and volume ratio vs MA10 — know whether the move is real or a fakeout before you enter.</p>
-        <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-3);border-radius:8px">
-            <span style="font-size:12px;color:var(--text-secondary)">Vol ratio</span>
-            <span style="font-size:12px;font-weight:700;font-family:monospace;color:var(--green)">1.8× MA10</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-3);border-radius:8px">
-            <span style="font-size:12px;color:var(--text-secondary)">Conviction</span>
-            <span style="font-size:12px;font-weight:700;color:var(--green)">HIGH</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.15);border-radius:8px">
-            <span style="font-size:12px;color:var(--text-secondary)">Signal</span>
-            <span style="font-size:11px;font-weight:700;color:var(--green)">Institutional buy</span>
-          </div>
-        </div>
-      </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 reveal mb-16" style="transition-delay: 0.1s;">
+                
+                <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col hover:shadow-lg transition-shadow">
+                    <div class="mb-8 w-full">
+                        <div class="bg-slate-50 rounded-3xl p-6 border border-slate-200 shadow-lg group">
+                            <div class="mb-5">
+                                <h4 data-i18n="squad_w1_sub" class="text-xs font-black text-slate-400 uppercase tracking-widest">Asset Distribution</h4>
+                            </div>
+                            <div class="space-y-5">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center text-navy font-bold">SOL</div>
+                                        <span class="font-semibold text-slate-700">SOL</span>
+                                    </div>
+                                    <div class="w-2/3 bg-slate-200 rounded-full h-2.5">
+                                        <div class="bg-navy h-2.5 rounded-full" style="width: 40%"></div>
+                                    </div>
+                                    <span class="text-sm font-bold text-navy">40%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center text-navy font-bold">BK</div>
+                                        <span class="font-semibold text-slate-700">BONK</span>
+                                    </div>
+                                    <div class="w-2/3 bg-slate-200 rounded-full h-2.5">
+                                        <div class="bg-navy h-2.5 rounded-full" style="width: 25%"></div>
+                                    </div>
+                                    <span class="text-sm font-bold text-navy">25%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center text-navy font-bold">JP</div>
+                                        <span class="font-semibold text-slate-700">JUP</span>
+                                    </div>
+                                    <div class="w-2/3 bg-slate-200 rounded-full h-2.5">
+                                        <div class="bg-navy h-2.5 rounded-full" style="width: 20%"></div>
+                                    </div>
+                                    <span class="text-sm font-bold text-navy">20%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center text-navy font-bold">PY</div>
+                                        <span class="font-semibold text-slate-700">PYTH</span>
+                                    </div>
+                                    <div class="w-2/3 bg-slate-200 rounded-full h-2.5">
+                                        <div class="bg-navy h-2.5 rounded-full" style="width: 15%"></div>
+                                    </div>
+                                    <span class="text-sm font-bold text-navy">15%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <h4 data-i18n="squad_w1_title" class="text-2xl font-black text-slate-900 tracking-tight mb-3">Treasury Rebalancing</h4>
+                        <p data-i18n="squad_w1_desc" class="text-slate-500 text-sm leading-relaxed">
+                            Set up and manage a collective strategy. AI automatically adjusts your vault's asset allocations to optimize shared yields across DeFi ecosystems.
+                        </p>
+                    </div>
+                </div>
 
-      <!-- Card 6: TradingView chart -->
-      <div class="bento-card span-2 reveal reveal-delay-3">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
-          <div>
-            <div class="bento-icon blue">🕯️</div>
-            <h3 class="bento-title">OKX TradingView Charts</h3>
-            <p class="bento-desc">Embedded OKX candlestick charts with 5m, 15m, 1H, 4H, 1D and 1W timeframes. Fullscreen mode with side toolbar for deep analysis when you need it.</p>
-            <div class="bento-tag blue">OKX:BTCUSDT — powered by TradingView</div>
-          </div>
-          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px">
-            <div style="display:flex;gap:4px;margin-bottom:4px">
-              <div style="padding:3px 8px;background:var(--bg-0);border-radius:5px;font-size:10px;font-weight:700;color:var(--green);border:1px solid rgba(0,212,170,.2)">15m</div>
-              <div style="padding:3px 8px;background:var(--bg-0);border-radius:5px;font-size:10px;font-weight:600;color:var(--text-muted)">1H</div>
-              <div style="padding:3px 8px;background:var(--bg-0);border-radius:5px;font-size:10px;font-weight:600;color:var(--text-muted)">4H</div>
-              <div style="padding:3px 8px;background:var(--bg-0);border-radius:5px;font-size:10px;font-weight:600;color:var(--text-muted)">1D</div>
+                <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col hover:shadow-lg transition-shadow">
+                    <div class="mb-8 w-full">
+                        <div class="bg-slate-50 rounded-3xl p-6 border border-slate-200 shadow-lg">
+                            <div class="mb-5 flex justify-between items-center">
+                                <h4 data-i18n="squad_w2_sub" class="text-xs font-black text-slate-400 uppercase tracking-widest">Market Conditions</h4>
+                                <div class="w-8 h-8 bg-navy/10 rounded-full flex items-center justify-center text-navy">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between space-x-3">
+                                    <span class="text-sm font-semibold text-slate-700">MA</span>
+                                    <div class="w-4/5 flex justify-between">
+                                        <svg class="h-6 w-20 text-green-500" stroke="currentColor" fill="none" viewBox="0 0 100 20"><path stroke-width="2" d="M0,10 L10,5 L20,15 L30,10 L40,15 L50,10 L60,5 L70,10 L80,15 L90,10 L100,5" /></svg>
+                                        <span data-i18n="status_bull" class="text-sm font-bold text-green-500">BULLISH</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between space-x-3">
+                                    <span class="text-sm font-semibold text-slate-700">RSI</span>
+                                    <div class="w-4/5 flex justify-between">
+                                        <svg class="h-6 w-20 text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 100 20"><path stroke-width="2" d="M0,15 L10,10 L20,5 L30,10 L40,15 L50,10 L60,5 L70,10 L80,15 L90,10 L100,5" /></svg>
+                                        <span data-i18n="status_neu" class="text-sm font-bold text-slate-500">NEUTRAL</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between space-x-3">
+                                    <span class="text-sm font-semibold text-slate-700">MACD</span>
+                                    <div class="w-4/5 flex justify-between">
+                                        <svg class="h-6 w-20 text-green-500" stroke="currentColor" fill="none" viewBox="0 0 100 20"><path stroke-width="2" d="M0,10 L10,15 L20,10 L30,5 L40,10 L50,15 L60,10 L70,5 L80,10 L90,15 L100,10" /></svg>
+                                        <span data-i18n="status_cross" class="text-sm font-bold text-green-500">CROSSOVER</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <h4 data-i18n="squad_w2_title" class="text-2xl font-black text-slate-900 tracking-tight mb-3">Dynamic Risk Management</h4>
+                        <p data-i18n="squad_w2_desc" class="text-slate-500 text-sm leading-relaxed">
+                            Define strict shared risk parameters for your team. AI monitors macro conditions and dynamically adjusts collective downside protection.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col hover:shadow-lg transition-shadow">
+                    <div class="mb-8 w-full">
+                        <div class="bg-slate-50 rounded-3xl p-6 border border-slate-200 shadow-lg">
+                            <div class="mb-5 flex justify-between items-center">
+                                <h4 data-i18n="squad_w3_sub" class="text-xs font-black text-slate-400 uppercase tracking-widest">Liquidity Pool Depth</h4>
+                                <div class="w-8 h-8 bg-navy/10 rounded-full flex items-center justify-center text-navy">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between space-x-3">
+                                    <span class="text-sm font-semibold text-slate-700">Raydium</span>
+                                    <svg class="h-6 w-4/5 text-blue-500" stroke="currentColor" fill="none" viewBox="0 0 100 20"><path stroke-width="1" d="M0,10 L5,10 L5,20 L10,20 L10,10 L15,10 L15,15 L20,15 L20,10 L25,10 L25,5 L30,5 L30,10 L35,10 L35,12 L40,12 L40,10 L45,10 L45,20 L50,20 L50,10 L55,10 L55,15 L60,15 L60,10 L65,10 L65,5 L70,5 L70,10 L75,10 L75,12 L80,12 L80,10 L85,10 L85,20 L90,20 L90,10 L95,10 L95,15 L100,15 L100,10" /></svg>
+                                </div>
+                                <div class="flex items-center justify-between space-x-3">
+                                    <span class="text-sm font-semibold text-slate-700">Orca</span>
+                                    <svg class="h-6 w-4/5 text-blue-500" stroke="currentColor" fill="none" viewBox="0 0 100 20"><path stroke-width="1" d="M0,10 L5,10 L5,15 L10,15 L10,10 L15,10 L15,5 L20,5 L20,10 L25,10 L25,12 L30,12 L30,10 L35,10 L35,20 L40,20 L40,10 L45,10 L45,15 L50,15 L50,10 L55,10 L55,5 L60,5 L60,10 L65,10 L65,12 L70,12 L70,10 L75,10 L75,20 L80,20 L80,10 L85,10 L85,15 L90,15 L90,10 L95,10 L95,5 L100,5 L100,10" /></svg>
+                                </div>
+                                <div class="flex items-center justify-between space-x-3">
+                                    <span class="text-sm font-semibold text-slate-700">Crema</span>
+                                    <svg class="h-6 w-4/5 text-blue-500" stroke="currentColor" fill="none" viewBox="0 0 100 20"><path stroke-width="1" d="M0,10 L5,10 L5,20 L10,20 L10,10 L15,10 L15,12 L20,12 L20,10 L25,10 L25,15 L30,15 L30,10 L35,10 L35,5 L40,5 L40,10 L45,10 L45,20 L50,20 L50,10 L55,10 L55,12 L60,12 L60,10 L65,10 L65,15 L70,15 L70,10 L75,10 L75,5 L80,5 L80,10 L85,10 L85,20 L90,20 L90,10 L95,10 L95,12 L100,12 L100,10" /></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <h4 data-i18n="squad_w3_title" class="text-2xl font-black text-slate-900 tracking-tight mb-3">On-Chain Liquidity Map</h4>
+                        <p data-i18n="squad_w3_desc" class="text-slate-500 text-sm leading-relaxed">
+                            Gain a unified view of liquidity across top DEXes. AI visualizes book depth, enabling data-driven team votes on major capital deployments.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm flex flex-col hover:shadow-lg transition-shadow">
+                    <div class="mb-8 w-full">
+                        <div class="bg-slate-50 rounded-3xl p-6 border border-slate-200 shadow-lg">
+                            <div class="mb-5 flex justify-between items-center">
+                                <h4 data-i18n="squad_w4_sub" class="text-xs font-black text-slate-400 uppercase tracking-widest">Execution Routes</h4>
+                                <div class="w-8 h-8 bg-navy/10 rounded-full flex items-center justify-center text-navy">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between space-x-3">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-4 h-4 rounded-full bg-green-500"></div>
+                                        <span data-i18n="squad_w4_opt" class="text-sm font-semibold text-slate-700">Optimal Route Found</span>
+                                    </div>
+                                    <span class="text-sm font-bold text-green-500">JUPITER AGG</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 pt-2">
+                                    <div class="bg-white p-3 rounded-xl border border-slate-100">
+                                        <p data-i18n="squad_w4_m1" class="text-xs text-slate-500 font-semibold mb-1">Execution Efficiency</p>
+                                        <p class="text-xl font-black text-navy">98.5%</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-slate-100">
+                                        <p data-i18n="squad_w4_m2" class="text-xs text-slate-500 font-semibold mb-1">Fee Optimization %</p>
+                                        <p class="text-xl font-black text-navy">95.2%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <h4 data-i18n="squad_w4_title" class="text-2xl font-black text-slate-900 tracking-tight mb-3">Automated Smart Routing</h4>
+                        <p data-i18n="squad_w4_desc" class="text-slate-500 text-sm leading-relaxed">
+                            Never suffer from high slippage again. Our aggregator finds the most efficient execution paths to minimize basis points lost on entry and exit.
+                        </p>
+                    </div>
+                </div>
+
             </div>
-            <div style="height:80px;position:relative;overflow:hidden;border-radius:6px">
-              <svg viewBox="0 0 200 80" style="width:100%;height:100%">
-                <polyline points="0,65 20,58 40,62 55,50 70,42 85,46 100,35 115,28 130,32 145,22 160,18 175,14 200,10" fill="none" stroke="var(--green)" stroke-width="1.5"/>
-                <polyline points="0,65 20,58 40,62 55,50 70,42 85,46 100,35 115,28 130,32 145,22 160,18 175,14 200,10" fill="url(#chartGrad)" stroke="none"/>
-                <defs>
-                  <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" style="stop-color:rgba(0,212,170,.2)"/>
-                    <stop offset="100%" style="stop-color:rgba(0,212,170,0)"/>
-                  </linearGradient>
-                </defs>
-              </svg>
+
+        </div>
+    </section>
+
+    <section class="py-24 relative z-10 border-t border-slate-200/50 bg-white/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-16 reveal">
+                <h2 data-i18n="feat_title" class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight max-w-2xl">
+                    Execute strategies built for capital preservation.
+                </h2>
             </div>
-            <div style="display:flex;justify-content:space-between;font-size:10px;font-family:monospace">
-              <span style="color:var(--text-muted)">OKX:BTCUSDT</span>
-              <span style="color:var(--green);font-weight:700">$84,210 ▲</span>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 reveal" style="transition-delay: 0.1s;">
+                <div class="bg-white rounded-[2rem] p-8 md:p-10 border border-slate-100 shadow-sm hover:shadow-xl transition duration-300">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-700 mb-6">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
+                    </div>
+                    <h3 data-i18n="f1_title" class="text-2xl font-bold mb-4 text-slate-900">Manage your downside</h3>
+                    <p data-i18n="f1_desc" class="text-slate-600 font-medium leading-relaxed">
+                        Our core AI models dynamically adjust your stop-loss and take-profit levels in real-time, helping protect your capital from sudden crypto market volatility before it happens.
+                    </p>
+                </div>
+                <div class="bg-white rounded-[2rem] p-8 md:p-10 border border-slate-100 shadow-sm hover:shadow-xl transition duration-300">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-700 mb-6">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"></path></svg>
+                    </div>
+                    <h3 data-i18n="f2_title" class="text-2xl font-bold mb-4 text-slate-900">Optimize execution paths</h3>
+                    <p data-i18n="f2_desc" class="text-slate-600 font-medium leading-relaxed">
+                        Smart routing algorithms automatically find the deepest liquidity pools across multiple exchanges to execute your trades with minimal slippage and the lowest possible network fees.
+                    </p>
+                </div>
+                <div class="bg-white rounded-[2rem] p-8 md:p-10 border border-slate-100 shadow-sm hover:shadow-xl transition duration-300">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-700 mb-6">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 data-i18n="f3_title" class="text-2xl font-bold mb-4 text-slate-900">Monitor markets 24/7</h3>
+                    <p data-i18n="f3_desc" class="text-slate-600 font-medium leading-relaxed">
+                        Crypto never sleeps, and neither does our engine. The software continuously scans thousands of pairs for optimal entry and exit points, maintaining your algorithmic edge even when you're offline.
+                    </p>
+                </div>
+                <div class="bg-white rounded-[2rem] p-8 md:p-10 border border-slate-100 shadow-sm hover:shadow-xl transition duration-300">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-700 mb-6">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h3 data-i18n="f4_title" class="text-2xl font-bold mb-4 text-slate-900">Diversify across protocols</h3>
+                    <p data-i18n="f4_desc" class="text-slate-600 font-medium leading-relaxed">
+                        Easily spread your risk by deploying automated strategies across a curated mix of top-tier Layer 1s, emerging DeFi tokens, and established foundational assets like BTC and ETH.
+                    </p>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+    </section>
 
-      <!-- Card 7: Session log + Positions -->
-      <div class="bento-card reveal reveal-delay-1">
-        <div class="bento-icon gold">📋</div>
-        <h3 class="bento-title">Live Session Log</h3>
-        <p class="bento-desc">Every analysis run auto-logs a timestamped entry with signal, confidence, and volume note. Your trade journal writes itself.</p>
-        <div style="margin-top:20px;display:flex;flex-direction:column;gap:6px">
-          <div style="padding:10px 12px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--green)">
-            <div style="font-size:11px;color:#ccc;line-height:1.4">LONG signal — Full Bullish ✓. $84,210 · 1.8× MA10. Conf 8.5/10.</div>
-            <div style="font-size:10px;color:var(--text-muted);margin-top:4px;font-family:monospace">13:24 · Jay · 15m</div>
-          </div>
-          <div style="padding:10px 12px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--gold)">
-            <div style="font-size:11px;color:#ccc;line-height:1.4">NEUTRAL signal — Indeterminate. $83,900 · Normal vol. Conf 4.2/10.</div>
-            <div style="font-size:10px;color:var(--text-muted);margin-top:4px;font-family:monospace">12:09 · Jay · 1h</div>
-          </div>
+    <section class="py-24 relative z-10 border-t border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <h2 data-i18n="price_title" class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">Institutional tools, accessible pricing.</h2>
+                <p data-i18n="price_desc" class="text-slate-600 text-lg">Transparent tiers. Powerful features at every level. Securely funded via Web3 wallets.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center reveal" style="transition-delay: 0.1s;">
+                <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-lg hover:shadow-xl transition duration-300 flex flex-col h-full">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Essential</h3>
+                    <p data-i18n="p1_desc" class="text-sm text-slate-500 mb-6">Perfect for manual charting and verifying visual setups.</p>
+                    <div class="mb-8">
+                        <span class="text-5xl font-black text-slate-900">0</span>
+                        <span class="text-lg text-slate-500 font-semibold">USDT / year</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 flex-grow text-slate-700 text-sm font-medium">
+                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Basic AI Trend Indicator</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 5 Indicators per chart</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Standard exchange feeds</li>
+                    </ul>
+                    <a href="#" data-i18n="p1_btn" class="block w-full py-3.5 px-4 bg-slate-100 text-slate-900 font-bold text-center rounded-xl hover:bg-slate-200 transition">Get Started</a>
+                </div>
+
+                <div class="bg-navy rounded-3xl p-8 border-2 border-navy shadow-2xl shadow-blue-500/10 relative flex flex-col h-[105%] transform md:-translate-y-2 z-10 text-white">
+                    <div data-i18n="p2_badge" class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-sky-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-lg">Most Popular</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Pro Trader</h3>
+                    <p data-i18n="p2_desc" class="text-sm text-sky-100 mb-6">For algorithmic traders needing deeper analytics and API speed.</p>
+                    <div class="mb-8">
+                        <span class="text-5xl font-black text-white">80</span>
+                        <span class="text-lg text-sky-100 font-semibold">USDT / year</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 flex-grow text-white text-sm font-medium">
+                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Full Smart Money (SMC) Suite</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Automated Order Block Detection</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Real-time AI Execution Signals</li>
+                    </ul>
+                    <a href="#" data-i18n="p2_btn" class="block w-full py-3.5 px-4 bg-white text-navy font-black text-center rounded-xl hover:bg-slate-50 transition shadow-lg">Upgrade to Pro</a>
+                </div>
+
+                <div class="bg-black rounded-3xl p-8 shadow-xl border border-slate-800 hover:border-slate-700 transition duration-300 flex flex-col h-full text-white">
+                    <h3 class="text-xl font-bold text-white mb-2">Institutional</h3>
+                    <p data-i18n="p3_desc" class="text-sm text-slate-400 mb-6">Maximum precision for multi-sig deployment & hedge funds.</p>
+                    <div class="mb-8">
+                        <span class="text-5xl font-black text-white">550</span>
+                        <span class="text-lg text-slate-400 font-semibold">USDT / year</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 flex-grow text-slate-300 text-sm font-medium">
+                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Unlimited algorithmic deployment</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Advanced Liquidity Heatmaps</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Co-located server execution</li>
+                    </ul>
+                    <a href="#" data-i18n="p3_btn" class="block w-full py-3.5 px-4 bg-slate-800 text-white font-bold text-center rounded-xl hover:bg-slate-700 transition">Contact Sales</a>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<!-- ═══════════════════════════════════
-     ASSET TICKER
-═══════════════════════════════════ -->
-<div class="ticker-section" id="assets">
-  <div class="ticker-label">25 markets supported</div>
-  <div class="ticker-wrap">
-    <div class="ticker-track" id="ticker">
-      <!-- Items duplicated in JS for infinite scroll -->
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════
-     HOW IT WORKS
-═══════════════════════════════════ -->
-<section class="section" id="how" style="background:var(--bg-1)">
-  <div class="section-inner">
-    <div class="text-center reveal">
-      <div class="section-eyebrow">How it works</div>
-      <h2 class="section-h2">Analysis in three steps</h2>
-      <p class="section-sub">No setup required. Open the dashboard, pick your coin and timeframe, and let the analyst engine do the work.</p>
-    </div>
-    <div class="how-grid">
-      <div class="how-card reveal reveal-delay-1">
-        <div class="how-num">1</div>
-        <h3 class="how-title">Pick your market & timeframe</h3>
-        <p class="how-desc">Select from 25 assets — BTC, ETH, SOL, PEPE, and more. Choose 5m, 15m, 1H, 4H, 1D or 1W analysis. The chart and data switch instantly.</p>
-      </div>
-      <div class="how-card reveal reveal-delay-2">
-        <div class="how-num">2</div>
-        <h3 class="how-title">Hit ⚡ Run Analysis</h3>
-        <p class="how-desc">The QuantAnalyst engine fetches live OHLC data, calculates MAs, scores conviction, identifies key levels, and generates long & short setups in under 2 seconds.</p>
-      </div>
-      <div class="how-card reveal reveal-delay-3">
-        <div class="how-num">3</div>
-        <h3 class="how-title">Trade with precision</h3>
-        <p class="how-desc">Read the confidence score, check the price ladder for exact entry/TP/SL, log your position, and track P&L. Auto-refresh keeps the analysis current every 15 minutes.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════
-     TESTIMONIALS
-═══════════════════════════════════ -->
-<section class="section">
-  <div class="section-inner">
-    <div class="text-center reveal">
-      <div class="section-eyebrow">Traders love it</div>
-      <h2 class="section-h2">Built for real traders</h2>
-      <p class="section-sub">What serious crypto traders say after using Quantichy for their analysis workflow.</p>
-    </div>
-    <div class="testi-grid">
-      <div class="testi-card reveal reveal-delay-1">
-        <div class="testi-stars">
-          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+    <section class="py-24 relative z-10 text-center border-t border-slate-200/50 bg-white">
+        <div class="max-w-3xl mx-auto px-4 reveal">
+            <h2 data-i18n="cta_title" class="text-4xl md:text-5xl font-black mb-6 text-slate-900 tracking-tight">Ready to let AI find your edge?</h2>
+            <p data-i18n="cta_desc" class="text-xl text-slate-600 mb-10 font-medium">Join top-tier traders automating their technical analysis and executing with absolute confidence.</p>
+            <a href="#" data-i18n="cta_btn" class="inline-block bg-black text-white px-12 py-5 rounded-full text-center font-bold text-xl hover:bg-slate-800 transition shadow-2xl">Deploy Capital Now</a>
         </div>
-        <p class="testi-text">The MA stack classifier alone is worth it. I finally stopped guessing whether we're in a full bullish trend or just a pullback. The signal is clean and unambiguous.</p>
-        <div class="testi-author">
-          <div class="testi-avatar" style="background:rgba(0,212,170,.15);color:var(--green)">AR</div>
-          <div>
-            <div class="testi-name">Ahmad R.</div>
-            <div class="testi-role">Spot & futures trader · Jakarta</div>
-          </div>
+    </section>
+
+    <footer class="bg-slate-50 py-12 border-t border-slate-200 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-400 text-xs leading-relaxed max-w-4xl font-medium">
+            <p data-i18n="footer_disc" class="mb-4">Cryptocurrency trading carries a high level of risk and may not be suitable for all investors. The AI-generated signals provided by Quantichy are for educational and informational purposes only. Past performance is no guarantee of future success.</p>
+            <p data-i18n="footer_copy">&copy; 2026 Quantichy AI. All rights reserved. For demonstration purposes.</p>
         </div>
-      </div>
-      <div class="testi-card reveal reveal-delay-2">
-        <div class="testi-stars">
-          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
-        </div>
-        <p class="testi-text">The confidence score requirement of 4+ factors before entering a trade has completely changed my discipline. I used to overtrade. Now I wait for the 7.5+ setups only.</p>
-        <div class="testi-author">
-          <div class="testi-avatar" style="background:rgba(59,130,246,.15);color:#60A5FA">MK</div>
-          <div>
-            <div class="testi-name">Marcus K.</div>
-            <div class="testi-role">Swing trader · Singapore</div>
-          </div>
-        </div>
-      </div>
-      <div class="testi-card reveal reveal-delay-3">
-        <div class="testi-stars">
-          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
-        </div>
-        <p class="testi-text">Ghost volume detection is insane. I used to get wicked into fake breakouts constantly. The analyst flags them immediately — the ghost volume filter alone saved me this month.</p>
-        <div class="testi-author">
-          <div class="testi-avatar" style="background:rgba(245,158,11,.15);color:var(--gold)">LP</div>
-          <div>
-            <div class="testi-name">Leo P.</div>
-            <div class="testi-role">Scalper · Kuala Lumpur</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </footer>
 
-<!-- ═══════════════════════════════════
-     PRICING
-═══════════════════════════════════ -->
-<section class="section" id="pricing" style="background:var(--bg-1)">
-  <div class="section-inner">
-    <div class="text-center reveal">
-      <div class="section-eyebrow">Pricing</div>
-      <h2 class="section-h2">Start free. Scale when ready.</h2>
-      <p class="section-sub">No hidden fees. Cancel anytime. The free tier gives you real access — not a crippled demo.</p>
-    </div>
+    <script>
+        /* --- Translations Object --- */
+        const translations = {
+            // Navbar
+            nav_platform: { en: "Platform", id: "Platform" },
+            nav_analytics: { en: "AI Analytics", id: "Analitik AI" },
+            nav_pricing: { en: "Pricing", id: "Harga" },
+            nav_company: { en: "Company", id: "Perusahaan" },
+            nav_login: { en: "Log in", id: "Masuk" },
+            nav_cta: { en: "Join Now", id: "Gabung Sekarang" },
 
-    <div class="pricing-grid">
-      <!-- Free -->
-      <div class="pricing-card reveal reveal-delay-1">
-        <div class="pricing-name">Free</div>
-        <div class="pricing-price"><sup>$</sup>0</div>
-        <div class="pricing-period">forever free</div>
-        <div class="pricing-divider"></div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>5 assets (BTC, ETH, SOL, BNB, AVAX)</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>MA stack + confidence scoring</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Manual Run Analysis</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Trade entry logging</div>
-        <div class="pricing-feature"><div class="pricing-check no"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>Auto-refresh analysis</div>
-        <div class="pricing-feature"><div class="pricing-check no"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>All 25 assets</div>
-        <a href="/index.html" class="pricing-btn outline">Get started free</a>
-      </div>
+            // Hero
+            hero_title: { en: "Institutional crypto analysis,<br> <span class=\"text-navy\">democratized.</span>", id: "Analisis kripto institusional,<br> <span class=\"text-navy\">didemokratisasikan.</span>" },
+            hero_desc: { en: "Deploy advanced AI to detect hidden order blocks, map on-chain liquidity, and execute high-probability trade setups with institutional precision.", id: "Kerahkan AI canggih untuk mendeteksi order block tersembunyi, memetakan likuiditas on-chain, dan mengeksekusi setup trading probabilitas tinggi dengan presisi institusional." },
+            hero_btn1: { en: "Deploy Capital", id: "Kerahkan Modal" },
+            hero_btn2: { en: "View Demo", id: "Lihat Demo" },
 
-      <!-- Pro (featured) -->
-      <div class="pricing-card featured reveal reveal-delay-2">
-        <div class="pricing-badge">Most Popular</div>
-        <div class="pricing-name">Pro</div>
-        <div class="pricing-price"><sup>$</sup>19</div>
-        <div class="pricing-period">per month · billed monthly</div>
-        <div class="pricing-divider"></div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><strong>All 25 assets</strong></div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>MA stack + confidence scoring</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><strong>Auto-refresh every 15 min</strong></div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Price ladder + R:R setups</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>OKX live price feed</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Full session log history</div>
-        <a href="/index.html" class="pricing-btn green">Start Pro free for 7 days</a>
-      </div>
+            // Preview Slider
+            preview_title: { en: "Live On-Chain Intelligence", id: "Intelijen On-Chain Langsung" },
 
-      <!-- Quant -->
-      <div class="pricing-card reveal reveal-delay-3">
-        <div class="pricing-name">Quant</div>
-        <div class="pricing-price"><sup>$</sup>49</div>
-        <div class="pricing-period">per month · billed monthly</div>
-        <div class="pricing-divider"></div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Everything in Pro</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><strong>Real-time auto-refresh (30s)</strong></div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Multi-portfolio tracking</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Custom macro events table</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Priority support</div>
-        <div class="pricing-feature active"><div class="pricing-check yes"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>API access (coming soon)</div>
-        <a href="/index.html" class="pricing-btn filled">Contact us</a>
-      </div>
-    </div>
-  </div>
-</section>
+            // Sec 1
+            sec1_title: { en: "Deconstruct Price Action with AI.", id: "Dekonstruksi Pergerakan Harga dengan AI." },
+            sec1_desc: { en: "Our proprietary algorithms map Smart Money Concepts in real-time, visualizing institutional liquidity zones and automating high-probability trade setups directly on your chart.", id: "Algoritma eksklusif kami memetakan Konsep Uang Pintar (SMC) secara real-time, memvisualisasikan zona likuiditas institusional dan mengotomatiskan setup trading probabilitas tinggi langsung di chart Anda." },
+            
+            // Widgets
+            w1_title: { en: "Automated SMC Detection", id: "Deteksi SMC Otomatis" },
+            w1_desc: { en: "Hover over the chart to interact with mapped Smart Money Concepts. We programmatically identify Rejection Blocks, Fair Value Gaps, and institutional liquidity zones instantly.", id: "Arahkan kursor ke chart untuk berinteraksi dengan pemetaan Konsep Uang Pintar. Kami mengidentifikasi Rejection Blocks, Fair Value Gaps, dan zona likuiditas institusional secara instan." },
+            w2_title: { en: "Algorithmic Setup Visualizer", id: "Visualisasi Setup Algoritmik" },
+            w2_desc: { en: "Turn complex market geometry into actionable signals. Click <b>\"Simulate Edge\"</b> to witness how the algorithm dynamically trails stop-losses as profit targets are systematically hit.", id: "Ubah geometri pasar kompleks menjadi sinyal yang dapat ditindaklanjuti. Klik <b>\"Simulate Edge\"</b> untuk melihat bagaimana algoritma secara dinamis menaikkan stop-loss saat target profit tercapai secara sistematis." },
+            sim_btn: { en: "Simulate Edge ▶", id: "Simulasi Keunggulan ▶" },
+            
+            w3_title: { en: "Stochastic Risk Modeling", id: "Pemodelan Risiko Stokastik" },
+            w3_desc: { en: "Simulate 50 automated executions. Uncover how defined risk shapes your equity curve.", id: "Simulasikan 50 eksekusi otomatis. Temukan bagaimana risiko yang ditetapkan membentuk kurva ekuitas Anda." },
+            sim_winrate: { en: "Win Rate", id: "Rasio Kemenangan" },
+            sim_rr: { en: "Reward:Risk", id: "Hasil:Risiko" },
+            sim_risk: { en: "Risk per Trade", id: "Risiko per Trading" },
+            sim_balance: { en: "Projected Equity", id: "Proyeksi Ekuitas" },
+            sim_drawdown: { en: "Peak Drawdown", id: "Drawdown Puncak" },
+            
+            w4_title: { en: "Rule-Based Strategy Builder", id: "Pembuat Strategi Berbasis Aturan" },
+            w4_desc: { en: "Architect and backtest strict logic-driven trading directives.", id: "Bangun dan uji kembali direktif trading berbasis logika yang ketat." },
+            build_context: { en: "Market Context (Thesis)", id: "Konteks Pasar (Tesis)" },
+            build_entry: { en: "Entry Trigger", id: "Pemicu Masuk (Entry)" },
+            build_exit: { en: "Exit Strategy", id: "Strategi Keluar (Exit)" },
+            build_plan: { en: "Compiled Directive", id: "Direktif yang Dikompilasi" },
 
-<!-- ═══════════════════════════════════
-     CTA
-═══════════════════════════════════ -->
-<div class="cta-section">
-  <div class="cta-inner reveal">
-    <div class="section-eyebrow" style="justify-content:center;margin-bottom:16px">Start trading smarter</div>
-    <h2 class="cta-h2">Your edge starts<br><span style="color:var(--green)">right now.</span></h2>
-    <p class="cta-sub">Open the dashboard, pick BTC, hit ⚡ Run Analysis — and get your first institutional-grade signal in under 5 seconds.</p>
-    <div class="cta-btns">
-      <a href="/index.html" class="cta-btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
-        Open dashboard — it's free
-      </a>
-      <a href="#how" class="cta-btn-outline">Learn more</a>
-    </div>
-    <p style="margin-top:20px;font-size:12px;color:var(--text-muted)">No signup required · Works on any device · Free forever tier</p>
-  </div>
-</div>
+            // Squads
+            squad_label: { en: "Enterprise Vaults", id: "Vault Perusahaan" },
+            squad_title: { en: "Collaborative <br><span class=\"text-navy italic font-serif tracking-normal\">multi-sig execution.</span>", id: "Eksekusi multi-sig <br><span class=\"text-navy italic font-serif tracking-normal\">kolaboratif.</span>" },
+            squad_desc: { en: "Pool capital, share AI-generated signals, and execute group strategies seamlessly via enterprise-grade multi-signature vaults. Optimize collective portfolio risk on-chain.", id: "Kumpulkan modal, bagikan sinyal dari AI, dan eksekusi strategi grup dengan mulus via vault multi-signature standar perusahaan. Optimalkan risiko portofolio kolektif secara on-chain." },
+            
+            squad_w1_sub: { en: "Asset Distribution", id: "Distribusi Aset" },
+            squad_w1_title: { en: "Treasury Rebalancing", id: "Rebalancing Perbendaharaan" },
+            squad_w1_desc: { en: "Set up and manage a collective strategy. AI automatically adjusts your vault's asset allocations to optimize shared yields across DeFi ecosystems.", id: "Atur dan kelola strategi kolektif. AI secara otomatis menyesuaikan alokasi aset vault Anda untuk mengoptimalkan keuntungan bersama di seluruh ekosistem DeFi." },
+            
+            squad_w2_sub: { en: "Market Conditions", id: "Kondisi Pasar" },
+            status_bull: { en: "BULLISH", id: "BULLISH" },
+            status_neu: { en: "NEUTRAL", id: "NETRAL" },
+            status_cross: { en: "CROSSOVER", id: "PERSILANGAN" },
+            squad_w2_title: { en: "Dynamic Risk Management", id: "Manajemen Risiko Dinamis" },
+            squad_w2_desc: { en: "Define strict shared risk parameters for your team. AI monitors macro conditions and dynamically adjusts collective downside protection.", id: "Tentukan parameter risiko bersama yang ketat untuk tim Anda. AI memonitor kondisi makro dan secara dinamis menyesuaikan perlindungan penurunan kolektif." },
+            
+            squad_w3_sub: { en: "Liquidity Pool Depth", id: "Kedalaman Liquidity Pool" },
+            squad_w3_title: { en: "On-Chain Liquidity Map", id: "Peta Likuiditas On-Chain" },
+            squad_w3_desc: { en: "Gain a unified view of liquidity across top DEXes. AI visualizes book depth, enabling data-driven team votes on major capital deployments.", id: "Dapatkan pandangan terpadu likuiditas di berbagai DEX teratas. AI memvisualisasikan kedalaman buku pesanan, memungkinkan voting tim berbasis data untuk penempatan modal besar." },
+            
+            squad_w4_sub: { en: "Execution Routes", id: "Rute Eksekusi" },
+            squad_w4_opt: { en: "Optimal Route Found", id: "Rute Optimal Ditemukan" },
+            squad_w4_m1: { en: "Execution Efficiency", id: "Efisiensi Eksekusi" },
+            squad_w4_m2: { en: "Fee Optimization %", id: "Optimasi Biaya %" },
+            squad_w4_title: { en: "Automated Smart Routing", id: "Routing Cerdas Otomatis" },
+            squad_w4_desc: { en: "Never suffer from high slippage again. Our aggregator finds the most efficient execution paths to minimize basis points lost on entry and exit.", id: "Tidak akan pernah mengalami slippage tinggi lagi. Agregator kami menemukan jalur eksekusi paling efisien untuk meminimalkan poin basis yang hilang saat entry dan exit." },
 
-<!-- ═══════════════════════════════════
-     FOOTER
-═══════════════════════════════════ -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <div class="footer-logo">
-          <div class="footer-logo-icon">Q</div>
-          Quantichy
-        </div>
-        <p class="footer-tagline">Institutional-grade crypto analysis for independent traders. Live signals, AI confidence scoring, and precise trade setups — in your browser.</p>
-        <div class="footer-socials">
-          <a href="#" class="social-btn" title="Twitter/X">𝕏</a>
-          <a href="#" class="social-btn" title="Telegram">✈</a>
-          <a href="#" class="social-btn" title="Discord">⌘</a>
-          <a href="#" class="social-btn" title="GitHub">⌥</a>
-        </div>
-      </div>
-      <div>
-        <div class="footer-col-title">Product</div>
-        <a href="#features" class="footer-link">Features</a>
-        <a href="#how" class="footer-link">How it works</a>
-        <a href="#pricing" class="footer-link">Pricing</a>
-        <a href="/index.html" class="footer-link">Dashboard</a>
-      </div>
-      <div>
-        <div class="footer-col-title">Markets</div>
-        <a href="/index.html" class="footer-link">BTC/USDT</a>
-        <a href="/index.html" class="footer-link">ETH/USDT</a>
-        <a href="/index.html" class="footer-link">SOL/USDT</a>
-        <a href="/index.html" class="footer-link">All 25 assets →</a>
-      </div>
-      <div>
-        <div class="footer-col-title">Resources</div>
-        <a href="#" class="footer-link">Documentation</a>
-        <a href="#" class="footer-link">MA Stack Guide</a>
-        <a href="#" class="footer-link">Volume Analysis</a>
-        <a href="#" class="footer-link">Confidence Scoring</a>
-      </div>
-      <div>
-        <div class="footer-col-title">Company</div>
-        <a href="#" class="footer-link">About</a>
-        <a href="#" class="footer-link">Blog</a>
-        <a href="#" class="footer-link">Contact</a>
-        <a href="#" class="footer-link">Changelog</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <div class="footer-copy">© 2026 Quantichy. Built for serious traders.</div>
-      <div class="footer-legal">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Risk Disclaimer</a>
-      </div>
-    </div>
-  </div>
-</footer>
+            // Features
+            feat_title: { en: "Execute strategies built for capital preservation.", id: "Eksekusi strategi yang dirancang untuk preservasi modal." },
+            f1_title: { en: "Manage your downside", id: "Kelola risiko penurunan" },
+            f1_desc: { en: "Our core AI models dynamically adjust your stop-loss and take-profit levels in real-time, helping protect your capital from sudden crypto market volatility before it happens.", id: "Model AI inti kami menyesuaikan level stop-loss dan take-profit Anda secara dinamis dan real-time, membantu melindungi modal Anda dari volatilitas pasar kripto yang tiba-tiba." },
+            f2_title: { en: "Optimize execution paths", id: "Optimalkan jalur eksekusi" },
+            f2_desc: { en: "Smart routing algorithms automatically find the deepest liquidity pools across multiple exchanges to execute your trades with minimal slippage and the lowest possible network fees.", id: "Algoritma perutean cerdas secara otomatis menemukan kumpulan likuiditas terdalam di berbagai bursa untuk mengeksekusi trading Anda dengan slippage minimal dan biaya jaringan terendah." },
+            f3_title: { en: "Monitor markets 24/7", id: "Pantau pasar 24/7" },
+            f3_desc: { en: "Crypto never sleeps, and neither does our engine. The software continuously scans thousands of pairs for optimal entry and exit points, maintaining your algorithmic edge even when you're offline.", id: "Kripto tidak pernah tidur, begitu pula mesin kami. Perangkat lunak ini terus memindai ribuan pasangan aset untuk titik masuk dan keluar optimal, menjaga keunggulan algoritmik Anda meskipun offline." },
+            f4_title: { en: "Diversify across protocols", id: "Diversifikasi di berbagai protokol" },
+            f4_desc: { en: "Easily spread your risk by deploying automated strategies across a curated mix of top-tier Layer 1s, emerging DeFi tokens, and established foundational assets like BTC and ETH.", id: "Sebarkan risiko Anda dengan mudah dengan menerapkan strategi otomatis di berbagai Layer 1 tingkat atas, token DeFi baru, dan aset dasar mapan seperti BTC dan ETH." },
 
-<!-- ═══════════════════════════════════
-     JAVASCRIPT
-═══════════════════════════════════ -->
-<script>
-/* ── Navbar scroll effect ── */
-const nav = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 20);
-}, { passive: true });
+            // Pricing
+            price_title: { en: "Institutional tools, accessible pricing.", id: "Alat institusional, harga terjangkau." },
+            price_desc: { en: "Transparent tiers. Powerful features at every level. Securely funded via Web3 wallets.", id: "Tingkatan yang transparan. Fitur kuat di setiap level. Didanai dengan aman via wallet Web3." },
+            p1_desc: { en: "Perfect for manual charting and verifying visual setups.", id: "Sempurna untuk charting manual dan memverifikasi setup visual." },
+            p1_btn: { en: "Get Started", id: "Mulai" },
+            p2_badge: { en: "Most Popular", id: "Paling Populer" },
+            p2_desc: { en: "For algorithmic traders needing deeper analytics and API speed.", id: "Untuk trader algoritmik yang membutuhkan analitik mendalam dan kecepatan API." },
+            p2_btn: { en: "Upgrade to Pro", id: "Tingkatkan ke Pro" },
+            p3_desc: { en: "Maximum precision for multi-sig deployment & hedge funds.", id: "Presisi maksimum untuk penempatan multi-sig & hedge fund." },
+            p3_btn: { en: "Contact Sales", id: "Hubungi Penjualan" },
 
-/* ── Mobile menu toggle ── */
-const mobToggle = document.getElementById('mob-toggle');
-const mobMenu   = document.getElementById('mob-menu');
-mobToggle.addEventListener('click', () => {
-  const open = mobMenu.classList.toggle('open');
-  const spans = mobToggle.querySelectorAll('span');
-  if (open) {
-    spans[0].style.transform = 'rotate(45deg) translate(5px,5px)';
-    spans[1].style.opacity   = '0';
-    spans[2].style.transform = 'rotate(-45deg) translate(5px,-5px)';
-  } else {
-    spans.forEach(s => { s.style.transform=''; s.style.opacity=''; });
-  }
-});
-mobMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-  mobMenu.classList.remove('open');
-  mobToggle.querySelectorAll('span').forEach(s => { s.style.transform=''; s.style.opacity=''; });
-}));
+            // CTA & Footer
+            cta_title: { en: "Ready to let AI find your edge?", id: "Siap biarkan AI menemukan keunggulan Anda?" },
+            cta_desc: { en: "Join top-tier traders automating their technical analysis and executing with absolute confidence.", id: "Bergabunglah dengan trader papan atas yang mengotomatiskan analisis teknis mereka dan mengeksekusi dengan keyakinan absolut." },
+            cta_btn: { en: "Deploy Capital Now", id: "Kerahkan Modal Sekarang" },
+            footer_disc: { en: "Cryptocurrency trading carries a high level of risk and may not be suitable for all investors. The AI-generated signals provided by Quantichy are for educational and informational purposes only. Past performance is no guarantee of future success.", id: "Trading mata uang kripto membawa tingkat risiko yang tinggi dan mungkin tidak cocok untuk semua investor. Sinyal yang dihasilkan AI dari Quantichy hanya untuk tujuan pendidikan dan informasi. Kinerja masa lalu bukan jaminan keberhasilan di masa depan." },
+            footer_copy: { en: "&copy; 2026 Quantichy AI. All rights reserved. For demonstration purposes.", id: "&copy; 2026 Quantichy AI. Seluruh hak cipta dilindungi. Untuk tujuan demonstrasi." }
+        };
 
-/* ── Scroll reveal ── */
-const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-const observer  = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      observer.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-revealEls.forEach(el => observer.observe(el));
+        /* --- Language Switcher Logic --- */
+        function changeLanguage(lang) {
+            document.getElementById('current-lang-display').innerText = lang.toUpperCase();
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[key] && translations[key][lang]) {
+                    el.innerHTML = translations[key][lang];
+                }
+            });
+        }
 
-/* ── Smooth active nav link ── */
-const sections  = document.querySelectorAll('section[id], div[id]');
-const navLinks  = document.querySelectorAll('.nav-link');
-const linkMap   = {};
-navLinks.forEach(l => {
-  const href = l.getAttribute('href').replace('#','');
-  if (href) linkMap[href] = l;
-});
-const sectionObserver = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      navLinks.forEach(l => l.style.color='');
-      const l = linkMap[e.target.id];
-      if (l) l.style.color = '#fff';
-    }
-  });
-}, { threshold: 0.4 });
-sections.forEach(s => sectionObserver.observe(s));
+        /* --- Setup Visualizer Widget --- */
+        function runSimulation() {
+            const dot = document.getElementById('sim-price');
+            const slLine = document.getElementById('sl-line');
+            const slLabel = document.getElementById('sl-label');
+            
+            dot.style.transitionDuration = '0s';
+            dot.style.opacity = '1';
+            dot.style.bottom = '15%'; 
+            dot.style.left = '30%';
+            slLine.style.transform = 'translateY(0)';
+            slLabel.innerHTML = "STOP LOSS (68,100)";
+            slLabel.classList.replace('text-slate-500', 'text-red-600');
+            slLine.classList.replace('border-slate-300', 'border-red-500');
 
-/* ── Ticker strip ── */
-const TICKERS = [
-  { sym:'BTC', name:'Bitcoin',   price:'$84,210', chg:'+2.4%', up:true,  bg:'rgba(247,147,26,.15)', col:'#F7931A', letter:'₿' },
-  { sym:'ETH', name:'Ethereum',  price:'$3,241',  chg:'+1.8%', up:true,  bg:'rgba(98,126,234,.15)', col:'#627EEA', letter:'Ξ' },
-  { sym:'SOL', name:'Solana',    price:'$172.40', chg:'-0.6%', up:false, bg:'rgba(153,69,255,.15)',  col:'#9945FF', letter:'◎' },
-  { sym:'BNB', name:'BNB',       price:'$618.20', chg:'+0.9%', up:true,  bg:'rgba(243,186,47,.15)', col:'#F3BA2F', letter:'B' },
-  { sym:'AVAX',name:'Avalanche', price:'$38.10',  chg:'+3.2%', up:true,  bg:'rgba(232,65,66,.15)',  col:'#E84142', letter:'A' },
-  { sym:'LINK',name:'Chainlink', price:'$14.80',  chg:'+1.1%', up:true,  bg:'rgba(55,91,210,.15)',  col:'#375BD2', letter:'⬡' },
-  { sym:'DOGE',name:'Dogecoin',  price:'$0.1842', chg:'-1.2%', up:false, bg:'rgba(194,154,78,.15)', col:'#C29A4E', letter:'Ð' },
-  { sym:'PEPE',name:'Pepe',      price:'$0.0000142',chg:'+8.4%',up:true, bg:'rgba(0,200,0,.1)',     col:'#00C800', letter:'🐸' },
-  { sym:'WIF', name:'dogwifhat', price:'$2.84',   chg:'+5.1%', up:true,  bg:'rgba(255,120,0,.12)', col:'#FF7800', letter:'🎩' },
-  { sym:'ARB', name:'Arbitrum',  price:'$0.842',  chg:'-0.8%', up:false, bg:'rgba(40,160,240,.12)' ,col:'#28A0F0', letter:'A' },
-  { sym:'OP',  name:'Optimism',  price:'$1.92',   chg:'+2.6%', up:true,  bg:'rgba(255,4,32,.12)',   col:'#FF0420', letter:'O' },
-  { sym:'TON', name:'Toncoin',   price:'$5.24',   chg:'+0.7%', up:true,  bg:'rgba(0,152,234,.12)',  col:'#0098EA', letter:'T' },
-];
+            setTimeout(() => {
+                dot.style.transitionDuration = '1s';
+                dot.style.bottom = '40%';
+                dot.style.left = '50%';
+            }, 100);
 
-const tickerEl = document.getElementById('ticker');
-const renderChip = t => `
-  <div class="ticker-chip">
-    <div class="ticker-avatar" style="background:${t.bg};color:${t.col}">${t.letter}</div>
-    <div>
-      <div class="ticker-sym">${t.sym}</div>
-      <div class="ticker-price">${t.price}</div>
-    </div>
-    <div class="ticker-chg ${t.up?'up':'dn'}">${t.chg}</div>
-  </div>`;
+            setTimeout(() => {
+                dot.style.bottom = '65%';
+                dot.style.left = '70%';
+                slLine.style.transform = 'translateY(-2rem)';
+                slLabel.innerHTML = "STOP LOSS (Moved to BE)";
+                slLabel.classList.replace('text-red-600', 'text-slate-500');
+                slLine.classList.replace('border-red-500', 'border-slate-300');
+            }, 1200);
 
-// Duplicate for seamless loop
-const html = [...TICKERS,...TICKERS].map(renderChip).join('');
-tickerEl.innerHTML = html;
+            setTimeout(() => {
+                dot.style.bottom = '90%';
+                dot.style.left = '90%';
+            }, 2300);
 
-/* ── Counter animation ── */
-function animateCounter(el, target, decimals=0, suffix='') {
-  const duration = 1800;
-  const start = performance.now();
-  const update = now => {
-    const elapsed  = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased    = 1 - Math.pow(1 - progress, 3);
-    const val      = target * eased;
-    el.textContent = (decimals > 0 ? val.toFixed(decimals) : Math.round(val)) + suffix;
-    if (progress < 1) requestAnimationFrame(update);
-  };
-  requestAnimationFrame(update);
-}
+            setTimeout(() => {
+                dot.style.opacity = '0';
+            }, 3500);
+        }
 
-/* Trigger counter on stats visible */
-const statsEl   = document.querySelector('.stats-inner');
-let   statsDone = false;
-const statsObs  = new IntersectionObserver(entries => {
-  if (entries[0].isIntersecting && !statsDone) {
-    statsDone = true;
-    const counts = statsEl.querySelectorAll('.count');
-    if (counts[0]) animateCounter(counts[0], 25, 0);
-    if (counts[1]) animateCounter(counts[1], 8.5, 1);
-  }
-}, { threshold: 0.5 });
-if (statsEl) statsObs.observe(statsEl);
+        /* --- Dynamic Risk Simulator Widget --- */
+        function updateRiskSim() {
+            const winRate = document.getElementById('winRate').value;
+            const rr = document.getElementById('rewardRisk').value;
+            const riskPct = document.getElementById('riskPct').value;
 
-/* ── MA bar fill animation ── */
-const maObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.querySelectorAll('.ma-bar-fill').forEach(bar => {
-        const w = bar.style.width;
-        bar.style.width = '0';
-        setTimeout(() => { bar.style.width = w; }, 100);
-      });
-      maObs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.4 });
-document.querySelectorAll('.ma-stack-visual').forEach(el => maObs.observe(el));
+            document.getElementById('wr-val').innerText = winRate + '%';
+            document.getElementById('rr-val').innerText = rr + ':1';
+            document.getElementById('risk-val').innerText = riskPct + '%';
 
-/* ── Hover tilt on bento cards ── */
-document.querySelectorAll('.bento-card').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const rect   = card.getBoundingClientRect();
-    const x      = (e.clientX - rect.left) / rect.width  - 0.5;
-    const y      = (e.clientY - rect.top)  / rect.height - 0.5;
-    card.style.transform = `translateY(-3px) perspective(600px) rotateX(${-y*4}deg) rotateY(${x*4}deg)`;
-  });
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = '';
-  });
-});
+            let balance = 10000;
+            let peak = balance;
+            let maxDrawdown = 0;
+            const dataPoints = [balance];
+            const numTrades = 50;
 
-/* ── Smooth scroll for anchor links ── */
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const target = document.querySelector(a.getAttribute('href'));
-    if (!target) return;
-    e.preventDefault();
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
-</script>
+            for(let i=0; i<numTrades; i++) {
+                const isWin = Math.random() < (winRate / 100);
+                const riskAmount = balance * (riskPct / 100);
+                
+                if(isWin) {
+                    balance += (riskAmount * rr);
+                } else {
+                    balance -= riskAmount;
+                }
+                
+                dataPoints.push(balance);
+                
+                if(balance > peak) peak = balance;
+                const drawdown = (peak - balance) / peak;
+                if(drawdown > maxDrawdown) maxDrawdown = drawdown;
+            }
+
+            const formatCurr = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(balance);
+            document.getElementById('sim-balance').innerText = formatCurr;
+            
+            const ddEl = document.getElementById('sim-drawdown');
+            const ddText = (maxDrawdown * 100).toFixed(2) + '%';
+            ddEl.innerText = ddText;
+            
+            if(maxDrawdown > 0.2) {
+                ddEl.className = 'text-xl font-black text-red-600';
+            } else if (maxDrawdown > 0.1) {
+                ddEl.className = 'text-xl font-black text-orange-500';
+            } else {
+                ddEl.className = 'text-xl font-black text-green-600';
+            }
+
+            drawEquityChart(dataPoints);
+        }
+
+        function drawEquityChart(data) {
+            const canvas = document.getElementById('equityCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            
+            const width = rect.width;
+            const height = rect.height;
+
+            const minVal = Math.min(...data) * 0.95; 
+            const maxVal = Math.max(...data) * 1.05; 
+            const range = maxVal - minVal;
+
+            ctx.clearRect(0, 0, width, height);
+
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            for(let i=1; i<4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, height * (i/4));
+                ctx.lineTo(width, height * (i/4));
+                ctx.stroke();
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(0, height - ((data[0] - minVal) / range) * height);
+            
+            const stepX = width / (data.length - 1);
+            
+            for(let i=1; i<data.length; i++) {
+                const x = i * stepX;
+                const y = height - ((data[i] - minVal) / range) * height;
+                ctx.lineTo(x, y);
+            }
+
+            ctx.strokeStyle = '#001f5c'; 
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            ctx.lineTo(width, height);
+            ctx.lineTo(0, height);
+            ctx.closePath();
+            
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, 'rgba(0, 31, 92, 0.2)');
+            gradient.addColorStop(1, 'rgba(0, 31, 92, 0)');
+            ctx.fillStyle = gradient;
+            ctx.fill();
+        }
+
+        /* --- Clear Thesis Strategy Builder --- */
+        function updateStrategy() {
+            const thesis = document.getElementById('strat-thesis').value;
+            const entry = document.getElementById('strat-entry').value;
+            const exit = document.getElementById('strat-exit').value;
+
+            let text = "";
+            let grade = "";
+            let gradeClass = "bg-green-100 text-green-800";
+
+            if(thesis === 'SMC') {
+                text = "The AI will scan for Smart Money Concept formations, specifically looking for resting liquidity pools and untouched order blocks. ";
+            } else if (thesis === 'Trend') {
+                text = "The AI is configured for Trend Following, identifying strong directional momentum on higher timeframes before seeking pullbacks. ";
+            } else {
+                text = "The AI will execute a Mean Reversion strategy, searching for statistical deviations from the VWAP or Bollinger Band extremes. ";
+            }
+
+            if(entry === 'Sweep') {
+                text += "Execution triggers only after a confirmed liquidity sweep followed by a structural shift (BOS) with displacement. ";
+            } else if (entry === 'Volume') {
+                text += "Execution triggers when price breaches a key level accompanied by a volume spike greater than the 20-period moving average. ";
+            } else {
+                text += "Execution triggers upon spotting a bullish/bearish divergence on the RSI relative to price action. ";
+            }
+
+            if(exit === 'Fixed') {
+                text += "Risk is strictly managed with a hard Stop Loss and a fixed Take Profit target yielding a 1:3 Risk/Reward ratio.";
+            } else if (exit === 'Trail') {
+                text += "The position will be managed dynamically using an ATR-based trailing stop to maximize capture on runner trades.";
+            } else {
+                text += "The position will be automatically closed prior to the daily close to avoid overnight funding fees and gap risk.";
+            }
+
+            if(thesis === 'SMC' && entry === 'Sweep') {
+                grade = "Grade: A+";
+                gradeClass = "bg-green-500 text-white";
+            } else if (thesis === 'MeanRev' && entry === 'RSI') {
+                grade = "Grade: A";
+                gradeClass = "bg-green-400 text-slate-900";
+            } else if (thesis === 'Trend' && exit === 'Trail') {
+                grade = "Grade: A";
+                gradeClass = "bg-green-400 text-slate-900";
+            } else if (thesis === 'Trend' && entry === 'Sweep') {
+                grade = "Grade: C (Conflict)";
+                gradeClass = "bg-orange-500 text-white";
+            } else {
+                grade = "Grade: B";
+                gradeClass = "bg-blue-200 text-navy";
+            }
+
+            const gradeEl = document.getElementById('strat-grade');
+            gradeEl.innerText = grade;
+            gradeEl.className = `absolute top-4 right-4 text-xs font-black px-2.5 py-1 rounded-md ${gradeClass}`;
+            document.getElementById('strat-output').innerText = text;
+        }
+
+        /* --- Initialization --- */
+        window.addEventListener('DOMContentLoaded', () => {
+            updateRiskSim();
+            updateStrategy();
+
+            const revealElements = document.querySelectorAll('.reveal');
+            const revealCallback = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            };
+            const revealOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
+            const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
+            revealElements.forEach(el => revealObserver.observe(el));
+        });
+
+        // Sticky Navbar
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 20) {
+                nav.classList.add('shadow-md', 'bg-white/95');
+                nav.classList.remove('bg-white/90');
+            } else {
+                nav.classList.remove('shadow-md', 'bg-white/95');
+                nav.classList.add('bg-white/90');
+            }
+        });
+    </script>
 </body>
 </html>
