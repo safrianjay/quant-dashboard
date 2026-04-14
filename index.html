@@ -802,12 +802,12 @@ p,span,div,input,button{
       </div>
     </div>
       </div><!-- /demo-paywall-content -->
-      <div id="demo-paywall-overlay" style="display:none;position:absolute;inset:0;z-index:10;align-items:center;justify-content:center;background:rgba(250,251,250,0.4)">
-        <div style="background:white;padding:24px 32px;border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,0.1);text-align:center;max-width:320px;margin-top:-100px;">
-          <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#0F172A,#1E293B);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px">🔒</div>
-          <h3 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:6px;font-family:var(--font-heading)">Detailed Analysis Locked</h3>
-          <p style="font-size:12px;color:#64748B;line-height:1.5;margin-bottom:16px;font-family:var(--font-body)">Upgrade to access full chart history, MA stacks, and macro calendar events.</p>
-          <button onclick="window.location.href='/pricing'" style="background:linear-gradient(135deg,#0F172A,#1E293B);color:white;padding:10px 20px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;width:100%;transition:transform .15s;font-family:var(--font-heading)" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">View Plans</button>
+      <div id="demo-paywall-overlay" style="display:none;position:absolute;inset:0;z-index:10;align-items:center;justify-content:center;background:#F8FAFC">
+        <div style="background:white;padding:40px;border-radius:24px;box-shadow:0 20px 50px rgba(15,23,42,0.1);text-align:center;max-width:400px;border:1px solid #E2E8F0">
+          <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#0F172A,#1E293B);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px">🔒</div>
+          <h3 style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:12px;font-family:var(--font-heading);letter-spacing:-0.02em">Unlock Professional Insights</h3>
+          <p style="font-size:14px;color:#64748B;line-height:1.6;margin-bottom:28px;font-family:var(--font-body)">Deep analysis widgets including the <b>Price Ladder</b>, <b>MA Stacks</b>, and <b>Risk Calendar</b> are reserved for Pro and Quant members.</p>
+          <a href="/pricing" style="display:block;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;padding:16px 32px;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;transition:transform .15s;font-family:var(--font-heading);box-shadow:0 8px 20px rgba(15,23,42,0.15)" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">Upgrade Plan Now</a>
         </div>
       </div>
     </div><!-- /demo-paywall-wrapper -->
@@ -3404,16 +3404,17 @@ function initDemoMode(){
     sbEmail.innerHTML = '<a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:600">View Plans &rarr;</a>';
   }
 
-  /* Blur deep analysis section immediately in demo mode */
+  /* Hide deep analysis section immediately in demo mode */
   isPaywallActive = true;
   const paywallContent = document.getElementById('demo-paywall-content');
   const paywallOverlay = document.getElementById('demo-paywall-overlay');
   if(paywallContent && paywallOverlay){
-    paywallContent.style.filter = 'blur(6px)';
-    paywallContent.style.opacity = '0.6';
-    paywallContent.style.pointerEvents = 'none';
-    paywallContent.style.userSelect = 'none';
+    paywallContent.style.visibility = 'hidden';
+    paywallContent.style.height = '400px'; /* maintain height */
     paywallOverlay.style.display = 'flex';
+    paywallOverlay.style.background = '#F8FAFC'; /* solid light slate background */
+    paywallOverlay.style.borderRadius = '24px';
+    paywallOverlay.style.border = '1px solid #E2E8F0';
   }
 
   console.log('🎮 Demo mode active — deep analysis features are locked');
