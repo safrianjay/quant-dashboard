@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Management | Quantichy</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700&display=swap');
+    
+    :root {
+      --font-heading: 'Montserrat', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --slate-900: #0F172A;
+      --slate-600: #475569;
+      --slate-400: #94A3B8;
+      --primary: #0F172A;
+      --success: #10B981;
+      --error: #EF4444;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: #F8FAFC;
+      font-family: var(--font-body);
+      color: var(--slate-900);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 48px 40px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      border: 1px solid #F1F5F9;
+      text-align: center;
+    }
+
+    .logo-wrap {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #0F172A, #1E293B);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
+    }
+
+    h1 {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: var(--slate-600);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1.5px solid #E2E8F0;
+      background: #F8FAFC;
+      font-size: 15px;
+      margin-bottom: 20px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #0F172A, #1E293B);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+
+    #loading-view, #success-view, #error-view, #reset-view {
+      display: none;
+    }
+
+    .footer-link {
+      display: inline-block;
+      margin-top: 24px;
+      color: var(--slate-400);
+      font-size: 13px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer-link:hover {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="card">
+      <div class="logo-wrap">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+      </div>
+
+      <!-- Reset View -->
+      <div id="reset-view">
+        <h1>Reset Password</h1>
+        <p id="reset-email-label">Enter a new secure password for your account.</p>
+        <input type="password" id="new-password" class="input-field" placeholder="New password" autofocus>
+        <button id="reset-btn" class="btn" onclick="handleReset()">Save New Password</button>
+      </div>
+
+      <!-- Success View -->
+      <div id="success-view">
+        <div class="status-icon">✅</div>
+        <h1 id="success-title">All Done!</h1>
+        <p id="success-msg">Your password has been successfully updated.</p>
+        <a href="/" class="btn" style="text-decoration:none; display:block">Back to Dashboard</a>
+      </div>
+
+      <!-- Error View -->
+      <div id="error-view">
+        <div class="status-icon">⚠️</div>
+        <h1>Something went wrong</h1>
+        <p id="error-msg">This link may have expired or has already been used.</p>
+        <a href="/" class="footer-link">← Return to Website</a>
+      </div>
+
+      <!-- Loading View -->
+      <div id="loading-view" style="display:block">
+        <div class="status-icon" style="animation: spin 1s linear infinite">⏳</div>
+        <p>Verifying request...</p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+
+  <!-- Firebase scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <script>
+    /* Config matching your project */
+    const firebaseConfig = {
+      apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
+      authDomain: "quantichy.com",
+      projectId: "quant-dashboard-1405b",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    /* URL Context */
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const oobCode = urlParams.get('oobCode');
+
+    function showView(id) {
+      document.getElementById('loading-view').style.display = 'none';
+      document.getElementById('reset-view').style.display = 'none';
+      document.getElementById('success-view').style.display = 'none';
+      document.getElementById('error-view').style.display = 'none';
+      if(id) document.getElementById(id).style.display = 'block';
+    }
+
+    async function init() {
+      if (!mode || !oobCode) {
+        document.querySelector('#error-msg').textContent = "Invalid account action link.";
+        showView('error-view');
+        return;
+      }
+
+      switch (mode) {
+        case 'resetPassword':
+          try {
+            const email = await auth.verifyPasswordResetCode(oobCode);
+            document.getElementById('reset-email-label').textContent = `Create a new password for ${email}`;
+            showView('reset-view');
+          } catch (e) {
+            showView('error-view');
+          }
+          break;
+        case 'verifyEmail':
+          try {
+            await auth.applyActionCode(oobCode);
+            document.getElementById('success-title').textContent = "Email Verified!";
+            document.getElementById('success-msg').textContent = "Your email address has been successfully verified. You can now access all features.";
+            showView('success-view');
+          } catch (e) {
+            showView('error-view');
+          }
+          break;
+        default:
+          showView('error-view');
+      }
+    }
+
+    async function handleReset() {
+      const password = document.getElementById('new-password').value;
+      const btn = document.getElementById('reset-btn');
+      
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Updating...";
+
+      try {
+        await auth.confirmPasswordReset(oobCode, password);
+        showView('success-view');
+      } catch (e) {
+        alert(e.message);
+        btn.disabled = false;
+        btn.textContent = "Save New Password";
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
