@@ -4,6 +4,12 @@
 [build.processing.html]
   pretty_urls = true
 
+# Security headers for Firebase Auth Popups
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+
 # Serve landing page at root URL
 [[redirects]]
   from = "/"
@@ -23,8 +29,7 @@
   to = "/pricing.html"
   status = 200
 
-# Proxy Firebase Auth calls to the real Firebase handler
-# This is required for Google Sign-In on custom domains (Netlify)
+# Proxy Firebase Auth calls to the real Firebase project
 [[redirects]]
   from = "/__/auth/*"
   to = "https://quant-dashboard-1405b.firebaseapp.com/__/auth/:splat"
@@ -36,4 +41,3 @@
   to = "https://quant-dashboard-1405b.firebaseapp.com/__/firebase/:splat"
   status = 200
   force = true
-
