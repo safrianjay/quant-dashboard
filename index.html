@@ -1719,7 +1719,37 @@ const MARKET_LIST = [
   { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'Quant AI', grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W' },
 ];
 
-let _marketPrices = {}; /* cache: { BTCUSDT: { price, chg, high, low, vol } } */
+let _marketPrices = {}; /* cache: { BTCUSDT: { price, chg, high, low, vol, lastUpdate, source } } */
+
+/**
+ * Centrally updates the price cache with prioritization.
+ * 'Live' (WebSocket) data always takes precedence.
+ * 'Batch' (REST) data is only applied if no 'Live' data has arrived for that coin recently.
+ */
+function _updatePrice(sym, data, isLive){
+  const now = Date.now();
+  const existing = _marketPrices[sym] || { source: 'none', lastUpdate: 0 };
+  
+  // Rule: If we have live data, don't let stale batch data overwrite it
+  if (!isLive && existing.source === 'live' && (now - existing.lastUpdate < 15000)) {
+    // Just update metadata (high/low/vol) if missing, but leave the price alone
+    _marketPrices[sym] = { ...existing, ...data, price: existing.price, source: 'live' };
+    return;
+  }
+
+  // Apply the update
+  _marketPrices[sym] = {
+    ...existing,
+    ...data,
+    lastUpdate: now,
+    source: isLive ? 'live' : 'batch'
+  };
+
+  // Trigger UI if it's the current coin or if it's a high-priority tick
+  if (sym === currentSymbol && !_selectMarketBusy) {
+    _applyMarketCache();
+  }
+}
 let _chartCache   = {}; /* cache: { cgId: closes[] } — avoid re-fetching same coin chart */
 let _selectMarketBusy = false; /* guard against concurrent coin-switch calls */
 
@@ -1809,19 +1839,13 @@ function _startBinanceWs(){
       try {
         const msg = JSON.parse(evt.data);
         if(!msg.s) return;
-        const sym = msg.s;
-        const price = parseFloat(msg.c);
-        const open  = parseFloat(msg.o) || price;
-        const existing = _marketPrices[sym] || {};
-        _marketPrices[sym] = {
-          ...existing,
-          price,
-          high: parseFloat(msg.h),
-          low:  parseFloat(msg.l),
-          chg:  parseFloat(msg.P),
-          vol:  parseFloat(msg.q) /* USDT volume */
-        };
-        if(sym === currentSymbol && !_selectMarketBusy) _applyMarketCache();
+        _updatePrice(msg.s, {
+          price: parseFloat(msg.c),
+          high:  parseFloat(msg.h),
+          low:   parseFloat(msg.l),
+          chg:   parseFloat(msg.P),
+          vol:   parseFloat(msg.q)
+        }, true);
       } catch(_){}
     };
     _binanceWs.onerror = () => { _binanceActive = false; _binanceWs = null; };
@@ -1849,14 +1873,13 @@ async function fetchAllMarketPrices(){
     const syms = new Set(MARKET_LIST.map(m => m.sym));
     json.forEach(t => {
       if(!syms.has(t.symbol)) return;
-      const price = parseFloat(t.lastPrice);
-      _marketPrices[t.symbol] = {
-        price,
-        high: parseFloat(t.highPrice),
-        low:  parseFloat(t.lowPrice),
-        chg:  parseFloat(t.priceChangePercent),
-        vol:  parseFloat(t.quoteVolume)
-      };
+      _updatePrice(t.symbol, {
+        price: parseFloat(t.lastPrice),
+        high:  parseFloat(t.highPrice),
+        low:   parseFloat(t.lowPrice),
+        chg:   parseFloat(t.priceChangePercent),
+        vol:   parseFloat(t.quoteVolume)
+      }, false);
     });
   } catch(e){
     console.error('Fetch prices failed:', e);
@@ -2262,8 +2285,8 @@ async function refreshAllCoins(){
   }
   _lastApiCall = now;
   try {
-    await fetchAllMarketPrices(); /* one batched call updates every coin */
-    _applyMarketCache();
+    await fetchAllMarketPrices(); /* updates every coin in the background */
+    // Note: _updatePrice handles the UI refresh check internally now
   } catch(_){}
 }
 
