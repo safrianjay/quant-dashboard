@@ -10,6 +10,17 @@
   [headers.values]
     Cross-Origin-Opener-Policy = "same-origin-allow-popups"
 
+# Exempt static assets from root redirect
+[[redirects]]
+  from = "/*.png"
+  to = "/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*.svg"
+  to = "/:splat"
+  status = 200
+
 # Serve landing page at root URL
 [[redirects]]
   from = "/"
