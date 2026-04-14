@@ -1639,7 +1639,7 @@ const MARKET_LIST = [
   { sym:'DOGEUSDT', base:'DOGE', name:'Dogecoin',        cgId:'dogecoin',               cat:'Meme',   grad:'linear-gradient(135deg,#C2A633,#FCD34D)', letter:'D' },
   { sym:'SHIBUSDT', base:'SHIB', name:'Shiba Inu',       cgId:'shiba-inu',              cat:'Meme',   grad:'linear-gradient(135deg,#E36D26,#F97316)', letter:'S' },
   { sym:'PEPEUSDT', base:'PEPE', name:'Pepe',            cgId:'pepe',                   cat:'Meme',   grad:'linear-gradient(135deg,#3D9900,#86EFAC)', letter:'P' },
-  { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'AI',     grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W' },
+  { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'Quant AI', grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W' },
 ];
 
 let _marketPrices = {}; /* cache: { BTCUSDT: { price, chg, high, low, vol } } */
@@ -3475,7 +3475,7 @@ function showUpgradeModal(action){
   const messages = {
     position: { title:'Add Positions', desc:'Create and track live positions with real-time P&L, TP/SL management, and Firestore sync.' },
     save:     { title:'Save Data',     desc:'Your positions and settings are saved securely to the cloud with your account.' },
-    analysis: { title:'Live AI Analysis',  desc:'Unlock real-time institutional analysis and smart money concepts on live data.' },
+    analysis: { title:'Live Quant AI Analysis',  desc:'Unlock real-time institutional analysis and smart money concepts on live data.' },
     default:  { title:'Full Access',   desc:'Unlock all features including unlimited analysis, position tracking, and multi-coin support.' }
   };
   const msg = messages[action] || messages.default;
