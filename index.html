@@ -43,13 +43,14 @@
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
-@keyframes pulse2{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
-@keyframes coinIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes barFill{from{width:0}to{width:var(--w)}}
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
+@keyframes softBreathe{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.3)}50%{box-shadow:0 0 0 8px rgba(16,185,129,0)}}
+@keyframes softBreatheRed { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.3)} 50%{box-shadow:0 0 0 8px rgba(239,68,68,0)} }
+@keyframes uptickGlow {from{background:rgba(16,185,129,.15)}to{background:transparent}}
+@keyframes downtickGlow {from{background:rgba(239,68,68,.15)}to{background:transparent}}
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+.uptick { animation: uptickGlow .8s ease-out forwards; }
+.downtick { animation: downtickGlow .8s ease-out forwards; }
 
 .sk-shimmer {
   position: relative;
@@ -60,8 +61,15 @@
   content: "";
   position: absolute;
   top: 0; right: 0; bottom: 0; left: 0;
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
-  animation: shimmer 1.5s infinite;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.4) 20%,
+    rgba(255, 255, 255, 0.7) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2.5s infinite; /* slower, smoother shimmer */
 }
 
 .loading-splash {
@@ -148,7 +156,7 @@ p,span,div,input,button{
 .nav-section-label{font-size:9px;font-weight:700;color:#94A3B8;letter-spacing:.12em;text-transform:uppercase;padding:14px 10px 5px;font-family:var(--font-heading)}
 
 /* ── BADGE / PULSE ── */
-.dot-pulse{width:7px;height:7px;border-radius:50%;background:#EF4444;border:2px solid white;animation:pulse2 2s ease infinite;position:absolute;top:6px;right:6px}
+.dot-pulse{width:7px;height:7px;border-radius:50%;background:#10B981;border:1px solid white;animation:softBreathe 2.5s ease-in-out infinite;position:absolute;top:9px;right:9px}
 
 /* ── COIN STRIP ── */
 .coin-strip-wrap{margin-bottom:14px;animation:fadeUp .5s ease .22s both}
@@ -1358,7 +1366,7 @@ function renderKPIs(){
     /* Shrink font for long values (e.g. PEPE's 10-decimal price) */
     const valFs = valStr.length > 14 ? '11px' : valStr.length > 11 ? '13px' : valStr.length > 8 ? '15px' : '19px';
     return `
-  <div class="kpi-card" style="animation-delay:${.05 + i * .05}s">
+  <div class="kpi-card" id="kv${i}-card" style="transition:background 0.3s;animation-delay:${.05 + i * .05}s">
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${k.acc};border-radius:13px 13px 0 0"></div>
     <div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div style="min-width:0;flex:1">
@@ -2257,14 +2265,26 @@ const API_INTERVAL_MS = 30000; /* 30s between real API calls */
 let _lastApiCall = 0;
 
 
+let _prevPrice = 0;
 function _applyMarketCache(){
   const c = _marketPrices[currentSymbol];
   if(!c) return;
+
+  const oldPrice = PRICE;
   PRICE = c.price;
   HIGH  = c.high;
   LOW   = c.low;
   CHG   = (c.chg >= 0 ? '+' : '') + parseFloat(c.chg).toFixed(2);
   VOL   = parseFloat((c.vol / c.price / 1000).toFixed(2));
+
+  // Visual uptick/downtick animation
+  const kv0 = document.getElementById('kv0-card');
+  if(kv0 && oldPrice > 0 && Math.abs(PRICE - oldPrice) > 0.001){
+    kv0.classList.remove('uptick','downtick');
+    void kv0.offsetWidth; // trigger reflow
+    kv0.classList.add(PRICE > oldPrice ? 'uptick' : 'downtick');
+  }
+
   ['1H','4H','1D','1W'].forEach(tf => {
     TF_DATA[tf].price = PRICE;
     TF_DATA[tf].high  = HIGH;
