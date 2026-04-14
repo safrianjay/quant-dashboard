@@ -22,3 +22,18 @@
   from = "/pricing"
   to = "/pricing.html"
   status = 200
+
+# Proxy Firebase Auth calls to the real Firebase handler
+# This is required for Google Sign-In on custom domains (Netlify)
+[[redirects]]
+  from = "/__/auth/*"
+  to = "https://quant-dashboard-1405b.firebaseapp.com/__/auth/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/__/firebase/*"
+  to = "https://quant-dashboard-1405b.firebaseapp.com/__/firebase/:splat"
+  status = 200
+  force = true
+
