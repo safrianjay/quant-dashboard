@@ -1734,6 +1734,7 @@ function _updatePrice(sym, data, isLive){
   if (!isLive && existing.source === 'live' && (now - existing.lastUpdate < 15000)) {
     // Just update metadata (high/low/vol) if missing, but leave the price alone
     _marketPrices[sym] = { ...existing, ...data, price: existing.price, source: 'live' };
+    if (sym === currentSymbol) _applyMarketCache();
     return;
   }
 
@@ -1745,7 +1746,7 @@ function _updatePrice(sym, data, isLive){
     source: isLive ? 'live' : 'batch'
   };
 
-  // Trigger UI if it's the current coin or if it's a high-priority tick
+  // Trigger UI if it's the current coin
   if (sym === currentSymbol && !_selectMarketBusy) {
     _applyMarketCache();
   }
@@ -2286,7 +2287,7 @@ async function refreshAllCoins(){
   _lastApiCall = now;
   try {
     await fetchAllMarketPrices(); /* updates every coin in the background */
-    // Note: _updatePrice handles the UI refresh check internally now
+    _applyMarketCache(); /* ensure UI is updated after the first big batch load */
   } catch(_){}
 }
 
