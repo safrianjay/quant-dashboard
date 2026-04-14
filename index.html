@@ -834,12 +834,17 @@ let _authTab = 'signin';
 
 /* ══ DEMO MODE ══ */
 const DEMO_MODE = new URLSearchParams(window.location.search).has('demo');
-const DEMO_POSITIONS = [
-  { coin:"BTC", sym:"BTCUSDT", cgId:"bitcoin", dir:"long", entry:67250, size:0.15, leverage:10, tp:72000, sl:65500, ts:Date.now()-3600000*48 },
-  { coin:"ETH", sym:"ETHUSDT", cgId:"ethereum", dir:"long", entry:3420, size:2.5, leverage:5, tp:3800, sl:3200, ts:Date.now()-3600000*24 },
-  { coin:"SOL", sym:"SOLUSDT", cgId:"solana", dir:"short", entry:178.5, size:30, leverage:8, tp:155, sl:190, ts:Date.now()-3600000*6 },
-  { coin:"BNB", sym:"BNBUSDT", cgId:"binancecoin", dir:"long", entry:595, size:5, leverage:3, tp:680, sl:560, ts:Date.now()-3600000*2 }
-];
+const DEMO_POSITIONS = (function(){
+  const now = new Date();
+  const fmt = d => ({ date:d.toLocaleDateString("en-US",{month:"short",day:"numeric"}), time:d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false}) });
+  const t1=fmt(new Date(now-3600000*48)), t2=fmt(new Date(now-3600000*24)), t3=fmt(new Date(now-3600000*6)), t4=fmt(new Date(now-3600000*2));
+  return [
+    { id:1001, symbol:"BTC", dir:"long", entry:67250, qty:0.15, exposure:67250*0.15, currentPrice:68900, tp:72000, sl:65500, rr:((72000-67250)/(67250-65500)).toFixed(2), note:"", status:"open", ...t1 },
+    { id:1002, symbol:"ETH", dir:"long", entry:3420, qty:2.5, exposure:3420*2.5, currentPrice:3510, tp:3800, sl:3200, rr:((3800-3420)/(3420-3200)).toFixed(2), note:"", status:"open", ...t2 },
+    { id:1003, symbol:"SOL", dir:"short", entry:178.5, qty:30, exposure:178.5*30, currentPrice:172, tp:155, sl:190, rr:((178.5-155)/(190-178.5)).toFixed(2), note:"", status:"open", ...t3 },
+    { id:1004, symbol:"BNB", dir:"long", entry:595, qty:5, exposure:595*5, currentPrice:608, tp:680, sl:560, rr:((680-595)/(595-560)).toFixed(2), note:"", status:"open", ...t4 }
+  ];
+})();
 
 /* ── Persist positions locally as fallback (skip in demo) ── */
 (function(){ if(DEMO_MODE) return; try{ const r=localStorage.getItem('vf_positions'); if(r) positions=JSON.parse(r); }catch(_){} })();
@@ -992,6 +997,7 @@ window.authGoogle = async function(){
 };
 
 window.doSignOut = async function(){
+  if(DEMO_MODE){ window.location.href='/app'; return; }
   try{
     if(_posUnsubscribe){ _posUnsubscribe(); _posUnsubscribe=null; }
     _posRef = null;
