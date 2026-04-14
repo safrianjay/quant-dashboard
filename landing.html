@@ -82,10 +82,10 @@
                     <a href="#" class="text-2xl font-black tracking-tighter text-black">Quantichy</a>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#" data-i18n="nav_platform" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Platform</a>
-                    <a href="#" data-i18n="nav_analytics" class="text-sm font-semibold text-slate-700 hover:text-navy transition">AI Analytics</a>
-                    <a href="#" data-i18n="nav_pricing" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Pricing</a>
-                    <a href="#" data-i18n="nav_company" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Company</a>
+                    <a href="#platform" data-i18n="nav_platform" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Platform</a>
+                    <a href="#features" data-i18n="nav_analytics" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Features</a>
+                    <a href="#pricing" data-i18n="nav_pricing" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Pricing</a>
+                    <a href="#how" data-i18n="nav_company" class="text-sm font-semibold text-slate-700 hover:text-navy transition">How it works</a>
                 </div>
                 <div class="hidden md:flex items-center space-x-4">
                     
@@ -104,15 +104,32 @@
                     <a href="#" data-i18n="nav_cta" class="bg-black text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-slate-800 transition shadow-lg">Join Now</a>
                 </div>
                 <div class="md:hidden flex items-center">
-                    <button class="text-black hover:text-navy focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <button id="mobile-menu-btn" class="text-black hover:text-navy focus:outline-none" aria-label="Toggle menu">
+                        <svg id="menu-icon-open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        <svg id="menu-icon-close" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden hidden border-t border-slate-100 py-4 px-2 space-y-1 bg-white/98 backdrop-blur">
+                <a href="#platform" class="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-navy transition mobile-link">Platform</a>
+                <a href="#features" class="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-navy transition mobile-link">Features</a>
+                <a href="#pricing" class="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-navy transition mobile-link">Pricing</a>
+                <a href="#how" class="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-navy transition mobile-link">How it works</a>
+                <div class="px-4 py-3 flex items-center gap-3">
+                    <a href="#" onclick="changeLanguage('en'); return false;" class="text-sm font-bold text-slate-700 hover:text-navy transition">EN</a>
+                    <span class="text-slate-300">|</span>
+                    <a href="#" onclick="changeLanguage('id'); return false;" class="text-sm font-bold text-slate-700 hover:text-navy transition">ID</a>
+                </div>
+                <div class="px-4 pt-2 pb-1 flex flex-col gap-2">
+                    <a href="#" class="block text-center py-3 px-4 text-sm font-semibold text-slate-700 hover:text-navy border border-slate-200 rounded-full transition">Log in</a>
+                    <a href="#" class="block text-center py-3 px-4 text-sm font-semibold bg-black text-white rounded-full hover:bg-slate-800 transition">Join Now</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <section class="pt-32 pb-16 lg:pt-48 lg:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col lg:flex-row items-center relative z-10">
+    <section id="hero" class="pt-32 pb-16 lg:pt-48 lg:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col lg:flex-row items-center relative z-10">
         <div class="lg:w-1/2 reveal">
             <h1 data-i18n="hero_title" class="text-5xl lg:text-7xl font-black leading-tight tracking-tighter mb-6 text-slate-900">
                 Institutional crypto analysis,<br> <span class="text-navy">democratized.</span>
@@ -121,7 +138,7 @@
                 Deploy advanced AI to detect hidden order blocks, map on-chain liquidity, and execute high-probability trade setups with institutional precision.
             </p>
             <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <a href="#" data-i18n="hero_btn1" class="bg-black text-white px-8 py-4 rounded-full text-center font-semibold text-lg hover:bg-slate-800 transition shadow-xl">Deploy Capital</a>
+                <a href="#" data-i18n="hero_btn1" class="bg-black text-white px-8 py-4 rounded-full text-center font-semibold text-lg hover:bg-slate-800 transition shadow-xl">Join Now</a>
                 <a href="#" data-i18n="hero_btn2" class="bg-white border-2 border-slate-200 text-slate-800 px-8 py-4 rounded-full text-center font-semibold text-lg hover:border-black hover:text-black transition shadow-sm">View Demo</a>
             </div>
         </div>
@@ -386,7 +403,7 @@
         </div>
     </section>
     
-    <section class="py-24 relative z-10 border-t border-slate-200/50 bg-white/40">
+    <section id="platform" class="py-24 relative z-10 border-t border-slate-200/50 bg-white/40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-3xl mx-auto text-center reveal mb-16">
                 <h2 data-i18n="sec1_title" class="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-6">
@@ -554,7 +571,7 @@
         </div>
     </section>
 
-    <section class="py-24 bg-white/50 backdrop-blur-sm border-t border-slate-200/50 relative z-10">
+    <section id="squads" class="py-24 bg-white/50 backdrop-blur-sm border-t border-slate-200/50 relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-3xl mx-auto text-center reveal mb-16">
                 <p data-i18n="squad_label" class="text-navy font-bold text-sm tracking-widest uppercase mb-3">Enterprise Vaults</p>
@@ -744,7 +761,7 @@
         </div>
     </section>
 
-    <section class="py-24 relative z-10 border-t border-slate-200/50 bg-white/40">
+    <section id="features" class="py-24 relative z-10 border-t border-slate-200/50 bg-white/40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-16 reveal">
                 <h2 data-i18n="feat_title" class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight max-w-2xl">
@@ -793,7 +810,7 @@
         </div>
     </section>
 
-    <section class="py-24 relative z-10 border-t border-slate-200/50">
+    <section id="pricing" class="py-24 relative z-10 border-t border-slate-200/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16 reveal">
                 <h2 data-i18n="price_title" class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">Institutional tools, accessible pricing.</h2>
@@ -801,67 +818,417 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center reveal" style="transition-delay: 0.1s;">
+                <!-- Free -->
                 <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-lg hover:shadow-xl transition duration-300 flex flex-col h-full">
-                    <h3 class="text-xl font-bold text-slate-900 mb-2">Essential</h3>
-                    <p data-i18n="p1_desc" class="text-sm text-slate-500 mb-6">Perfect for manual charting and verifying visual setups.</p>
-                    <div class="mb-8">
-                        <span class="text-5xl font-black text-slate-900">0</span>
-                        <span class="text-lg text-slate-500 font-semibold">USDT / year</span>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Free</h3>
+                    <p data-i18n="p1_desc" class="text-sm text-slate-500 mb-6">Start exploring with core tools, no credit card needed.</p>
+                    <div class="mb-8 flex items-end gap-1">
+                        <span class="text-5xl font-black text-slate-900">$0</span>
+                        <span class="text-lg text-slate-500 font-semibold mb-1">/ forever</span>
                     </div>
                     <ul class="space-y-4 mb-8 flex-grow text-slate-700 text-sm font-medium">
-                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Basic AI Trend Indicator</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 5 Indicators per chart</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Standard exchange feeds</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Basic AI Trend Indicator</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 5 Pairs on Dashboard</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Standard exchange feeds</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Community access</li>
                     </ul>
-                    <a href="#" data-i18n="p1_btn" class="block w-full py-3.5 px-4 bg-slate-100 text-slate-900 font-bold text-center rounded-xl hover:bg-slate-200 transition">Get Started</a>
+                    <a href="#" data-i18n="p1_btn" class="block w-full py-3.5 px-4 bg-slate-100 text-slate-900 font-bold text-center rounded-xl hover:bg-slate-200 transition">Get Started Free</a>
                 </div>
 
+                <!-- Pro -->
                 <div class="bg-navy rounded-3xl p-8 border-2 border-navy shadow-2xl shadow-blue-500/10 relative flex flex-col h-[105%] transform md:-translate-y-2 z-10 text-white">
                     <div data-i18n="p2_badge" class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-sky-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-lg">Most Popular</div>
-                    <h3 class="text-xl font-bold text-white mb-2">Pro Trader</h3>
-                    <p data-i18n="p2_desc" class="text-sm text-sky-100 mb-6">For algorithmic traders needing deeper analytics and API speed.</p>
-                    <div class="mb-8">
-                        <span class="text-5xl font-black text-white">80</span>
-                        <span class="text-lg text-sky-100 font-semibold">USDT / year</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
+                    <p data-i18n="p2_desc" class="text-sm text-sky-100 mb-6">For serious traders who need every edge available.</p>
+                    <div class="mb-8 flex items-end gap-1">
+                        <span class="text-5xl font-black text-white">$19</span>
+                        <span class="text-lg text-sky-100 font-semibold mb-1">/ month</span>
                     </div>
                     <ul class="space-y-4 mb-8 flex-grow text-white text-sm font-medium">
-                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Full Smart Money (SMC) Suite</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Automated Order Block Detection</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Real-time AI Execution Signals</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Full Smart Money (SMC) Suite</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 25 Assets — all markets</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> AI Confidence Scoring</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Volume Intelligence Feed</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Live Session Log</li>
                     </ul>
-                    <a href="#" data-i18n="p2_btn" class="block w-full py-3.5 px-4 bg-white text-navy font-black text-center rounded-xl hover:bg-slate-50 transition shadow-lg">Upgrade to Pro</a>
+                    <a href="#" data-i18n="p2_btn" class="block w-full py-3.5 px-4 bg-white text-navy font-black text-center rounded-xl hover:bg-slate-50 transition shadow-lg">Join Now</a>
                 </div>
 
+                <!-- Quant -->
                 <div class="bg-black rounded-3xl p-8 shadow-xl border border-slate-800 hover:border-slate-700 transition duration-300 flex flex-col h-full text-white">
-                    <h3 class="text-xl font-bold text-white mb-2">Institutional</h3>
-                    <p data-i18n="p3_desc" class="text-sm text-slate-400 mb-6">Maximum precision for multi-sig deployment & hedge funds.</p>
-                    <div class="mb-8">
-                        <span class="text-5xl font-black text-white">550</span>
-                        <span class="text-lg text-slate-400 font-semibold">USDT / year</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Quant</h3>
+                    <p data-i18n="p3_desc" class="text-sm text-slate-400 mb-6">Full institutional stack for professional quant traders.</p>
+                    <div class="mb-8 flex items-end gap-1">
+                        <span class="text-5xl font-black text-white">$49</span>
+                        <span class="text-lg text-slate-400 font-semibold mb-1">/ month</span>
                     </div>
                     <ul class="space-y-4 mb-8 flex-grow text-slate-300 text-sm font-medium">
-                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Unlimited algorithmic deployment</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Advanced Liquidity Heatmaps</li>
-                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Co-located server execution</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Everything in Pro</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> TradingView OKX Integration</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Multi-strategy Rule Builder</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Priority support & onboarding</li>
+                        <li class="flex items-start"><svg class="w-5 h-5 text-slate-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Early access to new features</li>
                     </ul>
-                    <a href="#" data-i18n="p3_btn" class="block w-full py-3.5 px-4 bg-slate-800 text-white font-bold text-center rounded-xl hover:bg-slate-700 transition">Contact Sales</a>
+                    <a href="#" data-i18n="p3_btn" class="block w-full py-3.5 px-4 bg-slate-800 text-white font-bold text-center rounded-xl hover:bg-slate-700 transition">Get Quant</a>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- HOW IT WORKS -->
+    <section id="how" class="py-24 relative z-10 border-t border-slate-200/50 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+                <p class="text-navy font-bold text-sm tracking-widest uppercase mb-3">Simple Process</p>
+                <h2 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">Up and trading in 3 steps.</h2>
+                <p class="text-slate-500 text-lg font-medium">No setup headaches. Just open the dashboard and let the AI do the heavy lifting.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 reveal" style="transition-delay: 0.1s;">
+                <!-- Step 1 -->
+                <div class="relative bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl transition duration-300">
+                    <div class="absolute -top-4 -left-4 w-10 h-10 bg-navy rounded-full flex items-center justify-center text-white font-black text-lg shadow-lg">1</div>
+                    <div class="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center text-navy mb-6 border border-sky-100">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 mb-3 tracking-tight">Pick market &amp; timeframe</h3>
+                    <p class="text-slate-500 font-medium leading-relaxed text-sm">Choose from 25 supported crypto pairs across spot and perp markets. Set your preferred timeframe — from 1m scalps to 4H swing setups.</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="relative bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl transition duration-300">
+                    <div class="absolute -top-4 -left-4 w-10 h-10 bg-navy rounded-full flex items-center justify-center text-white font-black text-lg shadow-lg">2</div>
+                    <div class="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center text-navy mb-6 border border-sky-100">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 mb-3 tracking-tight">Hit Run Analysis</h3>
+                    <p class="text-slate-500 font-medium leading-relaxed text-sm">Our AI engine scans order flow, detects SMC structures, scores AI confidence, and maps the full price ladder — all in under 3 seconds.</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="relative bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl transition duration-300">
+                    <div class="absolute -top-4 -left-4 w-10 h-10 bg-navy rounded-full flex items-center justify-center text-white font-black text-lg shadow-lg">3</div>
+                    <div class="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center text-navy mb-6 border border-sky-100">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 mb-3 tracking-tight">Trade with precision</h3>
+                    <p class="text-slate-500 font-medium leading-relaxed text-sm">Get exact entry, stop-loss, and TP levels. Execute directly via TradingView / OKX integration or copy the setup manually — your choice.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENTO FEATURES GRID -->
+    <section class="py-24 relative z-10 border-t border-slate-200/50 bg-slate-50/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+                <p class="text-navy font-bold text-sm tracking-widest uppercase mb-3">Platform Features</p>
+                <h2 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">Everything a trader needs.</h2>
+                <p class="text-slate-500 text-lg font-medium">Seven battle-tested modules. One unified dashboard.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-auto reveal" style="transition-delay:0.1s;">
+
+                <!-- MA Stack — wide card col-span-2 -->
+                <div class="col-span-2 bg-white rounded-[2rem] p-7 border border-slate-100 shadow-sm hover:shadow-lg transition duration-300">
+                    <div class="flex items-center justify-between mb-5">
+                        <div>
+                            <p class="text-xs font-bold text-navy uppercase tracking-widest mb-1">Live Signal</p>
+                            <h3 class="text-xl font-black text-slate-900 tracking-tight">MA Stack Analysis</h3>
+                        </div>
+                        <div class="w-10 h-10 bg-navy/10 rounded-xl flex items-center justify-center text-navy">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="space-y-2.5">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-slate-500 w-10">MA20</span>
+                            <div class="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden"><div class="bg-green-500 h-2.5 rounded-full" style="width:88%"></div></div>
+                            <span class="text-xs font-bold text-green-600">Bull</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-slate-500 w-10">MA50</span>
+                            <div class="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden"><div class="bg-green-500 h-2.5 rounded-full" style="width:72%"></div></div>
+                            <span class="text-xs font-bold text-green-600">Bull</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-slate-500 w-10">MA200</span>
+                            <div class="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden"><div class="bg-sky-500 h-2.5 rounded-full" style="width:55%"></div></div>
+                            <span class="text-xs font-bold text-sky-600">Neutral</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium mt-4">Multi-timeframe stack consensus — updated every candle close.</p>
+                </div>
+
+                <!-- AI Confidence -->
+                <div class="bg-navy rounded-[2rem] p-7 border border-navy shadow-sm hover:shadow-lg transition duration-300 text-white">
+                    <p class="text-xs font-bold text-sky-300 uppercase tracking-widest mb-2">AI Scoring</p>
+                    <h3 class="text-lg font-black text-white tracking-tight mb-4">AI Confidence</h3>
+                    <div class="relative w-20 h-20 mx-auto mb-4">
+                        <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90">
+                            <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="3"/>
+                            <circle cx="18" cy="18" r="15.9" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="87 100" stroke-linecap="round"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-xl font-black text-white">87%</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-sky-200 font-medium text-center">High-confidence long setup detected on BTC/USDT 4H</p>
+                </div>
+
+                <!-- 25 Assets -->
+                <div class="bg-white rounded-[2rem] p-7 border border-slate-100 shadow-sm hover:shadow-lg transition duration-300">
+                    <p class="text-xs font-bold text-navy uppercase tracking-widest mb-2">Coverage</p>
+                    <h3 class="text-lg font-black text-slate-900 tracking-tight mb-4">25 Assets<br>One Dashboard</h3>
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-900 text-white rounded-full">BTC</span>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 text-white rounded-full">ETH</span>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-sky-100 text-navy rounded-full">SOL</span>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-sky-100 text-navy rounded-full">BNB</span>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-100 text-slate-700 rounded-full">XRP</span>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-100 text-slate-700 rounded-full">ADA</span>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-100 text-slate-700 rounded-full">DOGE</span>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-100 text-slate-500 rounded-full">+18</span>
+                    </div>
+                </div>
+
+                <!-- Price Ladder — tall card, row-span-2 -->
+                <div class="row-span-2 bg-white rounded-[2rem] p-7 border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col">
+                    <div class="mb-5">
+                        <p class="text-xs font-bold text-navy uppercase tracking-widest mb-1">Order Flow</p>
+                        <h3 class="text-xl font-black text-slate-900 tracking-tight">Precise Trade Setups</h3>
+                    </div>
+                    <div class="flex-1 space-y-1.5 text-xs font-mono">
+                        <div class="flex justify-between items-center px-3 py-1.5 bg-red-50 rounded-lg border-l-4 border-red-400">
+                            <span class="text-red-700 font-bold">69,800</span>
+                            <span class="text-red-500 text-[10px]">SELL 1.2 BTC</span>
+                        </div>
+                        <div class="flex justify-between items-center px-3 py-1.5 bg-red-50 rounded-lg border-l-4 border-red-300">
+                            <span class="text-red-700 font-bold">69,500</span>
+                            <span class="text-red-400 text-[10px]">SELL 0.8 BTC</span>
+                        </div>
+                        <div class="flex justify-between items-center px-3 py-1.5 bg-navy/5 rounded-lg border-2 border-navy">
+                            <span class="text-navy font-black">69,120</span>
+                            <span class="text-navy text-[10px] font-black">CURRENT</span>
+                        </div>
+                        <div class="flex justify-between items-center px-3 py-1.5 bg-green-50 rounded-lg border-l-4 border-green-400">
+                            <span class="text-green-700 font-bold">68,900</span>
+                            <span class="text-green-500 text-[10px]">BUY 2.4 BTC</span>
+                        </div>
+                        <div class="flex justify-between items-center px-3 py-1.5 bg-green-50 rounded-lg border-l-4 border-green-300">
+                            <span class="text-green-700 font-bold">68,500</span>
+                            <span class="text-green-400 text-[10px]">BUY 1.9 BTC</span>
+                        </div>
+                        <div class="flex justify-between items-center px-3 py-1.5 bg-green-50 rounded-lg border-l-4 border-green-300">
+                            <span class="text-green-700 font-bold">68,100</span>
+                            <span class="text-green-400 text-[10px]">BUY 3.1 BTC</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium mt-4">Live bid/ask depth mapped to key SMC levels.</p>
+                </div>
+
+                <!-- Volume Intelligence -->
+                <div class="bg-white rounded-[2rem] p-7 border border-slate-100 shadow-sm hover:shadow-lg transition duration-300">
+                    <p class="text-xs font-bold text-navy uppercase tracking-widest mb-2">On-Chain</p>
+                    <h3 class="text-lg font-black text-slate-900 tracking-tight mb-3">Volume Intelligence</h3>
+                    <div class="flex items-end gap-1 h-12">
+                        <div class="flex-1 bg-slate-200 rounded-sm" style="height:30%"></div>
+                        <div class="flex-1 bg-slate-300 rounded-sm" style="height:50%"></div>
+                        <div class="flex-1 bg-slate-200 rounded-sm" style="height:40%"></div>
+                        <div class="flex-1 bg-navy rounded-sm" style="height:90%"></div>
+                        <div class="flex-1 bg-sky-400 rounded-sm" style="height:70%"></div>
+                        <div class="flex-1 bg-sky-300 rounded-sm" style="height:60%"></div>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium mt-3">Institutional volume spike detected — 3.2× avg.</p>
+                </div>
+
+                <!-- TradingView -->
+                <div class="bg-slate-900 rounded-[2rem] p-7 border border-slate-800 shadow-sm hover:shadow-lg transition duration-300 text-white">
+                    <p class="text-xs font-bold text-sky-400 uppercase tracking-widest mb-2">Integration</p>
+                    <h3 class="text-lg font-black text-white tracking-tight mb-3">OKX &amp; TradingView</h3>
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-7 h-7 bg-sky-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <span class="text-xs font-bold text-slate-300">One-click execution ready</span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium">Push signals directly to TradingView or execute on OKX without switching tabs.</p>
+                </div>
+
+                <!-- Session Log -->
+                <div class="bg-white rounded-[2rem] p-7 border border-slate-100 shadow-sm hover:shadow-lg transition duration-300">
+                    <p class="text-xs font-bold text-navy uppercase tracking-widest mb-2">Live Feed</p>
+                    <h3 class="text-lg font-black text-slate-900 tracking-tight mb-3">Session Log</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                            <span class="text-slate-600 font-medium">BTC long setup triggered — 68,800</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-sky-500 flex-shrink-0"></span>
+                            <span class="text-slate-600 font-medium">ETH order block retest confirmed</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0"></span>
+                            <span class="text-slate-600 font-medium">SOL FVG fill — watch for rejection</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="py-24 relative z-10 border-t border-slate-200/50 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+                <p class="text-navy font-bold text-sm tracking-widest uppercase mb-3">Traders Love It</p>
+                <h2 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">Built for real traders.</h2>
+                <p class="text-slate-500 text-lg font-medium">Across Southeast Asia and beyond, traders are getting their edge back.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 reveal" style="transition-delay:0.1s;">
+                <!-- T1 -->
+                <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl transition duration-300 flex flex-col">
+                    <div class="flex items-center gap-1 text-yellow-400 mb-4">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+                    <p class="text-slate-700 font-medium leading-relaxed flex-1 mb-6">"The AI Confidence score alone changed how I trade. I used to second-guess every entry — now I wait for 80%+ and let the setups come to me. Win rate went from 48% to 67%."</p>
+                    <div class="flex items-center gap-3 mt-auto">
+                        <div class="w-10 h-10 bg-navy rounded-full flex items-center justify-center text-white font-black text-sm flex-shrink-0">AR</div>
+                        <div>
+                            <p class="font-bold text-slate-900 text-sm">Ahmad R.</p>
+                            <p class="text-xs text-slate-500 font-medium">Swing Trader — Jakarta, Indonesia</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- T2 -->
+                <div class="bg-navy rounded-[2rem] p-8 border border-navy shadow-xl flex flex-col text-white">
+                    <div class="flex items-center gap-1 text-yellow-300 mb-4">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+                    <p class="text-sky-100 font-medium leading-relaxed flex-1 mb-6">"I've tried four different dashboards. Quantichy is the only one where I understand exactly what the AI is telling me and why. The price ladder + volume intelligence combo is genuinely powerful."</p>
+                    <div class="flex items-center gap-3 mt-auto">
+                        <div class="w-10 h-10 bg-sky-400 rounded-full flex items-center justify-center text-white font-black text-sm flex-shrink-0">MK</div>
+                        <div>
+                            <p class="font-bold text-white text-sm">Marcus K.</p>
+                            <p class="text-xs text-sky-200 font-medium">Algo Trader — Singapore</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- T3 -->
+                <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl transition duration-300 flex flex-col">
+                    <div class="flex items-center gap-1 text-yellow-400 mb-4">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+                    <p class="text-slate-700 font-medium leading-relaxed flex-1 mb-6">"Setup in 5 minutes, profitable by the end of the week. The session log keeps me accountable, and seeing the MA stack consensus means I'm never trading against the trend blindly again."</p>
+                    <div class="flex items-center gap-3 mt-auto">
+                        <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-white font-black text-sm flex-shrink-0">LP</div>
+                        <div>
+                            <p class="font-bold text-slate-900 text-sm">Leo P.</p>
+                            <p class="text-xs text-slate-500 font-medium">Day Trader — Kuala Lumpur, Malaysia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
     <section class="py-24 relative z-10 text-center border-t border-slate-200/50 bg-white">
         <div class="max-w-3xl mx-auto px-4 reveal">
             <h2 data-i18n="cta_title" class="text-4xl md:text-5xl font-black mb-6 text-slate-900 tracking-tight">Ready to let AI find your edge?</h2>
             <p data-i18n="cta_desc" class="text-xl text-slate-600 mb-10 font-medium">Join top-tier traders automating their technical analysis and executing with absolute confidence.</p>
-            <a href="#" data-i18n="cta_btn" class="inline-block bg-black text-white px-12 py-5 rounded-full text-center font-bold text-xl hover:bg-slate-800 transition shadow-2xl">Deploy Capital Now</a>
+            <a href="#" data-i18n="cta_btn" class="inline-block bg-black text-white px-12 py-5 rounded-full text-center font-bold text-xl hover:bg-slate-800 transition shadow-2xl">Join Now</a>
         </div>
     </section>
 
-    <footer class="bg-slate-50 py-12 border-t border-slate-200 relative z-10">
-        <div class="max-w-7xl mx-auto px-4 text-center text-slate-400 text-xs leading-relaxed max-w-4xl font-medium">
-            <p data-i18n="footer_disc" class="mb-4">Cryptocurrency trading carries a high level of risk and may not be suitable for all investors. The AI-generated signals provided by Quantichy are for educational and informational purposes only. Past performance is no guarantee of future success.</p>
-            <p data-i18n="footer_copy">&copy; 2026 Quantichy AI. All rights reserved. For demonstration purposes.</p>
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-white pt-16 pb-8 border-t border-slate-800 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
+                <!-- Brand col -->
+                <div class="col-span-2 md:col-span-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+                            <span class="text-slate-900 font-black text-lg leading-none">Q</span>
+                        </div>
+                        <span class="text-xl font-black tracking-tighter text-white">Quantichy</span>
+                    </div>
+                    <p class="text-sm text-slate-400 font-medium leading-relaxed mb-5">Institutional crypto intelligence, built for every trader.</p>
+                    <div class="flex items-center gap-3">
+                        <a href="#" class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition" aria-label="Twitter">
+                            <svg class="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="#" class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition" aria-label="Telegram">
+                            <svg class="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                        </a>
+                        <a href="#" class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition" aria-label="Discord">
+                            <svg class="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.027.054a19.9 19.9 0 0 0 5.993 3.03.08.08 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <!-- Product -->
+                <div>
+                    <h4 class="text-xs font-black text-white uppercase tracking-widest mb-5">Product</h4>
+                    <ul class="space-y-3 text-sm text-slate-400 font-medium">
+                        <li><a href="#platform" class="hover:text-white transition">Platform</a></li>
+                        <li><a href="#features" class="hover:text-white transition">Features</a></li>
+                        <li><a href="#pricing" class="hover:text-white transition">Pricing</a></li>
+                        <li><a href="#how" class="hover:text-white transition">How it works</a></li>
+                        <li><a href="#" class="hover:text-white transition">Changelog</a></li>
+                    </ul>
+                </div>
+                <!-- Markets -->
+                <div>
+                    <h4 class="text-xs font-black text-white uppercase tracking-widest mb-5">Markets</h4>
+                    <ul class="space-y-3 text-sm text-slate-400 font-medium">
+                        <li><a href="#" class="hover:text-white transition">BTC / USDT</a></li>
+                        <li><a href="#" class="hover:text-white transition">ETH / USDT</a></li>
+                        <li><a href="#" class="hover:text-white transition">SOL / USDT</a></li>
+                        <li><a href="#" class="hover:text-white transition">All 25 pairs →</a></li>
+                    </ul>
+                </div>
+                <!-- Resources -->
+                <div>
+                    <h4 class="text-xs font-black text-white uppercase tracking-widest mb-5">Resources</h4>
+                    <ul class="space-y-3 text-sm text-slate-400 font-medium">
+                        <li><a href="#" class="hover:text-white transition">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition">API Reference</a></li>
+                        <li><a href="#" class="hover:text-white transition">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition">Trading Guides</a></li>
+                    </ul>
+                </div>
+                <!-- Company -->
+                <div>
+                    <h4 class="text-xs font-black text-white uppercase tracking-widest mb-5">Company</h4>
+                    <ul class="space-y-3 text-sm text-slate-400 font-medium">
+                        <li><a href="#" class="hover:text-white transition">About</a></li>
+                        <li><a href="#" class="hover:text-white transition">Careers</a></li>
+                        <li><a href="#" class="hover:text-white transition">Contact</a></li>
+                        <li><a href="#" class="hover:text-white transition">Partners</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Bottom bar -->
+            <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-medium">
+                <p>&copy; 2026 Quantichy AI. All rights reserved.</p>
+                <p class="text-center text-slate-600 max-w-xl">Cryptocurrency trading carries a high level of risk. AI-generated signals are for informational purposes only. Not financial advice.</p>
+                <div class="flex gap-5">
+                    <a href="#" class="hover:text-slate-300 transition">Privacy</a>
+                    <a href="#" class="hover:text-slate-300 transition">Terms</a>
+                    <a href="#" class="hover:text-slate-300 transition">Risk Disclosure</a>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -870,16 +1237,16 @@
         const translations = {
             // Navbar
             nav_platform: { en: "Platform", id: "Platform" },
-            nav_analytics: { en: "AI Analytics", id: "Analitik AI" },
+            nav_analytics: { en: "Features", id: "Fitur" },
             nav_pricing: { en: "Pricing", id: "Harga" },
-            nav_company: { en: "Company", id: "Perusahaan" },
+            nav_company: { en: "How it works", id: "Cara kerja" },
             nav_login: { en: "Log in", id: "Masuk" },
             nav_cta: { en: "Join Now", id: "Gabung Sekarang" },
 
             // Hero
             hero_title: { en: "Institutional crypto analysis,<br> <span class=\"text-navy\">democratized.</span>", id: "Analisis kripto institusional,<br> <span class=\"text-navy\">didemokratisasikan.</span>" },
             hero_desc: { en: "Deploy advanced AI to detect hidden order blocks, map on-chain liquidity, and execute high-probability trade setups with institutional precision.", id: "Kerahkan AI canggih untuk mendeteksi order block tersembunyi, memetakan likuiditas on-chain, dan mengeksekusi setup trading probabilitas tinggi dengan presisi institusional." },
-            hero_btn1: { en: "Deploy Capital", id: "Kerahkan Modal" },
+            hero_btn1: { en: "Join Now", id: "Gabung Sekarang" },
             hero_btn2: { en: "View Demo", id: "Lihat Demo" },
 
             // Preview Slider
@@ -963,7 +1330,7 @@
             // CTA & Footer
             cta_title: { en: "Ready to let AI find your edge?", id: "Siap biarkan AI menemukan keunggulan Anda?" },
             cta_desc: { en: "Join top-tier traders automating their technical analysis and executing with absolute confidence.", id: "Bergabunglah dengan trader papan atas yang mengotomatiskan analisis teknis mereka dan mengeksekusi dengan keyakinan absolut." },
-            cta_btn: { en: "Deploy Capital Now", id: "Kerahkan Modal Sekarang" },
+            cta_btn: { en: "Join Now", id: "Gabung Sekarang" },
             footer_disc: { en: "Cryptocurrency trading carries a high level of risk and may not be suitable for all investors. The AI-generated signals provided by Quantichy are for educational and informational purposes only. Past performance is no guarantee of future success.", id: "Trading mata uang kripto membawa tingkat risiko yang tinggi dan mungkin tidak cocok untuk semua investor. Sinyal yang dihasilkan AI dari Quantichy hanya untuk tujuan pendidikan dan informasi. Kinerja masa lalu bukan jaminan keberhasilan di masa depan." },
             footer_copy: { en: "&copy; 2026 Quantichy AI. All rights reserved. For demonstration purposes.", id: "&copy; 2026 Quantichy AI. Seluruh hak cipta dilindungi. Untuk tujuan demonstrasi." }
         };
@@ -1209,6 +1576,45 @@
                 nav.classList.remove('shadow-md', 'bg-white/95');
                 nav.classList.add('bg-white/90');
             }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIconOpen = document.getElementById('menu-icon-open');
+        const menuIconClose = document.getElementById('menu-icon-close');
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                const isOpen = !mobileMenu.classList.contains('hidden');
+                mobileMenu.classList.toggle('hidden', isOpen);
+                menuIconOpen.classList.toggle('hidden', !isOpen);
+                menuIconClose.classList.toggle('hidden', isOpen);
+            });
+        }
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuIconOpen.classList.remove('hidden');
+                menuIconClose.classList.add('hidden');
+            });
+        });
+
+        // Smooth scroll for all anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                const target = document.querySelector(href);
+                if (target) {
+                    e.preventDefault();
+                    const navHeight = document.getElementById('navbar').offsetHeight;
+                    const targetPos = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+                    window.scrollTo({ top: targetPos, behavior: 'smooth' });
+                }
+            });
         });
     </script>
 </body>
