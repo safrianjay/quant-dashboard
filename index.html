@@ -3404,27 +3404,23 @@ function initDemoMode(){
     sbEmail.innerHTML = '<a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:600">View Plans &rarr;</a>';
   }
 
-  /* Blur deep analysis section after 1 minute (60000 ms) */
-  setTimeout(() => {
-    isPaywallActive = true;
-    const paywallContent = document.getElementById('demo-paywall-content');
-    const paywallOverlay = document.getElementById('demo-paywall-overlay');
-    if(paywallContent && paywallOverlay){
-      paywallContent.style.transition = 'filter 1s ease, opacity 1s ease';
-      paywallContent.style.filter = 'blur(6px)';
-      paywallContent.style.opacity = '0.6';
-      paywallContent.style.pointerEvents = 'none';
-      paywallContent.style.userSelect = 'none';
-      paywallOverlay.style.display = 'flex';
-      paywallOverlay.style.animation = 'overlayIn 0.5s ease both';
-    }
-  }, 60000);
+  /* Blur deep analysis section immediately in demo mode */
+  isPaywallActive = true;
+  const paywallContent = document.getElementById('demo-paywall-content');
+  const paywallOverlay = document.getElementById('demo-paywall-overlay');
+  if(paywallContent && paywallOverlay){
+    paywallContent.style.filter = 'blur(6px)';
+    paywallContent.style.opacity = '0.6';
+    paywallContent.style.pointerEvents = 'none';
+    paywallContent.style.userSelect = 'none';
+    paywallOverlay.style.display = 'flex';
+  }
 
-  console.log('🎮 Demo mode active — features are limited (paywall triggers in 1 min)');
+  console.log('🎮 Demo mode active — deep analysis features are locked');
 }
 
 function handleRunAnalysis(){
-  if(DEMO_MODE && isPaywallActive){
+  if(DEMO_MODE){
     showUpgradeModal('analysis');
   } else {
     runLiveAnalysis();
