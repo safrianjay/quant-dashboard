@@ -561,7 +561,7 @@ p,span,div,input,button{
         <button class="period utf" data-tf="1W"  onclick="unifiedTF('1W')">1W</button>
       </div>
       <!-- Run Analysis button -->
-      <button onclick="showUpgradeModal('analysis')" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ Run Analysis</button>
+      <button onclick="handleRunAnalysis()" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ Run Analysis</button>
       <button onclick="openPanel('long')" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:#0F172A;color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span class="entry-btn-label">Add Entry</span>
@@ -2282,7 +2282,7 @@ function syncEntryCoinPrices(){
 
 /* ── Panel open/close ── */
 window.openPanel = function(dir='long'){
-  if(DEMO_MODE){ showUpgradeModal('position'); return; }
+  if(DEMO_MODE && isPaywallActive){ showUpgradeModal('position'); return; }
   entryDir = dir;
   syncEntryCoinPrices();
   const overlay = document.createElement("div");
@@ -3405,7 +3405,6 @@ function initDemoMode(){
   }
 
   /* Hide deep analysis section immediately in demo mode */
-  isPaywallActive = true;
   const paywallContent = document.getElementById('demo-paywall-content');
   const paywallOverlay = document.getElementById('demo-paywall-overlay');
   if(paywallContent && paywallOverlay){
@@ -3417,11 +3416,18 @@ function initDemoMode(){
     paywallOverlay.style.border = '1px solid #E2E8F0';
   }
 
-  console.log('🎮 Demo mode active — deep analysis features are locked');
+  /* But allow CTAs (Run Analysis / Add Entry) for the first 60 seconds */
+  isPaywallActive = false;
+  setTimeout(() => {
+    isPaywallActive = true;
+    console.log('🔒 Demo CTA lock active');
+  }, 60000);
+
+  console.log('🎮 Demo mode active — charts hidden immediately, buttons locked in 60s');
 }
 
 function handleRunAnalysis(){
-  if(DEMO_MODE){
+  if(DEMO_MODE && isPaywallActive){
     showUpgradeModal('analysis');
   } else {
     runLiveAnalysis();
