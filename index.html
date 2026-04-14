@@ -561,7 +561,7 @@ p,span,div,input,button{
         <button class="period utf" data-tf="1W"  onclick="unifiedTF('1W')">1W</button>
       </div>
       <!-- Run Analysis button -->
-      <button onclick="handleRunAnalysis()" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ Run Analysis</button>
+      <button onclick="showUpgradeModal('analysis')" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ Run Analysis</button>
       <button onclick="openPanel('long')" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:#0F172A;color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span class="entry-btn-label">Add Entry</span>
@@ -2282,7 +2282,7 @@ function syncEntryCoinPrices(){
 
 /* ── Panel open/close ── */
 window.openPanel = function(dir='long'){
-  if(DEMO_MODE && isPaywallActive){ showUpgradeModal('position'); return; }
+  if(DEMO_MODE){ showUpgradeModal('position'); return; }
   entryDir = dir;
   syncEntryCoinPrices();
   const overlay = document.createElement("div");
