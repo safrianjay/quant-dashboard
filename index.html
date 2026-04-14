@@ -3415,6 +3415,10 @@ function initDemoMode(){
     sbEmail.innerHTML = '<a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:700;font-size:12px;line-height:1;margin-top:4px;display:block">View Plans &rarr;</a>';
   }
 
+  /* Hide Sign Out button in demo mode */
+  const signOutBtn = document.querySelector('button[onclick="doSignOut()"]');
+  if(signOutBtn) signOutBtn.style.display = 'none';
+
   /* Add standalone "Back to Website" link under the profile box */
   const footerRow = document.querySelector('.user-footer-row');
   if(footerRow && !document.getElementById('sb-back-link')){
