@@ -6,6 +6,14 @@
     <title>Quantichy | AI-Powered Crypto Dashboard</title>
     <link href="/styles.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        @media (max-width: 767px) {
+            #platform-grid > * {
+                grid-column: span 1 !important;
+                grid-row: span 1 !important;
+            }
+        }
+    </style>
 </head>
 <body class="antialiased relative" style="overflow-x: clip;">
 
@@ -351,7 +359,7 @@
                 <p class="text-slate-500 text-lg font-medium">Seven battle-tested modules. One unified dashboard.</p>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-auto reveal" style="transition-delay:0.1s;">
+            <div id="platform-grid" class="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-auto reveal" style="transition-delay:0.1s;">
 
                 <!-- MA Stack — wide card col-span-2 -->
                 <div class="col-span-2 bg-white rounded-[2rem] p-7 border border-slate-100 shadow-sm hover:shadow-lg transition duration-300">
