@@ -1277,110 +1277,106 @@
                     <a href="#" class="hover:text-slate-300 transition">Risk Disclosure</a>
                 </div>
             </div>
-        </div>
-    </footer>
-
-    <script>
         /* --- Translations Object --- */
         const translations = {
             // Navbar
             nav_platform: { en: "Platform", id: "Platform" },
-            nav_analytics: { en: "AI Analytics", id: "Analitik AI" },
+            nav_analytics: { en: "AI Analytics", id: "Analisis AI" },
             nav_pricing: { en: "Pricing", id: "Harga" },
-            nav_company: { en: "How it works", id: "Cara kerja" },
+            nav_company: { en: "How it works", id: "Cara Kerja" },
             nav_login: { en: "Log in", id: "Masuk" },
-            nav_cta: { en: "Join Now", id: "Gabung Sekarang" },
+            nav_cta: { en: "Join Now", id: "Mulai Sekarang" },
 
             // Hero
-            hero_title: { en: "Institutional crypto analysis,<br> <span class=\"text-navy\">democratized.</span>", id: "Analisis kripto institusional,<br> <span class=\"text-navy\">didemokratisasikan.</span>" },
-            hero_desc: { en: "Deploy advanced AI to detect hidden order blocks, map on-chain liquidity, and execute high-probability trade setups with institutional precision.", id: "Kerahkan AI canggih untuk mendeteksi order block tersembunyi, memetakan likuiditas on-chain, dan mengeksekusi setup trading probabilitas tinggi dengan presisi institusional." },
-            hero_btn1: { en: "Join Now", id: "Gabung Sekarang" },
-            hero_btn2: { en: "View Demo", id: "Lihat Demo" },
+            hero_title: { en: "Institutional crypto analysis,<br> <span class=\"text-navy\">democratized.</span>", id: "Analisis kripto level pro,<br> <span class=\"text-navy\">kini buat kamu semua.</span>" },
+            hero_desc: { en: "Deploy advanced AI to detect hidden order blocks, map on-chain liquidity, and execute high-probability trade setups with institutional precision.", id: "Pake AI canggih buat deteksi order block, petakan likuiditas on-chain, dan jalanin setup trading dengan presisi tinggi ala institusi." },
+            hero_btn1: { en: "Join Now", id: "Daftar Sekarang" },
+            hero_btn2: { en: "View Demo", id: "Coba Demo" },
 
             // Preview Slider
-            preview_title: { en: "Live On-Chain Intelligence", id: "Intelijen On-Chain Langsung" },
+            preview_title: { en: "Live On-Chain Intelligence", id: "Analisis On-Chain Real-Time" },
 
             // Sec 1
-            sec1_title: { en: "Deconstruct Price Action with AI.", id: "Dekonstruksi Pergerakan Harga dengan AI." },
-            sec1_desc: { en: "Our proprietary algorithms map Smart Money Concepts in real-time, visualizing institutional liquidity zones and automating high-probability trade setups directly on your chart.", id: "Algoritma eksklusif kami memetakan Konsep Uang Pintar (SMC) secara real-time, memvisualisasikan zona likuiditas institusional dan mengotomatiskan setup trading probabilitas tinggi langsung di chart Anda." },
+            sec1_title: { en: "Deconstruct Price Action with AI.", id: "Bedah Pergerakan Harga Pake AI." },
+            sec1_desc: { en: "Our proprietary algorithms map Smart Money Concepts in real-time, visualizing institutional liquidity zones and automating high-probability trade setups directly on your chart.", id: "Algoritma kita memetakan Smart Money Concepts (SMC) secara real-time, visualisasikan zona likuiditas, dan bikin setup trading otomatis langsung di chart kamu." },
             
             // Widgets
             w1_title: { en: "Automated SMC Detection", id: "Deteksi SMC Otomatis" },
-            w1_desc: { en: "Hover over the chart to interact with mapped Smart Money Concepts. We programmatically identify Rejection Blocks, Fair Value Gaps, and institutional liquidity zones instantly.", id: "Arahkan kursor ke chart untuk berinteraksi dengan pemetaan Konsep Uang Pintar. Kami mengidentifikasi Rejection Blocks, Fair Value Gaps, dan zona likuiditas institusional secara instan." },
+            w1_desc: { en: "Hover over the chart to interact with mapped Smart Money Concepts. We programmatically identify Rejection Blocks, Fair Value Gaps, and institutional liquidity zones instantly.", id: "Cukup arahin kursor ke chart buat lihat Smart Money Concepts. Kita bantu identifikasi Rejection Blocks, FVG, dan zona likuiditas secara instan." },
             w2_title: { en: "Algorithmic Setup Visualizer", id: "Visualisasi Setup Algoritmik" },
-            w2_desc: { en: "Turn complex market geometry into actionable signals. Click <b>\"Simulate Edge\"</b> to witness how the algorithm dynamically trails stop-losses as profit targets are systematically hit.", id: "Ubah geometri pasar kompleks menjadi sinyal yang dapat ditindaklanjuti. Klik <b>\"Simulate Edge\"</b> untuk melihat bagaimana algoritma secara dinamis menaikkan stop-loss saat target profit tercapai secara sistematis." },
-            sim_btn: { en: "Simulate Edge ▶", id: "Simulasi Keunggulan ▶" },
+            w2_desc: { en: "Turn complex market geometry into actionable signals. Click <b>\"Simulate Edge\"</b> to witness how the algorithm dynamically trails stop-losses as profit targets are systematically hit.", id: "Ubah data pasar yang ribet jadi sinyal siap pakai. Klik <b>\"Simulate Edge\"</b> buat lihat AI kita jalanin stop-loss dinamis pas target profit tercapai." },
+            sim_btn: { en: "Simulate Edge ▶", id: "Simulasikan Edge ▶" },
             
             w3_title: { en: "Stochastic Risk Modeling", id: "Pemodelan Risiko Stokastik" },
-            w3_desc: { en: "Simulate 50 automated executions. Uncover how defined risk shapes your equity curve.", id: "Simulasikan 50 eksekusi otomatis. Temukan bagaimana risiko yang ditetapkan membentuk kurva ekuitas Anda." },
-            sim_winrate: { en: "Win Rate", id: "Rasio Kemenangan" },
-            sim_rr: { en: "Reward:Risk", id: "Hasil:Risiko" },
-            sim_risk: { en: "Risk per Trade", id: "Risiko per Trading" },
+            w3_desc: { en: "Simulate 50 automated executions. Uncover how defined risk shapes your equity curve.", id: "Simulasiin 50 eksekusi otomatis. Lihat gimana manajemen risiko bisa nentuin kurva profit kamu." },
+            sim_winrate: { en: "Win Rate", id: "Win Rate" },
+            sim_rr: { en: "Reward:Risk", id: "Rasio RR" },
+            sim_risk: { en: "Risk per Trade", id: "Risiko per Trade" },
             sim_balance: { en: "Projected Equity", id: "Proyeksi Ekuitas" },
-            sim_drawdown: { en: "Peak Drawdown", id: "Drawdown Puncak" },
+            sim_drawdown: { en: "Peak Drawdown", id: "Drawdown Maksimal" },
             
-            w4_title: { en: "Rule-Based Strategy Builder", id: "Pembuat Strategi Berbasis Aturan" },
-            w4_desc: { en: "Architect and backtest strict logic-driven trading directives.", id: "Bangun dan uji kembali direktif trading berbasis logika yang ketat." },
+            w4_title: { en: "Rule-Based Strategy Builder", id: "Bikin Strategi Pake Aturan" },
+            w4_desc: { en: "Architect and backtest strict logic-driven trading directives.", id: "Susun dan uji strategi trading kamu pake logika yang mantap." },
             build_context: { en: "Market Context (Thesis)", id: "Konteks Pasar (Tesis)" },
-            build_entry: { en: "Entry Trigger", id: "Pemicu Masuk (Entry)" },
-            build_exit: { en: "Exit Strategy", id: "Strategi Keluar (Exit)" },
-            build_plan: { en: "Compiled Directive", id: "Direktif yang Dikompilasi" },
+            build_entry: { en: "Entry Trigger", id: "Pemicu Entry" },
+            build_exit: { en: "Exit Strategy", id: "Strategi Exit" },
+            build_plan: { en: "Compiled Directive", id: "Rencana yang Disusun" },
 
             // Squads
-            squad_label: { en: "Enterprise Vaults", id: "Vault Perusahaan" },
-            squad_title: { en: "Collaborative <br><span class=\"text-navy italic font-serif tracking-normal\">multi-sig execution.</span>", id: "Eksekusi multi-sig <br><span class=\"text-navy italic font-serif tracking-normal\">kolaboratif.</span>" },
-            squad_desc: { en: "Pool capital, share AI-generated signals, and execute group strategies seamlessly via enterprise-grade multi-signature vaults. Optimize collective portfolio risk on-chain.", id: "Kumpulkan modal, bagikan sinyal dari AI, dan eksekusi strategi grup dengan mulus via vault multi-signature standar perusahaan. Optimalkan risiko portofolio kolektif secara on-chain." },
+            squad_label: { en: "Enterprise Vaults", id: "Vault Level Pro" },
+            squad_title: { en: "Collaborative <br><span class=\"text-navy italic font-serif tracking-normal\">multi-sig execution.</span>", id: "Eksekusi multi-sig <br><span class=\"text-navy italic font-serif tracking-normal\">bareng tim kamu.</span>" },
+            squad_desc: { en: "Pool capital, share AI-generated signals, and execute group strategies seamlessly via enterprise-grade multi-signature vaults. Optimize collective portfolio risk on-chain.", id: "Kumpulin modal, bagiin sinyal dari AI, dan jalanin strategi grup dengan mulus lewat vault multi-sig. Pantau risiko tim kamu secara on-chain." },
             
             squad_w1_sub: { en: "Asset Distribution", id: "Distribusi Aset" },
-            squad_w1_title: { en: "Treasury Rebalancing", id: "Rebalancing Perbendaharaan" },
-            squad_w1_desc: { en: "Set up and manage a collective strategy. AI automatically adjusts your vault's asset allocations to optimize shared yields across DeFi ecosystems.", id: "Atur dan kelola strategi kolektif. AI secara otomatis menyesuaikan alokasi aset vault Anda untuk mengoptimalkan keuntungan bersama di seluruh ekosistem DeFi." },
+            squad_w1_title: { en: "Treasury Rebalancing", id: "Rebalancing Saldo" },
+            squad_w1_desc: { en: "Set up and manage a collective strategy. AI automatically adjusts your vault's asset allocations to optimize shared yields across DeFi ecosystems.", id: "Atur strategi kolektif tim kamu. AI bakal nyesuain alokasi aset vault secara otomatis buat maksimalin hasil di ekosistem DeFi." },
             
             squad_w2_sub: { en: "Market Conditions", id: "Kondisi Pasar" },
             status_bull: { en: "BULLISH", id: "BULLISH" },
             status_neu: { en: "NEUTRAL", id: "NETRAL" },
-            status_cross: { en: "CROSSOVER", id: "PERSILANGAN" },
+            status_cross: { en: "CROSSOVER", id: "CROSSOVER" },
             squad_w2_title: { en: "Dynamic Risk Management", id: "Manajemen Risiko Dinamis" },
-            squad_w2_desc: { en: "Define strict shared risk parameters for your team. AI monitors macro conditions and dynamically adjusts collective downside protection.", id: "Tentukan parameter risiko bersama yang ketat untuk tim Anda. AI memonitor kondisi makro dan secara dinamis menyesuaikan perlindungan penurunan kolektif." },
+            squad_w2_desc: { en: "Define strict shared risk parameters for your team. AI monitors macro conditions and dynamically adjusts collective downside protection.", id: "Tentukan batas risiko buat tim kamu. AI pantau kondisi makro dan atur proteksi aset secara dinamis." },
             
             squad_w3_sub: { en: "Liquidity Pool Depth", id: "Kedalaman Liquidity Pool" },
             squad_w3_title: { en: "On-Chain Liquidity Map", id: "Peta Likuiditas On-Chain" },
-            squad_w3_desc: { en: "Gain a unified view of liquidity across top DEXes. AI visualizes book depth, enabling data-driven team votes on major capital deployments.", id: "Dapatkan pandangan terpadu likuiditas di berbagai DEX teratas. AI memvisualisasikan kedalaman buku pesanan, memungkinkan voting tim berbasis data untuk penempatan modal besar." },
+            squad_w3_desc: { en: "Gain a unified view of liquidity across top DEXes. AI visualizes book depth, enabling data-driven team votes on major capital deployments.", id: "Pantau likuiditas di berbagai DEX sekaligus. AI visualisasikan data pasar biar tim kamu bisa voting buat kelola modal besar." },
             
             squad_w4_sub: { en: "Execution Routes", id: "Rute Eksekusi" },
-            squad_w4_opt: { en: "Optimal Route Found", id: "Rute Optimal Ditemukan" },
+            squad_w4_opt: { en: "Optimal Route Found", id: "Rute Terbaik Ketemu" },
             squad_w4_m1: { en: "Execution Efficiency", id: "Efisiensi Eksekusi" },
             squad_w4_m2: { en: "Fee Optimization %", id: "Optimasi Biaya %" },
             squad_w4_title: { en: "Automated Smart Routing", id: "Routing Cerdas Otomatis" },
-            squad_w4_desc: { en: "Never suffer from high slippage again. Our aggregator finds the most efficient execution paths to minimize basis points lost on entry and exit.", id: "Tidak akan pernah mengalami slippage tinggi lagi. Agregator kami menemukan jalur eksekusi paling efisien untuk meminimalkan poin basis yang hilang saat entry dan exit." },
+            squad_w4_desc: { en: "Never suffer from high slippage again. Our aggregator finds the most efficient execution paths to minimize basis points lost on entry and exit.", id: "Gak perlu takut slippage tinggi lagi. Agregator kita cari jalur eksekusi paling efisien biar biaya trade kamu seminim mungkin." },
 
             // Features
-            feat_title: { en: "Execute strategies built for capital preservation.", id: "Eksekusi strategi yang dirancang untuk preservasi modal." },
-            f1_title: { en: "Manage your downside", id: "Kelola risiko penurunan" },
-            f1_desc: { en: "Our core AI models dynamically adjust your stop-loss and take-profit levels in real-time, helping protect your capital from sudden crypto market volatility before it happens.", id: "Model AI inti kami menyesuaikan level stop-loss dan take-profit Anda secara dinamis dan real-time, membantu melindungi modal Anda dari volatilitas pasar kripto yang tiba-tiba." },
-            f2_title: { en: "Optimize execution paths", id: "Optimalkan jalur eksekusi" },
-            f2_desc: { en: "Smart routing algorithms automatically find the deepest liquidity pools across multiple exchanges to execute your trades with minimal slippage and the lowest possible network fees.", id: "Algoritma perutean cerdas secara otomatis menemukan kumpulan likuiditas terdalam di berbagai bursa untuk mengeksekusi trading Anda dengan slippage minimal dan biaya jaringan terendah." },
-            f3_title: { en: "Monitor markets 24/7", id: "Pantau pasar 24/7" },
-            f3_desc: { en: "Crypto never sleeps, and neither does our engine. The software continuously scans thousands of pairs for optimal entry and exit points, maintaining your algorithmic edge even when you're offline.", id: "Kripto tidak pernah tidur, begitu pula mesin kami. Perangkat lunak ini terus memindai ribuan pasangan aset untuk titik masuk dan keluar optimal, menjaga keunggulan algoritmik Anda meskipun offline." },
-            f4_title: { en: "Diversify across protocols", id: "Diversifikasi di berbagai protokol" },
-            f4_desc: { en: "Easily spread your risk by deploying automated strategies across a curated mix of top-tier Layer 1s, emerging DeFi tokens, and established foundational assets like BTC and ETH.", id: "Sebarkan risiko Anda dengan mudah dengan menerapkan strategi otomatis di berbagai Layer 1 tingkat atas, token DeFi baru, dan aset dasar mapan seperti BTC dan ETH." },
+            feat_title: { en: "Execute strategies built for capital preservation.", id: "Jalanin strategi trading yang bantu jaga modal kamu." },
+            f1_title: { en: "Manage your downside", id: "Kelola Risiko Kamu" },
+            f1_desc: { en: "Our core AI models dynamically adjust your stop-loss and take-profit levels in real-time, helping protect your capital from sudden crypto market volatility before it happens.", id: "Model AI kita atur stop-loss dan take-profit kamu secara real-time. Modal kamu jadi lebih aman dari pergerakan pasar yang tiba-tiba." },
+            f2_title: { en: "Optimize execution paths", id: "Jalur Eksekusi Terbaik" },
+            f2_desc: { en: "Smart routing algorithms automatically find the deepest liquidity pools across multiple exchanges to execute your trades with minimal slippage and the lowest possible network fees.", id: "Algoritma pinter kita cari likuiditas terbaik di berbagai bursa biar trading kamu lancar dengan slippage dan biaya paling rendah." },
+            f3_title: { en: "Monitor markets 24/7", id: "Pantau Pasar 24/7" },
+            f3_desc: { en: "Crypto never sleeps, and neither does our engine. The software continuously scans thousands of pairs for optimal entry and exit points, maintaining your algorithmic edge even when you're offline.", id: "Pasar kripto gak pernah tidur, begitu juga AI kita. Sistem kita terus pantau ribuan koin buat cari peluang terbaik buat kamu kapan aja." },
+            f4_title: { en: "Diversify across protocols", id: "Diversifikasi Antar Protokol" },
+            f4_desc: { en: "Easily spread your risk by deploying automated strategies across a curated mix of top-tier Layer 1s, emerging DeFi tokens, and established foundational assets like BTC and ETH.", id: "Sebarkan risiko kamu lewat strategi otomatis di berbagai Layer 1, token DeFi baru, sampe koin kuat kayak BTC dan ETH." },
 
             // Pricing
-            price_title: { en: "Institutional tools, accessible pricing.", id: "Alat institusional, harga terjangkau." },
-            price_desc: { en: "Transparent tiers. Powerful features at every level. Securely funded via Web3 wallets.", id: "Tingkatan yang transparan. Fitur kuat di setiap level. Didanai dengan aman via wallet Web3." },
-            p1_desc: { en: "Perfect for manual charting and verifying visual setups.", id: "Sempurna untuk charting manual dan memverifikasi setup visual." },
-            p1_btn: { en: "Get Started", id: "Mulai" },
+            price_title: { en: "Institutional tools, accessible pricing.", id: "Alat level institusi, harga dapet banget." },
+            price_desc: { en: "Transparent tiers. Powerful features at every level. Securely funded via Web3 wallets.", id: "Pilihan paket yang transparan. Fitur lengkap di tiap level. Bayar aman pake wallet Web3 kamu." },
+            p1_desc: { en: "Perfect for manual charting and verifying visual setups.", id: "Pas buat kamu yang mau charting manual dan cek setup visual." },
+            p1_btn: { en: "Get Started", id: "Yuk Mulai" },
             p2_badge: { en: "Most Popular", id: "Paling Populer" },
-            p2_desc: { en: "For algorithmic traders needing deeper analytics and API speed.", id: "Untuk trader algoritmik yang membutuhkan analitik mendalam dan kecepatan API." },
-            p2_btn: { en: "Upgrade to Pro", id: "Tingkatkan ke Pro" },
-            p3_desc: { en: "Maximum precision for multi-sig deployment & hedge funds.", id: "Presisi maksimum untuk penempatan multi-sig & hedge fund." },
+            p2_desc: { en: "For algorithmic traders needing deeper analytics and API speed.", id: "Buat para trader algo yang butuh analisis dalem dan data cepet." },
+            p2_btn: { en: "Upgrade to Pro", id: "Upgrade ke Pro" },
+            p3_desc: { en: "Maximum precision for multi-sig deployment & hedge funds.", id: "Presisi maksimal buat tim besar & hedge fund." },
             p3_btn: { en: "Contact Sales", id: "Hubungi Penjualan" },
 
             // CTA & Footer
-            cta_title: { en: "Ready to let AI find your edge?", id: "Siap biarkan AI menemukan keunggulan Anda?" },
-            cta_desc: { en: "Join top-tier traders automating their technical analysis and executing with absolute confidence.", id: "Bergabunglah dengan trader papan atas yang mengotomatiskan analisis teknis mereka dan mengeksekusi dengan keyakinan absolut." },
+            cta_title: { en: "Ready to let AI find your edge?", id: "Siap biarkan AI cari cuan buat kamu?" },
+            cta_desc: { en: "Join top-tier traders automating their technical analysis and executing with absolute confidence.", id: "Yuk join bareng trader pro lainnya, jalanin analisis otomatis, dan trading dengan jauh lebih pede." },
             cta_btn: { en: "Join Now", id: "Gabung Sekarang" },
-            footer_disc: { en: "Cryptocurrency trading carries a high level of risk and may not be suitable for all investors. The AI-generated signals provided by Quantichy are for educational and informational purposes only. Past performance is no guarantee of future success.", id: "Trading mata uang kripto membawa tingkat risiko yang tinggi dan mungkin tidak cocok untuk semua investor. Sinyal yang dihasilkan AI dari Quantichy hanya untuk tujuan pendidikan dan informasi. Kinerja masa lalu bukan jaminan keberhasilan di masa depan." },
-            footer_copy: { en: "&copy; 2026 Quantichy AI. All rights reserved. For demonstration purposes.", id: "&copy; 2026 Quantichy AI. Seluruh hak cipta dilindungi. Untuk tujuan demonstrasi." }
+            footer_disc: { en: "Cryptocurrency trading carries a high level of risk and may not be suitable for all investors. The AI-generated signals provided by Quantichy are for educational and informational purposes only. Past performance is no guarantee of future success.", id: "Trading kripto punya risiko tinggi dan mungkin gak cocok buat semua orang. Sinyal AI dari Quantichy cuma buat edukasi dan informasi. Profit masa lalu bukan jaminan buat masa depan ya." },
+            footer_copy: { en: "&copy; 2026 Quantichy AI. All rights reserved. For demonstration purposes.", id: "&copy; 2026 Quantichy AI. Hak cipta dilindungi. Buat tujuan demonstrasi." }
         };
 
         /* --- Language Switcher Logic --- */
