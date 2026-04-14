@@ -3381,12 +3381,17 @@ function initDemoMode(){
       <span style="background:linear-gradient(135deg,#F59E0B,#D97706);padding:3px 10px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">DEMO</span>
       <span style="font-size:13px;font-weight:600;color:#E2E8F0">You're exploring a limited preview</span>
     </div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <a href="/pricing" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;padding:6px 18px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;transition:transform .15s;box-shadow:0 2px 8px rgba(245,158,11,.3)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Upgrade Now</a>
+    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <a href="/pricing" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;transition:transform .15s;box-shadow:0 2px 8px rgba(245,158,11,.3);white-space:nowrap" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Upgrade Now</a>
     </div>
   `;
   document.body.prepend(banner);
-  document.body.style.paddingTop = '44px';
+  
+  const adjustPadding = () => {
+    document.body.style.paddingTop = window.innerWidth <= 480 ? '64px' : '54px';
+  };
+  adjustPadding();
+  window.addEventListener('resize', adjustPadding);
 
   /* Override user chip to show demo badge */
   const emailEl = document.getElementById('user-email');
@@ -3427,13 +3432,18 @@ function initDemoMode(){
   isPaywallActive = true;
   const paywallContent = document.getElementById('demo-paywall-content');
   const paywallOverlay = document.getElementById('demo-paywall-overlay');
-  if(paywallContent && paywallOverlay){
-    paywallContent.style.visibility = 'hidden';
-    paywallContent.style.height = '400px'; /* maintain height */
+  const paywallWrapper = document.getElementById('demo-paywall-wrapper');
+  
+  if(paywallContent && paywallOverlay && paywallWrapper){
+    paywallContent.style.display = 'none'; // Use display:none to remove whitespace
+    paywallWrapper.style.minHeight = '320px'; // Ensure space for the card
+    paywallWrapper.style.marginBottom = '20px';
     paywallOverlay.style.display = 'flex';
-    paywallOverlay.style.background = '#F8FAFC'; /* solid light slate background */
+    paywallOverlay.style.background = '#F8FAFC'; 
     paywallOverlay.style.borderRadius = '24px';
     paywallOverlay.style.border = '1px solid #E2E8F0';
+    paywallOverlay.style.position = 'relative'; // Change from absolute to relative if content is hidden
+    paywallOverlay.style.minHeight = '320px';
   }
 
   console.log('🎮 Demo mode active — deep analysis features are locked');
