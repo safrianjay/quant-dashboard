@@ -37,17 +37,20 @@
             animation: float 6s ease-in-out infinite;
         }
         
-        /* Marquee Animation */
+        /* Marquee Animation — GPU accelerated to prevent blink on loop */
         @keyframes marquee {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-50%); }
+            0%   { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
         }
         .animate-marquee {
             animation: marquee 35s linear infinite;
             display: flex;
             width: max-content;
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
         }
-        /* Hover pause removed as requested */
 
         /* Strict Black & Blue Theme */
         .text-navy { color: #001f5c; }
@@ -100,8 +103,8 @@
                         </div>
                     </div>
 
-                    <a href="/index.html" data-i18n="nav_login" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Log in</a>
-                    <a href="/index.html" data-i18n="nav_cta" class="bg-black text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-slate-800 transition shadow-lg">Join Now</a>
+                    <a href="/app" data-i18n="nav_login" class="text-sm font-semibold text-slate-700 hover:text-navy transition">Log in</a>
+                    <a href="/app" data-i18n="nav_cta" class="bg-black text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-slate-800 transition shadow-lg">Join Now</a>
                 </div>
                 <div class="md:hidden flex items-center">
                     <button id="mobile-menu-btn" class="text-black hover:text-navy focus:outline-none" aria-label="Toggle menu">
@@ -122,8 +125,8 @@
                     <a href="#" onclick="changeLanguage('id'); return false;" class="text-sm font-bold text-slate-700 hover:text-navy transition">ID</a>
                 </div>
                 <div class="px-4 pt-2 pb-1 flex flex-col gap-2">
-                    <a href="/index.html" class="block text-center py-3 px-4 text-sm font-semibold text-slate-700 hover:text-navy border border-slate-200 rounded-full transition">Log in</a>
-                    <a href="/index.html" class="block text-center py-3 px-4 text-sm font-semibold bg-black text-white rounded-full hover:bg-slate-800 transition">Join Now</a>
+                    <a href="/app" class="block text-center py-3 px-4 text-sm font-semibold text-slate-700 hover:text-navy border border-slate-200 rounded-full transition">Log in</a>
+                    <a href="/app" class="block text-center py-3 px-4 text-sm font-semibold bg-black text-white rounded-full hover:bg-slate-800 transition">Join Now</a>
                 </div>
             </div>
         </div>
@@ -138,7 +141,7 @@
                 Deploy advanced AI to detect hidden order blocks, map on-chain liquidity, and execute high-probability trade setups with institutional precision.
             </p>
             <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <a href="/index.html" data-i18n="hero_btn1" class="bg-black text-white px-8 py-4 rounded-full text-center font-semibold text-lg hover:bg-slate-800 transition shadow-xl">Join Now</a>
+                <a href="/app" data-i18n="hero_btn1" class="bg-black text-white px-8 py-4 rounded-full text-center font-semibold text-lg hover:bg-slate-800 transition shadow-xl">Join Now</a>
                 <a href="#" data-i18n="hero_btn2" class="bg-white border-2 border-slate-200 text-slate-800 px-8 py-4 rounded-full text-center font-semibold text-lg hover:border-black hover:text-black transition shadow-sm">View Demo</a>
             </div>
         </div>
@@ -181,7 +184,7 @@
         </div>
     </section>
 
-   <section class="py-8 border-t border-slate-200/50 bg-slate-50/50 overflow-hidden relative z-10 reveal">
+   <section class="py-8 border-t border-slate-200/50 bg-slate-50/50 overflow-hidden relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-center" data-i18n="preview_title">Live On-Chain Intelligence</h3>
         </div>
@@ -824,7 +827,7 @@
                         <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Standard exchange feeds</li>
                         <li class="flex items-start"><svg class="w-5 h-5 text-navy mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Community access</li>
                     </ul>
-                    <a href="/index.html" data-i18n="p1_btn" class="block w-full py-3.5 px-4 bg-slate-100 text-slate-900 font-bold text-center rounded-xl hover:bg-slate-200 transition">Get Started Free</a>
+                    <a href="/app" data-i18n="p1_btn" class="block w-full py-3.5 px-4 bg-slate-100 text-slate-900 font-bold text-center rounded-xl hover:bg-slate-200 transition">Get Started Free</a>
                 </div>
 
                 <!-- Pro -->
@@ -843,7 +846,7 @@
                         <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Volume Intelligence Feed</li>
                         <li class="flex items-start"><svg class="w-5 h-5 text-sky-300 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Live Session Log</li>
                     </ul>
-                    <a href="/index.html" data-i18n="p2_btn" class="block w-full py-3.5 px-4 bg-white text-navy font-black text-center rounded-xl hover:bg-slate-50 transition shadow-lg">Join Now</a>
+                    <a href="/app" data-i18n="p2_btn" class="block w-full py-3.5 px-4 bg-white text-navy font-black text-center rounded-xl hover:bg-slate-50 transition shadow-lg">Join Now</a>
                 </div>
 
                 <!-- Quant -->
@@ -861,7 +864,7 @@
                         <li class="flex items-start"><svg class="w-5 h-5 text-slate-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Priority support & onboarding</li>
                         <li class="flex items-start"><svg class="w-5 h-5 text-slate-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Early access to new features</li>
                     </ul>
-                    <a href="/index.html" data-i18n="p3_btn" class="block w-full py-3.5 px-4 bg-slate-800 text-white font-bold text-center rounded-xl hover:bg-slate-700 transition">Get Quant</a>
+                    <a href="/app" data-i18n="p3_btn" class="block w-full py-3.5 px-4 bg-slate-800 text-white font-bold text-center rounded-xl hover:bg-slate-700 transition">Get Quant</a>
                 </div>
             </div>
         </div>
@@ -1148,7 +1151,7 @@
         <div class="max-w-3xl mx-auto px-4 reveal">
             <h2 data-i18n="cta_title" class="text-4xl md:text-5xl font-black mb-6 text-slate-900 tracking-tight">Ready to let AI find your edge?</h2>
             <p data-i18n="cta_desc" class="text-xl text-slate-600 mb-10 font-medium">Join top-tier traders automating their technical analysis and executing with absolute confidence.</p>
-            <a href="/index.html" data-i18n="cta_btn" class="inline-block bg-black text-white px-12 py-5 rounded-full text-center font-bold text-xl hover:bg-slate-800 transition shadow-2xl">Join Now</a>
+            <a href="/app" data-i18n="cta_btn" class="inline-block bg-black text-white px-12 py-5 rounded-full text-center font-bold text-xl hover:bg-slate-800 transition shadow-2xl">Join Now</a>
         </div>
     </section>
 

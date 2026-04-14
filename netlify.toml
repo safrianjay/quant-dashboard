@@ -1,0 +1,18 @@
+[build]
+  publish = "."
+
+[build.processing.html]
+  pretty_urls = true
+
+# Serve landing page at root URL
+[[redirects]]
+  from = "/"
+  to = "/landing"
+  status = 200
+  force = true
+
+# Keep /app as clean URL for the dashboard
+[[redirects]]
+  from = "/app"
+  to = "/index.html"
+  status = 200
