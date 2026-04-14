@@ -1857,6 +1857,9 @@ function _startBinanceWs(){
   } catch(_){ _binanceWs = null; }
 }
 
+/* TradingView symbol mapper — use Binance to match our price feed */
+function _tvSymbol(sym){ return 'BINANCE:' + sym.replace('-', ''); }
+
 let _lastMarketFetch = 0;
 const _MARKET_THROTTLE = 10000; /* 10s — OKX allows frequent polling */
 
@@ -2156,7 +2159,7 @@ function _buildTVScript(containerId, base, interval, showSideToolbar){
   script.async = true;
   script.innerHTML = JSON.stringify({
     autosize: true,
-    symbol: _tvOkxSymbol(base + 'USDT'),
+    symbol: _tvSymbol(base + 'USDT'),
     interval: interval,
     timezone: 'Etc/UTC',
     theme: 'light',
