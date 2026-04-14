@@ -505,7 +505,7 @@ p,span,div,input,button{
           <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
         </div>
         <div class="user-info-text" style="flex:1;min-width:0">
-          <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
+          <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;line-height:1.2">—</div>
           <div id="sb-user-email" style="font-family:var(--font-body);font-size:10px;color:#94A3B8;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Not signed in</div>
         </div>
         <div style="width:6px;height:6px;border-radius:50%;background:#10B981;flex-shrink:0"></div>
@@ -3430,11 +3430,11 @@ function initDemoMode(){
     const backBtn = document.createElement('a');
     backBtn.id = 'sb-back-link';
     backBtn.href = '/';
-    backBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-bottom:10px;padding:8px;border-radius:8px;color:#64748B;text-decoration:none;font-size:12px;font-weight:600;font-family:var(--font-body);transition:all .15s';
+    backBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:10px;padding:8px;border-radius:8px;color:#64748B;text-decoration:none;font-size:12px;font-weight:600;font-family:var(--font-body);transition:all .15s';
     backBtn.innerHTML = '← Back to Website';
     backBtn.onmouseover = function(){ this.style.color = '#0F172A'; this.style.background = '#F1F5F9'; };
     backBtn.onmouseout = function(){ this.style.color = '#64748B'; this.style.background = 'transparent'; };
-    footerRow.parentNode.insertBefore(backBtn, footerRow);
+    footerRow.parentNode.insertBefore(backBtn, footerRow.nextSibling);
   }
 
   /* Hide deep analysis section immediately in demo mode */
