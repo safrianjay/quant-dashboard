@@ -865,7 +865,11 @@ const DEMO_POSITIONS = (function(){
 function savePositions(){
   if(DEMO_MODE) return; /* silently skip persist in demo */
   try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
-  if(_posRef) _posRef.set({ list: positions }).catch(e => console.error('Firestore save:', e));
+  if(_posRef){
+    /* Only save the static trade parameters, not the volatile currentPrice */
+    const cleanList = positions.map(({currentPrice, ...rest}) => rest);
+    _posRef.set({ list: cleanList }).catch(e => console.error('Firestore save:', e));
+  }
 }
 
 /* ── Firestore listener tied to user UID ── */
@@ -2198,7 +2202,6 @@ function _applyMarketCache(){
   const src   = _okxActive ? 'OKX·Live' : 'CoinGecko';
   TF_DATA[activeTF].subtitle = `${src} · ${activeTF} · ${utcTs}`;
   positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=PRICE; });
-  savePositions();
   renderKPIs(); renderLevelsSB(); renderPositions(); renderPerfChart();
 }
 
@@ -2635,7 +2638,9 @@ function renderPositions(){
   if(badge){badge.style.display="inline";badge.textContent=positions.length+(positions.length===1?" open":" open");}
   if(pcc) pcc.style.display="block";
   list.innerHTML=positions.map(p=>{
-    const cp=p.currentPrice,pnlRaw=(cp-p.entry)*p.qty*(p.dir==="long"?1:-1),
+    const mSym = MARKET_LIST.find(m => m.base === p.symbol)?.sym;
+    const cp = (mSym && _marketPrices[mSym]?.price) ? _marketPrices[mSym].price : (p.currentPrice || p.entry);
+    const pnlRaw=(cp-p.entry)*p.qty*(p.dir==="long"?1:-1),
           pnlPct=pnlRaw/p.exposure*100,pnlPos=pnlRaw>=0;
     const pnlStr=(pnlPos?"+":"")+pnlRaw.toLocaleString("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2});
     const pctStr=(pnlPos?"+":"")+pnlPct.toFixed(2)+"%";
@@ -2695,7 +2700,11 @@ function renderPositions(){
 }
 window.closePosition=function(id){positions=positions.filter(p=>p.id!==id);savePositions();renderPositions();renderPerfChart();};
 function updateSummaryStats(){
-  const pnls=positions.map(p=>(p.currentPrice-p.entry)*p.qty*(p.dir==="long"?1:-1));
+  const pnls=positions.map(p=>{
+    const mSym = MARKET_LIST.find(m => m.base === p.symbol)?.sym;
+    const cp = (mSym && _marketPrices[mSym]?.price) ? _marketPrices[mSym].price : (p.currentPrice || p.entry);
+    return (cp-p.entry)*p.qty*(p.dir==="long"?1:-1);
+  });
   const totalPnl=pnls.reduce((a,b)=>a+b,0),wins=pnls.filter(v=>v>0).length;
   const exposure=positions.reduce((a,p)=>a+p.exposure,0);
   const rrs=positions.filter(p=>p.rr).map(p=>parseFloat(p.rr));
@@ -2718,8 +2727,16 @@ function renderPerfChart(){
   card.style.display="block";
   const rev=[...positions].reverse();
   const labels=rev.map(p=>(p.dir==="long"?"↑":"↓")+" "+p.symbol+" "+p.time);
-  const pnls=rev.map(p=>(p.currentPrice-p.entry)*p.qty*(p.dir==="long"?1:-1));
-  const pcts=rev.map(p=>(p.currentPrice-p.entry)/p.entry*100*(p.dir==="long"?1:-1));
+  const pnls=rev.map(p=>{
+    const mSym = MARKET_LIST.find(m => m.base === p.symbol)?.sym;
+    const cp = (mSym && _marketPrices[mSym]?.price) ? _marketPrices[mSym].price : (p.currentPrice || p.entry);
+    return (cp-p.entry)*p.qty*(p.dir==="long"?1:-1);
+  });
+  const pcts=rev.map(p=>{
+    const mSym = MARKET_LIST.find(m => m.base === p.symbol)?.sym;
+    const cp = (mSym && _marketPrices[mSym]?.price) ? _marketPrices[mSym].price : (p.currentPrice || p.entry);
+    return (cp-p.entry)/p.entry*100*(p.dir==="long"?1:-1);
+  });
   const exps=rev.map(p=>p.exposure);
   let cum=0;const cumData=pnls.map(v=>{cum+=v;return+cum.toFixed(2);});
   const datasets=[];
