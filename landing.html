@@ -56,14 +56,19 @@
             .pt-16 {
                 padding-top: 2.5rem !important;
             }
+
+            /* Hide decorative blobs on mobile — they cause overflow */
+            .decorative-blob {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body class="antialiased">
-<div id="page-wrapper" style="overflow-x: hidden; width: 100%; position: relative;">
+<div id="page-wrapper" style="overflow: clip; overflow-x: clip; width: 100%; position: relative;">
 
-    <div class="absolute w-[500px] h-[500px] bg-sky-100 rounded-full top-0 left-[-100px] blur-[100px] opacity-60 z-0"></div>
-    <div class="absolute w-[600px] h-[600px] bg-blue-100 rounded-full bottom-[-100px] right-[-100px] blur-[120px] opacity-40 z-0"></div>
+    <div class="decorative-blob absolute w-[500px] h-[500px] bg-sky-100 rounded-full top-0 left-[-100px] blur-[100px] opacity-60 z-0"></div>
+    <div class="decorative-blob absolute w-[600px] h-[600px] bg-blue-100 rounded-full bottom-[-100px] right-[-100px] blur-[120px] opacity-40 z-0"></div>
 
     <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
