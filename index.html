@@ -477,7 +477,7 @@ p,span,div,input,button{
     </button>
   </div>
 
-  <div style="padding:6px 8px;flex:1;overflow-y:auto;padding-bottom:40px">
+  <div style="padding:6px 8px 30px;flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0">
     <div class="nav-section-label">Analysis</div>
     <div class="nav-item active">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -496,26 +496,25 @@ p,span,div,input,button{
       <span class="nav-item-text">Trade Setups</span>
     </div>
 
-    <div class="nav-section-label">Key Levels</div>
     <div id="levels-list"></div>
-  </div>
 
-  <!-- User footer (Back at Bottom) -->
-  <div style="padding:10px 8px 18px;border-top:1px solid #F1F5F9;margin-top:auto">
-    <div class="user-footer-row" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:#F8FAFC">
-      <div id="sb-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#10B981,#3B82F6);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
-        <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
+    <!-- User profile & Back link (Now Inside Scrollable Area for reachability) -->
+    <div style="padding:10px 8px 20px;border-top:1px solid #F1F5F9;margin-top:auto">
+      <div class="user-footer-row" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:#F8FAFC">
+        <div id="sb-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#10B981,#3B82F6);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
+          <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
+        </div>
+        <div class="user-info-text" style="flex:1;min-width:0">
+          <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
+          <div id="sb-user-email" style="font-family:var(--font-body);font-size:10px;color:#94A3B8;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Not signed in</div>
+        </div>
+        <div style="width:6px;height:6px;border-radius:50%;background:#10B981;flex-shrink:0"></div>
       </div>
-      <div class="user-info-text" style="flex:1;min-width:0">
-        <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
-        <div id="sb-user-email" style="font-family:var(--font-body);font-size:10px;color:#94A3B8;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Not signed in</div>
-      </div>
-      <div style="width:6px;height:6px;border-radius:50%;background:#10B981;flex-shrink:0"></div>
+      <button onclick="doSignOut()" style="width:100%;margin-top:6px;padding:7px;border-radius:8px;border:1px solid #E2E8F0;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-body);font-size:11px;font-weight:600;color:#64748B;transition:all .15s" onmouseover="this.style.borderColor='#EF4444';this.style.color='#DC2626'" onmouseout="this.style.borderColor='#E2E8F0';this.style.color='#64748B'">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
     </div>
-    <button onclick="doSignOut()" style="width:100%;margin-top:6px;padding:7px;border-radius:8px;border:1px solid #E2E8F0;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-body);font-size:11px;font-weight:600;color:#64748B;transition:all .15s" onmouseover="this.style.borderColor='#EF4444';this.style.color='#DC2626'" onmouseout="this.style.borderColor='#E2E8F0';this.style.color='#64748B'">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      Sign Out
-    </button>
   </div>
 </aside>
 
