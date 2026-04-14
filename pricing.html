@@ -21,6 +21,14 @@ body{font-family:'Inter',sans-serif;background:#fafbfa;color:#1a1a1a;min-height:
 .fade-in-d1{animation:fadeUp .6s ease .1s both}
 .fade-in-d2{animation:fadeUp .6s ease .2s both}
 .fade-in-d3{animation:fadeUp .6s ease .3s both}
+  /* Responsive nav */
+  @media(max-width:480px){
+    nav{padding:12px 16px!important;gap:8px!important}
+    .brand-text{font-size:16px!important}
+    .nav-actions{gap:6px!important}
+    .nav-btn{padding:6px 10px!important;font-size:11px!important}
+    #hero-h1{font-size:32px!important}
+  }
 </style>
 </head>
 <body>
@@ -38,18 +46,18 @@ body{font-family:'Inter',sans-serif;background:#fafbfa;color:#1a1a1a;min-height:
       <path d="M 60,30 L 45,30 C 35,30 25,40 25,50 L 50,75" stroke="url(#logo-g2)" stroke-width="15" />
       <path d="M 40,70 L 55,70 C 65,70 75,60 75,50 L 50,25" stroke="url(#logo-g1)" stroke-width="15" />
     </svg>
-    <span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:#0F172A">Quantichy</span>
+    <span class="brand-text" style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:#0F172A">Quantichy</span>
   </a>
-  <div style="display:flex;align-items:center;gap:12px">
-    <a href="/app?demo=true" style="font-size:13px;font-weight:600;color:#64748B;text-decoration:none;padding:8px 16px;border-radius:8px;transition:background .2s" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">Back to Demo</a>
-    <a href="/app" style="font-size:13px;font-weight:700;color:white;text-decoration:none;padding:8px 20px;border-radius:10px;background:#0F172A;transition:background .2s" onmouseover="this.style.background='#1E293B'" onmouseout="this.style.background='#0F172A'">Sign Up</a>
+  <div class="nav-actions" style="display:flex;align-items:center;gap:12px">
+    <a href="/app?demo=true" class="nav-btn" style="font-size:13px;font-weight:600;color:#64748B;text-decoration:none;padding:8px 16px;border-radius:8px;transition:background .2s;white-space:nowrap" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">Back to Demo</a>
+    <a href="/app" class="nav-btn" style="font-size:13px;font-weight:700;color:white;text-decoration:none;padding:8px 20px;border-radius:10px;background:#0F172A;transition:background .2s;white-space:nowrap" onmouseover="this.style.background='#1E293B'" onmouseout="this.style.background='#0F172A'">Sign Up</a>
   </div>
 </nav>
 
 <!-- Hero -->
 <section style="text-align:center;padding:48px 24px 16px;max-width:720px;margin:0 auto" class="fade-in">
   <p style="font-size:13px;font-weight:700;color:var(--color-navy);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px">Pricing</p>
-  <h1 style="font-family:'Montserrat',sans-serif;font-size:clamp(28px,5vw,48px);font-weight:900;color:#0F172A;line-height:1.1;margin-bottom:16px;letter-spacing:-.03em">Institutional tools, accessible pricing.</h1>
+  <h1 id="hero-h1" style="font-family:'Montserrat',sans-serif;font-size:clamp(28px,5vw,48px);font-weight:900;color:#0F172A;line-height:1.1;margin-bottom:16px;letter-spacing:-.03em">Institutional tools, accessible pricing.</h1>
   <p style="font-size:17px;color:#64748B;line-height:1.6;font-weight:500">Transparent tiers. Powerful features at every level. Securely funded via Web3 wallets.</p>
 </section>
 
