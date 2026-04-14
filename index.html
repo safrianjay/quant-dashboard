@@ -327,21 +327,15 @@ p,span,div,input,button{
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-icon">
-        <svg width="26" height="30" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: white">
           <defs>
-            <linearGradient id="qauth" x1="0" y1="0" x2="26" y2="32" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#38BDF8"/>
-              <stop offset="0.5" stop-color="#22D3EE"/>
-              <stop offset="1" stop-color="#10B981"/>
-            </linearGradient>
+            <linearGradient id="logo-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.2"/></linearGradient>
+            <linearGradient id="logo-g2" x1="1" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.2"/></linearGradient>
           </defs>
-          <path
-            stroke="url(#qauth)"
-            stroke-width="2.8"
-            fill="none"
-            stroke-linejoin="round"
-            stroke-linecap="round"
-            d="M8 2 H18 Q24 2 24 8 V18 Q24 24 18 24 H10 L2 32 V8 Q2 2 8 2 Z"/>
+          <polygon points="75,20 85,20 85,30" fill="currentColor"/>
+          <polygon points="25,80 15,80 15,70" fill="currentColor"/>
+          <path d="M 60,30 L 45,30 C 35,30 25,40 25,50 L 50,75" stroke="url(#logo-g2)" stroke-width="15" />
+          <path d="M 40,70 L 55,70 C 65,70 75,60 75,50 L 50,25" stroke="url(#logo-g1)" stroke-width="15" />
         </svg>
       </div>
       <span class="auth-title">Quantichy</span>
@@ -463,16 +457,15 @@ p,span,div,input,button{
   <!-- Brand -->
   <div class="sidebar-brand" style="padding:14px 12px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #F1F5F9">
     <div class="nav-brand-logo" style="width:34px;height:34px;border-radius:9px;background:#0F172A;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-      <svg width="14" height="16" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: white">
         <defs>
-          <linearGradient id="qsb" x1="0" y1="0" x2="26" y2="32" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#38BDF8"/>
-            <stop offset="0.5" stop-color="#22D3EE"/>
-            <stop offset="1" stop-color="#10B981"/>
-          </linearGradient>
+          <linearGradient id="logo-g1b" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.2"/></linearGradient>
+          <linearGradient id="logo-g2b" x1="1" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.2"/></linearGradient>
         </defs>
-        <path stroke="url(#qsb)" stroke-width="2.8" fill="none" stroke-linejoin="round" stroke-linecap="round"
-          d="M8 2 H18 Q24 2 24 8 V18 Q24 24 18 24 H10 L2 32 V8 Q2 2 8 2 Z"/>
+        <polygon points="75,20 85,20 85,30" fill="currentColor"/>
+        <polygon points="25,80 15,80 15,70" fill="currentColor"/>
+        <path d="M 60,30 L 45,30 C 35,30 25,40 25,50 L 50,75" stroke="url(#logo-g2b)" stroke-width="15" />
+        <path d="M 40,70 L 55,70 C 65,70 75,60 75,50 L 50,25" stroke="url(#logo-g1b)" stroke-width="15" />
       </svg>
     </div>
     <div class="nav-brand-text" style="min-width:0;flex:1">
@@ -839,10 +832,20 @@ let _db = null, _posRef = null, _posUnsubscribe = null, _firestoreUid = null;
 let currentUser = null;
 let _authTab = 'signin';
 
-/* ── Persist positions locally as fallback ── */
-(function(){ try{ const r=localStorage.getItem('vf_positions'); if(r) positions=JSON.parse(r); }catch(_){} })();
+/* ══ DEMO MODE ══ */
+const DEMO_MODE = new URLSearchParams(window.location.search).has('demo');
+const DEMO_POSITIONS = [
+  { coin:"BTC", sym:"BTCUSDT", cgId:"bitcoin", dir:"long", entry:67250, size:0.15, leverage:10, tp:72000, sl:65500, ts:Date.now()-3600000*48 },
+  { coin:"ETH", sym:"ETHUSDT", cgId:"ethereum", dir:"long", entry:3420, size:2.5, leverage:5, tp:3800, sl:3200, ts:Date.now()-3600000*24 },
+  { coin:"SOL", sym:"SOLUSDT", cgId:"solana", dir:"short", entry:178.5, size:30, leverage:8, tp:155, sl:190, ts:Date.now()-3600000*6 },
+  { coin:"BNB", sym:"BNBUSDT", cgId:"binancecoin", dir:"long", entry:595, size:5, leverage:3, tp:680, sl:560, ts:Date.now()-3600000*2 }
+];
+
+/* ── Persist positions locally as fallback (skip in demo) ── */
+(function(){ if(DEMO_MODE) return; try{ const r=localStorage.getItem('vf_positions'); if(r) positions=JSON.parse(r); }catch(_){} })();
 
 function savePositions(){
+  if(DEMO_MODE) return; /* silently skip persist in demo */
   try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
   if(_posRef) _posRef.set({ list: positions }).catch(e => console.error('Firestore save:', e));
 }
@@ -2143,7 +2146,12 @@ renderSetupsList();
 renderConfChart(TF_DATA['1H'].confHistory);
 renderPositions();
 renderPerfChart();
-initAuth();
+
+if(DEMO_MODE){
+  initDemoMode();
+} else {
+  initAuth();
+}
 
 /* ══ REFRESH ALL COINS (batch) + UPDATE CURRENT VIEW ══
    API_INTERVAL: how often we actually call CoinGecko (ms) — respects free-tier rate limit
@@ -2254,6 +2262,7 @@ function syncEntryCoinPrices(){
 
 /* ── Panel open/close ── */
 window.openPanel = function(dir='long'){
+  if(DEMO_MODE){ showUpgradeModal('position'); return; }
   entryDir = dir;
   syncEntryCoinPrices();
   const overlay = document.createElement("div");
@@ -3329,6 +3338,65 @@ setTimeout(()=>{
   runLiveAnalysis();
   startAutoRefresh(15);
 },2000);
+
+/* ══ DEMO MODE FUNCTIONS ══ */
+function initDemoMode(){
+  /* Mock user — skip Firebase entirely */
+  currentUser = { displayName:'Demo User', email:'demo@quantichy.com', uid:'demo', photoURL:null, providerData:[{providerId:'google.com'}] };
+  _updateUserChip(currentUser);
+  _hideAuthScreen();
+
+  /* Load sample positions */
+  positions = JSON.parse(JSON.stringify(DEMO_POSITIONS));
+  renderPositions();
+  renderPerfChart();
+
+  /* Inject demo banner */
+  const banner = document.createElement('div');
+  banner.id = 'demo-banner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:300;background:linear-gradient(90deg,#F59E0B,#D97706);color:white;text-align:center;padding:8px 16px;font-size:13px;font-weight:600;font-family:var(--font-heading);display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.15)';
+  banner.innerHTML = `
+    <span>🔒 You're viewing a limited demo</span>
+    <a href="/app" style="background:white;color:#D97706;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;transition:transform .15s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Sign Up for Full Access</a>
+    <button onclick="document.getElementById('demo-banner').remove();document.body.style.paddingTop='0'" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;margin-left:8px;opacity:.8" title="Dismiss">×</button>
+  `;
+  document.body.prepend(banner);
+  document.body.style.paddingTop = '40px';
+
+  console.log('🎮 Demo mode active — features are limited');
+}
+
+function showUpgradeModal(action){
+  /* Remove existing modal if any */
+  const existing = document.getElementById('upgrade-modal-overlay');
+  if(existing) existing.remove();
+
+  const messages = {
+    position: { title:'Add Positions', desc:'Create and track live positions with real-time P&L, TP/SL management, and Firestore sync.' },
+    save:     { title:'Save Data',     desc:'Your positions and settings are saved securely to the cloud with your account.' },
+    default:  { title:'Full Access',   desc:'Unlock all features including unlimited analysis, position tracking, and multi-coin support.' }
+  };
+  const msg = messages[action] || messages.default;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'upgrade-modal-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:400;background:rgba(15,23,42,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;animation:overlayIn .2s ease both';
+  overlay.onclick = e => { if(e.target===overlay) overlay.remove(); };
+
+  overlay.innerHTML = `
+    <div style="background:white;border-radius:20px;padding:36px 32px;max-width:400px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.18);animation:coinIn .3s ease both;text-align:center">
+      <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#F59E0B,#D97706);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px">🔒</div>
+      <h3 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;font-family:var(--font-heading)">${msg.title}</h3>
+      <p style="font-size:14px;color:#64748B;line-height:1.6;margin-bottom:24px;font-family:var(--font-body)">${msg.desc}</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <a href="/app" style="display:block;background:#0F172A;color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;font-family:var(--font-heading);transition:background .2s" onmouseover="this.style.background='#1E293B'" onmouseout="this.style.background='#0F172A'">Sign Up — Start Free</a>
+        <a href="/#pricing" style="display:block;color:#3B82F6;font-size:13px;font-weight:600;text-decoration:none;font-family:var(--font-body)">View Pricing Plans →</a>
+        <button onclick="this.closest('#upgrade-modal-overlay').remove()" style="background:none;border:none;color:#94A3B8;font-size:13px;cursor:pointer;padding:4px;font-family:var(--font-body)">Continue Demo</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
 </script>
 </body>
 </html>
