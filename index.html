@@ -528,10 +528,10 @@ p,span,div,input,button{
     <button onclick="openMarketSelector()" id="market-title-btn" style="min-width:0;text-align:left;background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:10px;transition:background .15s;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
       <div style="min-width:0">
         <div style="display:flex;align-items:center;gap:6px">
-          <div class="topbar-title" id="market-title" style="font-size:16px;font-weight:700;color:#0F172A;line-height:1.2">BTC/USDT — Live Analysis</div>
+          <div class="topbar-title" id="market-title" style="font-size:16px;font-weight:700;color:#0F172A;line-height:1.2">BTC/USDT</div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)" id="topbar-date">Live Analysis</div>
+        <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)" id="topbar-date">Real-time Analysis</div>
       </div>
     </button>
     </div>
@@ -1827,7 +1827,7 @@ window.selectMarket = async function(sym, base, name){
 
   /* Update topbar title immediately */
   const titleEl = document.getElementById('market-title');
-  if(titleEl) titleEl.textContent = `${base}/USDT — Live Analysis`;
+  if(titleEl) titleEl.textContent = `${base}/USDT`;
 
   /* Show loading on refresh btn */
   const btn  = document.getElementById('refresh-btn');
@@ -2154,7 +2154,7 @@ window.setTVInterval = function(tf){
 
 /* ══ INIT ══ */
 /* Restore topbar title for saved coin */
-(function(){ const el = document.getElementById('market-title'); if(el) el.textContent = currentBase+'/USDT — Live Analysis'; })();
+(function(){ const el = document.getElementById('market-title'); if(el) el.textContent = currentBase+'/USDT'; })();
 initTVWidget(currentBase);
 renderKPIs();
 renderCoinStrip();
@@ -3328,10 +3328,15 @@ async function runLiveAnalysis(){
         </div>`).join("");
     }
 
-    /* Update topbar date */
-    const utcTs=new Date().toUTCString().replace('GMT','UTC').slice(5,25);
+    /* Update topbar date to local time */
+    const now=new Date();
+    const localDay = now.getDate();
+    const localMonth = now.toLocaleString('en-US', { month: 'short' });
+    const localYear = now.getFullYear();
+    const localTime = now.toTimeString().split(' ')[0];
+    const localTs = `${localDay} ${localMonth} ${localYear} ${localTime}`;
     const tbDate=document.getElementById("topbar-date");
-    if(tbDate) tbDate.textContent=`Live · ${_analystTF.toUpperCase()} · ${utcTs}`;
+    if(tbDate) tbDate.textContent=`Live · ${_analystTF.toUpperCase()} · ${localTs}`;
 
     console.log("✅ QuantAnalyst run:",{asset,bias:analysis.bias,confidence:analysis.confidence,maStack:analysis.maStack.signal});
   } catch(err){
