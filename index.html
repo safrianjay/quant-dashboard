@@ -3381,8 +3381,10 @@ function initDemoMode(){
       <span style="background:linear-gradient(135deg,#F59E0B,#D97706);padding:3px 10px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">DEMO</span>
       <span style="font-size:13px;font-weight:600;color:#E2E8F0">You're exploring a limited preview</span>
     </div>
-    <a href="/pricing" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;padding:6px 18px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;transition:transform .15s;box-shadow:0 2px 8px rgba(245,158,11,.3)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Upgrade Now</a>
-    <button onclick="event.stopPropagation();document.getElementById('demo-banner').remove();document.body.style.paddingTop='0'" style="background:none;border:none;color:#64748B;font-size:16px;cursor:pointer;margin-left:4px;padding:2px 6px;line-height:1" title="Dismiss">&times;</button>
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="/" style="color:#94A3B8;font-size:12px;font-weight:600;text-decoration:none;transition:color .15s" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94A3B8'">← Back to Website</a>
+      <a href="/pricing" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;padding:6px 18px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;transition:transform .15s;box-shadow:0 2px 8px rgba(245,158,11,.3)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Upgrade Now</a>
+    </div>
   `;
   document.body.prepend(banner);
   document.body.style.paddingTop = '44px';
