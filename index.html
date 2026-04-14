@@ -3403,18 +3403,22 @@ function initDemoMode(){
     sbEmail.innerHTML = '<a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:600">View Plans &rarr;</a>';
   }
 
-  /* Blur deep analysis section and show overlay */
-  const paywallContent = document.getElementById('demo-paywall-content');
-  const paywallOverlay = document.getElementById('demo-paywall-overlay');
-  if(paywallContent && paywallOverlay){
-    paywallContent.style.filter = 'blur(6px)';
-    paywallContent.style.opacity = '0.6';
-    paywallContent.style.pointerEvents = 'none';
-    paywallContent.style.userSelect = 'none';
-    paywallOverlay.style.display = 'flex';
-  }
+  /* Blur deep analysis section after 2 minutes (120000 ms) */
+  setTimeout(() => {
+    const paywallContent = document.getElementById('demo-paywall-content');
+    const paywallOverlay = document.getElementById('demo-paywall-overlay');
+    if(paywallContent && paywallOverlay){
+      paywallContent.style.transition = 'filter 1s ease, opacity 1s ease';
+      paywallContent.style.filter = 'blur(6px)';
+      paywallContent.style.opacity = '0.6';
+      paywallContent.style.pointerEvents = 'none';
+      paywallContent.style.userSelect = 'none';
+      paywallOverlay.style.display = 'flex';
+      paywallOverlay.style.animation = 'overlayIn 0.5s ease both';
+    }
+  }, 120000);
 
-  console.log('🎮 Demo mode active — features are limited');
+  console.log('🎮 Demo mode active — features are limited (paywall triggers in 2 mins)');
 }
 
 function showUpgradeModal(action){
