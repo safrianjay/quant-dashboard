@@ -166,8 +166,8 @@
       <div id="success-view">
         <div class="status-icon">✅</div>
         <h1 id="success-title">All Done!</h1>
-        <p id="success-msg">Your password has been successfully updated.</p>
-        <a href="/" class="btn" style="text-decoration:none; display:block">Back to Dashboard</a>
+        <p id="success-msg">Your password has been successfully updated. You will be redirected to the login page in <span id="redirect-timer">20</span>s.</p>
+        <a href="/app" class="btn" style="text-decoration:none; display:block">Sign In Now</a>
       </div>
 
       <!-- Error View -->
@@ -239,8 +239,9 @@
           try {
             await auth.applyActionCode(oobCode);
             document.getElementById('success-title').textContent = "Email Verified!";
-            document.getElementById('success-msg').textContent = "Your email address has been successfully verified. You can now access all features.";
+            document.getElementById('success-msg').textContent = `Your email address has been successfully verified. Redirecting to login in 20s.`;
             showView('success-view');
+            startRedirectTimer();
           } catch (e) {
             showView('error-view');
           }
@@ -248,6 +249,19 @@
         default:
           showView('error-view');
       }
+    }
+
+    function startRedirectTimer() {
+      let seconds = 20;
+      const el = document.getElementById('redirect-timer');
+      const timer = setInterval(() => {
+        seconds--;
+        if (el) el.textContent = seconds;
+        if (seconds <= 0) {
+          clearInterval(timer);
+          window.location.href = '/app';
+        }
+      }, 1000);
     }
 
     async function handleReset() {
@@ -265,6 +279,7 @@
       try {
         await auth.confirmPasswordReset(oobCode, password);
         showView('success-view');
+        startRedirectTimer();
       } catch (e) {
         alert(e.message);
         btn.disabled = false;
