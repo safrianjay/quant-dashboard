@@ -1135,7 +1135,7 @@ window.authSendReset = async function(){
   btn.disabled = true;
   btn.textContent = 'Sending…';
   try {
-    await firebase.auth().sendPasswordResetEmail(email, { url: 'https://quantichy.netlify.app', handleCodeInApp: false });
+    await firebase.auth().sendPasswordResetEmail(email, { url: 'https://quantichy.com', handleCodeInApp: false });
     document.getElementById('auth-fp-form').style.display = 'none';
     document.getElementById('auth-fp-sent-email').textContent = email;
     document.getElementById('auth-fp-sent').style.display = 'block';
