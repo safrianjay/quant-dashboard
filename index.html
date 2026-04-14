@@ -1792,53 +1792,44 @@ function renderMarketGrid(list){
   }).join('');
 }
 
-/* ══ OKX WEBSOCKET — exact same source as TradingView OKX chart ══ */
-/* OKX instId uses dash: BTC-USDT. Exception: POL is still MATIC on OKX */
-const _okxBaseMap = { 'POL':'MATIC' }; /* base overrides for OKX naming */
-function _okxInstId(sym){ return sym.replace('USDT','-USDT'); }
-function _tvOkxSymbol(sym){ return 'OKX:' + sym; }
+/* ══ BINANCE WEBSOCKET — ultra-stable for public web apps ══ */
+let _binanceWs = null;
+let _binanceActive = false;
 
-let _okxWs = null;
-let _okxActive = false;
-
-function _startOKXWs(){
-  if(_okxWs) return;
+function _startBinanceWs(){
+  if(_binanceWs) return;
   try {
-    _okxWs = new WebSocket('wss://ws.okx.com:8443/ws/v5/public');
-    _okxWs.onopen = () => {
-      _okxActive = true;
-      const args = MARKET_LIST.map(m => ({
-        channel: 'tickers',
-        instId: _okxInstId(m.sym)
-      }));
-      _okxWs.send(JSON.stringify({ op: 'subscribe', args }));
+    _binanceWs = new WebSocket('wss://stream.binance.com:9443/ws');
+    _binanceWs.onopen = () => {
+      _binanceActive = true;
+      const params = MARKET_LIST.map(m => `${m.sym.toLowerCase()}@ticker`);
+      _binanceWs.send(JSON.stringify({ method: 'SUBSCRIBE', params, id: 1 }));
     };
-    _okxWs.onmessage = (evt) => {
+    _binanceWs.onmessage = (evt) => {
       try {
         const msg = JSON.parse(evt.data);
-        if(!msg.data || msg.arg?.channel !== 'tickers') return;
-        const t   = msg.data[0];
-        const sym = msg.arg.instId.replace('-',''); /* BTC-USDT → BTCUSDT */
-        const price = parseFloat(t.last);
-        const open  = parseFloat(t.open24h) || price;
+        if(!msg.s) return;
+        const sym = msg.s;
+        const price = parseFloat(msg.c);
+        const open  = parseFloat(msg.o) || price;
         const existing = _marketPrices[sym] || {};
         _marketPrices[sym] = {
           ...existing,
           price,
-          high: parseFloat(t.high24h),
-          low:  parseFloat(t.low24h),
-          chg:  open > 0 ? ((price - open) / open) * 100 : (existing.chg || 0),
-          vol:  parseFloat(t.volCcy24h) /* USDT volume */
+          high: parseFloat(msg.h),
+          low:  parseFloat(msg.l),
+          chg:  parseFloat(msg.P),
+          vol:  parseFloat(msg.q) /* USDT volume */
         };
         if(sym === currentSymbol && !_selectMarketBusy) _applyMarketCache();
       } catch(_){}
     };
-    _okxWs.onerror = () => { _okxActive = false; _okxWs = null; };
-    _okxWs.onclose = () => {
-      _okxActive = false; _okxWs = null;
-      setTimeout(_startOKXWs, 10000);
+    _binanceWs.onerror = () => { _binanceActive = false; _binanceWs = null; };
+    _binanceWs.onclose = () => {
+      _binanceActive = false; _binanceWs = null;
+      setTimeout(_startBinanceWs, 10000);
     };
-  } catch(_){ _okxWs = null; }
+  } catch(_){ _binanceWs = null; }
 }
 
 let _lastMarketFetch = 0;
@@ -1849,44 +1840,26 @@ async function fetchAllMarketPrices(){
   if(now - _lastMarketFetch < _MARKET_THROTTLE) return;
   _lastMarketFetch = now;
   try {
-    /* Try OKX via proxy first — exact same source as TradingView chart */
-    const res = await fetch('/.netlify/functions/cg?type=okx-tickers');
-    if(!res.ok) throw new Error('OKX failed');
+    /* Call our central proxy for reliable batch prices from Binance */
+    const res = await fetch('/.netlify/functions/market-data?type=prices');
+    if(!res.ok) throw new Error('Proxy error');
     const json = await res.json();
-    if(!json.data) throw new Error('OKX empty');
+    
+    // Binance payload is an array of tickers
     const syms = new Set(MARKET_LIST.map(m => m.sym));
-    json.data.forEach(t => {
-      const sym = t.instId.replace('-',''); /* BTC-USDT → BTCUSDT */
-      if(!syms.has(sym)) return;
-      const price = parseFloat(t.last);
-      const open  = parseFloat(t.open24h) || price;
-      _marketPrices[sym] = {
+    json.forEach(t => {
+      if(!syms.has(t.symbol)) return;
+      const price = parseFloat(t.lastPrice);
+      _marketPrices[t.symbol] = {
         price,
-        high: parseFloat(t.high24h),
-        low:  parseFloat(t.low24h),
-        chg:  open > 0 ? ((price - open) / open) * 100 : 0,
-        vol:  parseFloat(t.volCcy24h)
+        high: parseFloat(t.highPrice),
+        low:  parseFloat(t.lowPrice),
+        chg:  parseFloat(t.priceChangePercent),
+        vol:  parseFloat(t.quoteVolume)
       };
     });
-  } catch(_){
-    /* Fallback: CoinGecko */
-    try {
-      const ids = MARKET_LIST.map(m => m.cgId).join(',');
-      const res = await fetch(_cgUrl('market', { ids }));
-      if(!res.ok){ _lastMarketFetch = 0; return; }
-      const all = await res.json();
-      all.forEach(t => {
-        const m = MARKET_LIST.find(x => x.cgId === t.id);
-        if(m) _marketPrices[m.sym] = {
-          price: t.current_price, chg: t.price_change_percentage_24h,
-          high: t.high_24h, low: t.low_24h, vol: t.total_volume
-        };
-      });
-    } catch(_){ _lastMarketFetch = 0; }
-  }
-  const modal = document.getElementById('market-modal');
-  if(modal && modal.style.display !== 'none'){
-    filterMarkets(document.getElementById('market-search-input')?.value || '');
+  } catch(e){
+    console.error('Fetch prices failed:', e);
   }
 }
 
@@ -2273,7 +2246,7 @@ function _applyMarketCache(){
     TF_DATA[tf].vol   = VOL;
   });
   const utcTs = new Date().toUTCString().replace('GMT','UTC').slice(5,25);
-  const src   = _okxActive ? 'OKX·Live' : 'CoinGecko';
+  const src   = _binanceActive ? 'Live' : 'Market';
   TF_DATA[activeTF].subtitle = `${src} · ${activeTF} · ${utcTs}`;
   positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=PRICE; });
   renderKPIs(); renderLevelsSB(); renderPositions(); renderPerfChart();
@@ -2295,7 +2268,7 @@ async function refreshAllCoins(){
 }
 
 /* ══ FETCH LIVE DATA ON PAGE LOAD ══ */
-_startOKXWs();
+_startBinanceWs();
 refreshAllCoins();
 
 /* ══ AUTO-REFRESH every 10s (display) / 30s (API) ══ */
@@ -3324,10 +3297,10 @@ async function fetchLiveMarketData(asset="BTC", timeframe="15m") {
   const days=timeframe==="1d"?365:timeframe==="4h"?90:timeframe==="1h"?30:1;
 
   const [coinRes, ohlcRes]=await Promise.all([
-    fetch(`https://api.coingecko.com/api/v3/coins/${cgId}?localization=false&tickers=false&community_data=false&developer_data=false`),
-    fetch(`https://api.coingecko.com/api/v3/coins/${cgId}/ohlc?vs_currency=usd&days=${days}`)
+    fetch(`/.netlify/functions/market-data?type=coin&id=${cgId}`),
+    fetch(`/.netlify/functions/market-data?type=ohlc&id=${cgId}`)
   ]);
-  if(!coinRes.ok||!ohlcRes.ok) throw new Error("CoinGecko API error");
+  if(!coinRes.ok||!ohlcRes.ok) throw new Error("Market Data Proxy error");
   const coin=await coinRes.json();
   const ohlc=await ohlcRes.json();
 
