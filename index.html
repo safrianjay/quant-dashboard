@@ -501,7 +501,7 @@ p,span,div,input,button{
   </div>
 
   <!-- User footer (Back at Bottom) -->
-  <div style="padding:10px 8px;border-top:1px solid #F1F5F9;margin-top:auto">
+  <div style="padding:10px 8px 18px;border-top:1px solid #F1F5F9;margin-top:auto">
     <div class="user-footer-row" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:#F8FAFC">
       <div id="sb-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#10B981,#3B82F6);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
         <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
@@ -3431,11 +3431,11 @@ function initDemoMode(){
     const backBtn = document.createElement('a');
     backBtn.id = 'sb-back-link';
     backBtn.href = '/';
-    backBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:10px;padding:8px;border-radius:8px;color:#64748B;text-decoration:none;font-size:12px;font-weight:600;font-family:var(--font-body);transition:all .15s';
+    backBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-bottom:10px;padding:8px;border-radius:8px;color:#64748B;text-decoration:none;font-size:12px;font-weight:600;font-family:var(--font-body);transition:all .15s';
     backBtn.innerHTML = '← Back to Website';
     backBtn.onmouseover = function(){ this.style.color = '#0F172A'; this.style.background = '#F1F5F9'; };
     backBtn.onmouseout = function(){ this.style.color = '#64748B'; this.style.background = 'transparent'; };
-    footerRow.parentNode.insertBefore(backBtn, footerRow.nextSibling);
+    footerRow.parentNode.insertBefore(backBtn, footerRow);
   }
 
   /* Hide deep analysis section immediately in demo mode */
