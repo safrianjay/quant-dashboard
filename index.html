@@ -2527,14 +2527,20 @@ function getTPDollar(){
   const entry = parseFloat(document.getElementById("inp-entry")?.value) || selectedCoin.price;
   const val = parseFloat(document.getElementById("inp-tp")?.value) || 0;
   if(!val) return 0;
-  return tpMode === '%' ? entry * (1 + val/100) : val;
+  if(tpMode === '%'){
+    return entryDir === 'long' ? entry * (1 + val/100) : entry * (1 - val/100);
+  }
+  return val;
 }
 
 function getSLDollar(){
   const entry = parseFloat(document.getElementById("inp-entry")?.value) || selectedCoin.price;
   const val = parseFloat(document.getElementById("inp-sl")?.value) || 0;
   if(!val) return 0;
-  return slMode === '%' ? entry * (1 - val/100) : val;
+  if(slMode === '%'){
+    return entryDir === 'long' ? entry * (1 - val/100) : entry * (1 + val/100);
+  }
+  return val;
 }
 
 function updatePreview(){
@@ -2597,15 +2603,56 @@ function renderPositions(){
     const pnlStr=(pnlPos?"+":"")+pnlRaw.toLocaleString("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2});
     const pctStr=(pnlPos?"+":"")+pnlPct.toFixed(2)+"%";
     let tpDist="—",slDist="—";
-    if(p.tp) tpDist=((p.tp-cp)/cp*100*(p.dir==="long"?1:-1)).toFixed(2)+"%";
-    if(p.sl) slDist=((p.sl-cp)/cp*100*(p.dir==="long"?1:-1)).toFixed(2)+"%";
+    if(p.tp){
+      const d=((p.tp-cp)/cp*100);
+      tpDist=(d>=0?"+":"")+d.toFixed(2)+"%";
+    }
+    if(p.sl){
+      const d=((p.sl-cp)/cp*100);
+      slDist=(d>=0?"+":"")+d.toFixed(2)+"%";
+    }
     let rangeBar="";
     if(p.tp&&p.sl){
       const lo=Math.min(p.sl,p.tp,p.entry),hi=Math.max(p.sl,p.tp,p.entry);
       const pct=Math.max(0,Math.min(100,(cp-lo)/(hi-lo)*100)),barCol=pnlPos?"#10B981":"#EF4444";
-      rangeBar=`<div style="margin-top:8px"><div style="height:4px;border-radius:2px;background:#F1F5F9;position:relative"><div style="height:100%;width:${pct}%;background:${barCol};border-radius:2px"></div><div style="position:absolute;top:-3px;left:${pct}%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:${barCol};border:2px solid white"></div></div><div style="display:flex;justify-content:space-between;margin-top:4px"><span style="font-size:8px;color:#94A3B8;font-family:var(--font-mono)">SL $${p.sl?.toLocaleString()||"—"}</span><span style="font-size:8px;color:#94A3B8">range</span><span style="font-size:8px;color:#94A3B8;font-family:var(--font-mono)">TP $${p.tp?.toLocaleString()||"—"}</span></div></div>`;
+      const leftLabel=p.dir==="long"?`SL $${p.sl.toLocaleString()}`:`TP $${p.tp.toLocaleString()}`;
+      const rightLabel=p.dir==="long"?`TP $${p.tp.toLocaleString()}`:`SL $${p.sl.toLocaleString()}`;
+      const leftCol=p.dir==="long"?"#EF4444":"#16A34A";
+      const rightCol=p.dir==="long"?"#16A34A":"#EF4444";
+      rangeBar=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid #F1F5F9"><div style="height:4px;border-radius:2px;background:#F1F5F9;position:relative"><div style="height:100%;width:${pct}%;background:${barCol};border-radius:2px"></div><div style="position:absolute;top:-3px;left:${pct}%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:${barCol};border:2px solid white"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px"><span style="font-size:8px;color:${leftCol};font-family:var(--font-mono);font-weight:600">${leftLabel}</span><span style="font-size:8px;color:#CBD5E1">Entry $${p.entry.toLocaleString()}</span><span style="font-size:8px;color:${rightCol};font-family:var(--font-mono);font-weight:600">${rightLabel}</span></div></div>`;
     }
-    return `<div class="pos-row" style="flex-direction:column;align-items:stretch;padding:14px 18px"><div style="display:flex;align-items:center;gap:12px"><div class="pos-dir ${p.dir}">${p.dir==="long"?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>'}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap"><span style="font-family:var(--font-heading);font-size:13px;font-weight:700">${p.symbol}</span><span style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--font-mono);background:${pnlPos?"#F0FDF4":"#FEF2F2"};color:${pnlPos?"#16A34A":"#DC2626"}">${pnlStr} (${pctStr})</span><span style="padding:2px 7px;border-radius:20px;font-size:9px;font-weight:600;background:${p.dir==="long"?"#F0FDF4":"#FEF2F2"};color:${p.dir==="long"?"#16A34A":"#DC2626"}">${p.dir.toUpperCase()}</span></div><div style="display:flex;gap:10px;flex-wrap:wrap"><span style="font-size:10px;color:#94A3B8">Entry <span style="font-family:var(--font-mono);color:#334155;font-weight:600">$${p.entry.toLocaleString()}</span></span><span style="font-size:10px;color:#94A3B8">Qty <span style="font-family:var(--font-mono);color:#334155;font-weight:600">${p.qty.toFixed(4)} ${p.symbol}</span></span><span style="font-size:10px;color:#94A3B8">USD <span style="font-family:var(--font-mono);color:#334155;font-weight:600">$${p.exposure.toLocaleString("en-US",{maximumFractionDigits:0})}</span></span>${p.rr?`<span style="font-size:10px;color:#94A3B8;font-family:var(--font-mono)">R:R 1:${p.rr}</span>`:""}</div><div style="display:flex;gap:7px;margin-top:5px;flex-wrap:wrap">${p.tp?`<span style="font-size:9px;padding:2px 8px;border-radius:20px;background:#F0FDF4;color:#16A34A;font-family:var(--font-mono);font-weight:600">TP $${p.tp.toLocaleString()} · ${tpDist}</span>`:""} ${p.sl?`<span style="font-size:9px;padding:2px 8px;border-radius:20px;background:#FEF2F2;color:#DC2626;font-family:var(--font-mono);font-weight:600">SL $${p.sl.toLocaleString()} · ${slDist}</span>`:""}</div>${p.note?`<div style="font-size:10px;color:#94A3B8;margin-top:4px;font-style:italic">"${p.note}"</div>`:""}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0"><div style="font-size:9px;color:#94A3B8;font-family:var(--font-mono)">${p.date} ${p.time}</div><button onclick="closePosition(${p.id})" style="padding:3px 9px;border-radius:6px;border:1px solid #E2E8F0;background:white;cursor:pointer;font-size:10px;font-weight:600;color:#64748B;transition:all .15s" onmouseover="this.style.borderColor='#EF4444';this.style.color='#DC2626'" onmouseout="this.style.borderColor='#E2E8F0';this.style.color='#64748B'">Close</button></div></div>${rangeBar}</div>`;
+    const dirIcon=p.dir==="long"
+      ?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>'
+      :'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>';
+    const dirBg=p.dir==="long"?"#F0FDF4":"#FEF2F2";
+    const dirCol=p.dir==="long"?"#16A34A":"#DC2626";
+    return `<div class="pos-row" style="flex-direction:column;align-items:stretch;padding:16px 18px;gap:0">
+      <!-- Row 1: Symbol + PnL + Direction + Close -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="pos-dir ${p.dir}">${dirIcon}</div>
+        <span style="font-family:var(--font-heading);font-size:15px;font-weight:800;color:#0F172A">${p.symbol}</span>
+        <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--font-mono);background:${pnlPos?"#F0FDF4":"#FEF2F2"};color:${pnlPos?"#16A34A":"#DC2626"}">${pnlStr} (${pctStr})</span>
+        <span style="padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.04em;background:${dirBg};color:${dirCol}">${p.dir.toUpperCase()}</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="font-size:9px;color:#94A3B8;font-family:var(--font-mono)">${p.date} ${p.time}</span>
+          <button onclick="closePosition(${p.id})" style="padding:3px 10px;border-radius:6px;border:1px solid #E2E8F0;background:white;cursor:pointer;font-size:10px;font-weight:600;color:#64748B;transition:all .15s" onmouseover="this.style.borderColor='#EF4444';this.style.color='#DC2626'" onmouseout="this.style.borderColor='#E2E8F0';this.style.color='#64748B'">Close</button>
+        </div>
+      </div>
+      <!-- Row 2: Trade details grid -->
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px;padding-left:38px">
+        <span style="font-size:10px;color:#94A3B8;font-family:var(--font-body)">Entry <span style="font-family:var(--font-mono);color:#334155;font-weight:600">$${p.entry.toLocaleString()}</span></span>
+        <span style="font-size:10px;color:#94A3B8;font-family:var(--font-body)">Qty <span style="font-family:var(--font-mono);color:#334155;font-weight:600">${p.qty.toFixed(4)} ${p.symbol}</span></span>
+        <span style="font-size:10px;color:#94A3B8;font-family:var(--font-body)">USD <span style="font-family:var(--font-mono);color:#334155;font-weight:600">$${p.exposure.toLocaleString("en-US",{maximumFractionDigits:0})}</span></span>
+        ${p.rr?`<span style="font-size:10px;color:#94A3B8;font-family:var(--font-mono)">R:R <span style="color:#334155;font-weight:600">1:${p.rr}</span></span>`:""}
+      </div>
+      <!-- Row 3: TP / SL badges -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;padding-left:38px">
+        ${p.tp?`<span style="font-size:9px;padding:3px 10px;border-radius:20px;background:#F0FDF4;color:#16A34A;font-family:var(--font-mono);font-weight:600;border:1px solid #BBF7D0">TP $${p.tp.toLocaleString()} · ${tpDist}</span>`:""}
+        ${p.sl?`<span style="font-size:9px;padding:3px 10px;border-radius:20px;background:#FEF2F2;color:#DC2626;font-family:var(--font-mono);font-weight:600;border:1px solid #FECACA">SL $${p.sl.toLocaleString()} · ${slDist}</span>`:""}
+      </div>
+      ${p.note?`<div style="font-size:10px;color:#94A3B8;margin-top:6px;font-style:italic;padding-left:38px">"${p.note}"</div>`:""}
+      ${rangeBar?`<div style="padding-left:38px">${rangeBar}</div>`:""}
+    </div>`;
   }).join("");
   updateSummaryStats();
 }
