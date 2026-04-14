@@ -6,15 +6,8 @@
     <title>Quantichy | AI-Powered Crypto Dashboard</title>
     <link href="/styles.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:," />
     <style>
-        /* Prevent horizontal overflow globally */
-        html, body {
-            max-width: 100vw;
-        }
-        body {
-            overflow-x: hidden;
-        }
-
         @media (max-width: 767px) {
             /* Platform bento grid: single column on mobile */
             #platform-grid > * {
@@ -66,7 +59,8 @@
         }
     </style>
 </head>
-<body class="antialiased relative">
+<body class="antialiased">
+<div id="page-wrapper" style="overflow-x: hidden; width: 100%; position: relative;">
 
     <div class="absolute w-[500px] h-[500px] bg-sky-100 rounded-full top-0 left-[-100px] blur-[100px] opacity-60 z-0"></div>
     <div class="absolute w-[600px] h-[600px] bg-blue-100 rounded-full bottom-[-100px] right-[-100px] blur-[120px] opacity-40 z-0"></div>
@@ -1616,5 +1610,6 @@
             });
         });
     </script>
+</div>
 </body>
 </html>
