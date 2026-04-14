@@ -34,23 +34,25 @@ body{font-family:'Inter',sans-serif;background:#fafbfa;color:#1a1a1a;min-height:
 <body>
 
 <!-- Minimal nav -->
-<nav style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1280px;margin:0 auto">
-  <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none">
-    <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="logo-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0F172A" stop-opacity="1"/><stop offset="100%" stop-color="#0F172A" stop-opacity="0.2"/></linearGradient>
-        <linearGradient id="logo-g2" x1="1" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#0F172A" stop-opacity="1"/><stop offset="100%" stop-color="#0F172A" stop-opacity="0.2"/></linearGradient>
-      </defs>
-      <polygon points="75,20 85,20 85,30" fill="#0F172A"/>
-      <polygon points="25,80 15,80 15,70" fill="#0F172A"/>
-      <path d="M 60,30 L 45,30 C 35,30 25,40 25,50 L 50,75" stroke="url(#logo-g2)" stroke-width="15" />
-      <path d="M 40,70 L 55,70 C 65,70 75,60 75,50 L 50,25" stroke="url(#logo-g1)" stroke-width="15" />
-    </svg>
-    <span class="brand-text" style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:#0F172A">Quantichy</span>
-  </a>
-  <div class="nav-actions" style="display:flex;align-items:center;gap:12px">
-    <a href="/app?demo=true" class="nav-btn" style="font-size:13px;font-weight:600;color:#64748B;text-decoration:none;padding:8px 16px;border-radius:8px;transition:background .2s;white-space:nowrap" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">Back to Demo</a>
-    <a href="/app" class="nav-btn" style="font-size:13px;font-weight:700;color:white;text-decoration:none;padding:8px 20px;border-radius:10px;background:#0F172A;transition:background .2s;white-space:nowrap" onmouseover="this.style.background='#1E293B'" onmouseout="this.style.background='#0F172A'">Sign Up</a>
+<nav style="position:sticky;top:0;z-index:100;background:rgba(250,251,250,0.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(226,232,240,0.5)">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1280px;margin:0 auto">
+    <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none">
+      <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logo-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0F172A" stop-opacity="1"/><stop offset="100%" stop-color="#0F172A" stop-opacity="0.2"/></linearGradient>
+          <linearGradient id="logo-g2" x1="1" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#0F172A" stop-opacity="1"/><stop offset="100%" stop-color="#0F172A" stop-opacity="0.2"/></linearGradient>
+        </defs>
+        <polygon points="75,20 85,20 85,30" fill="#0F172A"/>
+        <polygon points="25,80 15,80 15,70" fill="#0F172A"/>
+        <path d="M 60,30 L 45,30 C 35,30 25,40 25,50 L 50,75" stroke="url(#logo-g2)" stroke-width="15" />
+        <path d="M 40,70 L 55,70 C 65,70 75,60 75,50 L 50,25" stroke="url(#logo-g1)" stroke-width="15" />
+      </svg>
+      <span class="brand-text" style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:#0F172A">Quantichy</span>
+    </a>
+    <div class="nav-actions" style="display:flex;align-items:center;gap:12px">
+      <a href="/app?demo=true" class="nav-btn" style="font-size:13px;font-weight:600;color:#64748B;text-decoration:none;padding:8px 16px;border-radius:8px;transition:background .2s;white-space:nowrap" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">Back to Demo</a>
+      <a href="/app" class="nav-btn" style="font-size:13px;font-weight:700;color:white;text-decoration:none;padding:8px 20px;border-radius:10px;background:#0F172A;transition:background .2s;white-space:nowrap" onmouseover="this.style.background='#1E293B'" onmouseout="this.style.background='#0F172A'">Sign Up</a>
+    </div>
   </div>
 </nav>
 
