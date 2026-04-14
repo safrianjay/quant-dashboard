@@ -3400,12 +3400,19 @@ function initDemoMode(){
   /* Sidebar user area → demo badge */
   const sbName = document.getElementById('sb-user-name');
   const sbEmail = document.getElementById('sb-user-email');
-  if(sbName) sbName.innerHTML = 'Demo Account <span style="background:#F59E0B;color:white;font-size:8px;padding:2px 6px;border-radius:4px;margin-left:4px;vertical-align:middle;font-weight:800;letter-spacing:.04em">DEMO</span>';
+  if(sbName){
+    sbName.style.display = 'flex';
+    sbName.style.alignItems = 'center';
+    sbName.style.gap = '6px';
+    sbName.innerHTML = 'Demo Account <span style="background:#F59E0B;color:white;font-size:8px;padding:2px 6px;border-radius:4px;font-weight:800;letter-spacing:.04em;line-height:1">DEMO</span>';
+  }
   if(sbEmail){
+    sbEmail.style.whiteSpace = 'normal';
+    sbEmail.style.marginTop = '4px';
     sbEmail.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:3px">
-        <a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:600;font-size:12px">View Plans &rarr;</a>
-        <a href="/" style="color:#64748B;text-decoration:none;font-weight:500;font-size:11px">← Back to Website</a>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:700;font-size:12px;line-height:1">View Plans &rarr;</a>
+        <a href="/" style="color:#64748B;text-decoration:none;font-weight:600;font-size:11px;line-height:1">← Back to Website</a>
       </div>
     `;
   }
