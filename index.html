@@ -3407,14 +3407,20 @@ function initDemoMode(){
     sbName.innerHTML = 'Demo Account <span style="background:#F59E0B;color:white;font-size:8px;padding:2px 6px;border-radius:4px;font-weight:800;letter-spacing:.04em;line-height:1">DEMO</span>';
   }
   if(sbEmail){
-    sbEmail.style.whiteSpace = 'normal';
-    sbEmail.style.marginTop = '4px';
-    sbEmail.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:5px">
-        <a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:700;font-size:12px;line-height:1">View Plans &rarr;</a>
-        <a href="/" style="color:#64748B;text-decoration:none;font-weight:600;font-size:11px;line-height:1">← Back to Website</a>
-      </div>
-    `;
+    sbEmail.innerHTML = '<a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:700;font-size:12px;line-height:1;margin-top:4px;display:block">View Plans &rarr;</a>';
+  }
+
+  /* Add standalone "Back to Website" link under the profile box */
+  const footerRow = document.querySelector('.user-footer-row');
+  if(footerRow && !document.getElementById('sb-back-link')){
+    const backBtn = document.createElement('a');
+    backBtn.id = 'sb-back-link';
+    backBtn.href = '/';
+    backBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:10px;padding:8px;border-radius:8px;color:#64748B;text-decoration:none;font-size:12px;font-weight:600;font-family:var(--font-body);transition:all .15s';
+    backBtn.innerHTML = '← Back to Website';
+    backBtn.onmouseover = function(){ this.style.color = '#0F172A'; this.style.background = '#F1F5F9'; };
+    backBtn.onmouseout = function(){ this.style.color = '#64748B'; this.style.background = 'transparent'; };
+    footerRow.parentNode.insertBefore(backBtn, footerRow.nextSibling);
   }
 
   /* Hide deep analysis section immediately in demo mode */
