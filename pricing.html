@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantichy — Pricing</title>
+<meta name="theme-color" content="#001f5c">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link href="/styles.css" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@600;700;800;900&display=swap');
+:root{--color-navy:#001f5c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#fafbfa;color:#1a1a1a;min-height:100vh}
+.bg-navy{background-color:var(--color-navy)}
+.text-navy{color:var(--color-navy)}
+
+/* Fade-in animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .6s ease both}
+.fade-in-d1{animation:fadeUp .6s ease .1s both}
+.fade-in-d2{animation:fadeUp .6s ease .2s both}
+.fade-in-d3{animation:fadeUp .6s ease .3s both}
+</style>
+</head>
+<body>
+
+<!-- Minimal nav -->
+<nav style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1280px;margin:0 auto">
+  <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none">
+    <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+      <rect width="40" height="40" rx="10" fill="#001f5c"/>
+      <text x="50%" y="55%" text-anchor="middle" dominant-baseline="central" fill="white" font-family="Montserrat,sans-serif" font-weight="800" font-size="20">S</text>
+    </svg>
+    <span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:#0F172A">Quantichy</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="/app?demo=true" style="font-size:13px;font-weight:600;color:#64748B;text-decoration:none;padding:8px 16px;border-radius:8px;transition:background .2s" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">Back to Demo</a>
+    <a href="/app" style="font-size:13px;font-weight:700;color:white;text-decoration:none;padding:8px 20px;border-radius:10px;background:#0F172A;transition:background .2s" onmouseover="this.style.background='#1E293B'" onmouseout="this.style.background='#0F172A'">Sign Up</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section style="text-align:center;padding:48px 24px 16px;max-width:720px;margin:0 auto" class="fade-in">
+  <p style="font-size:13px;font-weight:700;color:var(--color-navy);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px">Pricing</p>
+  <h1 style="font-family:'Montserrat',sans-serif;font-size:clamp(28px,5vw,48px);font-weight:900;color:#0F172A;line-height:1.1;margin-bottom:16px;letter-spacing:-.03em">Institutional tools, accessible pricing.</h1>
+  <p style="font-size:17px;color:#64748B;line-height:1.6;font-weight:500">Transparent tiers. Powerful features at every level. Securely funded via Web3 wallets.</p>
+</section>
+
+<!-- Pricing cards -->
+<section style="max-width:1100px;margin:0 auto;padding:32px 16px 64px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;align-items:center">
+
+    <!-- Free -->
+    <div class="fade-in-d1" style="background:white;border-radius:24px;padding:36px 32px;border:1px solid #E2E8F0;box-shadow:0 4px 24px rgba(0,0,0,.06);display:flex;flex-direction:column;height:100%">
+      <h3 style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:#0F172A;margin-bottom:6px">Free</h3>
+      <p style="font-size:14px;color:#64748B;margin-bottom:24px;line-height:1.5">Start exploring with core tools, no credit card needed.</p>
+      <div style="margin-bottom:28px;display:flex;align-items:baseline;gap:4px">
+        <span style="font-size:48px;font-weight:900;color:#0F172A;font-family:'Montserrat',sans-serif">$0</span>
+        <span style="font-size:16px;color:#94A3B8;font-weight:600">/ forever</span>
+      </div>
+      <ul style="list-style:none;flex:1;margin-bottom:28px;display:flex;flex-direction:column;gap:14px">
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#334155;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-navy)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Basic AI Trend Indicator</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#334155;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-navy)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>5 Pairs on Dashboard</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#334155;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-navy)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Standard exchange feeds</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#334155;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-navy)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Community access</li>
+      </ul>
+      <a href="/app" style="display:block;text-align:center;padding:14px;background:#F1F5F9;color:#0F172A;font-weight:700;font-size:15px;border-radius:14px;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#E2E8F0'" onmouseout="this.style.background='#F1F5F9'">Get Started Free</a>
+    </div>
+
+    <!-- Pro -->
+    <div class="fade-in-d2" style="background:var(--color-navy);border-radius:24px;padding:40px 32px;border:2px solid var(--color-navy);box-shadow:0 12px 48px rgba(0,31,92,.25);display:flex;flex-direction:column;position:relative;transform:scale(1.03);z-index:2">
+      <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:#0EA5E9;color:white;padding:5px 18px;border-radius:20px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;box-shadow:0 4px 12px rgba(14,165,233,.3)">Most Popular</div>
+      <h3 style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:white;margin-bottom:6px">Pro</h3>
+      <p style="font-size:14px;color:#93C5FD;margin-bottom:24px;line-height:1.5">For serious traders who need every edge available.</p>
+      <div style="margin-bottom:28px;display:flex;align-items:baseline;gap:4px">
+        <span style="font-size:48px;font-weight:900;color:white;font-family:'Montserrat',sans-serif">$35</span>
+        <span style="font-size:16px;color:#93C5FD;font-weight:600">/ month</span>
+      </div>
+      <ul style="list-style:none;flex:1;margin-bottom:28px;display:flex;flex-direction:column;gap:14px">
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:white;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Full Smart Money (SMC) Suite</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:white;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>25 Assets — all markets</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:white;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>AI Confidence Scoring</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:white;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Volume Intelligence Feed</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:white;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Live Session Log</li>
+      </ul>
+      <a href="/app" style="display:block;text-align:center;padding:14px;background:white;color:var(--color-navy);font-weight:800;font-size:15px;border-radius:14px;text-decoration:none;transition:transform .15s;box-shadow:0 4px 16px rgba(0,0,0,.15)" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Join Now</a>
+    </div>
+
+    <!-- Quant -->
+    <div class="fade-in-d3" style="background:#0F172A;border-radius:24px;padding:36px 32px;border:1px solid #1E293B;box-shadow:0 4px 24px rgba(0,0,0,.12);display:flex;flex-direction:column;height:100%;color:white">
+      <h3 style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:white;margin-bottom:6px">Quant</h3>
+      <p style="font-size:14px;color:#94A3B8;margin-bottom:24px;line-height:1.5">Full institutional stack for professional quant traders.</p>
+      <div style="margin-bottom:28px;display:flex;align-items:baseline;gap:4px">
+        <span style="font-size:48px;font-weight:900;color:white;font-family:'Montserrat',sans-serif">$80</span>
+        <span style="font-size:16px;color:#94A3B8;font-weight:600">/ month</span>
+      </div>
+      <ul style="list-style:none;flex:1;margin-bottom:28px;display:flex;flex-direction:column;gap:14px">
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#CBD5E1;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Everything in Pro</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#CBD5E1;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>TradingView OKX Integration</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#CBD5E1;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Multi-strategy Rule Builder</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#CBD5E1;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Priority support & onboarding</li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#CBD5E1;font-weight:500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M5 13l4 4L19 7"/></svg>Early access to new features</li>
+      </ul>
+      <a href="/app" style="display:block;text-align:center;padding:14px;background:#1E293B;color:white;font-weight:700;font-size:15px;border-radius:14px;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1E293B'">Get Quant</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- FAQ / Trust strip -->
+<section style="max-width:720px;margin:0 auto;padding:0 24px 64px;text-align:center">
+  <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;opacity:.6">
+    <span style="font-size:12px;font-weight:600;color:#64748B">No credit card required</span>
+    <span style="color:#CBD5E1">|</span>
+    <span style="font-size:12px;font-weight:600;color:#64748B">Cancel anytime</span>
+    <span style="color:#CBD5E1">|</span>
+    <span style="font-size:12px;font-weight:600;color:#64748B">Web3 wallet payments</span>
+  </div>
+</section>
+
+</body>
+</html>

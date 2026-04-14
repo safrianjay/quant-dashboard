@@ -16,3 +16,9 @@
   from = "/app"
   to = "/index.html"
   status = 200
+
+# Pricing page
+[[redirects]]
+  from = "/pricing"
+  to = "/pricing.html"
+  status = 200

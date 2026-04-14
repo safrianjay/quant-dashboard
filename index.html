@@ -3351,17 +3351,38 @@ function initDemoMode(){
   renderPositions();
   renderPerfChart();
 
-  /* Inject demo banner */
+  /* Inject demo highlight widget — top bar */
   const banner = document.createElement('div');
   banner.id = 'demo-banner';
-  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:300;background:linear-gradient(90deg,#F59E0B,#D97706);color:white;text-align:center;padding:8px 16px;font-size:13px;font-weight:600;font-family:var(--font-heading);display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.15)';
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:300;background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%);color:white;padding:10px 20px;font-family:var(--font-heading);display:flex;align-items:center;justify-content:center;gap:16px;box-shadow:0 4px 20px rgba(0,0,0,.25);cursor:pointer';
+  banner.onclick = function(e){ if(e.target.tagName!=='BUTTON') window.location.href='/pricing'; };
   banner.innerHTML = `
-    <span>🔒 You're viewing a limited demo</span>
-    <a href="/app" style="background:white;color:#D97706;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;transition:transform .15s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Sign Up for Full Access</a>
-    <button onclick="document.getElementById('demo-banner').remove();document.body.style.paddingTop='0'" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;margin-left:8px;opacity:.8" title="Dismiss">×</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="background:linear-gradient(135deg,#F59E0B,#D97706);padding:3px 10px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">DEMO</span>
+      <span style="font-size:13px;font-weight:600;color:#E2E8F0">You're exploring a limited preview</span>
+    </div>
+    <a href="/pricing" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;padding:6px 18px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;transition:transform .15s;box-shadow:0 2px 8px rgba(245,158,11,.3)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Upgrade Now</a>
+    <button onclick="event.stopPropagation();document.getElementById('demo-banner').remove();document.body.style.paddingTop='0'" style="background:none;border:none;color:#64748B;font-size:16px;cursor:pointer;margin-left:4px;padding:2px 6px;line-height:1" title="Dismiss">&times;</button>
   `;
   document.body.prepend(banner);
-  document.body.style.paddingTop = '40px';
+  document.body.style.paddingTop = '44px';
+
+  /* Override user chip to show demo badge */
+  const emailEl = document.getElementById('user-email');
+  const avatarEl = document.getElementById('user-avatar');
+  if(emailEl) emailEl.innerHTML = 'Demo Account';
+  if(avatarEl){
+    avatarEl.style.background = 'linear-gradient(135deg,#F59E0B,#D97706)';
+    avatarEl.style.cursor = 'pointer';
+    avatarEl.onclick = ()=> window.location.href='/pricing';
+  }
+  /* Sidebar user area → demo badge */
+  const sbName = document.getElementById('sb-user-name');
+  const sbEmail = document.getElementById('sb-user-email');
+  if(sbName) sbName.innerHTML = 'Demo Account <span style="background:#F59E0B;color:white;font-size:8px;padding:2px 6px;border-radius:4px;margin-left:4px;vertical-align:middle;font-weight:800;letter-spacing:.04em">DEMO</span>';
+  if(sbEmail){
+    sbEmail.innerHTML = '<a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:600">View Plans &rarr;</a>';
+  }
 
   console.log('🎮 Demo mode active — features are limited');
 }
@@ -3389,8 +3410,8 @@ function showUpgradeModal(action){
       <h3 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;font-family:var(--font-heading)">${msg.title}</h3>
       <p style="font-size:14px;color:#64748B;line-height:1.6;margin-bottom:24px;font-family:var(--font-body)">${msg.desc}</p>
       <div style="display:flex;flex-direction:column;gap:10px">
-        <a href="/app" style="display:block;background:#0F172A;color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;font-family:var(--font-heading);transition:background .2s" onmouseover="this.style.background='#1E293B'" onmouseout="this.style.background='#0F172A'">Sign Up — Start Free</a>
-        <a href="/#pricing" style="display:block;color:#3B82F6;font-size:13px;font-weight:600;text-decoration:none;font-family:var(--font-body)">View Pricing Plans →</a>
+        <a href="/pricing" style="display:block;background:linear-gradient(135deg,#F59E0B,#D97706);color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;font-family:var(--font-heading);transition:transform .15s;box-shadow:0 4px 16px rgba(245,158,11,.3)" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">View Pricing Plans</a>
+        <a href="/app" style="display:block;color:#0F172A;font-size:13px;font-weight:600;text-decoration:none;font-family:var(--font-body)">Sign Up Free →</a>
         <button onclick="this.closest('#upgrade-modal-overlay').remove()" style="background:none;border:none;color:#94A3B8;font-size:13px;cursor:pointer;padding:4px;font-family:var(--font-body)">Continue Demo</button>
       </div>
     </div>
