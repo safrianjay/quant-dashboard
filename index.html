@@ -561,7 +561,7 @@ p,span,div,input,button{
         <button class="period utf" data-tf="1W"  onclick="unifiedTF('1W')">1W</button>
       </div>
       <!-- Run Analysis button -->
-      <button onclick="runLiveAnalysis()" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ Run Analysis</button>
+      <button onclick="showUpgradeModal('analysis')" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ Run Analysis</button>
       <button onclick="openPanel('long')" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:#0F172A;color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span class="entry-btn-label">Add Entry</span>
@@ -3401,6 +3401,7 @@ function showUpgradeModal(action){
   const messages = {
     position: { title:'Add Positions', desc:'Create and track live positions with real-time P&L, TP/SL management, and Firestore sync.' },
     save:     { title:'Save Data',     desc:'Your positions and settings are saved securely to the cloud with your account.' },
+    analysis: { title:'Live AI Analysis',  desc:'Unlock real-time institutional analysis and smart money concepts on live data.' },
     default:  { title:'Full Access',   desc:'Unlock all features including unlimited analysis, position tracking, and multi-coin support.' }
   };
   const msg = messages[action] || messages.default;
@@ -3412,13 +3413,12 @@ function showUpgradeModal(action){
 
   overlay.innerHTML = `
     <div style="background:white;border-radius:20px;padding:36px 32px;max-width:400px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.18);animation:coinIn .3s ease both;text-align:center">
-      <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#F59E0B,#D97706);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px">🔒</div>
+      <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#0F172A,#1E293B);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px">🔒</div>
       <h3 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;font-family:var(--font-heading)">${msg.title}</h3>
-      <p style="font-size:14px;color:#64748B;line-height:1.6;margin-bottom:24px;font-family:var(--font-body)">${msg.desc}</p>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <a href="/pricing" style="display:block;background:linear-gradient(135deg,#F59E0B,#D97706);color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;font-family:var(--font-heading);transition:transform .15s;box-shadow:0 4px 16px rgba(245,158,11,.3)" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">View Pricing Plans</a>
-        <a href="/app" style="display:block;color:#0F172A;font-size:13px;font-weight:600;text-decoration:none;font-family:var(--font-body)">Sign Up Free →</a>
-        <button onclick="this.closest('#upgrade-modal-overlay').remove()" style="background:none;border:none;color:#94A3B8;font-size:13px;cursor:pointer;padding:4px;font-family:var(--font-body)">Continue Demo</button>
+      <p style="font-size:14px;color:#64748B;line-height:1.6;margin-bottom:28px;font-family:var(--font-body)">${msg.desc}</p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <a href="/pricing" style="display:block;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;padding:14px 24px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;font-family:var(--font-heading);transition:transform .15s;box-shadow:0 4px 16px rgba(15,23,42,.25)" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">View Pricing Plans</a>
+        <button onclick="this.closest('#upgrade-modal-overlay').remove()" style="background:none;border:none;color:#94A3B8;font-size:13px;font-weight:500;cursor:pointer;padding:6px;font-family:var(--font-body)">Continue Demo</button>
       </div>
     </div>
   `;
