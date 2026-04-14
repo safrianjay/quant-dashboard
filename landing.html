@@ -8,9 +8,52 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         @media (max-width: 767px) {
+            /* Platform bento grid: single column on mobile */
             #platform-grid > * {
                 grid-column: span 1 !important;
                 grid-row: span 1 !important;
+            }
+
+            /* Reduce section vertical padding */
+            .py-24 {
+                padding-top: 3rem !important;
+                padding-bottom: 3rem !important;
+            }
+
+            /* Reduce header bottom margins */
+            .mb-16 {
+                margin-bottom: 2.5rem !important;
+            }
+            .mb-12 {
+                margin-bottom: 1.5rem !important;
+            }
+
+            /* Scale down oversized headings */
+            .text-5xl {
+                font-size: 2rem !important;
+                line-height: 1.1 !important;
+            }
+            .text-7xl {
+                font-size: 2.25rem !important;
+                line-height: 1.1 !important;
+            }
+
+            /* Tighten squad/feature card grid gaps */
+            .gap-10 {
+                gap: 1.5rem !important;
+            }
+            .gap-8 {
+                gap: 1.25rem !important;
+            }
+
+            /* Reduce large card padding on mobile */
+            .p-10 {
+                padding: 1.5rem !important;
+            }
+
+            /* Footer padding */
+            .pt-16 {
+                padding-top: 2.5rem !important;
             }
         }
     </style>
