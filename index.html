@@ -3158,19 +3158,13 @@ const QuantAnalyst = (() => {
   function pushToCards(analysis) {
     const {price,bias,confidence,maStack,volume,levels,longSetup,shortSetup,probability,logEntry,timeframe}=analysis;
 
-    /* ── 1. KPI Price ── */
-    const kv0=document.getElementById("kv0");
-    if(kv0) kv0.textContent=`$${Math.round(price).toLocaleString()}`;
-
-    /* ── 2. KPI Confidence ── */
+    /* ── 2. KPI Confidence — Still derived from analysis ── */
     const kv1=document.getElementById("kv1");
     if(kv1) kv1.textContent=`${confidence}/10`;
 
-    /* ── 3. KPI Volume ── */
-    const kv2=document.getElementById("kv2");
-    if(kv2) kv2.textContent=`${Math.round(volume.currentVol)} ${currentBase}`;
-
-    /* ── 4. KPI 24H Range ── */
+    /* ── 3. KPI Volume — Use analysis volume for internal cards but skip global KPI override ── */
+    
+    /* ── 4. KPI 24H Range — Analysis derived ── */
     const rangeHigh=levels.resistances.find(r=>r.label==="24H High")?.price;
     const rangeLow=levels.supports.find(s=>s.label==="24H Low")?.price;
     const kv3=document.getElementById("kv3");
@@ -3323,21 +3317,22 @@ async function fetchLiveMarketData(asset="BTC", timeframe="15m") {
   const cgId=CG_IDS[asset]||"bitcoin";
   const days=timeframe==="1d"?365:timeframe==="4h"?90:timeframe==="1h"?30:1;
 
-  const [coinRes, ohlcRes]=await Promise.all([
-    fetch(`/.netlify/functions/market-data?type=coin&id=${cgId}`),
+  // Use our synchronized Binance data for real-time metadata
+  const cache = _marketPrices[currentSymbol] || { price: 0, high: 0, low: 0, vol: 0, chg: 0 };
+  
+  const [ohlcRes]=await Promise.all([
     fetch(`/.netlify/functions/market-data?type=ohlc&id=${cgId}`)
   ]);
-  if(!coinRes.ok||!ohlcRes.ok) throw new Error("Market Data Proxy error");
-  const coin=await coinRes.json();
+  if(!ohlcRes.ok) throw new Error("Market Data Proxy error (OHLC)");
   const ohlc=await ohlcRes.json();
 
-  const price=coin.market_data.current_price.usd;
-  const high24=coin.market_data.high_24h.usd;
-  const low24=coin.market_data.low_24h.usd;
-  const vol24=coin.market_data.total_volume.usd;
-  const chg24=coin.market_data.price_change_percentage_24h||0;
-  const chg7d=coin.market_data.price_change_percentage_7d||0;
-  const chg30d=coin.market_data.price_change_percentage_30d||0;
+  const price = cache.price;
+  const high24 = cache.high;
+  const low24 = cache.low;
+  const vol24 = cache.vol;
+  const chg24 = cache.chg;
+  const chg7d = cache.chg; // Fallback to 24h for 7d in live view if not in cache
+  const chg30d = cache.chg;
 
   const closes=ohlc.map(c=>c[4]).filter(Boolean);
   const avg=arr=>arr.reduce((a,b)=>a+b,0)/arr.length;
