@@ -3491,7 +3491,7 @@ function initDemoMode(){
   /* Override user chip to show demo badge */
   const emailEl = document.getElementById('user-email');
   const avatarEl = document.getElementById('user-avatar');
-  if(emailEl) emailEl.innerHTML = 'Demo Account';
+  if(emailEl) emailEl.innerHTML = 'Demo';
   if(avatarEl){
     avatarEl.style.background = 'linear-gradient(135deg,#F59E0B,#D97706)';
     avatarEl.style.cursor = 'pointer';
@@ -3504,7 +3504,7 @@ function initDemoMode(){
     sbName.style.display = 'flex';
     sbName.style.alignItems = 'center';
     sbName.style.gap = '6px';
-    sbName.innerHTML = 'Demo Account <span style="background:#F59E0B;color:white;font-size:8px;padding:2px 6px;border-radius:4px;font-weight:800;letter-spacing:.04em;line-height:1">DEMO</span>';
+    sbName.innerHTML = 'Demo <span style="background:#F59E0B;color:white;font-size:8px;padding:2px 6px;border-radius:4px;font-weight:800;letter-spacing:.04em;line-height:1">DEMO</span>';
   }
   if(sbEmail){
     sbEmail.innerHTML = '<a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:700;font-size:12px;line-height:1;margin-top:4px;display:block">View Plans &rarr;</a>';
