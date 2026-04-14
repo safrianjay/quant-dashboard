@@ -2282,7 +2282,7 @@ function syncEntryCoinPrices(){
 
 /* ── Panel open/close ── */
 window.openPanel = function(dir='long'){
-  if(DEMO_MODE && isPaywallActive){ showUpgradeModal('position'); return; }
+  if(DEMO_MODE){ showUpgradeModal('position'); return; }
   entryDir = dir;
   syncEntryCoinPrices();
   const overlay = document.createElement("div");
@@ -3405,6 +3405,7 @@ function initDemoMode(){
   }
 
   /* Hide deep analysis section immediately in demo mode */
+  isPaywallActive = true;
   const paywallContent = document.getElementById('demo-paywall-content');
   const paywallOverlay = document.getElementById('demo-paywall-overlay');
   if(paywallContent && paywallOverlay){
@@ -3416,18 +3417,11 @@ function initDemoMode(){
     paywallOverlay.style.border = '1px solid #E2E8F0';
   }
 
-  /* But allow CTAs (Run Analysis / Add Entry) for the first 60 seconds */
-  isPaywallActive = false;
-  setTimeout(() => {
-    isPaywallActive = true;
-    console.log('🔒 Demo CTA lock active');
-  }, 60000);
-
-  console.log('🎮 Demo mode active — charts hidden immediately, buttons locked in 60s');
+  console.log('🎮 Demo mode active — deep analysis features are locked');
 }
 
 function handleRunAnalysis(){
-  if(DEMO_MODE && isPaywallActive){
+  if(DEMO_MODE){
     showUpgradeModal('analysis');
   } else {
     runLiveAnalysis();
