@@ -3404,7 +3404,7 @@ function initDemoMode(){
     sbEmail.innerHTML = '<a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:600">View Plans &rarr;</a>';
   }
 
-  /* Blur deep analysis section after 2 minutes (120000 ms) */
+  /* Blur deep analysis section after 1 minute (60000 ms) */
   setTimeout(() => {
     isPaywallActive = true;
     const paywallContent = document.getElementById('demo-paywall-content');
@@ -3418,9 +3418,9 @@ function initDemoMode(){
       paywallOverlay.style.display = 'flex';
       paywallOverlay.style.animation = 'overlayIn 0.5s ease both';
     }
-  }, 120000);
+  }, 60000);
 
-  console.log('🎮 Demo mode active — features are limited (paywall triggers in 2 mins)');
+  console.log('🎮 Demo mode active — features are limited (paywall triggers in 1 min)');
 }
 
 function handleRunAnalysis(){
