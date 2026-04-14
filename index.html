@@ -3382,7 +3382,6 @@ function initDemoMode(){
       <span style="font-size:13px;font-weight:600;color:#E2E8F0">You're exploring a limited preview</span>
     </div>
     <div style="display:flex;align-items:center;gap:12px">
-      <a href="/" style="color:#94A3B8;font-size:12px;font-weight:600;text-decoration:none;transition:color .15s" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94A3B8'">← Back to Website</a>
       <a href="/pricing" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;padding:6px 18px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;transition:transform .15s;box-shadow:0 2px 8px rgba(245,158,11,.3)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Upgrade Now</a>
     </div>
   `;
@@ -3403,7 +3402,12 @@ function initDemoMode(){
   const sbEmail = document.getElementById('sb-user-email');
   if(sbName) sbName.innerHTML = 'Demo Account <span style="background:#F59E0B;color:white;font-size:8px;padding:2px 6px;border-radius:4px;margin-left:4px;vertical-align:middle;font-weight:800;letter-spacing:.04em">DEMO</span>';
   if(sbEmail){
-    sbEmail.innerHTML = '<a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:600">View Plans &rarr;</a>';
+    sbEmail.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:3px">
+        <a href="/pricing" style="color:#3B82F6;text-decoration:none;font-weight:600;font-size:12px">View Plans &rarr;</a>
+        <a href="/" style="color:#64748B;text-decoration:none;font-weight:500;font-size:11px">← Back to Website</a>
+      </div>
+    `;
   }
 
   /* Hide deep analysis section immediately in demo mode */
