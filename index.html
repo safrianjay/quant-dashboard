@@ -922,12 +922,6 @@ let _authTab = 'signin';
 /* ══ URL PARAMS ══ */
 const _urlParams = new URLSearchParams(window.location.search);
 const DEMO_MODE = _urlParams.has('demo');
-/* Persist plan in sessionStorage so it survives OAuth redirects & Netlify rewrites */
-const _pendingPlan = (function(){
-  const fromUrl = _urlParams.get('plan');
-  if(fromUrl){ sessionStorage.setItem('q_pending_plan', fromUrl); return fromUrl; }
-  return sessionStorage.getItem('q_pending_plan');
-})();
 const DEMO_POSITIONS = (function(){
   const now = new Date();
   const fmt = d => ({ date:d.toLocaleDateString("en-US",{month:"short",day:"numeric"}), time:d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false}) });
@@ -1001,12 +995,6 @@ function initAuth(){
           _hideSplash();
         } else {
           /* Verified (or Google/Phone sign-in) — grant full access */
-          if(_pendingPlan){
-            /* User came from pricing → redirect to payment after auth */
-            sessionStorage.removeItem('q_pending_plan');
-            window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
-            return;
-          }
           _hideAuthScreen();
           initFirestoreForUser(user.uid);
           _hideSplash();
@@ -1015,8 +1003,6 @@ function initAuth(){
         currentUser = null;
         _posRef = null;
         _showAuthScreen();
-        /* Default to Register tab when arriving from pricing */
-        if(_pendingPlan) setTimeout(()=> authSwitchTab('register'), 50);
         _hideSplash();
       }
     });
@@ -1095,12 +1081,6 @@ window.authSubmit = async function(){
     } else {
       await auth.createUserWithEmailAndPassword(email, pass);
     }
-    /* Redirect to payment immediately after successful auth if plan is pending */
-    if(_pendingPlan){
-      sessionStorage.removeItem('q_pending_plan');
-      window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
-      return;
-    }
   } catch(e){
     _authError(_friendlyAuthError(e.code));
     btn.disabled = false;
@@ -1112,12 +1092,6 @@ window.authGoogle = async function(){
   try{
     const provider = new firebase.auth.GoogleAuthProvider();
     await firebase.auth().signInWithPopup(provider);
-    /* Redirect to payment immediately after successful Google auth */
-    if(_pendingPlan){
-      sessionStorage.removeItem('q_pending_plan');
-      window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
-      return;
-    }
   } catch(e){
     _authError(_friendlyAuthError(e.code));
   }
@@ -1197,12 +1171,6 @@ window.authCheckVerified = async function(){
   try{
     await firebase.auth().currentUser.reload();
     if(firebase.auth().currentUser.emailVerified){
-      /* Verification confirmed — redirect to payment if plan pending */
-      if(_pendingPlan){
-        sessionStorage.removeItem('q_pending_plan');
-        window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
-        return;
-      }
       _hideAuthScreen();
       initFirestoreForUser(firebase.auth().currentUser.uid);
     } else {
@@ -1218,11 +1186,6 @@ window.authCheckVerified = async function(){
 };
 
 window.authSkipVerification = function(){
-  if(_pendingPlan){
-    sessionStorage.removeItem('q_pending_plan');
-    window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
-    return;
-  }
   _hideAuthScreen();
   initFirestoreForUser(firebase.auth().currentUser.uid);
 };
