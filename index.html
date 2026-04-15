@@ -2447,6 +2447,8 @@ window.selectMarket = async function(sym, base, name){
     const newChg = (newChgPct>=0?'+':'')+newChgPct.toFixed(2);
 
     /* Calculate MAs from daily closes (already populated from cache or fetch above) */
+    if(!closes || !closes.length) closes = [newPrice]; /* fallback if chart data unavailable */
+    if(!confLabels || !confLabels.length) confLabels = ['—'];
     const sma = (n) => {
       const slice = closes.slice(-n);
       return slice.length ? slice.reduce((a,b)=>a+b,0)/slice.length : newPrice;

@@ -3,16 +3,28 @@ const https = require('https');
 /* In-memory cache — persists across warm Lambda invocations.
    Prevents multiple browser tabs / rapid retries from hitting CoinGecko. */
 const _cache = {};
-const CACHE_TTL = 45000; /* 45 seconds */
+const CACHE_TTL = 120000; /* 2 minutes — CoinGecko free tier allows ~30 req/min */
+
+const HEADERS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+
+function httpsGet(url) {
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } }, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => resolve({ statusCode: res.statusCode, body }));
+    });
+    req.on('error', reject);
+    req.setTimeout(10000, () => { req.destroy(); reject(new Error('Timeout')); });
+  });
+}
 
 exports.handler = async (event) => {
   const q = event.queryStringParameters || {};
-  let url, ttl = CACHE_TTL; /* default 45s, overridden per type */
+  let url;
 
   if (q.type === 'okx-tickers') {
-    /* All USDT spot tickers from OKX — filter client-side */
     url = 'https://www.okx.com/api/v5/market/tickers?instType=SPOT';
-    ttl = 10000;
   } else if (q.type === 'market') {
     url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${encodeURIComponent(q.ids)}&sparkline=false`;
   } else if (q.type === 'chart') {
@@ -20,32 +32,39 @@ exports.handler = async (event) => {
   } else if (q.type === 'coin') {
     url = `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(q.id)}?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`;
   } else {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid type' }) };
+    return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ error: 'Invalid type' }) };
   }
 
+  /* Return cached if fresh */
   const hit = _cache[url];
   if (hit && Date.now() - hit.ts < CACHE_TTL) {
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: hit.body
-    };
+    console.log('[cg] Cache hit:', q.type, q.id || '');
+    return { statusCode: 200, headers: HEADERS, body: hit.body };
   }
 
-  return new Promise((resolve) => {
-    https.get(url, { headers: { 'Accept': 'application/json', 'User-Agent': 'Quantichy/1.0' } }, (res) => {
-      let body = '';
-      res.on('data', chunk => body += chunk);
-      res.on('end', () => {
-        if (res.statusCode === 200) _cache[url] = { body, ts: Date.now() };
-        resolve({
-          statusCode: res.statusCode,
-          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-          body
-        });
-      });
-    }).on('error', (e) => {
-      resolve({ statusCode: 500, body: JSON.stringify({ error: e.message }) });
-    });
-  });
+  try {
+    const res = await httpsGet(url);
+
+    /* On 429 rate limit — serve stale cache if available, else return error */
+    if (res.statusCode === 429) {
+      console.warn('[cg] Rate limited (429) for', q.type, q.id || '');
+      if (hit) {
+        console.log('[cg] Serving stale cache');
+        return { statusCode: 200, headers: HEADERS, body: hit.body };
+      }
+      return { statusCode: 429, headers: HEADERS, body: JSON.stringify({ error: 'Rate limited, try again later' }) };
+    }
+
+    if (res.statusCode === 200) {
+      _cache[url] = { body: res.body, ts: Date.now() };
+    }
+
+    return { statusCode: res.statusCode, headers: HEADERS, body: res.body };
+
+  } catch (e) {
+    console.error('[cg] Error:', e.message);
+    /* Serve stale on network error */
+    if (hit) return { statusCode: 200, headers: HEADERS, body: hit.body };
+    return { statusCode: 500, headers: HEADERS, body: JSON.stringify({ error: e.message }) };
+  }
 };

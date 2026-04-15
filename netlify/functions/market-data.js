@@ -1,7 +1,6 @@
 /**
  * Netlify Function: market-data
- * Uses Node https module (same as cg.js which works).
- * CoinGecko /simple/price → Kraken fallback.
+ * Prices: CoinGecko → Kraken fallback. 2-min in-memory cache.
  */
 const https = require('https');
 
@@ -9,6 +8,22 @@ const HEADERS = {
   'Content-Type': 'application/json',
   'Access-Control-Allow-Origin': '*'
 };
+
+/* ── In-memory cache (persists across warm invocations) ── */
+const _cache = {};
+const CACHE_TTL = 120000; /* 2 minutes */
+
+function cached(key) {
+  const hit = _cache[key];
+  if (hit && Date.now() - hit.ts < CACHE_TTL) return hit.body;
+  return null;
+}
+function stale(key) {
+  return _cache[key] ? _cache[key].body : null;
+}
+function store(key, body) {
+  _cache[key] = { body, ts: Date.now() };
+}
 
 const COIN_MAP = [
   { cgId: 'bitcoin',       sym: 'BTC'  },
@@ -46,11 +61,7 @@ function httpsGet(url) {
   });
 }
 
-async function fetchCoinGecko() {
-  const ids = COIN_MAP.map(c => c.cgId).join(',');
-  const data = await httpsGet(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_high_24h=true&include_low_24h=true`
-  );
+function transformCG(data) {
   return COIN_MAP.map(({ cgId, sym }) => {
     const d = data[cgId] || {};
     return {
@@ -101,28 +112,48 @@ exports.handler = async (event) => {
   try {
 
     if (type === 'prices') {
+      const cacheKey = 'prices';
+
+      /* Return cached if fresh */
+      const fresh = cached(cacheKey);
+      if (fresh) {
+        console.log('[market-data] Cache hit');
+        return { statusCode: 200, headers: HEADERS, body: fresh };
+      }
+
+      /* Try CoinGecko */
       let result;
       try {
-        result = await fetchCoinGecko();
-        console.log('[market-data] CoinGecko OK, coins:', result.length);
+        const ids = COIN_MAP.map(c => c.cgId).join(',');
+        const data = await httpsGet(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_high_24h=true&include_low_24h=true`
+        );
+        result = JSON.stringify(transformCG(data));
+        console.log('[market-data] CoinGecko OK');
       } catch (e) {
-        console.warn('[market-data] CoinGecko failed:', e.message, '— trying Kraken');
-        result = await fetchKraken();
-        console.log('[market-data] Kraken OK');
+        console.warn('[market-data] CoinGecko failed:', e.message);
+        /* On 429 — serve stale cache if available */
+        if (e.message.includes('429')) {
+          const old = stale(cacheKey);
+          if (old) {
+            console.log('[market-data] Serving stale cache on 429');
+            return { statusCode: 200, headers: HEADERS, body: old };
+          }
+        }
+        /* Try Kraken fallback */
+        try {
+          result = JSON.stringify(await fetchKraken());
+          console.log('[market-data] Kraken OK');
+        } catch (e2) {
+          /* Last resort: stale cache */
+          const old = stale(cacheKey);
+          if (old) return { statusCode: 200, headers: HEADERS, body: old };
+          throw e2;
+        }
       }
-      return { statusCode: 200, headers: HEADERS, body: JSON.stringify(result) };
-    }
 
-    if (type === 'ohlc' && id) {
-      const data = await httpsGet(`https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=1`);
-      return { statusCode: 200, headers: HEADERS, body: JSON.stringify(data) };
-    }
-
-    if (type === 'coin' && id) {
-      const data = await httpsGet(
-        `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&community_data=false&developer_data=false`
-      );
-      return { statusCode: 200, headers: HEADERS, body: JSON.stringify(data) };
+      store(cacheKey, result);
+      return { statusCode: 200, headers: HEADERS, body: result };
     }
 
     return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ error: 'Invalid type' }) };
