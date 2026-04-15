@@ -11,7 +11,11 @@ exports.handler = async (event) => {
     // Mode 1: Batch prices for the entire dashboard (from Binance)
     if (type === 'prices') {
       console.log('[market-data] Fetching prices from Binance...');
-      const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+      const response = await fetch('https://api.binance.com/api/v3/ticker/24hr', {
+        headers: {
+          'User-Agent': 'Quantichy-Dashboard/1.0'
+        }
+      });
       console.log('[market-data] Binance response status:', response.status);
 
       if (!response.ok) throw new Error(`Binance API Error: ${response.status}`);
@@ -35,7 +39,9 @@ exports.handler = async (event) => {
 
     // Mode 2: OHLC historical data (from CoinGecko)
     if (type === 'ohlc' && id) {
-      const response = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=1`);
+      const response = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=1`, {
+        headers: { 'User-Agent': 'Quantichy-Dashboard/1.0' }
+      });
       if (!response.ok) throw new Error(`CoinGecko OHLC Error: ${response.status}`);
       
       const data = await response.json();
@@ -52,7 +58,9 @@ exports.handler = async (event) => {
     // Mode 3: Detailed Coin Info (from CoinGecko)
     if (type === 'coin' && id) {
       const url = `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&community_data=false&developer_data=false`;
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: { 'User-Agent': 'Quantichy-Dashboard/1.0' }
+      });
       if (!response.ok) throw new Error(`CoinGecko Coin Error: ${response.status}`);
       
       const data = await response.json();
