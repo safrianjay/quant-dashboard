@@ -922,6 +922,7 @@ let _authTab = 'signin';
 /* ══ URL PARAMS ══ */
 const _urlParams = new URLSearchParams(window.location.search);
 const DEMO_MODE = _urlParams.has('demo');
+const _redirectAfterAuth = _urlParams.get('redirect');
 const DEMO_POSITIONS = (function(){
   const now = new Date();
   const fmt = d => ({ date:d.toLocaleDateString("en-US",{month:"short",day:"numeric"}), time:d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false}) });
@@ -995,6 +996,10 @@ function initAuth(){
           _hideSplash();
         } else {
           /* Verified (or Google/Phone sign-in) — grant full access */
+          if(_redirectAfterAuth){
+            window.location.href = _redirectAfterAuth;
+            return;
+          }
           _hideAuthScreen();
           initFirestoreForUser(user.uid);
           _hideSplash();
@@ -1171,6 +1176,7 @@ window.authCheckVerified = async function(){
   try{
     await firebase.auth().currentUser.reload();
     if(firebase.auth().currentUser.emailVerified){
+      if(_redirectAfterAuth){ window.location.href = _redirectAfterAuth; return; }
       _hideAuthScreen();
       initFirestoreForUser(firebase.auth().currentUser.uid);
     } else {
@@ -1186,6 +1192,7 @@ window.authCheckVerified = async function(){
 };
 
 window.authSkipVerification = function(){
+  if(_redirectAfterAuth){ window.location.href = _redirectAfterAuth; return; }
   _hideAuthScreen();
   initFirestoreForUser(firebase.auth().currentUser.uid);
 };
