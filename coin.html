@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Coin Price — Quantichy</title>
+<meta name="theme-color" content="#0F172A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quantichy">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=3">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg?v=3">
+<link rel="manifest" href="/manifest.json?v=3">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --dark: #0F172A;
+  --navy: #001f5c;
+  --fh: 'Montserrat', sans-serif;
+  --fb: 'Inter', sans-serif;
+  --fm: 'Space Mono', monospace;
+  --card-radius: 13px;
+  --card-border: 1px solid #E2E8F0;
+  --card-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { font-family: var(--fb); background: #F1F5F9; min-height: 100vh; color: var(--dark); }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:none } }
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+/* Nav */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,.88); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #E2E8F0;
+}
+.nav-in {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 28px; max-width: 1400px; margin: 0 auto;
+  position: relative;
+}
+.back-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 13px; font-weight: 600; color: #64748B;
+  text-decoration: none; padding: 7px 12px; border-radius: 8px;
+  transition: background .15s; z-index: 1;
+}
+.back-btn:hover { background: #F1F5F9; }
+.nav-brand {
+  display: flex; align-items: center; gap: 8px; text-decoration: none;
+  position: absolute; left: 50%; transform: translateX(-50%);
+}
+.nav-brand span { font-family: var(--fh); font-weight: 800; font-size: 17px; color: var(--dark); }
+.nav-user { display: flex; align-items: center; gap: 10px; z-index: 1; }
+.nav-email-txt { font-size: 12.5px; font-weight: 600; color: #475569; font-family: var(--fm); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.signout-btn { font-size: 12px; font-weight: 600; color: #94A3B8; background: none; border: 1px solid #E2E8F0; border-radius: 7px; padding: 5px 10px; cursor: pointer; font-family: var(--fb); transition: all .15s; }
+.signout-btn:hover { border-color: #CBD5E1; color: #64748B; }
+
+/* Layout */
+.page-wrap { max-width: 1400px; margin: 0 auto; padding: 24px 20px 60px; }
+.three-col { display: grid; grid-template-columns: 260px 1fr 300px; gap: 20px; align-items: start; }
+
+/* Card base */
+.card { background: white; border-radius: var(--card-radius); border: var(--card-border); box-shadow: var(--card-shadow); }
+
+/* Left panel */
+.left-panel { position: sticky; top: 80px; }
+.left-inner { padding: 20px; }
+.coin-avatar-lg {
+  width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-family: var(--fh); font-size: 24px; font-weight: 800;
+  color: white; margin: 0 auto 14px;
+}
+.coin-name-lg { font-family: var(--fh); font-size: 20px; font-weight: 800; color: var(--dark); text-align: center; line-height: 1.2; margin-bottom: 6px; }
+.coin-sym-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
+.sym-txt { font-family: var(--fm); font-size: 13px; color: #64748B; }
+.rank-badge-lg { display: inline-block; font-size: 10px; font-weight: 700; font-family: var(--fh); padding: 3px 9px; border-radius: 20px; background: #F1F5F9; color: #64748B; }
+.big-price { font-family: var(--fm); font-size: 32px; font-weight: 700; color: var(--dark); text-align: center; letter-spacing: -.02em; line-height: 1; margin-bottom: 8px; }
+.chg-pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 20px; font-family: var(--fm); font-size: 12px; font-weight: 700; }
+.chg-pill.up { background: #F0FDF4; color: #16A34A; }
+.chg-pill.dn { background: #FEF2F2; color: #DC2626; }
+.price-row { text-align: center; margin-bottom: 16px; }
+.divider { border: none; border-top: 1px solid #F1F5F9; margin: 16px 0; }
+.stat-grid { display: flex; flex-direction: column; gap: 10px; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; }
+.stat-label { font-size: 10px; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: .05em; font-family: var(--fb); }
+.stat-val { font-family: var(--fm); font-size: 12px; font-weight: 700; color: #334155; }
+.ext-links { display: flex; gap: 8px; }
+.ext-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 8px 10px; border-radius: 9px; border: 1px solid #E2E8F0;
+  font-size: 11.5px; font-weight: 600; font-family: var(--fb); color: #475569;
+  text-decoration: none; background: white; cursor: pointer; transition: all .15s;
+}
+.ext-btn:hover { background: #F8FAFC; border-color: #CBD5E1; }
+
+/* Center panel */
+.tab-bar { display: flex; gap: 4px; padding: 16px 16px 0; border-bottom: 1px solid #F1F5F9; margin-bottom: 0; }
+.tab-btn {
+  padding: 8px 16px; border-radius: 8px 8px 0 0; font-size: 13px; font-weight: 600;
+  font-family: var(--fb); border: none; background: none; cursor: pointer; color: #94A3B8;
+  border-bottom: 2px solid transparent; transition: all .15s;
+}
+.tab-btn.active { color: var(--dark); border-bottom-color: var(--dark); }
+.tab-btn:hover:not(.active) { color: #64748B; background: #F8FAFC; }
+.tab-content { padding: 16px; }
+.tv-wrap { width: 100%; height: 420px; border-radius: 10px; overflow: hidden; background: #F8FAFC; }
+
+/* OHLC bar */
+.ohlc-bar { display: flex; gap: 0; border-top: 1px solid #F1F5F9; margin-top: 16px; }
+.ohlc-item { flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid #F1F5F9; }
+.ohlc-item:last-child { border-right: none; }
+.ohlc-label { font-size: 9px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .06em; font-family: var(--fb); margin-bottom: 4px; }
+.ohlc-val { font-family: var(--fm); font-size: 11px; font-weight: 700; color: #334155; }
+
+/* Coming soon */
+.coming-soon { text-align: center; padding: 60px 20px; color: #94A3B8; font-size: 14px; font-weight: 500; }
+
+/* Right panel */
+.right-panel { display: flex; flex-direction: column; gap: 16px; }
+.card-inner { padding: 18px 18px 16px; }
+.card-title-sm { font-family: var(--fh); font-size: 13px; font-weight: 800; color: var(--dark); margin-bottom: 14px; letter-spacing: .01em; }
+
+/* Sentiment */
+.sent-bar-wrap { margin-bottom: 14px; }
+.sent-bar-track { height: 8px; border-radius: 99px; background: #F1F5F9; overflow: hidden; display: flex; }
+.sent-bar-bull { height: 100%; background: #16A34A; transition: width .4s ease; }
+.sent-bar-bear { height: 100%; background: #DC2626; transition: width .4s ease; flex: 1; }
+.sent-labels { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.sent-label { font-size: 10px; font-weight: 700; font-family: var(--fb); }
+.sent-label.bull { color: #16A34A; }
+.sent-label.bear { color: #DC2626; }
+.sent-pct { font-family: var(--fm); font-size: 12px; font-weight: 700; }
+.sent-pct.bull { color: #16A34A; }
+.sent-pct.bear { color: #DC2626; }
+.sent-btn-row { display: flex; gap: 8px; margin-top: 12px; }
+.sent-btn {
+  flex: 1; padding: 9px; border-radius: 9px; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 700; font-family: var(--fh); transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.sent-btn.bull { background: #F0FDF4; color: #16A34A; border: 1px solid #BBF7D0; }
+.sent-btn.bull:hover { background: #DCFCE7; }
+.sent-btn.bear { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+.sent-btn.bear:hover { background: #FEE2E2; }
+
+/* Price stats */
+.ps-grid { display: flex; flex-direction: column; gap: 10px; }
+.ps-row { display: flex; justify-content: space-between; align-items: center; }
+.ps-label { font-size: 10px; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: .05em; font-family: var(--fb); }
+.ps-val { font-family: var(--fm); font-size: 12px; font-weight: 700; color: #334155; }
+.ps-val.green { color: #16A34A; }
+.ps-val.red { color: #DC2626; }
+
+/* Skeleton */
+.sk { background: #F1F5F9; border-radius: 6px; position: relative; overflow: hidden; }
+.sk::after { content: ""; position: absolute; top:0; right:0; bottom:0; left:0; transform: translateX(-100%); background-image: linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,.4) 20%,rgba(255,255,255,.7) 60%,rgba(255,255,255,0)); animation: shimmer 2.5s infinite; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .three-col { grid-template-columns: 260px 1fr; }
+  .right-panel { grid-column: 2; grid-row: 2; }
+}
+@media (max-width: 768px) {
+  .three-col { grid-template-columns: 1fr; }
+  .left-panel { position: static; }
+  .nav-in { padding: 11px 16px; }
+  .nav-email-txt { display: none; }
+  .big-price { font-size: 26px; }
+  .right-panel { grid-column: 1; grid-row: auto; }
+  .ohlc-bar { flex-wrap: wrap; }
+  .ohlc-item { min-width: 33%; }
+}
+@media (max-width: 480px) {
+  .page-wrap { padding: 16px 12px 50px; }
+  .three-col { gap: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-in">
+    <a href="/app" class="back-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back
+    </a>
+    <a href="/" class="nav-brand">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0F172A"/><stop offset="100%" stop-color="#0F172A" stop-opacity=".2"/></linearGradient>
+          <linearGradient id="g2" x1="1" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#0F172A"/><stop offset="100%" stop-color="#0F172A" stop-opacity=".2"/></linearGradient>
+        </defs>
+        <polygon points="75,20 85,20 85,30" fill="#0F172A"/>
+        <polygon points="25,80 15,80 15,70" fill="#0F172A"/>
+        <path d="M60,30 L45,30 C35,30 25,40 25,50 L50,75" stroke="url(#g2)" stroke-width="15"/>
+        <path d="M40,70 L55,70 C65,70 75,60 75,50 L50,25" stroke="url(#g1)" stroke-width="15"/>
+      </svg>
+      <span>Quantichy</span>
+    </a>
+    <div id="nav-user" class="nav-user" style="display:none">
+      <span id="nav-email" class="nav-email-txt"></span>
+      <button class="signout-btn" onclick="doSignOut()">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Loading splash -->
+<div id="loading-splash" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#F8FAFC;z-index:9999;display:flex;align-items:center;justify-content:center">
+  <div style="display:flex;gap:7px">
+    <div style="width:9px;height:9px;border-radius:50%;background:#94A3B8;animation:dotpulse .7s ease infinite alternate"></div>
+    <div style="width:9px;height:9px;border-radius:50%;background:#94A3B8;animation:dotpulse .7s .15s ease infinite alternate"></div>
+    <div style="width:9px;height:9px;border-radius:50%;background:#94A3B8;animation:dotpulse .7s .3s ease infinite alternate"></div>
+  </div>
+</div>
+<style>@keyframes dotpulse { to { opacity:.3; transform:scale(.75); } }</style>
+
+<!-- Page -->
+<div id="page-body" style="display:none">
+<div class="page-wrap">
+  <div class="three-col">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <div class="card left-inner">
+        <!-- Avatar -->
+        <div id="coin-avatar" class="coin-avatar-lg" style="background:linear-gradient(135deg,#94A3B8,#CBD5E1)">
+          <span id="coin-letter">?</span>
+        </div>
+        <!-- Name -->
+        <div id="coin-name" class="coin-name-lg">Loading...</div>
+        <!-- Symbol + rank -->
+        <div class="coin-sym-row">
+          <span id="coin-sym" class="sym-txt">—</span>
+          <span id="coin-rank" class="rank-badge-lg">#—</span>
+        </div>
+        <!-- Big price -->
+        <div class="price-row">
+          <div id="coin-price" class="big-price">—</div>
+          <div id="coin-chg" class="chg-pill up" style="display:inline-flex">—</div>
+        </div>
+        <hr class="divider">
+        <!-- Stats -->
+        <div class="stat-grid">
+          <div class="stat-row">
+            <span class="stat-label">Market Cap</span>
+            <span id="s-mktcap" class="stat-val">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Volume (24h)</span>
+            <span id="s-vol" class="stat-val">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">FDV</span>
+            <span id="s-fdv" class="stat-val">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Circulating Supply</span>
+            <span id="s-circ" class="stat-val">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Max Supply</span>
+            <span id="s-max" class="stat-val">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Total Supply</span>
+            <span id="s-total" class="stat-val">—</span>
+          </div>
+        </div>
+        <hr class="divider">
+        <!-- External links -->
+        <div id="ext-links" class="ext-links" style="display:none">
+          <a id="link-website" href="#" target="_blank" rel="noopener" class="ext-btn">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Website
+          </a>
+          <a id="link-explorer" href="#" target="_blank" rel="noopener" class="ext-btn">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Explorer
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER PANEL -->
+    <div>
+      <div class="card">
+        <!-- Tabs -->
+        <div class="tab-bar">
+          <button class="tab-btn active" id="tab-chart" onclick="switchTab('chart')">Chart</button>
+          <button class="tab-btn" id="tab-markets" onclick="switchTab('markets')">Markets</button>
+          <button class="tab-btn" id="tab-about" onclick="switchTab('about')">About</button>
+        </div>
+
+        <!-- Chart tab -->
+        <div id="panel-chart" class="tab-content">
+          <div id="tv-chart-container" class="tv-wrap"></div>
+          <!-- OHLC bar -->
+          <div class="ohlc-bar">
+            <div class="ohlc-item">
+              <div class="ohlc-label">Open</div>
+              <div class="ohlc-val" id="ohlc-open">—</div>
+            </div>
+            <div class="ohlc-item">
+              <div class="ohlc-label">High</div>
+              <div class="ohlc-val" style="color:#16A34A" id="ohlc-high">—</div>
+            </div>
+            <div class="ohlc-item">
+              <div class="ohlc-label">Low</div>
+              <div class="ohlc-val" style="color:#DC2626" id="ohlc-low">—</div>
+            </div>
+            <div class="ohlc-item">
+              <div class="ohlc-label">Close</div>
+              <div class="ohlc-val" id="ohlc-close">—</div>
+            </div>
+            <div class="ohlc-item">
+              <div class="ohlc-label">Volume</div>
+              <div class="ohlc-val" id="ohlc-vol">—</div>
+            </div>
+          </div>
+        </div>
+        <!-- Markets tab -->
+        <div id="panel-markets" class="tab-content" style="display:none">
+          <div class="coming-soon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5" style="margin-bottom:10px"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+            <div style="font-family:var(--fh);font-size:15px;font-weight:700;color:#94A3B8">Markets coming soon</div>
+          </div>
+        </div>
+        <!-- About tab -->
+        <div id="panel-about" class="tab-content" style="display:none">
+          <div class="coming-soon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5" style="margin-bottom:10px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div style="font-family:var(--fh);font-size:15px;font-weight:700;color:#94A3B8">About coming soon</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <!-- Community Sentiment -->
+      <div class="card card-inner">
+        <div class="card-title-sm">Community Sentiment</div>
+        <div class="sent-bar-wrap">
+          <div class="sent-labels">
+            <span class="sent-label bull">Bullish <span id="bull-pct" class="sent-pct bull">50%</span></span>
+            <span class="sent-label bear">Bearish <span id="bear-pct" class="sent-pct bear">50%</span></span>
+          </div>
+          <div class="sent-bar-track">
+            <div id="bull-bar" class="sent-bar-bull" style="width:50%"></div>
+            <div class="sent-bar-bear"></div>
+          </div>
+          <div style="text-align:center;margin-top:6px;font-size:10px;color:#CBD5E1;font-family:var(--fb)" id="sent-count-txt">0 votes</div>
+        </div>
+        <div class="sent-btn-row">
+          <button class="sent-btn bull" onclick="vote('bull')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+            Bullish
+          </button>
+          <button class="sent-btn bear" onclick="vote('bear')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            Bearish
+          </button>
+        </div>
+      </div>
+      <!-- Price Stats -->
+      <div class="card card-inner">
+        <div class="card-title-sm">Price Statistics</div>
+        <div class="ps-grid">
+          <div class="ps-row">
+            <span class="ps-label">24h High</span>
+            <span id="ps-high" class="ps-val green">—</span>
+          </div>
+          <div class="ps-row">
+            <span class="ps-label">24h Low</span>
+            <span id="ps-low" class="ps-val red">—</span>
+          </div>
+          <div class="ps-row">
+            <span class="ps-label">24h Change</span>
+            <span id="ps-chg" class="ps-val">—</span>
+          </div>
+          <hr class="divider" style="margin:4px 0">
+          <div class="ps-row">
+            <span class="ps-label">All Time High</span>
+            <span id="ps-ath" class="ps-val green">—</span>
+          </div>
+          <div class="ps-row">
+            <span class="ps-label">All Time Low</span>
+            <span id="ps-atl" class="ps-val red">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /three-col -->
+</div><!-- /page-wrap -->
+</div><!-- /page-body -->
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+<script>
+// ── Parse URL params ──
+const _params = new URLSearchParams(window.location.search);
+const _sym  = _params.get('sym')  || 'BTC';
+const _cgId = _params.get('cgId') || 'bitcoin';
+const _name = _params.get('name') || 'Bitcoin';
+const _tvSym = _params.get('tvSym') || 'BINANCE:BTCUSDT';
+
+// Set page title
+document.getElementById('page-title').textContent = `${_name} (${_sym}) Price — Quantichy`;
+
+// Set initial static info
+document.getElementById('coin-name').textContent = _name;
+document.getElementById('coin-sym').textContent = _sym;
+document.getElementById('coin-letter').textContent = _sym.charAt(0);
+
+// ── Firebase ──
+const _fbConfig = {
+  apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
+  authDomain: "quantichy.com",
+  projectId: "quant-dashboard-1405b",
+  storageBucket: "quant-dashboard-1405b.firebasestorage.app",
+  messagingSenderId: "812483550152",
+  appId: "1:812483550152:web:quantichy"
+};
+
+if (!firebase.apps.length) firebase.initializeApp(_fbConfig);
+
+firebase.auth().onAuthStateChanged(user => {
+  if (!user) {
+    const redir = encodeURIComponent('/coin?' + window.location.search.slice(1));
+    window.location.href = '/app?redirect=' + redir;
+    return;
+  }
+  // Show nav user
+  const navUser = document.getElementById('nav-user');
+  const navEmail = document.getElementById('nav-email');
+  if (navUser) { navUser.style.display = 'flex'; }
+  if (navEmail) { navEmail.textContent = user.email || ''; }
+
+  // Show page, hide splash
+  document.getElementById('loading-splash').style.display = 'none';
+  document.getElementById('page-body').style.display = 'block';
+
+  // Init everything
+  initTV();
+  loadSentiment();
+  fetchCoinData();
+});
+
+function doSignOut() {
+  firebase.auth().signOut().then(() => { window.location.href = '/'; });
+}
+
+// ── Tab switching ──
+function switchTab(tab) {
+  ['chart','markets','about'].forEach(t => {
+    document.getElementById('tab-' + t).className = 'tab-btn' + (t === tab ? ' active' : '');
+    document.getElementById('panel-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// ── TradingView ──
+function initTV() {
+  const container = document.getElementById('tv-chart-container');
+  if (!container) return;
+  container.innerHTML = '';
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    autosize: true,
+    symbol: _tvSym,
+    interval: '60',
+    timezone: 'Etc/UTC',
+    theme: 'light',
+    style: '1',
+    locale: 'en',
+    hide_top_toolbar: false,
+    hide_legend: false,
+    hide_side_toolbar: false,
+    allow_symbol_change: false,
+    save_image: false,
+    calendar: false,
+    hide_volume: false,
+    up_color: '#10B981',
+    down_color: '#EF4444',
+    border_up_color: '#10B981',
+    border_down_color: '#EF4444',
+    wick_up_color: '#10B981',
+    wick_down_color: '#EF4444',
+    support_host: 'https://www.tradingview.com'
+  });
+  container.appendChild(script);
+}
+
+// ── Number formatters ──
+function fmtPrice(v) {
+  if (v == null || isNaN(v)) return '—';
+  const abs = Math.abs(v);
+  const d = abs < 0.0001 ? 8 : abs < 0.01 ? 6 : abs < 1 ? 4 : abs < 10 ? 4 : abs < 1000 ? 2 : 0;
+  return '$' + v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+
+function fmtLarge(v) {
+  if (v == null || isNaN(v)) return '—';
+  if (v >= 1e12) return '$' + (v / 1e12).toFixed(2) + 'T';
+  if (v >= 1e9)  return '$' + (v / 1e9).toFixed(2) + 'B';
+  if (v >= 1e6)  return '$' + (v / 1e6).toFixed(2) + 'M';
+  if (v >= 1e3)  return '$' + (v / 1e3).toFixed(1) + 'K';
+  return '$' + v.toLocaleString('en-US');
+}
+
+function fmtSupply(v, sym) {
+  if (v == null || isNaN(v)) return '∞';
+  if (v >= 1e12) return (v / 1e12).toFixed(2) + 'T ' + sym;
+  if (v >= 1e9)  return (v / 1e9).toFixed(2) + 'B ' + sym;
+  if (v >= 1e6)  return (v / 1e6).toFixed(2) + 'M ' + sym;
+  return v.toLocaleString('en-US') + ' ' + sym;
+}
+
+// ── Fetch coin data ──
+async function fetchCoinData() {
+  try {
+    const res = await fetch(`/.netlify/functions/cg?type=coin&id=${encodeURIComponent(_cgId)}`);
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const d = await res.json();
+    applyData(d);
+  } catch(e) {
+    console.error('Coin fetch error:', e);
+  }
+}
+
+function applyData(d) {
+  const md = d.market_data || {};
+
+  // Avatar gradient from first category or fallback
+  const gradients = [
+    'linear-gradient(135deg,#F7931A,#FBBF24)',
+    'linear-gradient(135deg,#627EEA,#A78BFA)',
+    'linear-gradient(135deg,#9945FF,#14F195)',
+    'linear-gradient(135deg,#E84142,#F87171)',
+    'linear-gradient(135deg,#2A5ADA,#60A5FA)',
+  ];
+  const avatarEl = document.getElementById('coin-avatar');
+  if (avatarEl) {
+    const gIdx = _sym.charCodeAt(0) % gradients.length;
+    avatarEl.style.background = gradients[gIdx];
+  }
+
+  // Name + symbol + rank
+  const name = d.name || _name;
+  document.getElementById('coin-name').textContent = name;
+  document.getElementById('coin-sym').textContent = d.symbol ? d.symbol.toUpperCase() : _sym;
+  const rank = d.market_cap_rank;
+  document.getElementById('coin-rank').textContent = rank ? '#' + rank : '#—';
+  document.getElementById('coin-letter').textContent = (d.symbol || _sym).charAt(0).toUpperCase();
+
+  // Price + change
+  const price = md.current_price?.usd;
+  const chg24 = md.price_change_percentage_24h;
+  document.getElementById('coin-price').textContent = fmtPrice(price);
+
+  const chgEl = document.getElementById('coin-chg');
+  if (chg24 != null) {
+    const isUp = chg24 >= 0;
+    const arrow = isUp
+      ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>`
+      : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 7 7 7 17"/></svg>`;
+    chgEl.className = 'chg-pill ' + (isUp ? 'up' : 'dn');
+    chgEl.innerHTML = arrow + (isUp ? '+' : '') + chg24.toFixed(2) + '%';
+  }
+
+  // Stats
+  const sym = (d.symbol || _sym).toUpperCase();
+  document.getElementById('s-mktcap').textContent = fmtLarge(md.market_cap?.usd);
+  document.getElementById('s-vol').textContent = fmtLarge(md.total_volume?.usd);
+  document.getElementById('s-fdv').textContent = fmtLarge(md.fully_diluted_valuation?.usd);
+  document.getElementById('s-circ').textContent = fmtSupply(md.circulating_supply, sym);
+  document.getElementById('s-max').textContent = md.max_supply ? fmtSupply(md.max_supply, sym) : '∞';
+  document.getElementById('s-total').textContent = fmtSupply(md.total_supply, sym);
+
+  // OHLC (approximated from 24h data)
+  const h24 = md.high_24h?.usd;
+  const l24 = md.low_24h?.usd;
+  const open = price && chg24 != null ? price / (1 + chg24/100) : null;
+  document.getElementById('ohlc-open').textContent  = fmtPrice(open);
+  document.getElementById('ohlc-high').textContent  = fmtPrice(h24);
+  document.getElementById('ohlc-low').textContent   = fmtPrice(l24);
+  document.getElementById('ohlc-close').textContent = fmtPrice(price);
+  document.getElementById('ohlc-vol').textContent   = fmtLarge(md.total_volume?.usd);
+
+  // Price stats (right panel)
+  document.getElementById('ps-high').textContent = fmtPrice(h24);
+  document.getElementById('ps-low').textContent  = fmtPrice(l24);
+
+  const chgPsEl = document.getElementById('ps-chg');
+  if (chg24 != null) {
+    chgPsEl.textContent = (chg24 >= 0 ? '+' : '') + chg24.toFixed(2) + '%';
+    chgPsEl.className = 'ps-val ' + (chg24 >= 0 ? 'green' : 'red');
+  }
+
+  document.getElementById('ps-ath').textContent = fmtPrice(md.ath?.usd);
+  document.getElementById('ps-atl').textContent = fmtPrice(md.atl?.usd);
+
+  // External links
+  const links = d.links || {};
+  const website = links.homepage?.[0];
+  const explorer = links.blockchain_site?.find(s => s && s.length > 0);
+  const extWrap = document.getElementById('ext-links');
+  if (website || explorer) {
+    extWrap.style.display = 'flex';
+    const wEl = document.getElementById('link-website');
+    const eEl = document.getElementById('link-explorer');
+    if (website) { wEl.href = website; } else { wEl.style.display = 'none'; }
+    if (explorer) { eEl.href = explorer; } else { eEl.style.display = 'none'; }
+  }
+
+  // Page title update
+  document.getElementById('page-title').textContent = `${name} (${sym}) Price — Quantichy`;
+}
+
+// ── Sentiment (localStorage) ──
+function _sentKey() { return 'q_sent_' + _cgId; }
+
+function loadSentiment() {
+  const raw = localStorage.getItem(_sentKey());
+  const data = raw ? JSON.parse(raw) : { bull: 0, bear: 0 };
+  renderSentiment(data);
+}
+
+function vote(side) {
+  const raw = localStorage.getItem(_sentKey());
+  const data = raw ? JSON.parse(raw) : { bull: 0, bear: 0 };
+  data[side]++;
+  localStorage.setItem(_sentKey(), JSON.stringify(data));
+  renderSentiment(data);
+}
+
+function renderSentiment(data) {
+  const total = (data.bull || 0) + (data.bear || 0);
+  const bullPct = total === 0 ? 50 : Math.round((data.bull / total) * 100);
+  const bearPct = 100 - bullPct;
+
+  document.getElementById('bull-bar').style.width = bullPct + '%';
+  document.getElementById('bull-pct').textContent = bullPct + '%';
+  document.getElementById('bear-pct').textContent = bearPct + '%';
+  document.getElementById('sent-count-txt').textContent = total + (total === 1 ? ' vote' : ' votes');
+}
+</script>
+
+</body>
+</html>

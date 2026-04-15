@@ -608,6 +608,10 @@ p,span,div,input,button{
         <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)" id="topbar-date">Real-time Analysis</div>
       </div>
     </button>
+    <button id="coin-detail-btn" onclick="openCoinDetail()" title="View coin detail" style="display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:8px;border:1px solid #E2E8F0;background:white;color:#64748B;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .2s" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Detail
+    </button>
     </div>
     <div style="display:flex;align-items:center;gap:7px;flex-shrink:0">
       <div id="topbar-search" style="display:flex;align-items:center;gap:7px;padding:6px 12px;background:#F8FAFC;border-radius:8px;border:1px solid #E2E8F0">
@@ -1320,8 +1324,13 @@ function renderCoinStrip(){
       ? `<div class="coin-avatar" style="background:${c.gradient}">${c.svg}</div>`
       : `<div class="coin-avatar" style="background:${c.gradient};color:white;font-family:var(--font-heading)">${c.letter}</div>`;
 
+    // Find cgId from MARKET_LIST
+    const mkt = MARKET_LIST.find(m => m.base === c.symbol);
+    const cgId = mkt ? mkt.cgId : c.symbol.toLowerCase();
+    const tvSym = mkt && mkt.tvSym ? mkt.tvSym : 'BINANCE:' + c.symbol + 'USDT';
+
     return `
-    <div class="coin-card r${c.rank}" style="animation:coinIn .45s ease ${i * .065}s both">
+    <div class="coin-card r${c.rank}" style="animation:coinIn .45s ease ${i * .065}s both;cursor:pointer" onclick="window.location.href='/coin?sym=${c.symbol}&cgId=${cgId}&name=${encodeURIComponent(c.name)}&tvSym=${encodeURIComponent(tvSym)}'">
       <div class="rank-badge" style="background:${c.accent}1A;color:${c.accent}">#${c.rank}</div>
 
       <!-- Header -->
@@ -1381,6 +1390,15 @@ window.switchCoinTab = function(tab){
   document.getElementById("tab-losers").className  = "period" + (tab === "losers"  ? " active" : "");
   renderCoinStrip();
 };
+
+/* ══ COIN DETAIL NAVIGATION ══ */
+function openCoinDetail() {
+  const mkt = MARKET_LIST.find(m => m.sym === currentSymbol);
+  const cgId = mkt ? mkt.cgId : currentCgId;
+  const name = mkt ? mkt.name : currentBase;
+  const tvSym = mkt && mkt.tvSym ? mkt.tvSym : 'BINANCE:' + currentBase + 'USDT';
+  window.location.href = '/coin?sym=' + currentBase + '&cgId=' + encodeURIComponent(cgId) + '&name=' + encodeURIComponent(name) + '&tvSym=' + encodeURIComponent(tvSym);
+}
 
 /* ══ KPI CARDS ══ */
 const KPIS = [

@@ -17,6 +17,8 @@ exports.handler = async (event) => {
     url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${encodeURIComponent(q.ids)}&sparkline=false`;
   } else if (q.type === 'chart') {
     url = `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(q.id)}/market_chart?vs_currency=usd&days=${q.days || 99}&interval=daily`;
+  } else if (q.type === 'coin') {
+    url = `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(q.id)}?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`;
   } else {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid type' }) };
   }
