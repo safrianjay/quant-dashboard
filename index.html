@@ -702,15 +702,27 @@ p,span,div,input,button{
       <!-- CENTER: Chart -->
       <div style="display:flex;flex-direction:column;gap:12px">
 
-        <!-- Chart tabs -->
-        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-          <div style="display:flex;border-bottom:1px solid #F1F5F9;padding:0 16px">
-            <button style="padding:13px 16px;font-size:12px;font-weight:700;color:#0F172A;background:none;border:none;border-bottom:2px solid #0F172A;cursor:pointer;font-family:var(--font-heading)">Chart</button>
-            <button style="padding:13px 16px;font-size:12px;font-weight:600;color:#94A3B8;background:none;border:none;border-bottom:2px solid transparent;cursor:default;font-family:var(--font-heading)">Markets</button>
-            <button style="padding:13px 16px;font-size:12px;font-weight:600;color:#94A3B8;background:none;border:none;border-bottom:2px solid transparent;cursor:default;font-family:var(--font-heading)">About</button>
+        <!-- Chart card — same style as main dashboard -->
+        <div style="background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden">
+          <!-- Card header -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid #F1F5F9">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></div>
+              <span id="cd-chart-label" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A">—/USDT</span>
+              <span style="font-size:10px;font-weight:500;color:#94A3B8;font-family:var(--font-body)">Candlestick</span>
+            </div>
+            <div style="display:flex;gap:4px" id="cd-tf-tabs">
+              <button onclick="setCDInterval('15')"  class="cd-tf-btn" data-tf="15"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">15m</button>
+              <button onclick="setCDInterval('60')"  class="cd-tf-btn" data-tf="60"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#10B981;color:white;transition:all .15s">1H</button>
+              <button onclick="setCDInterval('240')" class="cd-tf-btn" data-tf="240" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">4H</button>
+              <button onclick="setCDInterval('D')"   class="cd-tf-btn" data-tf="D"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">1D</button>
+              <button onclick="setCDInterval('W')"   class="cd-tf-btn" data-tf="W"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">1W</button>
+            </div>
           </div>
-          <!-- TradingView chart -->
-          <div id="cd-tv-container" style="height:420px;width:100%"></div>
+          <!-- Widget -->
+          <div style="height:400px;width:100%">
+            <div id="cd-tv-container" style="height:100%;width:100%"></div>
+          </div>
         </div>
 
         <!-- OHLC bar -->
@@ -1515,7 +1527,8 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
   }
   _cdSym = sym;
 
-  /* Show detail, hide main content */
+  /* Show detail, hide main content + topbar */
+  document.querySelector('.topbar').style.display = 'none';
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('coin-detail-view').style.display = 'block';
   document.getElementById('cd-breadcrumb').textContent = 'Dashboard › ' + name;
@@ -1535,20 +1548,13 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
   document.getElementById('cd-price-stats').innerHTML = '<div style="color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading...</div>';
   document.getElementById('cd-links').innerHTML   = '';
 
-  /* Load TradingView chart */
-  const tvEl = document.getElementById('cd-tv-container');
-  tvEl.innerHTML = '';
-  const script = document.createElement('script');
-  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
-  script.async = true;
-  script.innerHTML = JSON.stringify({
-    autosize: true, symbol: tvSym, interval: '1H',
-    timezone: 'Etc/UTC', theme: 'light', style: '1', locale: 'en',
-    hide_top_toolbar: false, hide_legend: false,
-    allow_symbol_change: false, save_image: false,
-    container_id: 'cd-tv-container'
-  });
-  tvEl.appendChild(script);
+  /* Update chart label */
+  document.getElementById('cd-chart-label').textContent = sym + '/USDT';
+
+  /* Load TradingView chart — same config as main dashboard */
+  _cdTvSym = tvSym;
+  _cdTvInterval = '60';
+  _cdLoadTVChart('60');
 
   /* Fetch coin data from CoinGecko */
   _cdLoadData(cgId, sym);
@@ -1568,6 +1574,7 @@ function openCoinDetailByBase(base){
 }
 
 function closeCoinDetail(){
+  document.querySelector('.topbar').style.display = '';
   document.getElementById('coin-detail-view').style.display = 'none';
   document.getElementById('main-content').style.display = 'block';
   _cdSym = null;
@@ -1669,6 +1676,35 @@ async function _cdLoadData(cgId, sym){
     document.getElementById('cd-stats').innerHTML = '<div style="font-size:11px;color:#DC2626;font-family:var(--font-body)">Failed to load data</div>';
   }
 }
+
+let _cdTvSym = null, _cdTvInterval = '60';
+
+function _cdLoadTVChart(interval){
+  const el = document.getElementById('cd-tv-container');
+  el.innerHTML = '';
+  const s = document.createElement('script');
+  s.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  s.async = true;
+  s.innerHTML = JSON.stringify({
+    autosize: true, symbol: _cdTvSym, interval: interval,
+    timezone: 'Etc/UTC', theme: 'light', style: '1', locale: 'en',
+    hide_top_toolbar: false, hide_legend: false,
+    allow_symbol_change: false, save_image: false
+  });
+  el.appendChild(s);
+
+  /* Update TF pill highlight */
+  document.querySelectorAll('.cd-tf-btn').forEach(b => {
+    const active = b.dataset.tf === interval;
+    b.style.background = active ? '#10B981' : '#F1F5F9';
+    b.style.color = active ? 'white' : '#64748B';
+  });
+}
+
+window.setCDInterval = function(tf){
+  _cdTvInterval = tf;
+  _cdLoadTVChart(tf);
+};
 
 function _cdLoadSentiment(sym){
   let votes;
