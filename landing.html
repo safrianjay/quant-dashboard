@@ -1616,9 +1616,18 @@
                     }
                 });
             };
-            const revealOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
+            /* threshold:0 fires as soon as 1px is visible; no negative rootMargin
+               so above-the-fold elements activate immediately on load */
+            const revealOptions = { threshold: 0, rootMargin: "0px" };
             const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
             revealElements.forEach(el => revealObserver.observe(el));
+            /* Fallback: immediately activate anything already in the viewport */
+            revealElements.forEach(el => {
+                const r = el.getBoundingClientRect();
+                if (r.top < window.innerHeight && r.bottom > 0) {
+                    el.classList.add('active');
+                }
+            });
         });
 
         // Sticky Navbar

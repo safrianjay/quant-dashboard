@@ -235,8 +235,14 @@ nav {
   <!-- Card -->
   <div class="card fi1">
 
-    <!-- QR first, amount below -->
+    <!-- Amount on top, QR below -->
     <div class="top-row">
+      <div class="amount-side">
+        <p class="amount-label">Amount Due</p>
+        <p id="pay-amount" class="amount-val"></p>
+        <p class="amount-unit">USDT</p>
+        <p id="pay-period" class="amount-per"></p>
+      </div>
       <div class="qr-side">
         <p class="qr-label">Scan QR Code</p>
         <div class="qr-frame">
@@ -245,12 +251,6 @@ nav {
         <div class="net-pill">
           <span class="net-dot"></span> BEP-20 (BSC)
         </div>
-      </div>
-      <div class="amount-side">
-        <p class="amount-label">Amount Due</p>
-        <p id="pay-amount" class="amount-val"></p>
-        <p class="amount-unit">USDT</p>
-        <p id="pay-period" class="amount-per"></p>
       </div>
     </div>
 
