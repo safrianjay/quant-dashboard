@@ -72,13 +72,37 @@ nav {
   overflow: hidden;
 }
 
-/* Top: Amount + QR side by side */
+/* Top: QR centered, amount below */
 .top-row {
-  display: grid; grid-template-columns: 1fr auto;
-  align-items: center; gap: 0;
-  padding: 26px 28px 22px; border-bottom: 1px solid #F1F5F9;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 28px 28px 22px; border-bottom: 1px solid #F1F5F9;
+  gap: 16px;
 }
-.amount-side { }
+.qr-side {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 10px;
+}
+.qr-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: #94A3B8;
+  text-align: center;
+}
+.qr-frame {
+  display: inline-block; padding: 10px; background: white;
+  border-radius: 14px; border: 1.5px solid #E2E8F0;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+.qr-frame img { display: block; border-radius: 6px; }
+.net-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 100px;
+  background: #F0FDF4; border: 1px solid #BBF7D0;
+  font-size: 10px; font-weight: 700; color: #15803D;
+}
+.net-dot { width: 6px; height: 6px; border-radius: 50%; background: #10B981; }
+
+/* Amount — below QR */
+.amount-side { text-align: center; }
 .amount-label {
   font-size: 10px; font-weight: 700; letter-spacing: .1em;
   text-transform: uppercase; color: #94A3B8; margin-bottom: 6px;
@@ -89,25 +113,6 @@ nav {
 }
 .amount-unit { font-size: 15px; font-weight: 700; color: #94A3B8; margin-top: 3px; }
 .amount-per  { font-size: 12px; color: #94A3B8; font-weight: 500; margin-top: 2px; }
-
-.qr-side { text-align: center; }
-.qr-label {
-  font-size: 10px; font-weight: 700; letter-spacing: .1em;
-  text-transform: uppercase; color: #94A3B8; margin-bottom: 8px;
-}
-.qr-frame {
-  display: inline-block; padding: 10px; background: white;
-  border-radius: 14px; border: 1.5px solid #E2E8F0;
-  box-shadow: 0 2px 10px rgba(0,0,0,.06);
-}
-.qr-frame img { display: block; border-radius: 6px; }
-.net-pill {
-  display: inline-flex; align-items: center; gap: 5px;
-  margin-top: 8px; padding: 4px 10px; border-radius: 100px;
-  background: #F0FDF4; border: 1px solid #BBF7D0;
-  font-size: 10px; font-weight: 700; color: #15803D;
-}
-.net-dot { width: 6px; height: 6px; border-radius: 50%; background: #10B981; }
 
 /* Body sections */
 .card-body { padding: 20px 28px 26px; display: flex; flex-direction: column; gap: 18px; }
@@ -135,14 +140,13 @@ nav {
 }
 .copy-btn:hover { background: #F8FAFC; border-color: #CBD5E1; }
 
-/* Steps 2×2 grid */
+/* Steps — vertical list */
 .steps-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  display: flex; flex-direction: column; gap: 8px;
 }
 .step {
-  display: flex; align-items: flex-start; gap: 8px;
-  font-size: 12.5px; color: #475569; line-height: 1.45;
-  background: #F8FAFC; border-radius: 10px; padding: 10px 12px;
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; color: #475569; line-height: 1.5;
 }
 .step-n {
   flex-shrink: 0; width: 20px; height: 20px; border-radius: 6px;
@@ -231,22 +235,22 @@ nav {
   <!-- Card -->
   <div class="card fi1">
 
-    <!-- Amount + QR -->
+    <!-- QR first, amount below -->
     <div class="top-row">
+      <div class="qr-side">
+        <p class="qr-label">Scan QR Code</p>
+        <div class="qr-frame">
+          <img id="qr-code" width="160" height="160" alt="USDT QR Code">
+        </div>
+        <div class="net-pill">
+          <span class="net-dot"></span> BEP-20 (BSC)
+        </div>
+      </div>
       <div class="amount-side">
         <p class="amount-label">Amount Due</p>
         <p id="pay-amount" class="amount-val"></p>
         <p class="amount-unit">USDT</p>
         <p id="pay-period" class="amount-per"></p>
-      </div>
-      <div class="qr-side">
-        <p class="qr-label">Scan QR Code</p>
-        <div class="qr-frame">
-          <img id="qr-code" width="148" height="148" alt="USDT QR Code">
-        </div>
-        <div class="net-pill">
-          <span class="net-dot"></span> BEP-20 (BSC)
-        </div>
       </div>
     </div>
 
@@ -329,7 +333,7 @@ document.getElementById('pay-period').textContent  = plan.period;
 document.getElementById('inline-amt').textContent  = '$' + plan.price;
 document.getElementById('wallet-addr').textContent = WALLET;
 document.getElementById('qr-code').src =
-  'https://api.qrserver.com/v1/create-qr-code/?size=148x148&data=' +
+  'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' +
   encodeURIComponent(WALLET) + '&bgcolor=ffffff&color=0F172A&margin=6';
 
 function copyAddr() {
