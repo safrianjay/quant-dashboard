@@ -1094,8 +1094,12 @@ window.authSubmit = async function(){
       await auth.signInWithEmailAndPassword(email, pass);
     } else {
       await auth.createUserWithEmailAndPassword(email, pass);
-      /* onAuthStateChanged will fire and call _showVerifyView, which sends
-         the verification email after the session is fully established */
+    }
+    /* Redirect to payment immediately after successful auth if plan is pending */
+    if(_pendingPlan){
+      sessionStorage.removeItem('q_pending_plan');
+      window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
+      return;
     }
   } catch(e){
     _authError(_friendlyAuthError(e.code));
@@ -1108,6 +1112,12 @@ window.authGoogle = async function(){
   try{
     const provider = new firebase.auth.GoogleAuthProvider();
     await firebase.auth().signInWithPopup(provider);
+    /* Redirect to payment immediately after successful Google auth */
+    if(_pendingPlan){
+      sessionStorage.removeItem('q_pending_plan');
+      window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
+      return;
+    }
   } catch(e){
     _authError(_friendlyAuthError(e.code));
   }
