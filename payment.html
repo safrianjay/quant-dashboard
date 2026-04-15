@@ -13,7 +13,6 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=3">
 <link rel="icon" type="image/svg+xml" href="/logo-icon.svg?v=3">
 <link rel="manifest" href="/manifest.json?v=3">
-<link href="/styles.css" rel="stylesheet">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 :root{--color-navy:#001f5c;--font-heading:'Montserrat','DM Sans',sans-serif;--font-body:'Inter','DM Sans',sans-serif;--font-mono:'Space Mono','Fira Mono',monospace}
@@ -25,24 +24,16 @@ body{font-family:var(--font-body);background:#fafbfa;color:#1a1a1a;min-height:10
 .fade-in-d1{animation:fadeUp .5s ease .1s both}
 .fade-in-d2{animation:fadeUp .5s ease .2s both}
 
-/* Loading state */
-#loading-screen{display:flex;align-items:center;justify-content:center;min-height:60vh}
-.loader-dot{width:8px;height:8px;border-radius:50%;background:#94A3B8;animation:pulse .8s ease infinite alternate}
-.loader-dot:nth-child(2){animation-delay:.15s}
-.loader-dot:nth-child(3){animation-delay:.3s}
-@keyframes pulse{to{opacity:.3;transform:scale(.8)}}
-
-/* Responsive */
 @media(max-width:480px){
   nav{padding:12px 16px!important}
   .brand-text{font-size:16px!important}
   .nav-btn{padding:6px 10px!important;font-size:11px!important}
   .pay-card{padding:28px 20px!important}
   .plan-badge{font-size:13px!important;padding:6px 16px!important}
-  .qr-img{width:180px!important;height:180px!important}
+  .qr-img{width:160px!important;height:160px!important}
 }
 @media(max-width:360px){
-  .qr-img{width:150px!important;height:150px!important}
+  .qr-img{width:130px!important;height:130px!important}
   .addr-text{font-size:10px!important}
 }
 </style>
@@ -60,8 +51,8 @@ body{font-family:var(--font-body);background:#fafbfa;color:#1a1a1a;min-height:10
         </defs>
         <polygon points="75,20 85,20 85,30" fill="#0F172A"/>
         <polygon points="25,80 15,80 15,70" fill="#0F172A"/>
-        <path d="M 60,30 L 45,30 C 35,30 25,40 25,50 L 50,75" stroke="url(#logo-g2)" stroke-width="15" />
-        <path d="M 40,70 L 55,70 C 65,70 75,60 75,50 L 50,25" stroke="url(#logo-g1)" stroke-width="15" />
+        <path d="M 60,30 L 45,30 C 35,30 25,40 25,50 L 50,75" stroke="url(#logo-g2)" stroke-width="15"/>
+        <path d="M 40,70 L 55,70 C 65,70 75,60 75,50 L 50,25" stroke="url(#logo-g1)" stroke-width="15"/>
       </svg>
       <span class="brand-text" style="font-family:var(--font-heading);font-weight:800;font-size:18px;color:#0F172A">Quantichy</span>
     </a>
@@ -72,32 +63,17 @@ body{font-family:var(--font-body);background:#fafbfa;color:#1a1a1a;min-height:10
   </div>
 </nav>
 
-<!-- Loading (shown while Firebase checks auth) -->
-<div id="loading-screen">
-  <div style="display:flex;gap:6px">
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-  </div>
-</div>
+<!-- Page -->
+<section style="max-width:520px;margin:0 auto;padding:40px 16px 64px">
 
-<!-- Payment content (hidden until auth confirmed) -->
-<section id="pay-content" style="display:none;max-width:520px;margin:0 auto;padding:40px 16px 64px">
-
-  <!-- Plan badge -->
+  <!-- Header -->
   <div class="fade-in" style="text-align:center;margin-bottom:32px">
     <div id="plan-badge" class="plan-badge" style="display:inline-block;font-family:var(--font-heading);font-size:14px;font-weight:800;padding:8px 20px;border-radius:12px;margin-bottom:16px;text-transform:uppercase;letter-spacing:.06em"></div>
     <h1 style="font-family:var(--font-heading);font-size:28px;font-weight:900;color:#0F172A;margin-bottom:6px;letter-spacing:-.02em">Complete your payment</h1>
     <p style="font-size:14px;color:#64748B;font-weight:500">Send exactly the amount below to activate your plan</p>
   </div>
 
-  <!-- Logged-in user info -->
-  <div class="fade-in" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px;padding:10px 16px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-    <span style="font-size:13px;color:#166534;font-weight:600">Signed in as <span id="pay-user-email" style="font-family:var(--font-mono);font-weight:700"></span></span>
-  </div>
-
-  <!-- Payment card -->
+  <!-- Card -->
   <div class="pay-card fade-in-d1" style="background:white;border-radius:24px;padding:36px 32px;border:1px solid #E2E8F0;box-shadow:0 4px 24px rgba(0,0,0,.06)">
 
     <!-- Amount -->
@@ -137,10 +113,10 @@ body{font-family:var(--font-body);background:#fafbfa;color:#1a1a1a;min-height:10
     <!-- Instructions -->
     <div style="background:#F8FAFC;border-radius:14px;padding:18px 20px;margin-bottom:24px">
       <p style="font-size:12px;font-weight:700;color:#0F172A;margin-bottom:10px;font-family:var(--font-heading)">How to pay</p>
-      <ol style="list-style:none;counter-reset:steps;display:flex;flex-direction:column;gap:10px">
+      <ol style="list-style:none;display:flex;flex-direction:column;gap:10px">
         <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#475569;line-height:1.5">
           <span style="flex-shrink:0;width:22px;height:22px;border-radius:7px;background:#0F172A;color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading)">1</span>
-          Open your Binance app or wallet
+          Open your Binance app or crypto wallet
         </li>
         <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#475569;line-height:1.5">
           <span style="flex-shrink:0;width:22px;height:22px;border-radius:7px;background:#0F172A;color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading)">2</span>
@@ -152,7 +128,7 @@ body{font-family:var(--font-body);background:#fafbfa;color:#1a1a1a;min-height:10
         </li>
         <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#475569;line-height:1.5">
           <span style="flex-shrink:0;width:22px;height:22px;border-radius:7px;background:#0F172A;color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading)">4</span>
-          After sending, click "I've Paid" below
+          After sending, click "I've Paid" and email us your transaction hash
         </li>
       </ol>
     </div>
@@ -160,7 +136,7 @@ body{font-family:var(--font-body);background:#fafbfa;color:#1a1a1a;min-height:10
     <!-- Warning -->
     <div style="display:flex;align-items:flex-start;gap:10px;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:14px 16px;margin-bottom:28px">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      <p style="font-size:12px;color:#991B1B;line-height:1.5;font-weight:500">Only send <strong>USDT</strong> on the <strong>BEP-20 (BSC)</strong> network. Sending other tokens or using the wrong network will result in permanent loss.</p>
+      <p style="font-size:12px;color:#991B1B;line-height:1.5;font-weight:500">Only send <strong>USDT</strong> on the <strong>BEP-20 (BSC)</strong> network. Sending other tokens or using the wrong network will result in permanent loss of funds.</p>
     </div>
 
     <!-- CTA -->
@@ -169,98 +145,77 @@ body{font-family:var(--font-body);background:#fafbfa;color:#1a1a1a;min-height:10
     </button>
   </div>
 
-  <!-- Support note -->
+  <!-- Support -->
   <div class="fade-in-d2" style="text-align:center;margin-top:24px">
     <p style="font-size:12px;color:#94A3B8;line-height:1.6">
       Payment is manually verified within 24 hours.<br>
       Need help? Contact <a href="mailto:support@quantichy.com" style="color:var(--color-navy);font-weight:600;text-decoration:none">support@quantichy.com</a>
     </p>
   </div>
+
 </section>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script>
-/* ── Config ── */
-const WALLET_ADDRESS = '0x0000000000000000000000000000000000000000'; /* ← Replace with your USDT BEP-20 wallet address */
-const FB_CONFIG = {
-  apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
-  authDomain: "quant-dashboard-1405b.firebaseapp.com",
-  projectId: "quant-dashboard-1405b"
-};
+const WALLET_ADDRESS = '0x0000000000000000000000000000000000000000'; /* ← Replace with your actual USDT BEP-20 wallet address */
 
 const PLANS = {
-  pro:   { name:'Pro',   price:35, period:'per month', badge:'#001f5c', badgeText:'white' },
-  quant: { name:'Quant', price:80, period:'per month', badge:'#0F172A', badgeText:'white' }
+  pro:   { name:'Pro',   price:35, period:'/ month', badge:'#001f5c', badgeText:'white' },
+  quant: { name:'Quant', price:80, period:'/ month', badge:'#0F172A', badgeText:'white' }
 };
 
-const params = new URLSearchParams(window.location.search);
+const params  = new URLSearchParams(window.location.search);
 const planKey = params.get('plan') || 'pro';
-const plan = PLANS[planKey] || PLANS.pro;
+const plan    = PLANS[planKey] || PLANS.pro;
 
-/* ── Set plan badge ── */
-document.getElementById('plan-badge').textContent = plan.name + ' Plan';
-document.getElementById('plan-badge').style.background = plan.badge;
-document.getElementById('plan-badge').style.color = plan.badgeText;
-document.title = `Quantichy — Pay for ${plan.name}`;
+/* Set plan badge */
+const badge = document.getElementById('plan-badge');
+badge.textContent           = plan.name + ' Plan';
+badge.style.background      = plan.badge;
+badge.style.color           = plan.badgeText;
+document.title              = 'Quantichy — Pay for ' + plan.name;
 
-/* ── Firebase Auth — redirect if not logged in ── */
-firebase.initializeApp(FB_CONFIG);
-firebase.auth().onAuthStateChanged(user => {
-  if(user){
-    /* LOGGED IN → show payment */
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('pay-content').style.display = 'block';
-    document.getElementById('pay-user-email').textContent = user.email;
-    initPaymentView();
-  } else {
-    /* NOT LOGGED IN → redirect to existing login page, then come back */
-    const returnUrl = '/pay' + (planKey ? '?plan=' + encodeURIComponent(planKey) : '');
-    window.location.href = '/app?redirect=' + encodeURIComponent(returnUrl);
-  }
-});
+/* Fill in amounts */
+document.getElementById('pay-amount').textContent    = '$' + plan.price;
+document.getElementById('pay-period').textContent    = plan.period;
+document.getElementById('inline-amount').textContent = '$' + plan.price;
 
-function initPaymentView(){
-  document.getElementById('pay-amount').textContent = '$' + plan.price;
-  document.getElementById('pay-period').textContent = plan.period;
-  document.getElementById('inline-amount').textContent = '$' + plan.price;
-  document.getElementById('wallet-addr').textContent = WALLET_ADDRESS;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(WALLET_ADDRESS)}&bgcolor=ffffff&color=0F172A&margin=8`;
-  document.getElementById('qr-code').src = qrUrl;
-}
+/* Wallet & QR */
+document.getElementById('wallet-addr').textContent = WALLET_ADDRESS;
+document.getElementById('qr-code').src =
+  'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' +
+  encodeURIComponent(WALLET_ADDRESS) + '&bgcolor=ffffff&color=0F172A&margin=8';
 
-/* ── Copy wallet address ── */
+/* Copy address */
 function copyAddress(){
-  navigator.clipboard.writeText(WALLET_ADDRESS).then(()=>{
-    const btn = document.getElementById('copy-btn');
-    const txt = document.getElementById('copy-text');
-    const icon = document.getElementById('copy-icon');
-    txt.textContent = 'Copied!';
-    btn.style.background = '#F0FDF4';
-    btn.style.color = '#16A34A';
+  navigator.clipboard.writeText(WALLET_ADDRESS).then(function(){
+    var btn  = document.getElementById('copy-btn');
+    var txt  = document.getElementById('copy-text');
+    var icon = document.getElementById('copy-icon');
+    txt.textContent     = 'Copied!';
+    btn.style.background  = '#F0FDF4';
+    btn.style.color       = '#16A34A';
     btn.style.borderColor = '#BBF7D0';
     icon.innerHTML = '<polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>';
-    setTimeout(()=>{
-      txt.textContent = 'Copy';
-      btn.style.background = '#F1F5F9';
-      btn.style.color = '#334155';
+    setTimeout(function(){
+      txt.textContent     = 'Copy';
+      btn.style.background  = '#F1F5F9';
+      btn.style.color       = '#334155';
       btn.style.borderColor = '#E2E8F0';
       icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
     }, 2000);
   });
 }
 
-/* ── Paid confirmation ── */
+/* Paid button */
 function handlePaid(){
-  const btn = document.getElementById('paid-btn');
-  btn.disabled = true;
+  var btn  = document.getElementById('paid-btn');
+  btn.disabled       = true;
   btn.style.background = '#10B981';
-  btn.innerHTML = `<span style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Payment Submitted</span>`;
-  const card = document.querySelector('.pay-card');
-  const msg = document.createElement('div');
-  msg.style.cssText = 'margin-top:20px;padding:18px 20px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:14px;text-align:center;animation:fadeUp .4s ease both';
-  msg.innerHTML = `<p style="font-size:14px;font-weight:700;color:#166534;margin-bottom:6px;font-family:var(--font-heading)">Thank you!</p><p style="font-size:13px;color:#15803D;line-height:1.5">We'll verify your payment and activate your account within 24 hours. You'll receive a confirmation email.</p>`;
+  btn.innerHTML = '<span style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Payment Submitted</span>';
+  var card = document.querySelector('.pay-card');
+  var msg  = document.createElement('div');
+  msg.style.cssText = 'margin-top:20px;padding:18px 20px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:14px;text-align:center';
+  msg.innerHTML = '<p style="font-size:14px;font-weight:700;color:#166534;margin-bottom:6px;font-family:var(--font-heading)">Thank you!</p><p style="font-size:13px;color:#15803D;line-height:1.5">We\'ll verify your payment and activate your account within 24 hours. Please email your transaction hash to <a href="mailto:support@quantichy.com" style="color:#166534;font-weight:700">support@quantichy.com</a>.</p>';
   card.appendChild(msg);
 }
 </script>
