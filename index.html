@@ -1766,7 +1766,7 @@ const MARKET_LIST = [
   { sym:'SHIBUSDT', base:'SHIB', name:'Shiba Inu',       cgId:'shiba-inu',              cat:'Meme',   grad:'linear-gradient(135deg,#E36D26,#F97316)', letter:'S' },
   { sym:'PEPEUSDT', base:'PEPE', name:'Pepe',            cgId:'pepe',                   cat:'Meme',   grad:'linear-gradient(135deg,#3D9900,#86EFAC)', letter:'P' },
   { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'Quant AI', grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W' },
-  { sym:'RAVEUSDT', base:'RAVE', name:'Rave',             cgId:'rave-token',             cat:'BSC',      grad:'linear-gradient(135deg,#FF6B6B,#FF8E53)', letter:'R' },
+  { sym:'RAVEUSDT', base:'RAVE', name:'Rave',             cgId:'rave-token',             cat:'BSC',      grad:'linear-gradient(135deg,#FF6B6B,#FF8E53)', letter:'R', tvSym:'PANCAKESWAP:RAVEUSDT' },
 ];
 
 let _marketPrices = {}; /* cache: { BTCUSDT: { price, chg, high, low, vol, lastUpdate, source } } */
@@ -1923,8 +1923,12 @@ function _startBinanceWs(){
   } catch(_){ _binanceWs = null; }
 }
 
-/* TradingView symbol mapper — use Binance to match our price feed */
-function _tvSymbol(sym){ return 'BINANCE:' + sym.replace('-', ''); }
+/* TradingView symbol mapper — use per-coin override if set, else default to Binance */
+function _tvSymbol(sym){
+  const market = MARKET_LIST.find(m => m.sym === sym || m.base + 'USDT' === sym);
+  if(market && market.tvSym) return market.tvSym;
+  return 'BINANCE:' + sym.replace('-', '');
+}
 
 let _lastMarketFetch = 0;
 const _MARKET_THROTTLE = 5000; /* 5s — increased polling since WebSocket is blocked */
@@ -1990,14 +1994,22 @@ window.selectMarket = async function(sym, base, name){
     if(_chartCache[cgId]) {
       closes = _chartCache[cgId].closes;
       confLabels = _chartCache[cgId].labels;
-    } else {
-      const chartRes = await fetch(_cgUrl('chart', { id: cgId, days: 99 }));
-      if(!chartRes.ok) throw new Error(`Chart API ${chartRes.status}`);
-      const chart = await chartRes.json();
-      if(!chart.prices) throw new Error('Empty chart data');
-      closes = chart.prices.map(p => p[1]);
-      confLabels = chart.prices.slice(-10).map(p=>{ const d=new Date(p[0]); return (d.getMonth()+1)+'/'+(d.getDate()); });
-      _chartCache[cgId] = { closes, labels: confLabels };
+    } else if(cgId) {
+      try {
+        const chartRes = await fetch(_cgUrl('chart', { id: cgId, days: 99 }));
+        if(chartRes.ok) {
+          const chart = await chartRes.json();
+          if(chart.prices && chart.prices.length) {
+            closes = chart.prices.map(p => p[1]);
+            confLabels = chart.prices.slice(-10).map(p=>{ const d=new Date(p[0]); return (d.getMonth()+1)+'/'+(d.getDate()); });
+            _chartCache[cgId] = { closes, labels: confLabels };
+          }
+        } else {
+          console.warn(`CoinGecko chart not found for ${cgId} (${chartRes.status}) — TradingView chart still works`);
+        }
+      } catch(cgErr) {
+        console.warn('CoinGecko chart fetch failed:', cgErr.message);
+      }
     }
 
     /* If cache missing, fetch market data as fallback */
