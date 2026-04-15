@@ -40,6 +40,12 @@
   to = "/pricing.html"
   status = 200
 
+# Payment page
+[[redirects]]
+  from = "/pay"
+  to = "/payment.html"
+  status = 200
+
 # Proxy Firebase Auth calls to the real Firebase project
 [[redirects]]
   from = "/__/auth/*"
