@@ -265,7 +265,23 @@ window.approvePayment = async function(uid, btn) {
 
     await batch.commit();
 
-    btn.innerHTML = '✓ Approved';
+    /* Send confirmation email */
+    try {
+      await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email:    payData.email,
+          planName: payData.planName || payData.plan,
+          amount:   payData.amount,
+          uid:      uid
+        })
+      });
+    } catch(emailErr) {
+      console.warn('Email send failed (approval still saved):', emailErr.message);
+    }
+
+    btn.innerHTML = '✓ Approved & Emailed';
     btn.style.background = '#D1FAE5';
     btn.style.color = '#15803D';
     btn.style.cursor = 'default';
