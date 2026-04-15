@@ -218,8 +218,15 @@ p,span,div,input,button{
   .kpi-grid{grid-template-columns:1fr 1fr}
   .content{padding:12px 12px 24px}
   .topbar{padding:10px 12px;gap:6px}
-  /* Hide search bar on mobile */
-  #topbar-search{display:none!important}
+  /* Hide secondary topbar items on mobile — keep only Run Analysis + Add Entry */
+  #topbar-eye,
+  #topbar-bell,
+  #refresh-btn,
+  #unified-tf-wrap,
+  #coin-detail-btn { display:none!important; }
+  /* Make the two CTA buttons fill nicely */
+  #run-analysis-btn { padding:8px 14px!important; font-size:12px!important; }
+  #add-entry-btn    { padding:8px 14px!important; font-size:12px!important; }
   /* Stats row: 3 cols instead of 5 */
   .perf-stat-row{grid-template-columns:repeat(3,1fr)}
   /* Coin strip header wraps */
@@ -232,11 +239,42 @@ p,span,div,input,button{
   #cd-grid { grid-template-columns: 1fr 1fr !important; }
   #cd-left  { position:static !important; }
 }
+/* Collapsible stats toggle — hidden on desktop */
+.cd-stats-toggle { display:none; }
+.cd-stats-list   { display:flex; flex-direction:column; gap:9px; }
+
 @media(max-width:640px){
   #cd-grid  { grid-template-columns: 1fr !important; }
   #cd-left  { position:static !important; }
   #coin-detail-view { padding:12px 12px 40px !important; }
   #cd-tv-container  { height:260px !important; }
+
+  /* Collapsible stats on mobile */
+  .cd-stats-list {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease;
+    gap: 9px;
+  }
+  .cd-stats-list.expanded {
+    max-height: 400px;
+  }
+  .cd-stats-toggle {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 7px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748B;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .cd-stats-toggle:hover { background: #F1F5F9; }
 }
 @media(max-width:480px){
   /* KPI stays 2-col but smaller padding */
@@ -247,10 +285,11 @@ p,span,div,input,button{
   /* Stack TP/SL fields vertically in panel */
   .field-row{grid-template-columns:1fr}
   /* Topbar tighter */
-  .topbar{padding:8px 10px;gap:4px}
-  /* New Entry button: icon-only */
-  #topbar-newentry-label{display:none}
-  .topbar-newentry{padding:6px 10px!important}
+  .topbar{padding:8px 10px;gap:6px}
+  /* Shrink labels to just icons on very small screens */
+  .run-label, .entry-btn-label { display:none!important; }
+  #run-analysis-btn { padding:8px 10px!important; }
+  #add-entry-btn    { padding:8px 10px!important; }
   /* Reduce grid gaps on very small screens */
   .two-col,.chart-grid,.kpi-grid{gap:8px}
   /* Price ladder footer: stack */
@@ -625,14 +664,10 @@ p,span,div,input,button{
     </button>
     </div>
     <div style="display:flex;align-items:center;gap:7px;flex-shrink:0">
-      <div id="topbar-search" style="display:flex;align-items:center;gap:7px;padding:6px 12px;background:#F8FAFC;border-radius:8px;border:1px solid #E2E8F0">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input placeholder="Search levels..." style="border:none;background:none;outline:none;font-size:11px;color:#334155;width:130px;font-family:var(--font-body)">
-      </div>
-      <div onclick="toggleBal()" style="width:32px;height:32px;border-radius:8px;border:1px solid #E2E8F0;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer" title="Toggle visibility">
+      <div id="topbar-eye" onclick="toggleBal()" style="width:32px;height:32px;border-radius:8px;border:1px solid #E2E8F0;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer" title="Toggle visibility">
         <svg id="eye-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       </div>
-      <div style="width:32px;height:32px;border-radius:8px;border:1px solid #E2E8F0;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative">
+      <div id="topbar-bell" style="width:32px;height:32px;border-radius:8px;border:1px solid #E2E8F0;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="dot-pulse"></div>
       </div>
@@ -650,8 +685,8 @@ p,span,div,input,button{
         <button class="period utf" data-tf="1W"  onclick="unifiedTF('1W')">1W</button>
       </div>
       <!-- Run Analysis button -->
-      <button onclick="handleRunAnalysis()" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ Run Analysis</button>
-      <button onclick="openPanel('long')" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:#0F172A;color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading)">
+      <button onclick="handleRunAnalysis()" id="run-analysis-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ <span class="run-label">Run Analysis</span></button>
+      <button onclick="openPanel('long')" id="add-entry-btn" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:#0F172A;color:white;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:var(--font-heading)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span class="entry-btn-label">Add Entry</span>
       </button>
@@ -1632,11 +1667,15 @@ async function _cdLoadData(cgId, sym){
       ['Max Supply',           md.max_supply ? _fmtSupply(md.max_supply, sym) : '∞'],
       ['Total Supply',         _fmtSupply(md.total_supply, sym)],
     ];
-    document.getElementById('cd-stats').innerHTML = stats.map(([label, val]) => `
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:11px;color:#94A3B8;font-family:var(--font-body);font-weight:500">${label}</span>
-        <span style="font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-mono)">${val}</span>
-      </div>`).join('<div style="height:1px;background:#F8FAFC"></div>');
+    document.getElementById('cd-stats').innerHTML =
+      `<div id="cd-stats-list" class="cd-stats-list">${
+        stats.map(([label, val]) => `
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:11px;color:#94A3B8;font-family:var(--font-body);font-weight:500">${label}</span>
+            <span style="font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-mono)">${val}</span>
+          </div>`).join('<div style="height:1px;background:#F8FAFC"></div>')
+      }</div>
+      <button id="cd-stats-toggle" class="cd-stats-toggle" onclick="toggleCDStats()">Show More ↓</button>`;
 
     /* Price stats (right panel) */
     const ath = md.ath?.usd, atl = md.atl?.usd;
@@ -1711,6 +1750,14 @@ window.setCDInterval = function(tf){
   _cdTvInterval = tf;
   _cdLoadTVChart(tf);
 };
+
+function toggleCDStats(){
+  const list = document.getElementById('cd-stats-list');
+  const btn  = document.getElementById('cd-stats-toggle');
+  if(!list || !btn) return;
+  const expanded = list.classList.toggle('expanded');
+  btn.textContent = expanded ? 'Show Less ↑' : 'Show More ↓';
+}
 
 function _cdLoadSentiment(sym){
   let votes;

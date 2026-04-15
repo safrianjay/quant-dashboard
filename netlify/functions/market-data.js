@@ -1,110 +1,134 @@
 /**
  * Netlify Function: market-data
- * Uses Node 18+ native fetch — no external dependencies needed.
- * Proxies market data from Binance and CoinGecko to bypass browser-side CORS and rate limits.
+ * Uses Node https module (same as cg.js which works).
+ * CoinGecko /simple/price → Kraken fallback.
  */
+const https = require('https');
+
+const HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*'
+};
+
+const COIN_MAP = [
+  { cgId: 'bitcoin',       sym: 'BTC'  },
+  { cgId: 'ethereum',      sym: 'ETH'  },
+  { cgId: 'binancecoin',   sym: 'BNB'  },
+  { cgId: 'solana',        sym: 'SOL'  },
+  { cgId: 'ripple',        sym: 'XRP'  },
+  { cgId: 'cardano',       sym: 'ADA'  },
+  { cgId: 'dogecoin',      sym: 'DOGE' },
+  { cgId: 'avalanche-2',   sym: 'AVAX' },
+  { cgId: 'chainlink',     sym: 'LINK' },
+  { cgId: 'polkadot',      sym: 'DOT'  },
+  { cgId: 'matic-network', sym: 'MATIC'},
+  { cgId: 'uniswap',       sym: 'UNI'  },
+  { cgId: 'litecoin',      sym: 'LTC'  },
+  { cgId: 'near',          sym: 'NEAR' },
+  { cgId: 'aptos',         sym: 'APT'  },
+  { cgId: 'sui',           sym: 'SUI'  },
+  { cgId: 'rave-token',    sym: 'RAVE' },
+];
+
+function httpsGet(url) {
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } }, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        if (res.statusCode !== 200) return reject(new Error('HTTP ' + res.statusCode));
+        try { resolve(JSON.parse(body)); }
+        catch(e) { reject(new Error('JSON parse error')); }
+      });
+    });
+    req.on('error', reject);
+    req.setTimeout(8000, () => { req.destroy(); reject(new Error('Timeout')); });
+  });
+}
+
+async function fetchCoinGecko() {
+  const ids = COIN_MAP.map(c => c.cgId).join(',');
+  const data = await httpsGet(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_high_24h=true&include_low_24h=true`
+  );
+  return COIN_MAP.map(({ cgId, sym }) => {
+    const d = data[cgId] || {};
+    return {
+      symbol: sym + 'USDT',
+      lastPrice: (d.usd || 0).toString(),
+      highPrice:  (d.usd_24h_high || d.usd || 0).toString(),
+      lowPrice:   (d.usd_24h_low  || d.usd || 0).toString(),
+      priceChangePercent: (d.usd_24h_change || 0).toFixed(4),
+      quoteVolume: (d.usd_24h_vol || 0).toString()
+    };
+  });
+}
+
+async function fetchKraken() {
+  const pairs = [
+    ['XXBTZUSD','BTC'], ['XETHZUSD','ETH'], ['SOLUSDT','SOL'],
+    ['XXRPZUSD','XRP'], ['ADAUSD','ADA'],   ['XDGUSD','DOGE'],
+    ['AVAXUSD','AVAX'], ['LINKUSD','LINK'],  ['DOTUSD','DOT'],
+    ['UNIUSD','UNI'],   ['LTCUSD','LTC'],    ['NEARUSD','NEAR'],
+    ['APTUSD','APT'],   ['SUIUSD','SUI'],
+  ];
+  const json = await httpsGet(`https://api.kraken.com/0/public/Ticker?pair=${pairs.map(p=>p[0]).join(',')}`);
+  if (json.error && json.error.length) throw new Error('Kraken: ' + json.error[0]);
+  return pairs.map(([krakenPair, sym]) => {
+    const key = Object.keys(json.result || {}).find(k => k.includes(krakenPair.slice(0,4))) || krakenPair;
+    const t = (json.result || {})[key] || {};
+    const last = parseFloat(t.c?.[0] || 0);
+    const high = parseFloat(t.h?.[1] || 0);
+    const low  = parseFloat(t.l?.[1] || 0);
+    const open = parseFloat(t.o || last);
+    const vol  = parseFloat(t.v?.[1] || 0);
+    const chg  = open ? ((last - open) / open * 100) : 0;
+    return {
+      symbol: sym + 'USDT',
+      lastPrice: last.toString(),
+      highPrice: high.toString(),
+      lowPrice:  low.toString(),
+      priceChangePercent: chg.toFixed(4),
+      quoteVolume: (last * vol).toString()
+    };
+  });
+}
+
 exports.handler = async (event) => {
   const params = event.queryStringParameters || {};
   const { type, id } = params;
 
   try {
-    // Mode 1: Batch prices for the entire dashboard (from CoinGecko)
+
     if (type === 'prices') {
-      console.log('[market-data] Fetching prices from CoinGecko...');
-      // Get top 100 cryptos with prices - CoinGecko doesn't block Netlify IPs
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false',
-        {
-          headers: {
-            'User-Agent': 'Quantichy-Dashboard/1.0'
-          }
-        }
-      );
-      console.log('[market-data] CoinGecko response status:', response.status);
-
-      if (!response.ok) throw new Error(`CoinGecko API Error: ${response.status}`);
-
-      const data = await response.json();
-      console.log('[market-data] Got', data.length, 'coins from CoinGecko');
-
-      // Transform CoinGecko format to match dashboard expectations (Binance-like format)
-      const transformed = data.map(coin => ({
-        symbol: (coin.symbol || '').toUpperCase() + 'USDT',
-        name: coin.name,
-        lastPrice: coin.current_price ? coin.current_price.toString() : '0',
-        highPrice: coin.high_24h ? coin.high_24h.toString() : '0',
-        lowPrice: coin.low_24h ? coin.low_24h.toString() : '0',
-        priceChangePercent: (coin.price_change_percentage_24h || 0).toString(),
-        quoteVolume: coin.total_volume ? coin.total_volume.toString() : '0'
-      }));
-
-      console.log('[market-data] Transformed to', transformed.length, 'coins');
-
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify(transformed)
-      };
+      let result;
+      try {
+        result = await fetchCoinGecko();
+        console.log('[market-data] CoinGecko OK, coins:', result.length);
+      } catch (e) {
+        console.warn('[market-data] CoinGecko failed:', e.message, '— trying Kraken');
+        result = await fetchKraken();
+        console.log('[market-data] Kraken OK');
+      }
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify(result) };
     }
 
-    // Mode 2: OHLC historical data (from CoinGecko)
     if (type === 'ohlc' && id) {
-      const response = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=1`, {
-        headers: { 'User-Agent': 'Quantichy-Dashboard/1.0' }
-      });
-      if (!response.ok) throw new Error(`CoinGecko OHLC Error: ${response.status}`);
-      
-      const data = await response.json();
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify(data)
-      };
+      const data = await httpsGet(`https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=1`);
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify(data) };
     }
 
-    // Mode 3: Detailed Coin Info (from CoinGecko)
     if (type === 'coin' && id) {
-      const url = `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&community_data=false&developer_data=false`;
-      const response = await fetch(url, {
-        headers: { 'User-Agent': 'Quantichy-Dashboard/1.0' }
-      });
-      if (!response.ok) throw new Error(`CoinGecko Coin Error: ${response.status}`);
-      
-      const data = await response.json();
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify(data)
-      };
+      const data = await httpsGet(
+        `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&community_data=false&developer_data=false`
+      );
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify(data) };
     }
 
-    return {
-      statusCode: 400,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ error: 'Invalid type or missing parameters' })
-    };
+    return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ error: 'Invalid type' }) };
 
-  } catch (error) {
-    console.error('Market Data Proxy Error:', error);
-    return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ error: error.message })
-    };
+  } catch (err) {
+    console.error('[market-data] Fatal error:', err.message);
+    return { statusCode: 500, headers: HEADERS, body: JSON.stringify({ error: err.message }) };
   }
 };
