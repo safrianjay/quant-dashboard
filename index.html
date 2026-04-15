@@ -727,8 +727,10 @@ p,span,div,input,button{
               <button onclick="setCDInterval('W')"   class="cd-tf-btn" data-tf="W"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">1W</button>
             </div>
           </div>
-          <!-- Widget — fills remaining card height exactly -->
-          <div id="cd-tv-container" style="flex:1;min-height:400px;width:100%"></div>
+          <!-- Widget — same height as main dashboard chart -->
+          <div style="height:360px;width:100%">
+            <div id="cd-tv-container" style="height:100%;width:100%"></div>
+          </div>
         </div>
 
         <!-- OHLC bar -->
@@ -1688,9 +1690,6 @@ let _cdTvSym = null, _cdTvInterval = '60';
 function _cdLoadTVChart(interval){
   const el = document.getElementById('cd-tv-container');
   el.innerHTML = '';
-  /* Wrapper needed by TradingView to measure height */
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'height:100%;width:100%;min-height:400px';
   const s = document.createElement('script');
   s.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
   s.async = true;
@@ -1700,8 +1699,7 @@ function _cdLoadTVChart(interval){
     hide_top_toolbar: false, hide_legend: false,
     allow_symbol_change: false, save_image: false
   });
-  wrap.appendChild(s);
-  el.appendChild(wrap);
+  el.appendChild(s);
 
   /* Update TF pill highlight */
   document.querySelectorAll('.cd-tf-btn').forEach(b => {
