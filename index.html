@@ -227,6 +227,9 @@ p,span,div,input,button{
   /* Smooth momentum scroll on iOS */
   .main{-webkit-overflow-scrolling:touch}
 }
+@media(max-width:900px){
+  #coin-detail-view > div:last-child { grid-template-columns: 1fr !important; }
+}
 @media(max-width:480px){
   /* KPI stays 2-col but smaller padding */
   .kpi-card{padding:12px 14px}
@@ -648,8 +651,111 @@ p,span,div,input,button{
   </div>
 
 
+  <!-- Coin Detail View (hidden by default, swaps with .content) -->
+  <div id="coin-detail-view" style="display:none;padding:18px 24px 32px;flex:1;overflow-y:auto">
+    <!-- Back bar -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <button onclick="closeCoinDetail()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid #E2E8F0;background:white;font-size:12px;font-weight:600;color:#64748B;cursor:pointer;font-family:var(--font-body);transition:all .15s" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Dashboard
+      </button>
+      <span id="cd-breadcrumb" style="font-size:12px;color:#94A3B8;font-family:var(--font-body)"></span>
+    </div>
+
+    <!-- 3-column layout -->
+    <div style="display:grid;grid-template-columns:240px 1fr 260px;gap:14px;align-items:start">
+
+      <!-- LEFT: Coin Info Panel -->
+      <div style="display:flex;flex-direction:column;gap:12px;position:sticky;top:0">
+
+        <!-- Identity card -->
+        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div id="cd-avatar" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:800;font-size:16px;color:white;flex-shrink:0"></div>
+            <div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span id="cd-name" style="font-family:var(--font-heading);font-size:15px;font-weight:800;color:#0F172A"></span>
+                <span id="cd-rank" style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:#F1F5F9;color:#64748B;font-family:var(--font-body)"></span>
+              </div>
+              <span id="cd-sym" style="font-size:11px;color:#94A3B8;font-family:var(--font-mono);font-weight:600"></span>
+            </div>
+          </div>
+
+          <div id="cd-price" style="font-family:var(--font-mono);font-size:28px;font-weight:700;color:#0F172A;letter-spacing:-.02em;margin-bottom:6px"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <span id="cd-chg" style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:var(--font-mono)"></span>
+            <span style="font-size:10px;color:#94A3B8;font-family:var(--font-body)">24h</span>
+          </div>
+
+          <div style="height:1px;background:#F1F5F9;margin-bottom:12px"></div>
+
+          <!-- Stats -->
+          <div style="display:flex;flex-direction:column;gap:9px" id="cd-stats">
+            <div style="color:#94A3B8;font-size:11px;text-align:center;font-family:var(--font-body)">Loading...</div>
+          </div>
+        </div>
+
+        <!-- Links card -->
+        <div id="cd-links" style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;flex-wrap:wrap;gap:7px"></div>
+      </div>
+
+      <!-- CENTER: Chart -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+
+        <!-- Chart tabs -->
+        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div style="display:flex;border-bottom:1px solid #F1F5F9;padding:0 16px">
+            <button style="padding:13px 16px;font-size:12px;font-weight:700;color:#0F172A;background:none;border:none;border-bottom:2px solid #0F172A;cursor:pointer;font-family:var(--font-heading)">Chart</button>
+            <button style="padding:13px 16px;font-size:12px;font-weight:600;color:#94A3B8;background:none;border:none;border-bottom:2px solid transparent;cursor:default;font-family:var(--font-heading)">Markets</button>
+            <button style="padding:13px 16px;font-size:12px;font-weight:600;color:#94A3B8;background:none;border:none;border-bottom:2px solid transparent;cursor:default;font-family:var(--font-heading)">About</button>
+          </div>
+          <!-- TradingView chart -->
+          <div id="cd-tv-container" style="height:420px;width:100%"></div>
+        </div>
+
+        <!-- OHLC bar -->
+        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:14px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px" id="cd-ohlc">
+            <div style="color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading OHLC...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Sentiment + Stats -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+
+        <!-- Sentiment card -->
+        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div style="font-family:var(--font-heading);font-size:12px;font-weight:700;color:#0F172A;margin-bottom:12px">Community Sentiment</div>
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:11px;font-weight:700;color:#16A34A;font-family:var(--font-body)">🐂 Bullish <span id="cd-bull-pct">50</span>%</span>
+              <span style="font-size:11px;font-weight:700;color:#DC2626;font-family:var(--font-body)"><span id="cd-bear-pct">50</span>% Bearish 🐻</span>
+            </div>
+            <div style="height:8px;border-radius:4px;background:#FEE2E2;overflow:hidden">
+              <div id="cd-bull-bar" style="height:100%;border-radius:4px;background:linear-gradient(90deg,#10B981,#34D399);width:50%;transition:width .5s ease"></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button id="cd-bull-btn" onclick="cdVote('bull')" style="padding:9px;border-radius:9px;border:1.5px solid #BBF7D0;background:#F0FDF4;color:#16A34A;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-heading);transition:all .15s">🐂 Bullish</button>
+            <button id="cd-bear-btn" onclick="cdVote('bear')" style="padding:9px;border-radius:9px;border:1.5px solid #FECACA;background:#FEF2F2;color:#DC2626;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-heading);transition:all .15s">🐻 Bearish</button>
+          </div>
+        </div>
+
+        <!-- Price stats card -->
+        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div style="font-family:var(--font-heading);font-size:12px;font-weight:700;color:#0F172A;margin-bottom:12px">Price Statistics</div>
+          <div style="display:flex;flex-direction:column;gap:10px" id="cd-price-stats">
+            <div style="color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Content -->
-  <div class="content">
+  <div class="content" id="main-content">
 
     <!-- KPI Grid -->
     <div class="kpi-grid" id="kpi-grid"></div>
@@ -1328,9 +1434,11 @@ function renderCoinStrip(){
     const mkt = MARKET_LIST.find(m => m.base === c.symbol);
     const cgId = mkt ? mkt.cgId : c.symbol.toLowerCase();
     const tvSym = mkt && mkt.tvSym ? mkt.tvSym : 'BINANCE:' + c.symbol + 'USDT';
+    const grad  = mkt ? mkt.grad : 'linear-gradient(135deg,#64748B,#94A3B8)';
+    const letter= mkt ? mkt.letter : c.symbol[0];
 
     return `
-    <div class="coin-card r${c.rank}" style="animation:coinIn .45s ease ${i * .065}s both;cursor:pointer" onclick="window.location.href='/coin?sym=${c.symbol}&cgId=${cgId}&name=${encodeURIComponent(c.name)}&tvSym=${encodeURIComponent(tvSym)}'">
+    <div class="coin-card r${c.rank}" style="animation:coinIn .45s ease ${i * .065}s both;cursor:pointer" onclick="openCoinDetailByBase('${c.symbol}')">
       <div class="rank-badge" style="background:${c.accent}1A;color:${c.accent}">#${c.rank}</div>
 
       <!-- Header -->
@@ -1391,13 +1499,203 @@ window.switchCoinTab = function(tab){
   renderCoinStrip();
 };
 
-/* ══ COIN DETAIL NAVIGATION ══ */
-function openCoinDetail() {
-  const mkt = MARKET_LIST.find(m => m.sym === currentSymbol);
-  const cgId = mkt ? mkt.cgId : currentCgId;
-  const name = mkt ? mkt.name : currentBase;
-  const tvSym = mkt && mkt.tvSym ? mkt.tvSym : 'BINANCE:' + currentBase + 'USDT';
-  window.location.href = '/coin?sym=' + currentBase + '&cgId=' + encodeURIComponent(cgId) + '&name=' + encodeURIComponent(name) + '&tvSym=' + encodeURIComponent(tvSym);
+/* ══ COIN DETAIL VIEW ══ */
+let _cdSym = null;
+
+function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
+  /* If called from topbar button with no args — use current coin */
+  if(!sym){
+    const mkt = MARKET_LIST.find(m => m.sym === currentSymbol);
+    sym   = currentBase;
+    cgId  = mkt ? mkt.cgId : currentCgId;
+    name  = mkt ? mkt.name : currentBase;
+    grad  = mkt ? mkt.grad : 'linear-gradient(135deg,#F7931A,#FBBF24)';
+    letter= mkt ? mkt.letter : sym[0];
+    tvSym = mkt && mkt.tvSym ? mkt.tvSym : 'BINANCE:' + sym + 'USDT';
+  }
+  _cdSym = sym;
+
+  /* Show detail, hide main content */
+  document.getElementById('main-content').style.display = 'none';
+  document.getElementById('coin-detail-view').style.display = 'block';
+  document.getElementById('cd-breadcrumb').textContent = 'Dashboard › ' + name;
+
+  /* Set avatar */
+  const av = document.getElementById('cd-avatar');
+  av.style.background = grad;
+  av.textContent = letter;
+
+  /* Set name/sym placeholders */
+  document.getElementById('cd-name').textContent  = name;
+  document.getElementById('cd-sym').textContent   = sym + ' / USDT';
+  document.getElementById('cd-rank').textContent  = '';
+  document.getElementById('cd-price').textContent = '—';
+  document.getElementById('cd-chg').textContent   = '—';
+  document.getElementById('cd-stats').innerHTML   = '<div style="color:#94A3B8;font-size:11px;text-align:center;font-family:var(--font-body)">Loading...</div>';
+  document.getElementById('cd-price-stats').innerHTML = '<div style="color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading...</div>';
+  document.getElementById('cd-links').innerHTML   = '';
+
+  /* Load TradingView chart */
+  const tvEl = document.getElementById('cd-tv-container');
+  tvEl.innerHTML = '';
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    autosize: true, symbol: tvSym, interval: '1H',
+    timezone: 'Etc/UTC', theme: 'light', style: '1', locale: 'en',
+    hide_top_toolbar: false, hide_legend: false,
+    allow_symbol_change: false, save_image: false,
+    container_id: 'cd-tv-container'
+  });
+  tvEl.appendChild(script);
+
+  /* Fetch coin data from CoinGecko */
+  _cdLoadData(cgId, sym);
+
+  /* Load sentiment votes from localStorage */
+  _cdLoadSentiment(sym);
+
+  /* Scroll to top */
+  document.getElementById('coin-detail-view').scrollTop = 0;
+}
+
+/* Called from coin card clicks — looks up all data from MARKET_LIST */
+function openCoinDetailByBase(base){
+  const mkt = MARKET_LIST.find(m => m.base === base);
+  if(!mkt) return;
+  openCoinDetail(mkt.base, mkt.cgId, mkt.name, mkt.grad, mkt.letter, mkt.tvSym || ('BINANCE:' + mkt.sym));
+}
+
+function closeCoinDetail(){
+  document.getElementById('coin-detail-view').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+  _cdSym = null;
+}
+
+function _fmtNum(n){
+  if(n == null || isNaN(n)) return '—';
+  if(n >= 1e12) return '$' + (n/1e12).toFixed(2) + 'T';
+  if(n >= 1e9)  return '$' + (n/1e9).toFixed(2) + 'B';
+  if(n >= 1e6)  return '$' + (n/1e6).toFixed(2) + 'M';
+  if(n >= 1e3)  return '$' + (n/1e3).toFixed(1) + 'K';
+  return '$' + n.toFixed(2);
+}
+function _fmtSupply(n, sym){
+  if(n == null) return '—';
+  if(n >= 1e9)  return (n/1e9).toFixed(2) + 'B ' + sym;
+  if(n >= 1e6)  return (n/1e6).toFixed(2) + 'M ' + sym;
+  if(n >= 1e3)  return (n/1e3).toFixed(2) + 'K ' + sym;
+  return n.toLocaleString() + ' ' + sym;
+}
+
+async function _cdLoadData(cgId, sym){
+  try {
+    const res = await fetch('/.netlify/functions/cg?type=coin&id=' + encodeURIComponent(cgId));
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+    const md = d.market_data || {};
+    const p  = md.current_price?.usd || 0;
+    const chg= md.price_change_percentage_24h || 0;
+    const pos = chg >= 0;
+
+    /* Price */
+    const dec = p < 0.001 ? 8 : p < 1 ? 4 : 2;
+    document.getElementById('cd-price').textContent = '$' + p.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+    const chgEl = document.getElementById('cd-chg');
+    chgEl.textContent = (pos ? '+' : '') + chg.toFixed(2) + '%';
+    chgEl.style.background = pos ? '#F0FDF4' : '#FEF2F2';
+    chgEl.style.color = pos ? '#16A34A' : '#DC2626';
+
+    /* Rank */
+    if(d.market_cap_rank) document.getElementById('cd-rank').textContent = '#' + d.market_cap_rank;
+
+    /* Stats rows */
+    const stats = [
+      ['Market Cap',          _fmtNum(md.market_cap?.usd)],
+      ['Volume (24h)',         _fmtNum(md.total_volume?.usd)],
+      ['Fully Diluted Val.',   _fmtNum(md.fully_diluted_valuation?.usd)],
+      ['Circulating Supply',   _fmtSupply(md.circulating_supply, sym)],
+      ['Max Supply',           md.max_supply ? _fmtSupply(md.max_supply, sym) : '∞'],
+      ['Total Supply',         _fmtSupply(md.total_supply, sym)],
+    ];
+    document.getElementById('cd-stats').innerHTML = stats.map(([label, val]) => `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:#94A3B8;font-family:var(--font-body);font-weight:500">${label}</span>
+        <span style="font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-mono)">${val}</span>
+      </div>`).join('<div style="height:1px;background:#F8FAFC"></div>');
+
+    /* Price stats (right panel) */
+    const ath = md.ath?.usd, atl = md.atl?.usd;
+    const pStats = [
+      ['24h High',    _fmtNum(md.high_24h?.usd),  true],
+      ['24h Low',     _fmtNum(md.low_24h?.usd),   false],
+      ['24h Change',  (pos?'+':'')+chg.toFixed(2)+'%', pos],
+      ['All Time High', _fmtNum(ath), true],
+      ['All Time Low',  _fmtNum(atl), false],
+    ];
+    document.getElementById('cd-price-stats').innerHTML = pStats.map(([label, val, up]) => `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:#94A3B8;font-family:var(--font-body)">${label}</span>
+        <span style="font-size:11px;font-weight:700;font-family:var(--font-mono);color:${label.includes('Change') ? (up?'#16A34A':'#DC2626') : '#0F172A'}">${val}</span>
+      </div>`).join('<div style="height:1px;background:#F8FAFC;margin:1px 0"></div>');
+
+    /* OHLC bar */
+    const ohlc = [
+      ['Open',  md.price_change_24h ? '$'+(p - md.price_change_24h).toFixed(2) : '—'],
+      ['High',  _fmtNum(md.high_24h?.usd)],
+      ['Low',   _fmtNum(md.low_24h?.usd)],
+      ['Close', '$'+p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})],
+      ['Vol',   _fmtNum(md.total_volume?.usd)],
+    ];
+    document.getElementById('cd-ohlc').innerHTML = ohlc.map(([l,v]) => `
+      <div>
+        <div style="font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;font-family:var(--font-body);margin-bottom:2px">${l}</div>
+        <div style="font-size:11px;font-weight:700;font-family:var(--font-mono);color:#0F172A">${v}</div>
+      </div>`).join('');
+
+    /* Links */
+    const links = [];
+    if(d.links?.homepage?.[0]) links.push(['🌐 Website', d.links.homepage[0]]);
+    if(d.links?.blockchain_site?.[0]) links.push(['🔍 Explorer', d.links.blockchain_site[0]]);
+    if(d.links?.subreddit_url) links.push(['💬 Reddit', d.links.subreddit_url]);
+    if(d.links?.twitter_screen_name) links.push(['𝕏 Twitter', 'https://twitter.com/'+d.links.twitter_screen_name]);
+    document.getElementById('cd-links').innerHTML = links.map(([label, url]) => `
+      <a href="${url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;border:1px solid #E2E8F0;background:white;font-size:11px;font-weight:600;color:#334155;text-decoration:none;font-family:var(--font-body);transition:all .15s" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">${label}</a>`).join('');
+    if(!links.length) document.getElementById('cd-links').style.display = 'none';
+
+  } catch(err) {
+    console.error('Coin detail load error:', err);
+    document.getElementById('cd-stats').innerHTML = '<div style="font-size:11px;color:#DC2626;font-family:var(--font-body)">Failed to load data</div>';
+  }
+}
+
+function _cdLoadSentiment(sym){
+  let votes;
+  try { votes = JSON.parse(localStorage.getItem('cd_sentiment_'+sym) || '{"bull":50,"bear":50}'); }
+  catch(_){ votes = {bull:50, bear:50}; }
+  _cdUpdateSentiment(votes);
+}
+
+function cdVote(type){
+  if(!_cdSym) return;
+  let votes;
+  try { votes = JSON.parse(localStorage.getItem('cd_sentiment_'+_cdSym) || '{"bull":50,"bear":50}'); }
+  catch(_){ votes = {bull:50, bear:50}; }
+  if(type === 'bull') votes.bull = Math.min(98, votes.bull + 2);
+  else votes.bear = Math.min(98, votes.bear + 2);
+  /* Normalize to 100 */
+  const total = votes.bull + votes.bear;
+  votes.bull = Math.round(votes.bull / total * 100);
+  votes.bear = 100 - votes.bull;
+  localStorage.setItem('cd_sentiment_'+_cdSym, JSON.stringify(votes));
+  _cdUpdateSentiment(votes);
+}
+
+function _cdUpdateSentiment(votes){
+  document.getElementById('cd-bull-pct').textContent = votes.bull;
+  document.getElementById('cd-bear-pct').textContent = votes.bear;
+  document.getElementById('cd-bull-bar').style.width = votes.bull + '%';
 }
 
 /* ══ KPI CARDS ══ */
