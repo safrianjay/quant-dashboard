@@ -1481,16 +1481,13 @@ function renderCoinStrip(){
     const arr       = bull
       ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>`
       : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 7 7 7 17"/></svg>`;
-    const logo = c.svg
-      ? `<div class="coin-avatar" style="background:${c.gradient}">${c.svg}</div>`
-      : `<div class="coin-avatar" style="background:${c.gradient};color:white;font-family:var(--font-heading)">${c.letter}</div>`;
-
-    // Find cgId from MARKET_LIST
+    // Find from MARKET_LIST for icon/grad
     const mkt = MARKET_LIST.find(m => m.base === c.symbol);
     const cgId = mkt ? mkt.cgId : c.symbol.toLowerCase();
     const tvSym = mkt && mkt.tvSym ? mkt.tvSym : 'BINANCE:' + c.symbol + 'USDT';
     const grad  = mkt ? mkt.grad : 'linear-gradient(135deg,#64748B,#94A3B8)';
     const letter= mkt ? mkt.letter : c.symbol[0];
+    const logo = mkt ? coinIcon(mkt, 34) : `<div class="coin-avatar" style="background:${c.gradient};color:white;font-family:var(--font-heading)">${c.letter}</div>`;
 
     return `
     <div class="coin-card r${c.rank}" style="animation:coinIn .45s ease ${i * .065}s both;cursor:pointer" onclick="openCoinDetailByBase('${c.symbol}')">
@@ -1576,10 +1573,16 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
   document.getElementById('coin-detail-view').style.display = 'block';
   document.getElementById('cd-breadcrumb').textContent = 'Dashboard › ' + name;
 
-  /* Set avatar */
+  /* Set avatar — use real logo */
   const av = document.getElementById('cd-avatar');
-  av.style.background = grad;
-  av.textContent = letter;
+  const mktEntry = MARKET_LIST.find(m => m.base === sym);
+  if(mktEntry && mktEntry.icon){
+    av.style.background = 'transparent';
+    av.innerHTML = `<img src="${mktEntry.icon}" alt="${sym}" width="44" height="44" style="border-radius:50%;object-fit:cover" onerror="this.style.display='none';this.parentElement.style.background='${grad.replace(/'/g,"\\'")}';this.parentElement.textContent='${letter}'">`;
+  } else {
+    av.style.background = grad;
+    av.textContent = letter;
+  }
 
   /* Set name/sym placeholders */
   document.getElementById('cd-name').textContent  = name;
@@ -2147,33 +2150,42 @@ function _cgUrl(type, params) {
 /* ══ MARKET SELECTOR ══ */
 
 const MARKET_LIST = [
-  { sym:'BTCUSDT',  base:'BTC',  name:'Bitcoin',        cgId:'bitcoin',                cat:'Major',  grad:'linear-gradient(135deg,#F7931A,#FBBF24)', letter:'B' },
-  { sym:'ETHUSDT',  base:'ETH',  name:'Ethereum',        cgId:'ethereum',               cat:'Major',  grad:'linear-gradient(135deg,#627EEA,#A78BFA)', letter:'E' },
-  { sym:'BNBUSDT',  base:'BNB',  name:'BNB',             cgId:'binancecoin',            cat:'Major',  grad:'linear-gradient(135deg,#F3BA2F,#F59E0B)', letter:'B' },
-  { sym:'SOLUSDT',  base:'SOL',  name:'Solana',          cgId:'solana',                 cat:'Major',  grad:'linear-gradient(135deg,#9945FF,#14F195)', letter:'S' },
-  { sym:'XRPUSDT',  base:'XRP',  name:'Ripple',          cgId:'ripple',                 cat:'Major',  grad:'linear-gradient(135deg,#0085C0,#38BDF8)', letter:'X' },
-  { sym:'ADAUSDT',  base:'ADA',  name:'Cardano',         cgId:'cardano',                cat:'Major',  grad:'linear-gradient(135deg,#0033AD,#60A5FA)', letter:'A' },
-  { sym:'LTCUSDT',  base:'LTC',  name:'Litecoin',        cgId:'litecoin',               cat:'Major',  grad:'linear-gradient(135deg,#BFBFBF,#64748B)', letter:'L' },
-  { sym:'AVAXUSDT', base:'AVAX', name:'Avalanche',       cgId:'avalanche-2',            cat:'Layer1', grad:'linear-gradient(135deg,#E84142,#F87171)', letter:'A' },
-  { sym:'DOTUSDT',  base:'DOT',  name:'Polkadot',        cgId:'polkadot',               cat:'Layer1', grad:'linear-gradient(135deg,#E6007A,#EC4899)', letter:'D' },
-  { sym:'ATOMUSDT', base:'ATOM', name:'Cosmos',          cgId:'cosmos',                 cat:'Layer1', grad:'linear-gradient(135deg,#6B7280,#9CA3AF)', letter:'A' },
-  { sym:'NEARUSDT', base:'NEAR', name:'NEAR Protocol',   cgId:'near',                   cat:'Layer1', grad:'linear-gradient(135deg,#00EC97,#34D399)', letter:'N' },
-  { sym:'SUIUSDT',  base:'SUI',  name:'Sui',             cgId:'sui',                    cat:'Layer1', grad:'linear-gradient(135deg,#4CA3FF,#7DD3FC)', letter:'S' },
-  { sym:'APTUSDT',  base:'APT',  name:'Aptos',           cgId:'aptos',                  cat:'Layer1', grad:'linear-gradient(135deg,#00B5AD,#2DD4BF)', letter:'A' },
-  { sym:'ICPUSDT',  base:'ICP',  name:'Internet Comp.',  cgId:'internet-computer',      cat:'Layer1', grad:'linear-gradient(135deg,#7B2FBE,#9B51E0)', letter:'I' },
-  { sym:'INJUSDT',  base:'INJ',  name:'Injective',       cgId:'injective-protocol',     cat:'Layer1', grad:'linear-gradient(135deg,#00B2FF,#38BDF8)', letter:'I' },
-  { sym:'LINKUSDT', base:'LINK', name:'Chainlink',       cgId:'chainlink',              cat:'DeFi',   grad:'linear-gradient(135deg,#2A5ADA,#60A5FA)', letter:'L' },
-  { sym:'UNIUSDT',  base:'UNI',  name:'Uniswap',         cgId:'uniswap',                cat:'DeFi',   grad:'linear-gradient(135deg,#FF007A,#F97316)', letter:'U' },
-  { sym:'AAVEUSDT', base:'AAVE', name:'Aave',            cgId:'aave',                   cat:'DeFi',   grad:'linear-gradient(135deg,#B6509E,#EC4899)', letter:'A' },
-  { sym:'MATICUSDT',base:'POL',  name:'Polygon',         cgId:'matic-network',          cat:'Layer2', grad:'linear-gradient(135deg,#8247E5,#A78BFA)', letter:'P' },
-  { sym:'ARBUSDT',  base:'ARB',  name:'Arbitrum',        cgId:'arbitrum',               cat:'Layer2', grad:'linear-gradient(135deg,#1B4ADD,#60A5FA)', letter:'A' },
-  { sym:'OPUSDT',   base:'OP',   name:'Optimism',        cgId:'optimism',               cat:'Layer2', grad:'linear-gradient(135deg,#FF0420,#F87171)', letter:'O' },
-  { sym:'DOGEUSDT', base:'DOGE', name:'Dogecoin',        cgId:'dogecoin',               cat:'Meme',   grad:'linear-gradient(135deg,#C2A633,#FCD34D)', letter:'D' },
-  { sym:'SHIBUSDT', base:'SHIB', name:'Shiba Inu',       cgId:'shiba-inu',              cat:'Meme',   grad:'linear-gradient(135deg,#E36D26,#F97316)', letter:'S' },
-  { sym:'PEPEUSDT', base:'PEPE', name:'Pepe',            cgId:'pepe',                   cat:'Meme',   grad:'linear-gradient(135deg,#3D9900,#86EFAC)', letter:'P' },
-  { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'Quant AI', grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W' },
-  { sym:'RAVEUSDT', base:'RAVE', name:'Rave',             cgId:'rave-token',             cat:'BSC',      grad:'linear-gradient(135deg,#FF6B6B,#FF8E53)', letter:'R', tvSym:'RAVEUSDT.P' },
+  { sym:'BTCUSDT',  base:'BTC',  name:'Bitcoin',        cgId:'bitcoin',                cat:'Major',  grad:'linear-gradient(135deg,#F7931A,#FBBF24)', letter:'B', icon:'https://assets.coingecko.com/coins/images/1/small/bitcoin.png' },
+  { sym:'ETHUSDT',  base:'ETH',  name:'Ethereum',        cgId:'ethereum',               cat:'Major',  grad:'linear-gradient(135deg,#627EEA,#A78BFA)', letter:'E', icon:'https://assets.coingecko.com/coins/images/279/small/ethereum.png' },
+  { sym:'BNBUSDT',  base:'BNB',  name:'BNB',             cgId:'binancecoin',            cat:'Major',  grad:'linear-gradient(135deg,#F3BA2F,#F59E0B)', letter:'B', icon:'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png' },
+  { sym:'SOLUSDT',  base:'SOL',  name:'Solana',          cgId:'solana',                 cat:'Major',  grad:'linear-gradient(135deg,#9945FF,#14F195)', letter:'S', icon:'https://assets.coingecko.com/coins/images/4128/small/solana.png' },
+  { sym:'XRPUSDT',  base:'XRP',  name:'Ripple',          cgId:'ripple',                 cat:'Major',  grad:'linear-gradient(135deg,#0085C0,#38BDF8)', letter:'X', icon:'https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png' },
+  { sym:'ADAUSDT',  base:'ADA',  name:'Cardano',         cgId:'cardano',                cat:'Major',  grad:'linear-gradient(135deg,#0033AD,#60A5FA)', letter:'A', icon:'https://assets.coingecko.com/coins/images/975/small/cardano.png' },
+  { sym:'LTCUSDT',  base:'LTC',  name:'Litecoin',        cgId:'litecoin',               cat:'Major',  grad:'linear-gradient(135deg,#BFBFBF,#64748B)', letter:'L', icon:'https://assets.coingecko.com/coins/images/2/small/litecoin.png' },
+  { sym:'AVAXUSDT', base:'AVAX', name:'Avalanche',       cgId:'avalanche-2',            cat:'Layer1', grad:'linear-gradient(135deg,#E84142,#F87171)', letter:'A', icon:'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png' },
+  { sym:'DOTUSDT',  base:'DOT',  name:'Polkadot',        cgId:'polkadot',               cat:'Layer1', grad:'linear-gradient(135deg,#E6007A,#EC4899)', letter:'D', icon:'https://assets.coingecko.com/coins/images/12171/small/polkadot.png' },
+  { sym:'ATOMUSDT', base:'ATOM', name:'Cosmos',          cgId:'cosmos',                 cat:'Layer1', grad:'linear-gradient(135deg,#6B7280,#9CA3AF)', letter:'A', icon:'https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png' },
+  { sym:'NEARUSDT', base:'NEAR', name:'NEAR Protocol',   cgId:'near',                   cat:'Layer1', grad:'linear-gradient(135deg,#00EC97,#34D399)', letter:'N', icon:'https://assets.coingecko.com/coins/images/10365/small/near.jpg' },
+  { sym:'SUIUSDT',  base:'SUI',  name:'Sui',             cgId:'sui',                    cat:'Layer1', grad:'linear-gradient(135deg,#4CA3FF,#7DD3FC)', letter:'S', icon:'https://assets.coingecko.com/coins/images/26375/small/sui-ocean-square.png' },
+  { sym:'APTUSDT',  base:'APT',  name:'Aptos',           cgId:'aptos',                  cat:'Layer1', grad:'linear-gradient(135deg,#00B5AD,#2DD4BF)', letter:'A', icon:'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png' },
+  { sym:'ICPUSDT',  base:'ICP',  name:'Internet Comp.',  cgId:'internet-computer',      cat:'Layer1', grad:'linear-gradient(135deg,#7B2FBE,#9B51E0)', letter:'I', icon:'https://assets.coingecko.com/coins/images/14495/small/Internet_Computer_logo.png' },
+  { sym:'INJUSDT',  base:'INJ',  name:'Injective',       cgId:'injective-protocol',     cat:'Layer1', grad:'linear-gradient(135deg,#00B2FF,#38BDF8)', letter:'I', icon:'https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png' },
+  { sym:'LINKUSDT', base:'LINK', name:'Chainlink',       cgId:'chainlink',              cat:'DeFi',   grad:'linear-gradient(135deg,#2A5ADA,#60A5FA)', letter:'L', icon:'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png' },
+  { sym:'UNIUSDT',  base:'UNI',  name:'Uniswap',         cgId:'uniswap',                cat:'DeFi',   grad:'linear-gradient(135deg,#FF007A,#F97316)', letter:'U', icon:'https://assets.coingecko.com/coins/images/12504/small/uni.jpg' },
+  { sym:'AAVEUSDT', base:'AAVE', name:'Aave',            cgId:'aave',                   cat:'DeFi',   grad:'linear-gradient(135deg,#B6509E,#EC4899)', letter:'A', icon:'https://assets.coingecko.com/coins/images/12645/small/aave-token-round.png' },
+  { sym:'MATICUSDT',base:'POL',  name:'Polygon',         cgId:'matic-network',          cat:'Layer2', grad:'linear-gradient(135deg,#8247E5,#A78BFA)', letter:'P', icon:'https://assets.coingecko.com/coins/images/4713/small/polygon.png' },
+  { sym:'ARBUSDT',  base:'ARB',  name:'Arbitrum',        cgId:'arbitrum',               cat:'Layer2', grad:'linear-gradient(135deg,#1B4ADD,#60A5FA)', letter:'A', icon:'https://assets.coingecko.com/coins/images/16547/small/arb.jpg' },
+  { sym:'OPUSDT',   base:'OP',   name:'Optimism',        cgId:'optimism',               cat:'Layer2', grad:'linear-gradient(135deg,#FF0420,#F87171)', letter:'O', icon:'https://assets.coingecko.com/coins/images/25244/small/Optimism.png' },
+  { sym:'DOGEUSDT', base:'DOGE', name:'Dogecoin',        cgId:'dogecoin',               cat:'Meme',   grad:'linear-gradient(135deg,#C2A633,#FCD34D)', letter:'D', icon:'https://assets.coingecko.com/coins/images/5/small/dogecoin.png' },
+  { sym:'SHIBUSDT', base:'SHIB', name:'Shiba Inu',       cgId:'shiba-inu',              cat:'Meme',   grad:'linear-gradient(135deg,#E36D26,#F97316)', letter:'S', icon:'https://assets.coingecko.com/coins/images/11939/small/shiba.png' },
+  { sym:'PEPEUSDT', base:'PEPE', name:'Pepe',            cgId:'pepe',                   cat:'Meme',   grad:'linear-gradient(135deg,#3D9900,#86EFAC)', letter:'P', icon:'https://assets.coingecko.com/coins/images/29850/small/pepe-token.jpeg' },
+  { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'Quant AI', grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W', icon:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg' },
+  { sym:'RAVEUSDT', base:'RAVE', name:'Rave',             cgId:'rave-token',             cat:'BSC',      grad:'linear-gradient(135deg,#FF6B6B,#FF8E53)', letter:'R', tvSym:'RAVEUSDT.P', icon:'' },
 ];
+
+/* Returns coin icon HTML — real logo with gradient fallback */
+function coinIcon(m, size){
+  size = size || 32;
+  if(m.icon){
+    return `<img src="${m.icon}" alt="${m.base}" width="${size}" height="${size}" style="border-radius:50%;object-fit:cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div style="display:none;width:${size}px;height:${size}px;border-radius:50%;background:${m.grad};align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:700;font-size:${Math.round(size*.38)}px;color:white;flex-shrink:0">${m.letter}</div>`;
+  }
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${m.grad};display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:700;font-size:${Math.round(size*.38)}px;color:white;flex-shrink:0">${m.letter}</div>`;
+}
 
 let _marketPrices = {}; /* cache: { BTCUSDT: { price, chg, high, low, vol, lastUpdate, source } } */
 
@@ -2281,7 +2293,7 @@ function renderMarketGrid(list){
             style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;border:${isActive?'2px solid #0F172A':'1px solid #F1F5F9'};background:${isActive?'#F8FAFC':'white'};cursor:pointer;text-align:left;transition:all .15s;width:100%"
             onmouseover="if('${m.sym}'!==currentSymbol)this.style.background='#F8FAFC'"
             onmouseout="if('${m.sym}'!==currentSymbol)this.style.background='white'">
-            <div style="width:32px;height:32px;border-radius:8px;background:${m.grad};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-heading);font-size:12px;font-weight:700;color:white">${m.letter}</div>
+            <div style="width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center">${coinIcon(m, 32)}</div>
             <div style="min-width:0">
               <div style="font-family:var(--font-heading);font-size:12px;font-weight:700;color:#0F172A;line-height:1.2">${m.base}</div>
               <div style="font-size:9px;color:#94A3B8;font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.name}</div>
