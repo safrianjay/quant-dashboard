@@ -711,9 +711,9 @@ p,span,div,input,button{
       <div style="display:flex;flex-direction:column;gap:12px">
 
         <!-- Chart card — same style as main dashboard -->
-        <div style="background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden">
+        <div style="background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;display:flex;flex-direction:column">
           <!-- Card header -->
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid #F1F5F9">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid #F1F5F9;flex-shrink:0">
             <div style="display:flex;align-items:center;gap:8px">
               <div style="width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></div>
               <span id="cd-chart-label" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A">—/USDT</span>
@@ -727,10 +727,8 @@ p,span,div,input,button{
               <button onclick="setCDInterval('W')"   class="cd-tf-btn" data-tf="W"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">1W</button>
             </div>
           </div>
-          <!-- Widget -->
-          <div style="height:400px;width:100%">
-            <div id="cd-tv-container" style="height:100%;width:100%"></div>
-          </div>
+          <!-- Widget — fills remaining card height exactly -->
+          <div id="cd-tv-container" style="flex:1;min-height:400px;width:100%"></div>
         </div>
 
         <!-- OHLC bar -->
@@ -1690,6 +1688,9 @@ let _cdTvSym = null, _cdTvInterval = '60';
 function _cdLoadTVChart(interval){
   const el = document.getElementById('cd-tv-container');
   el.innerHTML = '';
+  /* Wrapper needed by TradingView to measure height */
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'height:100%;width:100%;min-height:400px';
   const s = document.createElement('script');
   s.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
   s.async = true;
@@ -1699,7 +1700,8 @@ function _cdLoadTVChart(interval){
     hide_top_toolbar: false, hide_legend: false,
     allow_symbol_change: false, save_image: false
   });
-  el.appendChild(s);
+  wrap.appendChild(s);
+  el.appendChild(wrap);
 
   /* Update TF pill highlight */
   document.querySelectorAll('.cd-tf-btn').forEach(b => {
