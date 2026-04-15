@@ -922,6 +922,17 @@ let _authTab = 'signin';
 /* ══ URL PARAMS ══ */
 const _urlParams = new URLSearchParams(window.location.search);
 const DEMO_MODE = _urlParams.has('demo');
+
+/* Persist redirect target so it survives Google OAuth page reloads */
+const _redirectAfterAuth = (function(){
+  const fromUrl = _urlParams.get('redirect');
+  if(fromUrl){ sessionStorage.setItem('q_redirect', fromUrl); return fromUrl; }
+  return sessionStorage.getItem('q_redirect');
+})();
+function _doRedirect(){
+  sessionStorage.removeItem('q_redirect');
+  window.location.href = _redirectAfterAuth;
+}
 const DEMO_POSITIONS = (function(){
   const now = new Date();
   const fmt = d => ({ date:d.toLocaleDateString("en-US",{month:"short",day:"numeric"}), time:d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false}) });
@@ -995,6 +1006,7 @@ function initAuth(){
           _hideSplash();
         } else {
           /* Verified (or Google/Phone sign-in) — grant full access */
+          if(_redirectAfterAuth){ _doRedirect(); return; }
           _hideAuthScreen();
           initFirestoreForUser(user.uid);
           _hideSplash();
@@ -1003,6 +1015,8 @@ function initAuth(){
         currentUser = null;
         _posRef = null;
         _showAuthScreen();
+        /* Default to Register tab when arriving from a redirect (e.g. pricing → pay) */
+        if(_redirectAfterAuth) setTimeout(()=> authSwitchTab('register'), 50);
         _hideSplash();
       }
     });
@@ -1171,6 +1185,7 @@ window.authCheckVerified = async function(){
   try{
     await firebase.auth().currentUser.reload();
     if(firebase.auth().currentUser.emailVerified){
+      if(_redirectAfterAuth){ _doRedirect(); return; }
       _hideAuthScreen();
       initFirestoreForUser(firebase.auth().currentUser.uid);
     } else {
@@ -1186,6 +1201,7 @@ window.authCheckVerified = async function(){
 };
 
 window.authSkipVerification = function(){
+  if(_redirectAfterAuth){ _doRedirect(); return; }
   _hideAuthScreen();
   initFirestoreForUser(firebase.auth().currentUser.uid);
 };

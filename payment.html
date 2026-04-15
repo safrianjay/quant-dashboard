@@ -175,6 +175,44 @@ nav {
 .paid-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,31,92,.28); }
 .paid-btn:disabled { cursor: not-allowed; transform: none; }
 
+/* User badge */
+.user-badge {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; padding: 10px 14px;
+  background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px;
+  margin-bottom: 4px;
+}
+.user-badge-left { display: flex; align-items: center; gap: 8px; }
+.user-badge span { font-size: 12.5px; color: #166534; font-weight: 600; font-family: var(--fm); }
+.signout-btn {
+  font-size: 11px; font-weight: 600; color: #94A3B8;
+  background: none; border: none; cursor: pointer; padding: 2px 4px;
+  font-family: var(--fb); transition: color .15s;
+}
+.signout-btn:hover { color: #64748B; }
+
+/* Demo button */
+.demo-btn {
+  width: 100%; padding: 13px; border-radius: 12px;
+  border: 1.5px solid #E2E8F0; background: white;
+  font-size: 14px; font-weight: 700; font-family: var(--fh);
+  color: var(--dark); cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  text-decoration: none;
+}
+.demo-btn:hover { background: #F8FAFC; border-color: #CBD5E1; }
+
+/* Loading */
+#pay-loading {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 50vh; gap: 6px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #94A3B8;
+  animation: pulse .7s ease infinite alternate; }
+.dot:nth-child(2) { animation-delay: .15s; }
+.dot:nth-child(3) { animation-delay: .3s; }
+@keyframes pulse { to { opacity:.3; transform: scale(.75); } }
+
 /* Support */
 .support {
   text-align: center; margin-top: 20px;
@@ -223,6 +261,13 @@ nav {
   </div>
 </nav>
 
+<!-- Loading -->
+<div id="pay-loading">
+  <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+</div>
+
+<!-- Payment page (hidden until auth confirmed) -->
+<div id="pay-page" style="display:none">
 <div class="page">
 
   <!-- Header -->
@@ -304,13 +349,32 @@ nav {
     </div>
   </div>
 
+  <!-- User badge + demo button -->
+  <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
+    <div class="user-badge">
+      <div class="user-badge-left">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="user-email-display">—</span>
+      </div>
+      <button class="signout-btn" onclick="doSignOut()">Sign out</button>
+    </div>
+    <a href="/app?demo=true" class="demo-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+      Try Demo Dashboard while you wait
+    </a>
+  </div>
+
   <p class="support fi2">
     Payment verified within 24 hours &nbsp;·&nbsp;
     Questions? <a href="mailto:support@quantichy.com">support@quantichy.com</a>
   </p>
 
 </div>
+</div><!-- /pay-page -->
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script>
 const WALLET = '0x0000000000000000000000000000000000000000'; /* ← Replace with your USDT BEP-20 address */
 
@@ -328,13 +392,42 @@ badge.style.background = plan.badge;
 badge.style.color      = plan.text;
 document.title         = 'Quantichy — Pay for ' + plan.name;
 
-document.getElementById('pay-amount').textContent  = '$' + plan.price;
-document.getElementById('pay-period').textContent  = plan.period;
-document.getElementById('inline-amt').textContent  = '$' + plan.price;
-document.getElementById('wallet-addr').textContent = WALLET;
-document.getElementById('qr-code').src =
-  'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' +
-  encodeURIComponent(WALLET) + '&bgcolor=ffffff&color=0F172A&margin=6';
+/* Firebase auth — redirect to login if not signed in */
+const FB = {
+  apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
+  authDomain: "quant-dashboard-1405b.firebaseapp.com",
+  projectId: "quant-dashboard-1405b"
+};
+firebase.initializeApp(FB);
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    document.getElementById('pay-loading').style.display = 'none';
+    document.getElementById('pay-page').style.display = 'block';
+    document.getElementById('user-email-display').textContent = user.email || user.displayName;
+    initPaymentView();
+  } else {
+    /* Not logged in — redirect to login, come back after auth */
+    var returnUrl = '/pay' + (k ? '?plan=' + encodeURIComponent(k) : '');
+    window.location.href = '/app?redirect=' + encodeURIComponent(returnUrl);
+  }
+});
+
+function initPaymentView() {
+  document.getElementById('pay-amount').textContent  = '$' + plan.price;
+  document.getElementById('pay-period').textContent  = plan.period;
+  document.getElementById('inline-amt').textContent  = '$' + plan.price;
+  document.getElementById('wallet-addr').textContent = WALLET;
+  document.getElementById('qr-code').src =
+    'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' +
+    encodeURIComponent(WALLET) + '&bgcolor=ffffff&color=0F172A&margin=6';
+}
+
+function doSignOut() {
+  firebase.auth().signOut().then(function() {
+    var returnUrl = '/pay' + (k ? '?plan=' + encodeURIComponent(k) : '');
+    window.location.href = '/app?redirect=' + encodeURIComponent(returnUrl);
+  });
+}
 
 function copyAddr() {
   navigator.clipboard.writeText(WALLET).then(function () {
