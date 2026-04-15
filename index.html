@@ -13,17 +13,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quantichy</title>
-<!-- PWA -->
-<link rel="manifest" href="/manifest.json?v=2">
+<link rel="manifest" href="/manifest.json?v=3">
 <meta name="theme-color" content="#0F172A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Quantichy">
-<link rel="apple-touch-icon" href="https://quantichy.com/apple-touch-icon.png">
-<link rel="apple-touch-icon-precomposed" href="https://quantichy.com/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=final">
-<link rel="icon" type="image/svg+xml" href="/logo-icon.svg?v=final">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3">
+<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon.png?v=3">
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png?v=3">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=3">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg?v=3">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
@@ -918,8 +919,10 @@ let _db = null, _posRef = null, _posUnsubscribe = null, _firestoreUid = null;
 let currentUser = null;
 let _authTab = 'signin';
 
-/* ══ DEMO MODE ══ */
-const DEMO_MODE = new URLSearchParams(window.location.search).has('demo');
+/* ══ URL PARAMS ══ */
+const _urlParams = new URLSearchParams(window.location.search);
+const DEMO_MODE = _urlParams.has('demo');
+const _pendingPlan = _urlParams.get('plan'); /* pro | quant — redirect to /pay after auth */
 const DEMO_POSITIONS = (function(){
   const now = new Date();
   const fmt = d => ({ date:d.toLocaleDateString("en-US",{month:"short",day:"numeric"}), time:d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false}) });
@@ -993,6 +996,11 @@ function initAuth(){
           _hideSplash();
         } else {
           /* Verified (or Google/Phone sign-in) — grant full access */
+          if(_pendingPlan){
+            /* User came from pricing → redirect to payment after auth */
+            window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
+            return;
+          }
           _hideAuthScreen();
           initFirestoreForUser(user.uid);
           _hideSplash();
@@ -1001,6 +1009,8 @@ function initAuth(){
         currentUser = null;
         _posRef = null;
         _showAuthScreen();
+        /* Default to Register tab when arriving from pricing */
+        if(_pendingPlan) setTimeout(()=> authSwitchTab('register'), 50);
         _hideSplash();
       }
     });
@@ -1171,7 +1181,11 @@ window.authCheckVerified = async function(){
   try{
     await firebase.auth().currentUser.reload();
     if(firebase.auth().currentUser.emailVerified){
-      /* Verification confirmed — proceed to dashboard */
+      /* Verification confirmed — redirect to payment if plan pending */
+      if(_pendingPlan){
+        window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
+        return;
+      }
       _hideAuthScreen();
       initFirestoreForUser(firebase.auth().currentUser.uid);
     } else {
@@ -1187,6 +1201,10 @@ window.authCheckVerified = async function(){
 };
 
 window.authSkipVerification = function(){
+  if(_pendingPlan){
+    window.location.href = '/pay?plan=' + encodeURIComponent(_pendingPlan);
+    return;
+  }
   _hideAuthScreen();
   initFirestoreForUser(firebase.auth().currentUser.uid);
 };
