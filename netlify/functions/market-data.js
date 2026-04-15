@@ -10,13 +10,18 @@ exports.handler = async (event) => {
   try {
     // Mode 1: Batch prices for the entire dashboard (from Binance)
     if (type === 'prices') {
+      console.log('[market-data] Fetching prices from Binance...');
       const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+      console.log('[market-data] Binance response status:', response.status);
+
       if (!response.ok) throw new Error(`Binance API Error: ${response.status}`);
-      
+
       const data = await response.json();
-      
+      console.log('[market-data] Got', data.length, 'symbols from Binance');
+
       // Filter for USDT pairs to keep payload lean
       const filtered = data.filter(i => i.symbol.endsWith('USDT'));
+      console.log('[market-data] Filtered to', filtered.length, 'USDT pairs');
       
       return {
         statusCode: 200,
