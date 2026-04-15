@@ -106,6 +106,14 @@
                 padding: 1.25rem !important;
             }
         }
+
+        /* Override styles.css: .reveal must never stay hidden.
+           styles.css sets opacity:0 on .reveal but the observer
+           can silently fail — this guarantees content is always visible. */
+        .reveal {
+            opacity: 1 !important;
+            transform: none !important;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -181,7 +189,7 @@
     </nav>
 
     <section id="hero" class="pt-32 pb-16 lg:pt-48 lg:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col lg:flex-row items-center relative z-10">
-        <div class="lg:w-1/2 reveal">
+        <div class="lg:w-1/2">
             <h1 data-i18n="hero_title" class="text-3xl sm:text-5xl lg:text-7xl font-black leading-tight tracking-tighter mb-6 text-slate-900">
                 Institutional crypto analysis,<br> <span class="text-navy">democratized.</span>
             </h1>
@@ -194,7 +202,7 @@
             </div>
         </div>
         
-        <div class="lg:w-1/2 mt-16 lg:mt-0 relative reveal" style="transition-delay: 0.2s;">
+        <div class="lg:w-1/2 mt-16 lg:mt-0 relative" style="transition-delay: 0.2s;">
             <div class="relative w-full max-w-md mx-auto animate-float">
                 <div class="absolute inset-0 bg-sky-100 rounded-3xl transform rotate-3 scale-105 shadow-2xl opacity-70"></div>
                 <div class="relative bg-white rounded-3xl shadow-xl border border-white p-6 overflow-hidden">
