@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantichy — Admin Panel</title>
+<meta name="theme-color" content="#0F172A">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@600;700;800;900&display=swap');
+:root {
+  --navy: #001f5c;
+  --dark: #0F172A;
+  --fh: 'Montserrat', sans-serif;
+  --fb: 'Inter', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--fb); background: #F1F5F9; min-height: 100vh; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 20px; }
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px; background: white; border-radius: 12px; border: 1px solid #E2E8F0;
+  margin-bottom: 20px;
+}
+.header h1 { font-family: var(--fh); font-size: 20px; color: var(--dark); }
+.header button {
+  padding: 8px 14px; border-radius: 8px; border: 1px solid #E2E8F0;
+  background: white; color: #64748B; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--fb); transition: all .15s;
+}
+.header button:hover { background: #F8FAFC; border-color: #CBD5E1; }
+
+.auth-box {
+  background: white; border-radius: 12px; border: 1px solid #E2E8F0;
+  padding: 24px; margin-bottom: 20px; max-width: 400px;
+}
+.auth-box h2 { font-family: var(--fh); font-size: 16px; margin-bottom: 16px; color: var(--dark); }
+.auth-box input {
+  width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #E2E8F0;
+  border-radius: 8px; font-size: 13px; font-family: var(--fb);
+}
+.auth-box button {
+  width: 100%; padding: 12px; background: var(--navy); color: white;
+  border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: var(--fb);
+}
+.auth-box button:hover { opacity: .9; }
+.error { color: #DC2626; font-size: 12px; margin-bottom: 12px; }
+
+.payments-list { background: white; border-radius: 12px; border: 1px solid #E2E8F0; overflow: hidden; }
+.payment-row {
+  display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr; gap: 16px; padding: 14px 18px;
+  border-bottom: 1px solid #F1F5F9; align-items: center;
+}
+.payment-row:last-child { border-bottom: none; }
+.payment-header { background: #F8FAFC; font-weight: 700; font-size: 12px; color: #64748B; text-transform: uppercase; letter-spacing: .05em; }
+.payment-email { font-family: 'Space Mono', monospace; font-size: 11px; color: #334155; word-break: break-all; }
+.payment-plan { font-weight: 600; color: var(--dark); }
+.payment-amount { color: #64748B; font-size: 13px; }
+.btn-approve {
+  padding: 6px 12px; border-radius: 6px; border: none;
+  background: #10B981; color: white; font-size: 11px; font-weight: 700;
+  cursor: pointer; font-family: var(--fb); transition: all .15s;
+}
+.btn-approve:hover { background: #059669; }
+.btn-approve:disabled { background: #D1FAE5; cursor: not-allowed; }
+
+.loading, .empty, .error-msg {
+  padding: 20px; text-align: center; color: #64748B; font-size: 13px;
+}
+.loading { color: #94A3B8; }
+.empty { color: #10B981; }
+.error-msg { color: #DC2626; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; }
+
+.success-badge {
+  display: inline-block; padding: 4px 8px; background: #F0FDF4; color: #15803D;
+  border-radius: 4px; font-size: 11px; font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .payment-row { grid-template-columns: 1fr; }
+  .payment-header { display: none; }
+  .payment-row::before { content: attr(data-label); font-weight: 700; font-size: 11px; color: #64748B; display: block; margin-bottom: 4px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Auth section -->
+  <div id="auth-section" style="display:none">
+    <div class="auth-box">
+      <h2>Admin Sign In</h2>
+      <div id="auth-error" class="error"></div>
+      <input type="email" id="admin-email" placeholder="Email">
+      <input type="password" id="admin-password" placeholder="Password">
+      <button onclick="adminSignIn()">Sign In</button>
+    </div>
+  </div>
+
+  <!-- Admin section -->
+  <div id="admin-section" style="display:none">
+    <div class="header">
+      <h1>⚙️ Payment Approvals</h1>
+      <button onclick="adminSignOut()">Sign Out</button>
+    </div>
+
+    <div id="payments-container">
+      <div class="loading">Loading payments...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const FB = {
+  apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
+  authDomain: "quant-dashboard-1405b.firebaseapp.com",
+  projectId: "quant-dashboard-1405b"
+};
+firebase.initializeApp(FB);
+
+let _adminUser = null;
+let _db = null;
+
+/* Check auth on load */
+firebase.auth().onAuthStateChanged(user => {
+  if(user) {
+    _adminUser = user;
+    _db = firebase.firestore();
+    showAdminSection();
+    loadPayments();
+  } else {
+    _adminUser = null;
+    showAuthSection();
+  }
+});
+
+function showAuthSection() {
+  document.getElementById('auth-section').style.display = 'block';
+  document.getElementById('admin-section').style.display = 'none';
+}
+
+function showAdminSection() {
+  document.getElementById('auth-section').style.display = 'none';
+  document.getElementById('admin-section').style.display = 'block';
+}
+
+window.adminSignIn = async function() {
+  const email = document.getElementById('admin-email').value.trim();
+  const password = document.getElementById('admin-password').value.trim();
+  const errEl = document.getElementById('auth-error');
+
+  if(!email || !password) {
+    errEl.textContent = 'Please enter email and password.';
+    return;
+  }
+
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+  } catch(e) {
+    errEl.textContent = 'Sign in failed: ' + (e.message || 'Unknown error');
+  }
+};
+
+window.adminSignOut = async function() {
+  try {
+    await firebase.auth().signOut();
+  } catch(e) {
+    console.error('Sign out error:', e);
+  }
+};
+
+function loadPayments() {
+  const container = document.getElementById('payments-container');
+  container.innerHTML = '<div class="loading">Loading payments...</div>';
+
+  _db.collection('payments')
+    .where('status', '==', 'pending')
+    .orderBy('timestamp', 'desc')
+    .onSnapshot(snap => {
+      if(snap.empty) {
+        container.innerHTML = '<div class="empty">✓ No pending payments</div>';
+        return;
+      }
+
+      let html = '<div class="payments-list">'
+        + '<div class="payment-row payment-header">'
+        + '<div>Email</div><div>Plan</div><div>Amount</div><div>Action</div>'
+        + '</div>';
+
+      snap.forEach(doc => {
+        const data = doc.data();
+        html += '<div class="payment-row" data-uid="' + data.uid + '">'
+          + '<div class="payment-email">' + (data.email || '(no email)') + '</div>'
+          + '<div class="payment-plan">' + (data.planName || data.plan || '?') + '</div>'
+          + '<div class="payment-amount">$' + (data.amount || '0') + '</div>'
+          + '<div><button class="btn-approve" onclick="approvePayment(\'' + data.uid + '\', this)">Approve</button></div>'
+          + '</div>';
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+    }, err => {
+      container.innerHTML = '<div class="error-msg">Error loading payments: ' + err.message + '</div>';
+    });
+}
+
+window.approvePayment = async function(uid, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Approving…';
+
+  try {
+    const batch = _db.batch();
+
+    /* Get the payment doc to get plan info */
+    const payDoc = await _db.collection('payments').doc(uid).get();
+    const payData = payDoc.data();
+
+    /* Update user plan */
+    const userRef = _db.collection('users').doc(uid);
+    batch.update(userRef, { plan: payData.plan });
+
+    /* Mark payment as approved */
+    const payRef = _db.collection('payments').doc(uid);
+    batch.update(payRef, {
+      status: 'approved',
+      approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      approvedBy: _adminUser.email
+    });
+
+    await batch.commit();
+
+    btn.innerHTML = '✓ Approved';
+    btn.style.background = '#D1FAE5';
+    btn.style.color = '#15803D';
+    btn.style.cursor = 'default';
+
+  } catch(err) {
+    console.error('Approval error:', err);
+    btn.disabled = false;
+    btn.textContent = 'Approve';
+    alert('Error: ' + err.message);
+  }
+};
+</script>
+
+</body>
+</html>

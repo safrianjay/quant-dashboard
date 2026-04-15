@@ -579,7 +579,10 @@ p,span,div,input,button{
           <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
         </div>
         <div class="user-info-text" style="flex:1;min-width:0">
-          <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;line-height:1.2">—</div>
+          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+            <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;line-height:1.2">—</div>
+            <span id="sb-plan-badge" style="display:none;font-family:var(--font-heading);font-size:9px;font-weight:800;padding:2px 6px;border-radius:100px;background:#001f5c;color:white;text-transform:uppercase;letter-spacing:.06em;line-height:1.4"></span>
+          </div>
           <div id="sb-user-email" style="font-family:var(--font-body);font-size:10px;color:#94A3B8;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Not signed in</div>
         </div>
         <div style="width:6px;height:6px;border-radius:50%;background:#10B981;flex-shrink:0"></div>
@@ -915,7 +918,7 @@ const _fbConfig = {
   messagingSenderId: "1013979996177",
   appId: "1:1013979996177:web:7274da6d71ef702e3011b0"
 };
-let _db = null, _posRef = null, _posUnsubscribe = null, _firestoreUid = null;
+let _db = null, _posRef = null, _posUnsubscribe = null, _firestoreUid = null, _planUnsubscribe = null;
 let currentUser = null;
 let _authTab = 'signin';
 
@@ -964,6 +967,7 @@ function initFirestoreForUser(uid){
     _db = firebase.firestore();
     _posRef = _db.collection('users').doc(uid).collection('data').doc('positions');
     if(_posUnsubscribe) _posUnsubscribe();
+    if(_planUnsubscribe) _planUnsubscribe();
 
     /* Only clear positions when switching to a different user account.
        On same-user page refresh, keep existing data until snapshot arrives. */
@@ -974,10 +978,29 @@ function initFirestoreForUser(uid){
     }
     _firestoreUid = uid;
 
+    /* Listen for position changes */
     _posUnsubscribe = _posRef.onSnapshot(doc => {
       positions = (doc && doc.exists) ? (doc.data().list || []) : [];
       renderPositions(); renderPerfChart();
     }, err => console.error('Firestore listen:', err));
+
+    /* Listen for plan changes — updates badge in real-time when admin approves */
+    _planUnsubscribe = _db.collection('users').doc(uid).onSnapshot(doc => {
+      const data   = (doc && doc.exists) ? doc.data() : {};
+      const plan   = data.plan || 'free';
+      const badge  = document.getElementById('sb-plan-badge');
+      if(!badge) return;
+      if(plan === 'pro' || plan === 'quant'){
+        const label = plan === 'quant' ? 'Quant' : 'Pro';
+        const bg    = plan === 'quant' ? '#0F172A' : '#001f5c';
+        badge.textContent  = label;
+        badge.style.background = bg;
+        badge.style.display    = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+    }, err => console.error('Plan listen:', err));
+
   } catch(e){
     console.error('Firestore init:', e);
   }
@@ -1115,6 +1138,7 @@ window.doSignOut = async function(){
   if(DEMO_MODE){ window.location.href='/app'; return; }
   try{
     if(_posUnsubscribe){ _posUnsubscribe(); _posUnsubscribe=null; }
+    if(_planUnsubscribe){ _planUnsubscribe(); _planUnsubscribe=null; }
     _posRef = null;
     positions = [];
     try{ localStorage.removeItem('vf_positions'); }catch(_){}
