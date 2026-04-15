@@ -1,7 +1,6 @@
-const fetch = require('node-fetch');
-
 /**
  * Netlify Function: market-data
+ * Uses Node 18+ native fetch — no external dependencies needed.
  * Proxies market data from Binance and CoinGecko to bypass browser-side CORS and rate limits.
  */
 exports.handler = async (event) => {
