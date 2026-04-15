@@ -4,7 +4,8 @@
  * Proxies market data from Binance and CoinGecko to bypass browser-side CORS and rate limits.
  */
 exports.handler = async (event) => {
-  const { type, id } = event.queryStringParameters;
+  const params = event.queryStringParameters || {};
+  const { type, id } = params;
 
   try {
     // Mode 1: Batch prices for the entire dashboard (from Binance)
@@ -19,7 +20,10 @@ exports.handler = async (event) => {
       
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify(filtered)
       };
     }
@@ -32,7 +36,10 @@ exports.handler = async (event) => {
       const data = await response.json();
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify(data)
       };
     }
@@ -46,13 +53,20 @@ exports.handler = async (event) => {
       const data = await response.json();
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify(data)
       };
     }
 
     return {
       statusCode: 400,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ error: 'Invalid type or missing parameters' })
     };
 
@@ -60,6 +74,10 @@ exports.handler = async (event) => {
     console.error('Market Data Proxy Error:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ error: error.message })
     };
   }
