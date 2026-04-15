@@ -1910,7 +1910,7 @@ function _startBinanceWs(){
 function _tvSymbol(sym){ return 'BINANCE:' + sym.replace('-', ''); }
 
 let _lastMarketFetch = 0;
-const _MARKET_THROTTLE = 10000; /* 10s — OKX allows frequent polling */
+const _MARKET_THROTTLE = 5000; /* 5s — increased polling since WebSocket is blocked */
 
 async function fetchAllMarketPrices(){
   const now = Date.now();
@@ -2356,7 +2356,8 @@ async function refreshAllCoins(){
 }
 
 /* ══ FETCH LIVE DATA ON PAGE LOAD ══ */
-_startBinanceWs();
+/* Binance WebSocket is blocked by browsers — use polling instead */
+// _startBinanceWs();
 fetchLiveData();
 
 /* ══ AUTO-REFRESH every 10s (display) / 30s (API) ══ */
@@ -2374,6 +2375,7 @@ fetchLiveData();
     if(countdown <= 0){
       countdown = INTERVAL;
       refreshAllCoins();
+      fetchAllMarketPrices(); /* Fetch latest prices from CoinGecko via Netlify */
     }
   }
 
