@@ -251,9 +251,9 @@ window.approvePayment = async function(uid, btn) {
     const payDoc = await _db.collection('payments').doc(uid).get();
     const payData = payDoc.data();
 
-    /* Update user plan */
+    /* Update user plan — use set+merge so it works even if user doc doesn't exist yet */
     const userRef = _db.collection('users').doc(uid);
-    batch.update(userRef, { plan: payData.plan });
+    batch.set(userRef, { plan: payData.plan, email: payData.email }, { merge: true });
 
     /* Mark payment as approved */
     const payRef = _db.collection('payments').doc(uid);
@@ -303,9 +303,9 @@ window.rejectPayment = async function(uid, btn) {
   try {
     const batch = _db.batch();
 
-    /* Clear user plan — back to free */
+    /* Clear user plan — back to free, use set+merge in case doc doesn't exist */
     const userRef = _db.collection('users').doc(uid);
-    batch.update(userRef, { plan: 'free' });
+    batch.set(userRef, { plan: 'free' }, { merge: true });
 
     /* Mark payment as unpaid */
     const payRef = _db.collection('payments').doc(uid);
