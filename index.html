@@ -262,19 +262,20 @@ p,span,div,input,button{
   .cd-stats-toggle {
     display: block;
     width: 100%;
-    margin-top: 8px;
-    padding: 7px;
-    background: #F8FAFC;
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
+    margin-top: 4px;
+    padding: 6px 0;
+    background: none;
+    border: none;
     font-size: 11px;
-    font-weight: 700;
-    color: #64748B;
+    font-weight: 600;
+    color: #94A3B8;
     font-family: var(--font-body);
     cursor: pointer;
-    transition: background .15s;
+    transition: color .15s;
+    text-align: center;
+    letter-spacing: .02em;
   }
-  .cd-stats-toggle:hover { background: #F1F5F9; }
+  .cd-stats-toggle:hover { color: #64748B; }
 }
 @media(max-width:480px){
   /* KPI stays 2-col but smaller padding */
@@ -1675,7 +1676,7 @@ async function _cdLoadData(cgId, sym){
             <span style="font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-mono)">${val}</span>
           </div>`).join('<div style="height:1px;background:#F8FAFC"></div>')
       }</div>
-      <button id="cd-stats-toggle" class="cd-stats-toggle" onclick="toggleCDStats()">Show More ↓</button>`;
+      <button id="cd-stats-toggle" class="cd-stats-toggle" onclick="toggleCDStats()">More details ▾</button>`;
 
     /* Price stats (right panel) */
     const ath = md.ath?.usd, atl = md.atl?.usd;
@@ -1756,7 +1757,7 @@ function toggleCDStats(){
   const btn  = document.getElementById('cd-stats-toggle');
   if(!list || !btn) return;
   const expanded = list.classList.toggle('expanded');
-  btn.textContent = expanded ? 'Show Less ↑' : 'Show More ↓';
+  btn.textContent = expanded ? 'Less details ▴' : 'More details ▾';
 }
 
 function _cdLoadSentiment(sym){
