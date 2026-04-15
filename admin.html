@@ -226,7 +226,10 @@ function loadPayments() {
           + '<div class="payment-email">' + (data.email || '(no email)') + '</div>'
           + '<div class="payment-plan">' + (data.planName || data.plan || '?') + '</div>'
           + '<div class="payment-amount">$' + (data.amount || '0') + '</div>'
-          + '<div><button class="btn-approve" onclick="approvePayment(\'' + data.uid + '\', this)">Approve</button></div>'
+          + '<div style="display:flex;gap:6px">'
+          + '<button class="btn-approve" onclick="approvePayment(\'' + data.uid + '\', this)">Approve</button>'
+          + '<button style="padding:6px 10px;border-radius:6px;border:1px solid #FECACA;background:#FEF2F2;color:#DC2626;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fb);transition:all .15s" onmouseover="this.style.background=\'#FECACA\';this.style.color=\'white\'" onmouseout="this.style.background=\'#FEF2F2\';this.style.color=\'#DC2626\'" onclick="rejectPayment(\'' + data.uid + '\', this)">Unpaid</button>'
+          + '</div>'
           + '</div>';
       });
 
@@ -271,6 +274,42 @@ window.approvePayment = async function(uid, btn) {
     console.error('Approval error:', err);
     btn.disabled = false;
     btn.textContent = 'Approve';
+    alert('Error: ' + err.message);
+  }
+};
+
+window.rejectPayment = async function(uid, btn) {
+  if (!confirm('Mark this payment as unpaid? User will need to pay again.')) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Rejecting…';
+
+  try {
+    const batch = _db.batch();
+
+    /* Clear user plan — back to free */
+    const userRef = _db.collection('users').doc(uid);
+    batch.update(userRef, { plan: 'free' });
+
+    /* Mark payment as unpaid */
+    const payRef = _db.collection('payments').doc(uid);
+    batch.update(payRef, {
+      status: 'unpaid',
+      rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      rejectedBy: _adminUser.email
+    });
+
+    await batch.commit();
+
+    btn.innerHTML = '✗ Unpaid';
+    btn.style.background = '#FEF2F2';
+    btn.style.color = '#DC2626';
+    btn.style.cursor = 'default';
+
+  } catch(err) {
+    console.error('Rejection error:', err);
+    btn.disabled = false;
+    btn.textContent = 'Unpaid';
     alert('Error: ' + err.message);
   }
 };

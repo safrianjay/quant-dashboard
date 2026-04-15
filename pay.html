@@ -417,6 +417,21 @@ firebase.auth().onAuthStateChanged(function(user) {
     document.getElementById('nav-email').textContent = user.email || user.displayName;
     navUser.style.display = 'flex';
     initPaymentView();
+
+    /* Listen for plan approval — auto-redirect to dashboard when admin approves */
+    _db.collection('users').doc(user.uid).onSnapshot(function(doc) {
+      if (doc.exists) {
+        var data = doc.data();
+        var plan = data.plan;
+        /* If plan is set to anything other than "free", user is approved */
+        if (plan && plan !== 'free') {
+          /* Redirect to dashboard after 2 seconds to show "thank you" message */
+          setTimeout(function() {
+            window.location.href = '/app';
+          }, 2000);
+        }
+      }
+    });
   } else {
     /* Not logged in — redirect to login, come back after auth */
     var returnUrl = '/pay' + (k ? '?plan=' + encodeURIComponent(k) : '');
