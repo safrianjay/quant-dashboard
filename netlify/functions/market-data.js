@@ -8,32 +8,45 @@ exports.handler = async (event) => {
   const { type, id } = params;
 
   try {
-    // Mode 1: Batch prices for the entire dashboard (from Binance)
+    // Mode 1: Batch prices for the entire dashboard (from CoinGecko)
     if (type === 'prices') {
-      console.log('[market-data] Fetching prices from Binance...');
-      const response = await fetch('https://api.binance.com/api/v3/ticker/24hr', {
-        headers: {
-          'User-Agent': 'Quantichy-Dashboard/1.0'
+      console.log('[market-data] Fetching prices from CoinGecko...');
+      // Get top 100 cryptos with prices - CoinGecko doesn't block Netlify IPs
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false',
+        {
+          headers: {
+            'User-Agent': 'Quantichy-Dashboard/1.0'
+          }
         }
-      });
-      console.log('[market-data] Binance response status:', response.status);
+      );
+      console.log('[market-data] CoinGecko response status:', response.status);
 
-      if (!response.ok) throw new Error(`Binance API Error: ${response.status}`);
+      if (!response.ok) throw new Error(`CoinGecko API Error: ${response.status}`);
 
       const data = await response.json();
-      console.log('[market-data] Got', data.length, 'symbols from Binance');
+      console.log('[market-data] Got', data.length, 'coins from CoinGecko');
 
-      // Filter for USDT pairs to keep payload lean
-      const filtered = data.filter(i => i.symbol.endsWith('USDT'));
-      console.log('[market-data] Filtered to', filtered.length, 'USDT pairs');
-      
+      // Transform CoinGecko format to match dashboard expectations (Binance-like format)
+      const transformed = data.map(coin => ({
+        symbol: (coin.symbol || '').toUpperCase() + 'USDT',
+        name: coin.name,
+        lastPrice: coin.current_price ? coin.current_price.toString() : '0',
+        highPrice: coin.high_24h ? coin.high_24h.toString() : '0',
+        lowPrice: coin.low_24h ? coin.low_24h.toString() : '0',
+        priceChangePercent: (coin.price_change_percentage_24h || 0).toString(),
+        quoteVolume: coin.total_volume ? coin.total_volume.toString() : '0'
+      }));
+
+      console.log('[market-data] Transformed to', transformed.length, 'coins');
+
       return {
         statusCode: 200,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify(filtered)
+        body: JSON.stringify(transformed)
       };
     }
 
