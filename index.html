@@ -579,10 +579,8 @@ p,span,div,input,button{
           <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
         </div>
         <div class="user-info-text" style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
-            <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;line-height:1.2">—</div>
-            <span id="sb-plan-badge" style="display:none;font-family:var(--font-heading);font-size:9px;font-weight:800;padding:2px 6px;border-radius:100px;background:#001f5c;color:white;text-transform:uppercase;letter-spacing:.06em;line-height:1.4"></span>
-          </div>
+          <span id="sb-plan-badge" style="display:none;font-family:var(--font-heading);font-size:8px;font-weight:800;padding:2px 7px;border-radius:100px;background:linear-gradient(135deg,#B8860B,#FFD700);color:#3B1F00;text-transform:uppercase;letter-spacing:.08em;line-height:1.5;margin-bottom:2px;box-shadow:0 1px 4px rgba(184,134,11,.35)"></span>
+          <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;line-height:1.2">—</div>
           <div id="sb-user-email" style="font-family:var(--font-body);font-size:10px;color:#94A3B8;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Not signed in</div>
         </div>
         <div style="width:6px;height:6px;border-radius:50%;background:#10B981;flex-shrink:0"></div>
@@ -992,10 +990,11 @@ function initFirestoreForUser(uid){
       if(!badge) return;
       if(plan === 'pro' || plan === 'quant'){
         const label = plan === 'quant' ? 'Quant' : 'Pro';
-        const bg    = plan === 'quant' ? '#0F172A' : '#001f5c';
-        badge.textContent  = label;
-        badge.style.background = bg;
-        badge.style.display    = 'inline';
+        badge.textContent = label;
+        badge.style.display = 'inline-block';
+        /* Gold gradient for both plans */
+        badge.style.background = 'linear-gradient(135deg,#B8860B,#FFD700)';
+        badge.style.color = '#3B1F00';
       } else {
         badge.style.display = 'none';
       }
