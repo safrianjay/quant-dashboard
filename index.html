@@ -2316,9 +2316,7 @@ async function _cdLoadData(cgId, sym, requestToken){
       if(d.market_cap_rank) document.getElementById('cd-rank').textContent = '#' + d.market_cap_rank;
     }
 
-    const res = await fetch('/.netlify/functions/cg?type=coin&id=' + encodeURIComponent(cgId));
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const d = await res.json();
+    const d = await _cgFetchThrottled('/.netlify/functions/cg?type=coin&id=' + encodeURIComponent(cgId));
     _writeClientCache(`q_coin_detail_${cgId}`, d);
     if(!isActiveView()) return;
     const md = d.market_data || {};
@@ -3896,9 +3894,7 @@ async function loadMarketOverview(force=false){
   _marketOverviewLoading = true;
   _renderMarketOverviewLoading();
   try {
-    const res = await fetch(_cgUrl('market', { ids: _MARKET_OVERVIEW_IDS.join(',') }));
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
+    const data = await _cgFetchThrottled(_cgUrl('market', { ids: _MARKET_OVERVIEW_IDS.join(',') }));
     if(Array.isArray(data) && data.length){
       _marketOverviewSnapshot = data;
       _marketOverviewUpdatedAt = Date.now();
@@ -4130,13 +4126,37 @@ window.selectMarket = async function(sym, base, name){
       newPrice = cached.price; newHigh = cached.high; newLow = cached.low;
       newChgPct = cached.chg; newVol = cached.vol;
     } else {
-      const mktRes = await fetch(_cgUrl('market', { ids: cgId }));
-      if(!mktRes.ok) throw new Error(`Markets API ${mktRes.status}`);
-      const mktJson = await mktRes.json();
-      if(!Array.isArray(mktJson) || !mktJson[0]) throw new Error('Empty market data');
-      const [mkt] = mktJson;
-      newPrice = mkt.current_price; newHigh = mkt.high_24h; newLow = mkt.low_24h;
-      newChgPct = mkt.price_change_percentage_24h; newVol = mkt.total_volume;
+      /* Try CoinGecko market API (throttled), with multiple fallback layers */
+      let mktLoaded = false;
+      try {
+        const mktData = await _cgFetchThrottled(_cgUrl('market', { ids: cgId }));
+        if(Array.isArray(mktData) && mktData[0]) {
+          const mkt = mktData[0];
+          newPrice = mkt.current_price; newHigh = mkt.high_24h; newLow = mkt.low_24h;
+          newChgPct = mkt.price_change_percentage_24h; newVol = mkt.total_volume;
+          _updatePrice(sym, { price:newPrice, high:newHigh, low:newLow, chg:newChgPct, vol:newVol }, false);
+          mktLoaded = true;
+        }
+      } catch(_) { /* will try fallbacks below */ }
+
+      if(!mktLoaded) {
+        /* Fallback 1: derive from chart closes if available */
+        if(closes?.length >= 2) {
+          newPrice = closes[closes.length - 1];
+          newHigh = Math.max(...closes.slice(-24));
+          newLow = Math.min(...closes.slice(-24));
+          newChgPct = ((closes[closes.length-1] / closes[closes.length-2]) - 1) * 100;
+          newVol = 0;
+          console.warn(`[selectMarket] Using chart-derived price for ${base} ($${newPrice.toFixed(2)})`);
+        /* Fallback 2: any cached price at all */
+        } else if(cached?.price) {
+          newPrice = cached.price; newHigh = cached.high || cached.price;
+          newLow = cached.low || cached.price; newChgPct = cached.chg || 0;
+          newVol = cached.vol || 0;
+        } else {
+          throw new Error('No price data available — try again in a moment');
+        }
+      }
     }
     const newChg = (newChgPct>=0?'+':'')+newChgPct.toFixed(2);
 
