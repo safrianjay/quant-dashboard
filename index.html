@@ -1259,15 +1259,21 @@ function _hideSplash(){
 
 function _handleCoinHash(){
   try{
+    /* Check URL hash first (from /coin redirect), then sessionStorage (page reload) */
+    let data = null;
     const h = window.location.hash;
-    if(!h || !h.startsWith('#coin=')) return;
-    const data = JSON.parse(decodeURIComponent(h.slice(6)));
-    if(!data.sym || !data.cgId || !data.name) return;
+    if(h && h.startsWith('#coin=')){
+      data = JSON.parse(decodeURIComponent(h.slice(6)));
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    } else {
+      const saved = sessionStorage.getItem('q_coin_detail');
+      if(saved) data = JSON.parse(saved);
+    }
+    if(!data || !data.sym || !data.cgId || !data.name) return;
     const mkt = MARKET_LIST.find(m => m.base === data.sym) || {};
-    const grad = mkt.grad || 'linear-gradient(135deg,#64748B,#94A3B8)';
-    const letter = mkt.letter || data.sym[0];
+    const grad = data.grad || mkt.grad || 'linear-gradient(135deg,#64748B,#94A3B8)';
+    const letter = data.letter || mkt.letter || data.sym[0];
     const tvSym = data.tvSym || (mkt.tvSym || 'BINANCE:' + data.sym + 'USDT');
-    history.replaceState(null, '', window.location.pathname + window.location.search);
     setTimeout(()=> openCoinDetail(data.sym, data.cgId, data.name, grad, letter, tvSym), 300);
   }catch(_){}
 }
@@ -1712,6 +1718,9 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
   }
   _cdSym = sym;
 
+  /* Persist state so page reload stays on coin detail */
+  try{ sessionStorage.setItem('q_coin_detail', JSON.stringify({sym,cgId,name,grad,letter,tvSym})); }catch(_){}
+
   /* Show detail, hide main content + topbar */
   document.querySelector('.topbar').style.display = 'none';
   document.getElementById('main-content').style.display = 'none';
@@ -1772,6 +1781,7 @@ function closeCoinDetail(){
   document.getElementById('coin-detail-view').style.display = 'none';
   document.getElementById('main-content').style.display = 'block';
   _cdSym = null;
+  try{ sessionStorage.removeItem('q_coin_detail'); }catch(_){}
 }
 
 function _fmtNum(n){
