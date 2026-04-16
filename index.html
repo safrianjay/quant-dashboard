@@ -199,7 +199,7 @@ p,span,div,input,button{
 .coin-tldr-list{display:flex;flex-direction:column;gap:14px}
 .coin-tldr-bullet{display:flex;align-items:flex-start;gap:12px}
 .coin-tldr-bullet-icon{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;opacity:.92}
-.coin-tldr-bullet-copy{font-size:13px;line-height:1.62;color:#334155;font-family:var(--font-body);letter-spacing:-.01em}
+.coin-tldr-bullet-copy{font-size:12px;line-height:1.62;color:#334155;font-family:var(--font-body);letter-spacing:-.01em}
 .coin-tldr-emph{color:#365EDC;font-weight:700}
 .coin-tldr-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:20px;padding-top:14px;border-top:1px solid #E5EDF8;font-size:11px;color:#94A3B8;font-family:var(--font-body)}
 .coin-tldr-mini{padding:16px;cursor:pointer;transition:all .18s}
@@ -212,6 +212,7 @@ p,span,div,input,button{
 .coin-tldr-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 16px;border-bottom:1px solid #F1F5F9}
 .coin-tldr-modal-title{font-family:var(--font-heading);font-size:20px;font-weight:800;color:#0F172A;letter-spacing:-.02em}
 .coin-tldr-modal-sub{font-size:11px;color:#64748B;font-family:var(--font-body);margin-top:4px}
+.coin-tldr-sheet-handle{display:none;width:42px;height:4px;border-radius:999px;background:#D8E3F3;margin:12px auto 0;flex-shrink:0}
 .coin-tldr-close{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;border:1px solid #E2E8F0;background:white;color:#64748B;cursor:pointer;transition:all .15s}
 .coin-tldr-close:hover{background:#F8FAFC;border-color:#CBD5E1;color:#0F172A}
 .coin-tldr-modal-body{padding:18px 20px 22px;overflow-y:auto}
@@ -399,9 +400,19 @@ p,span,div,input,button{
   .coin-tldr-side{grid-template-columns:1fr}
   .coin-tldr-title{font-size:17px}
   .coin-tldr-body{padding:18px 16px}
-  .coin-tldr-bullet-copy{font-size:12.5px;line-height:1.58}
+  .coin-tldr-bullet-copy{font-size:12px;line-height:1.58}
   .coin-tldr-subtitle{font-size:10px}
-  .coin-tldr-modal{width:min(94vw,94vw);max-height:88vh}
+  .coin-tldr-modal{
+    top:auto;left:0;right:0;bottom:0;transform:translateY(100%);
+    width:100%;max-width:none;max-height:min(82vh,720px);
+    border-radius:22px 22px 0 0;border-bottom:none;
+    box-shadow:0 -16px 42px rgba(15,23,42,.18)
+  }
+  .coin-tldr-sheet-handle{display:block}
+  .coin-tldr-modal-head{padding:14px 16px 12px}
+  .coin-tldr-modal-title{font-size:18px}
+  .coin-tldr-modal-body{padding:16px 16px 24px}
+  .coin-tldr-entry-card{padding:14px}
   /* Price ladder footer: stack */
   .ladder-footer{grid-template-columns:1fr 1fr!important}
 }
@@ -973,6 +984,7 @@ p,span,div,input,button{
 
     <div id="coin-tldr-overlay" class="coin-tldr-overlay" onclick="if(event.target===this)closeCoinTLDRModal()"></div>
     <div id="coin-tldr-modal" class="coin-tldr-modal">
+      <div class="coin-tldr-sheet-handle" aria-hidden="true"></div>
       <div class="coin-tldr-modal-head">
         <div>
           <div class="coin-tldr-modal-title" id="coin-tldr-modal-title">Coin TLDR</div>
@@ -2153,13 +2165,34 @@ function infoBtn(title, desc){
 }
 
 /* ── Market Cycles Indicators ── */
-async function _cdLoadCycleData(cgId, sym, requestToken){
+const _PERSISTED_CYCLE_CACHE_TTL = 24 * 60 * 60 * 1000;
+
+function _cycleCacheKey(cgId){
+  return `q_cycle_cache_${cgId}`;
+}
+
+function _renderCycleRetryState(cgId, sym, requestToken, message){
+  const grid = document.getElementById('cd-cycles-grid');
+  if(!grid) return;
+  grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:24px;background:white;border:1px dashed #CBD5E1;border-radius:13px">
+    <div style="color:#64748B;font-size:11px;font-family:var(--font-body);margin-bottom:12px">${message}</div>
+    <button onclick="_cdLoadCycleData('${cgId}','${sym}',${requestToken},0)" style="padding:8px 12px;border-radius:10px;border:1px solid #CBD5E1;background:#F8FAFC;color:#0F172A;font-size:11px;font-weight:700;font-family:var(--font-body);cursor:pointer">Retry market cycles</button>
+  </div>`;
+}
+
+async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
   const grid = document.getElementById('cd-cycles-grid');
   const status = document.getElementById('cd-cycle-status');
   if(!grid) return;
   const isActiveView = () => _cdSym === sym && requestToken === _cdRequestToken;
+  const persistedCycle = _readClientCache(_cycleCacheKey(cgId), _PERSISTED_CYCLE_CACHE_TTL);
 
-  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading market cycle data...</div>';
+  if(persistedCycle?.data?.html){
+    grid.innerHTML = persistedCycle.data.html;
+    if(status) status.textContent = `Refreshing cycle data · ${_coinRelativeTime(persistedCycle.data.updatedAt || persistedCycle.ts)}`;
+  } else {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading market cycle data...</div>';
+  }
 
   try {
     /* Fetch 365-day daily chart for MA calculations */
@@ -2433,13 +2466,33 @@ async function _cdLoadCycleData(cgId, sym, requestToken){
     }
 
     grid.innerHTML = html;
+    _writeClientCache(_cycleCacheKey(cgId), { html, updatedAt: Date.now() });
     if(status) status.textContent = 'Updated ' + new Date().toLocaleTimeString();
 
   } catch(err) {
     console.error('Cycle data error:', err);
     if(!isActiveView()) return;
-    if(status) status.textContent = 'Using fallback data';
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#64748B;font-size:11px;font-family:var(--font-body);background:white;border:1px dashed #CBD5E1;border-radius:13px">Market cycle data is temporarily rate-limited. Try again in a moment or reopen this coin detail.</div>';
+    if(persistedCycle?.data?.html){
+      grid.innerHTML = persistedCycle.data.html;
+      if(status) status.textContent = `Showing cached cycle data · ${_coinRelativeTime(persistedCycle.data.updatedAt || persistedCycle.ts)}`;
+      return;
+    }
+    if(err.message === 'HTTP 429' && retryCount < 2){
+      if(status) status.textContent = `Rate limit hit. Retrying${retryCount === 0 ? '' : ' again'}…`;
+      setTimeout(() => {
+        if(isActiveView()) _cdLoadCycleData(cgId, sym, requestToken, retryCount + 1);
+      }, 1200 * (retryCount + 1));
+      return;
+    }
+    if(status) status.textContent = err.message === 'HTTP 429' ? 'Cycle data unavailable right now' : 'Cycle data unavailable';
+    _renderCycleRetryState(
+      cgId,
+      sym,
+      requestToken,
+      err.message === 'HTTP 429'
+        ? 'Market cycle data is temporarily rate-limited, but you can retry without reopening the coin detail.'
+        : 'Market cycle data could not be loaded right now.'
+    );
   }
 }
 
@@ -3521,6 +3574,10 @@ function renderCoinTLDRModal(base){
     </div>`;
 }
 
+function _coinTLDRUsesBottomSheet(){
+  return window.matchMedia('(max-width: 640px)').matches;
+}
+
 function openCoinTLDRModal(base){
   renderCoinTLDRModal(base);
   const overlay = document.getElementById('coin-tldr-overlay');
@@ -3530,7 +3587,9 @@ function openCoinTLDRModal(base){
   modal.style.display = 'flex';
   requestAnimationFrame(() => {
     modal.style.opacity = '1';
-    modal.style.transform = 'translate(-50%,-50%) scale(1)';
+    modal.style.transform = _coinTLDRUsesBottomSheet()
+      ? 'translateY(0)'
+      : 'translate(-50%,-50%) scale(1)';
   });
 }
 
@@ -3554,7 +3613,9 @@ function closeCoinTLDRModal(){
   const modal = document.getElementById('coin-tldr-modal');
   if(!overlay || !modal) return;
   modal.style.opacity = '0';
-  modal.style.transform = 'translate(-50%,-50%) scale(.97)';
+  modal.style.transform = _coinTLDRUsesBottomSheet()
+    ? 'translateY(100%)'
+    : 'translate(-50%,-50%) scale(.97)';
   setTimeout(() => {
     overlay.style.display = 'none';
     modal.style.display = 'none';
