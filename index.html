@@ -639,36 +639,36 @@ p,span,div,input,button{
       </div>
       <span class="auth-title">Quantichy</span>
     </div>
-    <p class="auth-sub">Sign in to sync your trades across all devices</p>
+    <p class="auth-sub" data-i18n="auth_subtitle">Sign in to sync your trades across all devices</p>
 
     <!-- ── Main sign-in / register view ── -->
     <div id="auth-main-view">
       <div class="auth-tabs">
-        <button class="auth-tab active" id="tab-signin" onclick="authSwitchTab('signin')">Sign In</button>
-        <button class="auth-tab" id="tab-register" onclick="authSwitchTab('register')">Register</button>
+        <button class="auth-tab active" id="tab-signin" data-i18n="auth_tab_login" onclick="authSwitchTab('signin')">Sign In</button>
+        <button class="auth-tab" id="tab-register" data-i18n="auth_tab_register" onclick="authSwitchTab('register')">Register</button>
       </div>
 
       <div id="auth-error" class="auth-error"></div>
 
       <div class="auth-field">
-        <label>Email</label>
+        <label data-i18n="auth_email_label">Email</label>
         <input type="email" id="auth-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')authSubmit()">
       </div>
       <div class="auth-field">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <label>Password</label>
-          <button id="auth-fp-link" onclick="authShowForgot()" style="background:none;border:none;cursor:pointer;font-size:11px;font-weight:600;color:#3B82F6;font-family:var(--font-body);padding:0">Forgot password?</button>
+          <label data-i18n="auth_pass_label">Password</label>
+          <button id="auth-fp-link" onclick="authShowForgot()" style="background:none;border:none;cursor:pointer;font-size:11px;font-weight:600;color:#3B82F6;font-family:var(--font-body);padding:0" data-i18n="auth_forgot">Forgot password?</button>
         </div>
         <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')authSubmit()">
       </div>
 
-      <button class="auth-btn" id="auth-submit-btn" onclick="authSubmit()">Sign In</button>
+      <button class="auth-btn" id="auth-submit-btn" data-i18n="auth_login_btn" onclick="authSubmit()">Sign In</button>
 
-      <div class="auth-divider">or</div>
+      <div class="auth-divider" data-i18n="auth_or">or</div>
 
       <button class="auth-google" onclick="authGoogle()">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Continue with Google
+        <span data-i18n="auth_google">Continue with Google</span>
       </button>
     </div>
 
@@ -776,27 +776,35 @@ p,span,div,input,button{
     </button>
   </div>
 
+  <!-- Language switcher -->
+  <div style="padding:8px 12px;border-bottom:1px solid #F1F5F9">
+    <div id="lang-switcher" style="display:flex;align-items:center;border-radius:8px;background:#F1F5F9;padding:3px;gap:2px;cursor:pointer">
+      <button class="lang-btn active" data-lang="en" onclick="_switchLang('en')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 8px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s;background:white;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,.08)">&#x1F1FA;&#x1F1F8; EN</button>
+      <button class="lang-btn" data-lang="id" onclick="_switchLang('id')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 8px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s;background:transparent;color:#64748B">&#x1F1EE;&#x1F1E9; ID</button>
+    </div>
+  </div>
+
   <div style="padding:6px 8px 10px;flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0">
-    <div class="nav-section-label">Analysis</div>
+    <div class="nav-section-label" data-i18n="nav_analysis">Analysis</div>
     <div class="nav-item active" id="nav-market-overview" onclick="switchAppView('overview')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 4-6"/></svg>
-      <span class="nav-item-text">Market Overview</span>
+      <span class="nav-item-text" data-i18n="nav_market_overview">Market Overview</span>
     </div>
     <div class="nav-item" id="nav-live-trade" onclick="switchAppView('trade')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <span class="nav-item-text">Live Trade</span>
+      <span class="nav-item-text" data-i18n="nav_live_trade">Live Trade</span>
     </div>
     <div class="nav-item">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span class="nav-item-text">Session History</span>
+      <span class="nav-item-text" data-i18n="nav_session_history">Session History</span>
     </div>
     <div class="nav-item">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></svg>
-      <span class="nav-item-text">Macro Events</span>
+      <span class="nav-item-text" data-i18n="nav_macro_events">Macro Events</span>
     </div>
     <div class="nav-item">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <span class="nav-item-text">Trade Setups</span>
+      <span class="nav-item-text" data-i18n="nav_trade_setups">Trade Setups</span>
     </div>
 
     <div id="levels-list"></div>
@@ -816,7 +824,7 @@ p,span,div,input,button{
       </div>
       <button onclick="doSignOut()" style="width:100%;margin-top:6px;padding:7px;border-radius:8px;border:1px solid #E2E8F0;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-body);font-size:11px;font-weight:600;color:#64748B;transition:all .15s" onmouseover="this.style.borderColor='#EF4444';this.style.color='#DC2626'" onmouseout="this.style.borderColor='#E2E8F0';this.style.color='#64748B'">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Sign Out
+        <span data-i18n="sign_out">Sign Out</span>
       </button>
     </div>
   </div>
@@ -838,8 +846,8 @@ p,span,div,input,button{
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px;min-width:0">
     <div id="overview-topbar-copy" style="display:none;min-width:0">
-      <div class="topbar-title" style="font-size:16px;font-weight:700;color:#0F172A;line-height:1.2">Market Overview</div>
-      <div id="overview-topbar-sub" style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Breadth, dominance and capital rotation</div>
+      <div class="topbar-title" data-i18n="nav_market_overview" style="font-size:16px;font-weight:700;color:#0F172A;line-height:1.2">Market Overview</div>
+      <div id="overview-topbar-sub" data-i18n="topbar_overview_sub" style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Breadth, dominance and capital rotation</div>
     </div>
     <button onclick="openMarketSelector()" id="market-title-btn" style="min-width:0;text-align:left;background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:10px;transition:background .15s;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
       <div style="min-width:0">
@@ -894,8 +902,8 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px">Fear & Greed Index <span class="info-wrap"><button class="info-btn" onclick="showInfo('Fear &amp; Greed Index','A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).')" type="button">?</button><span class="info-tooltip">A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).</span></span></div>
-                <div class="muted" id="overview-fg-sub">Live breadth pulse from tracked crypto leaders</div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_fear_greed">Fear & Greed Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Fear &amp; Greed Index','A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).')" type="button">?</button><span class="info-tooltip">A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).</span></span></div>
+                <div class="muted" data-i18n="sub_fear_greed" id="overview-fg-sub">Live breadth pulse from tracked crypto leaders</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-fear-greed-card"></div>
@@ -904,8 +912,8 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px">Altcoin Season Index <span class="info-wrap"><button class="info-btn" onclick="showInfo('Altcoin Season Index','Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).')" type="button">?</button><span class="info-tooltip">Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).</span></span></div>
-                <div class="muted">Outperformance versus Bitcoin across tracked leaders</div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_altcoin_season">Altcoin Season Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Altcoin Season Index','Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).')" type="button">?</button><span class="info-tooltip">Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).</span></span></div>
+                <div class="muted" data-i18n="sub_altcoin_season">Outperformance versus Bitcoin across tracked leaders</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-alt-season-card"></div>
@@ -914,8 +922,8 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px">Tracked Market Index <span class="info-wrap"><button class="info-btn" onclick="showInfo('Tracked Market Index','A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.')" type="button">?</button><span class="info-tooltip">A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.</span></span></div>
-                <div class="muted">Weighted performance basket of the market leaders we monitor</div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_tracked_index">Tracked Market Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Tracked Market Index','A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.')" type="button">?</button><span class="info-tooltip">A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.</span></span></div>
+                <div class="muted" data-i18n="sub_tracked_index">Weighted performance basket of the market leaders we monitor</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-tracked-index-card"></div>
@@ -925,13 +933,13 @@ p,span,div,input,button{
         <div class="card">
           <div class="card-head" style="padding-bottom:10px">
             <div>
-              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px">Crypto Market Snapshot <span class="info-wrap"><button class="info-btn" onclick="showInfo('Crypto Market Snapshot','Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.')" type="button">?</button><span class="info-tooltip">Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.</span></span></div>
-              <div class="muted" id="overview-snapshot-sub">Aggregated view across the largest tracked assets</div>
+              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_market_snapshot">Crypto Market Snapshot</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Crypto Market Snapshot','Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.')" type="button">?</button><span class="info-tooltip">Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.</span></span></div>
+              <div class="muted" data-i18n="sub_market_snapshot" id="overview-snapshot-sub">Aggregated view across the largest tracked assets</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
               <div class="overview-pillbar" id="overview-mode-tabs">
-                <button class="overview-pill active" data-mode="overview" onclick="setMarketOverviewMode('overview')">Overview</button>
-                <button class="overview-pill" data-mode="breadth" onclick="setMarketOverviewMode('breadth')">Breadth</button>
+                <button class="overview-pill active" data-mode="overview" data-i18n="pill_overview" onclick="setMarketOverviewMode('overview')">Overview</button>
+                <button class="overview-pill" data-mode="breadth" data-i18n="pill_breadth" onclick="setMarketOverviewMode('breadth')">Breadth</button>
               </div>
               <div class="overview-pillbar" id="overview-range-tabs">
                 <button class="overview-pill" data-range="7d" onclick="setMarketOverviewRange('7d')">7d</button>
@@ -953,8 +961,8 @@ p,span,div,input,button{
         <div class="card">
           <div class="card-head" style="padding-bottom:10px">
             <div>
-              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px">Capital Flow Pulse <span class="info-wrap"><button class="info-btn" onclick="showInfo('Capital Flow Pulse','Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.')" type="button">?</button><span class="info-tooltip">Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.</span></span></div>
-              <div class="muted">Daily pressure by asset using turnover and directional change</div>
+              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_capital_flow">Capital Flow Pulse</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Capital Flow Pulse','Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.')" type="button">?</button><span class="info-tooltip">Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.</span></span></div>
+              <div class="muted" data-i18n="sub_capital_flow">Daily pressure by asset using turnover and directional change</div>
             </div>
             <div style="font-size:10px;color:#94A3B8;font-family:var(--font-body)" id="overview-flow-label">Top flow movers</div>
           </div>
@@ -970,8 +978,8 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px">Market Dominance <span class="info-wrap"><button class="info-btn" onclick="showInfo('Market Dominance','Shows each asset&#39;s share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.')" type="button">?</button><span class="info-tooltip">Shows each asset's share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.</span></span></div>
-                <div class="muted">Share of tracked market cap by the biggest leaders</div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_market_dominance">Market Dominance</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Market Dominance','Shows each asset&#39;s share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.')" type="button">?</button><span class="info-tooltip">Shows each asset's share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.</span></span></div>
+                <div class="muted" data-i18n="sub_market_dominance">Share of tracked market cap by the biggest leaders</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-dominance-card"></div>
@@ -980,8 +988,8 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px">Positioning Pressure <span class="info-wrap"><button class="info-btn" onclick="showInfo('Positioning Pressure','Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.')" type="button">?</button><span class="info-tooltip">Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.</span></span></div>
-                <div class="muted">Spot-based proxy for conviction, turnover, and realized volatility</div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_positioning_pressure">Positioning Pressure</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Positioning Pressure','Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.')" type="button">?</button><span class="info-tooltip">Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.</span></span></div>
+                <div class="muted" data-i18n="sub_positioning_pressure">Spot-based proxy for conviction, turnover, and realized volatility</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-pressure-card"></div>
@@ -998,7 +1006,7 @@ p,span,div,input,button{
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
       <button onclick="closeCoinDetail()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid #E2E8F0;background:white;font-size:12px;font-weight:600;color:#64748B;cursor:pointer;font-family:var(--font-body);transition:all .15s" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
-        Back to Live Trade
+        <span data-i18n="cd_back_live">Back to Live Trade</span>
       </button>
       <span id="cd-breadcrumb" style="font-size:12px;color:#94A3B8;font-family:var(--font-body)"></span>
     </div>
@@ -1075,7 +1083,7 @@ p,span,div,input,button{
 
         <!-- Sentiment card -->
         <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:12px">Community Sentiment</div>
+          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:12px" data-i18n="cd_community_sentiment">Community Sentiment</div>
           <div style="margin-bottom:10px">
             <div style="display:flex;justify-content:space-between;margin-bottom:4px">
               <span style="font-size:11px;font-weight:700;color:#16A34A;font-family:var(--font-body)">🐂 Bullish <span id="cd-bull-pct">50</span>%</span>
@@ -1093,7 +1101,7 @@ p,span,div,input,button{
 
         <!-- Price stats card -->
         <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:12px">Price Statistics</div>
+          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:12px" data-i18n="cd_price_stats">Price Statistics</div>
           <div style="display:flex;flex-direction:column;gap:10px" id="cd-price-stats">
             <div style="color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading...</div>
           </div>
@@ -1141,7 +1149,7 @@ p,span,div,input,button{
     <div style="margin-top:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="font-family:var(--font-heading);font-size:16px;font-weight:800;color:#0F172A;display:flex;align-items:center;gap:6px">
-          <span>📊</span> Market Cycles
+          <span>📊</span> <span data-i18n="cd_market_cycles">Market Cycles</span>
         </div>
         <span id="cd-cycle-status" style="font-size:10px;color:#94A3B8;font-family:var(--font-body)"></span>
       </div>
@@ -1238,7 +1246,7 @@ p,span,div,input,button{
     <div class="perf-chart-card" id="perf-chart-card">
       <div class="card-head" style="padding-bottom:8px">
         <div>
-          <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A">Positions Performance</div>
+          <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A"><span data-i18n="card_positions_perf">Positions Performance</span></div>
           <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Cumulative P&L · all entries</div>
         </div>
         <div class="periods" id="perf-period-tabs">
@@ -1258,7 +1266,7 @@ p,span,div,input,button{
     <div class="pos-card" id="positions-card">
       <div class="card-head" style="padding-bottom:10px">
         <div>
-          <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A">Open Positions</div>
+          <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A"><span data-i18n="card_open_positions">Open Positions</span></div>
           <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Live entries · P&L updates in real time</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
@@ -1574,6 +1582,102 @@ function _handleCoinHash(){
   }catch(_){}
 }
 
+/* ══ i18n LANGUAGE SYSTEM ══ */
+let _currentLang = localStorage.getItem('q_lang') || 'en';
+const _i18n = {
+  nav_analysis:{en:'Analysis',id:'Analisis'},
+  nav_market_overview:{en:'Market Overview',id:'Ringkasan Pasar'},
+  nav_live_trade:{en:'Live Trade',id:'Trading Live'},
+  nav_session_history:{en:'Session History',id:'Riwayat Sesi'},
+  nav_macro_events:{en:'Macro Events',id:'Event Makro'},
+  nav_trade_setups:{en:'Trade Setups',id:'Setup Trading'},
+  sign_out:{en:'Sign Out',id:'Keluar'},
+  topbar_overview_sub:{en:'Breadth, dominance and capital rotation',id:'Keluasan, dominasi, dan rotasi modal'},
+  card_fear_greed:{en:'Fear & Greed Index',id:'Indeks Ketakutan & Keserakahan'},
+  card_altcoin_season:{en:'Altcoin Season Index',id:'Indeks Musim Altcoin'},
+  card_tracked_index:{en:'Tracked Market Index',id:'Indeks Pasar Terpantau'},
+  card_market_snapshot:{en:'Crypto Market Snapshot',id:'Ringkasan Pasar Kripto'},
+  card_capital_flow:{en:'Capital Flow Pulse',id:'Aliran Modal'},
+  card_market_dominance:{en:'Market Dominance',id:'Dominasi Pasar'},
+  card_positioning_pressure:{en:'Positioning Pressure',id:'Tekanan Posisi'},
+  sub_fear_greed:{en:'Live breadth pulse from tracked crypto leaders',id:'Sentimen pasar real-time dari aset kripto utama'},
+  sub_altcoin_season:{en:'Outperformance versus Bitcoin across tracked leaders',id:'Kinerja altcoin dibanding Bitcoin dari aset terpantau'},
+  sub_tracked_index:{en:'Weighted performance basket of the market leaders we monitor',id:'Keranjang kinerja tertimbang dari aset utama yang dipantau'},
+  sub_market_snapshot:{en:'Aggregated view across the largest tracked assets',id:'Tampilan agregat dari aset terbesar yang dipantau'},
+  sub_capital_flow:{en:'Daily pressure by asset using turnover and directional change',id:'Tekanan harian per aset berdasarkan volume dan perubahan arah'},
+  sub_market_dominance:{en:'Share of tracked market cap by the biggest leaders',id:'Pangsa kapitalisasi pasar dari aset terbesar'},
+  sub_positioning_pressure:{en:'Spot-based proxy for conviction, turnover, and realized volatility',id:'Indikator keyakinan pasar, volume, dan volatilitas terealisasi'},
+  pill_overview:{en:'Overview',id:'Ringkasan'},
+  pill_breadth:{en:'Breadth',id:'Keluasan'},
+  stat_market_cap:{en:'Market Cap',id:'Kap. Pasar'},
+  stat_volume:{en:'Volume',id:'Volume'},
+  stat_positive_breadth:{en:'Positive Breadth',id:'Keluasan Positif'},
+  stat_tracked_index:{en:'Tracked Index',id:'Indeks Terpantau'},
+  card_positions_perf:{en:'Positions Performance',id:'Kinerja Posisi'},
+  card_open_positions:{en:'Open Positions',id:'Posisi Terbuka'},
+  cd_back_live:{en:'Back to Live Trade',id:'Kembali ke Trading'},
+  cd_community_sentiment:{en:'Community Sentiment',id:'Sentimen Komunitas'},
+  cd_price_stats:{en:'Price Statistics',id:'Statistik Harga'},
+  cd_market_cycles:{en:'Market Cycles',id:'Siklus Pasar'},
+  cd_show_more:{en:'Show more details ▾',id:'Lihat detail lainnya ▾'},
+  cd_show_less:{en:'Show less ▴',id:'Sembunyikan ▴'},
+  cd_loading:{en:'Loading...',id:'Memuat...'},
+  sentiment_bullish:{en:'Bullish',id:'Bullish'},
+  sentiment_bearish:{en:'Bearish',id:'Bearish'},
+  upgrade_title:{en:'Unlock Coin Detail',id:'Buka Detail Koin'},
+  upgrade_subtitle:{en:'Upgrade to access full coin analysis, market cycles, price statistics, and more.',id:'Upgrade untuk akses analisis koin lengkap, siklus pasar, statistik harga, dan lainnya.'},
+  upgrade_btn:{en:'Upgrade Plan Now',id:'Upgrade Sekarang'},
+  upgrade_starting:{en:'Starting from $35/year',id:'Mulai dari $35/tahun'},
+  auth_welcome:{en:'Welcome to',id:'Selamat datang di'},
+  auth_subtitle:{en:'Sign in to sync your trades across all devices',id:'Masuk untuk sinkronkan trading di semua perangkat'},
+  auth_email_label:{en:'Email',id:'Email'},
+  auth_pass_label:{en:'Password',id:'Kata Sandi'},
+  auth_forgot:{en:'Forgot password?',id:'Lupa kata sandi?'},
+  auth_google:{en:'Continue with Google',id:'Lanjutkan dengan Google'},
+  auth_or:{en:'or use email',id:'atau gunakan email'},
+  auth_email_ph:{en:'Email address',id:'Alamat email'},
+  auth_pass_ph:{en:'Password',id:'Kata sandi'},
+  auth_login_btn:{en:'Sign In',id:'Masuk'},
+  auth_register_btn:{en:'Create Account',id:'Buat Akun'},
+  auth_tab_login:{en:'Login',id:'Masuk'},
+  auth_tab_register:{en:'Register',id:'Daftar'},
+  btn_run_analysis:{en:'Run Analysis',id:'Jalankan Analisis'},
+  btn_add_entry:{en:'Add Entry',id:'Tambah Entri'},
+  fg_extreme_fear:{en:'Extreme Fear',id:'Sangat Takut'},
+  fg_fear:{en:'Fear',id:'Takut'},
+  fg_neutral:{en:'Neutral',id:'Netral'},
+  fg_risk_on:{en:'Risk-On',id:'Risk-On'},
+  fg_greed:{en:'Greed',id:'Serakah'},
+  fg_capitulation:{en:'Capitulation',id:'Kapitulasi'},
+  alt_season:{en:'Altcoin Season',id:'Musim Altcoin'},
+  btc_season:{en:'Bitcoin Season',id:'Musim Bitcoin'},
+  alt_rotation:{en:'Rotation',id:'Rotasi'},
+};
+
+function _t(key){ const e = _i18n[key]; return e ? (e[_currentLang] || e.en) : key; }
+
+function _switchLang(lang){
+  _currentLang = lang;
+  localStorage.setItem('q_lang', lang);
+  document.querySelectorAll('#lang-switcher .lang-btn').forEach(btn => {
+    const active = btn.dataset.lang === lang;
+    btn.style.background = active ? 'white' : 'transparent';
+    btn.style.color = active ? '#0F172A' : '#64748B';
+    btn.style.boxShadow = active ? '0 1px 3px rgba(0,0,0,.08)' : 'none';
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const val = _t(el.dataset.i18n);
+    if(val) el.textContent = val;
+  });
+  /* Re-render dynamic content */
+  if(typeof _renderOverviewCards === 'function') try{ _renderOverviewCards(); }catch(_){}
+}
+
+function _initLang(){
+  /* Restore saved language on page load */
+  if(_currentLang !== 'en') _switchLang(_currentLang);
+}
+
 function initAuth(){
   try{
     if(!firebase.apps.length) firebase.initializeApp(_fbConfig);
@@ -1651,7 +1755,7 @@ window.authSwitchTab = function(tab){
   _authTab = tab;
   document.getElementById('tab-signin').classList.toggle('active', tab==='signin');
   document.getElementById('tab-register').classList.toggle('active', tab==='register');
-  document.getElementById('auth-submit-btn').textContent = tab==='signin' ? 'Sign In' : 'Create Account';
+  document.getElementById('auth-submit-btn').textContent = tab==='signin' ? _t('auth_login_btn') : _t('auth_register_btn');
   const fpLink = document.getElementById('auth-fp-link');
   if(fpLink) fpLink.style.display = tab==='signin' ? 'inline' : 'none';
   _authError('');
@@ -1682,7 +1786,7 @@ window.authSubmit = async function(){
   } catch(e){
     _authError(_friendlyAuthError(e.code));
     btn.disabled = false;
-    btn.textContent = _authTab==='signin' ? 'Sign In' : 'Create Account';
+    btn.textContent = _authTab==='signin' ? _t('auth_login_btn') : _t('auth_register_btn');
   }
 };
 
@@ -1962,8 +2066,8 @@ function showUpgradePopup(){
       <div style="width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#0F172A,#1E293B);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
       </div>
-      <h3 style="font-family:var(--font-heading);font-size:20px;font-weight:800;color:#0F172A;margin:0 0 8px;letter-spacing:-.02em">Unlock Coin Detail</h3>
-      <p style="font-family:var(--font-body);font-size:13px;color:#64748B;line-height:1.6;margin:0 0 24px">Get access to in-depth coin analysis, market cycle indicators, price statistics, and more with a premium plan.</p>
+      <h3 style="font-family:var(--font-heading);font-size:20px;font-weight:800;color:#0F172A;margin:0 0 8px;letter-spacing:-.02em">${_t('upgrade_title')}</h3>
+      <p style="font-family:var(--font-body);font-size:13px;color:#64748B;line-height:1.6;margin:0 0 24px">${_t('upgrade_subtitle')}</p>
       <div style="display:flex;flex-direction:column;gap:8px;text-align:left;margin-bottom:24px">
         <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1983,9 +2087,9 @@ function showUpgradePopup(){
         </div>
       </div>
       <a href="/pricing" style="display:block;background:linear-gradient(135deg,#0F172A,#1E293B);color:white;padding:14px 32px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;font-family:var(--font-heading);transition:transform .15s;box-shadow:0 4px 14px rgba(15,23,42,.2)" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
-        Upgrade Plan Now
+        ${_t('upgrade_btn')}
       </a>
-      <p style="font-size:11px;color:#94A3B8;margin:14px 0 0;font-family:var(--font-body)">Starting from $35/year</p>
+      <p style="font-size:11px;color:#94A3B8;margin:14px 0 0;font-family:var(--font-body)">${_t('upgrade_starting')}</p>
     </div>`;
   overlay.addEventListener('click', e => { if(e.target === overlay) closeUpgradePopup(); });
   document.body.appendChild(overlay);
@@ -3522,10 +3626,10 @@ function _renderOverviewCards(){
   const marketStats = document.getElementById('overview-market-stats');
   if(marketStats){
     marketStats.innerHTML = [
-      ['Market Cap', _overviewFmtMoney(metrics.totalMarketCap)],
-      ['Volume', _overviewFmtMoney(metrics.totalVolume)],
-      ['Positive Breadth', `${metrics.breadthPct.toFixed(0)}%`],
-      ['Tracked Index', `${aggregate.trackedIndex[aggregate.trackedIndex.length - 1].toFixed(1)}`]
+      [_t('stat_market_cap'), _overviewFmtMoney(metrics.totalMarketCap)],
+      [_t('stat_volume'), _overviewFmtMoney(metrics.totalVolume)],
+      [_t('stat_positive_breadth'), `${metrics.breadthPct.toFixed(0)}%`],
+      [_t('stat_tracked_index'), `${aggregate.trackedIndex[aggregate.trackedIndex.length - 1].toFixed(1)}`]
     ].map(([label, value]) => `
       <div class="overview-stat-block">
         <div class="overview-stat-label">${label}</div>
@@ -4640,6 +4744,7 @@ if(DEMO_MODE){
 } else {
   initAuth();
 }
+_initLang();
 
 /* ══ REFRESH ALL COINS (batch) + UPDATE CURRENT VIEW ══
    API_INTERVAL: how often we actually call CoinGecko (ms) — respects free-tier rate limit
