@@ -3832,32 +3832,40 @@ async function fetchLiveMarketData(asset="BTC", timeframe="15m") {
   // Use our synchronized Binance data for real-time metadata
   const cache = _marketPrices[currentSymbol] || { price: 0, high: 0, low: 0, vol: 0, chg: 0 };
   
-  const [ohlcRes]=await Promise.all([
-    fetch(`/.netlify/functions/market-data?type=ohlc&id=${cgId}`)
-  ]);
-  if(!ohlcRes.ok) throw new Error("Market Data Proxy error (OHLC)");
-  const ohlc=await ohlcRes.json();
+  /* Fetch OHLC via cg.js (cached, rate-limit safe) — graceful fallback */
+  let ohlc = [];
+  try {
+    const ohlcRes = await fetch(`/.netlify/functions/cg?type=chart&id=${encodeURIComponent(cgId)}&days=${days}`);
+    if(ohlcRes.ok) {
+      const chartData = await ohlcRes.json();
+      /* chart endpoint returns { prices:[[ts,p],...] } — convert to pseudo-OHLC */
+      if(chartData.prices && chartData.prices.length) {
+        ohlc = chartData.prices.map(([ts, p]) => [ts, p, p, p, p]);
+      }
+    }
+  } catch(e) { console.warn('OHLC fetch failed:', e.message); }
 
-  const price = cache.price;
-  const high24 = cache.high;
-  const low24 = cache.low;
-  const vol24 = cache.vol;
-  const chg24 = cache.chg;
-  const chg7d = cache.chg; // Fallback to 24h for 7d in live view if not in cache
-  const chg30d = cache.chg;
+  const price = cache.price || (ohlc.length ? ohlc[ohlc.length-1][4] : 0);
+  const high24 = cache.high || price;
+  const low24 = cache.low || price;
+  const vol24 = cache.vol || 0;
+  const chg24 = cache.chg || 0;
+  const chg7d = cache.chg || 0;
+  const chg30d = cache.chg || 0;
 
   const closes=ohlc.map(c=>c[4]).filter(Boolean);
+  if(!closes.length) closes.push(price); /* fallback so MAs don't crash */
   const avg=arr=>arr.reduce((a,b)=>a+b,0)/arr.length;
   const n=Math.min.bind(Math);
   const ma7 =closes.length>=7  ?avg(closes.slice(-n(7,  closes.length))):price;
   const ma25=closes.length>=25 ?avg(closes.slice(-n(25, closes.length))):price;
   const ma99=closes.length>=99 ?avg(closes.slice(-n(99, closes.length))):price;
 
-  const volCoin=vol24/price;
+  const volCoin=price?vol24/price:0;
   const candlesPerDay=timeframe==="1d"?1:timeframe==="4h"?6:timeframe==="1h"?24:timeframe==="15m"?96:288;
-  const volPerCandle=volCoin/candlesPerDay;
+  const volPerCandle=candlesPerDay?volCoin/candlesPerDay:0;
 
-  const last=ohlc[ohlc.length-1];
+  const last=ohlc.length?ohlc[ohlc.length-1]:null;
   const candleColor=last&&last[4]>=last[1]?"green":"red";
 
   return {
