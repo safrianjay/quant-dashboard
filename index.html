@@ -135,6 +135,7 @@ p,span,div,input,button{
 .kpi-card{background:white;border-radius:13px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04);border:1px solid #F1F5F9;position:relative;overflow:hidden;animation:fadeUp .5s ease both}
 .card{background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden}
 .card-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px 12px}
+.card-head .muted{margin-top:4px}
 
 /* ── LABELS — Inter ── */
 .label{font-size:10px;font-weight:600;color:#94A3B8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;font-family:var(--font-body)}
@@ -194,7 +195,7 @@ p,span,div,input,button{
 .overview-main-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:12px}
 .overview-stack{display:flex;flex-direction:column;gap:12px}
 .overview-bottom-grid{display:grid;grid-template-columns:minmax(0,1.45fr) 320px;gap:12px}
-.overview-section-pad{padding:16px 18px 18px}
+.overview-section-pad{padding:14px 18px 16px}
 .overview-pillbar{display:flex;gap:4px;background:#F1F5F9;border-radius:8px;padding:3px}
 .overview-pill{padding:4px 10px;border:none;border-radius:6px;background:transparent;color:#64748B;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s}
 .overview-pill.active{background:white;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -214,13 +215,13 @@ p,span,div,input,button{
 .overview-index-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
 .overview-index-value{font-size:22px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.03em}
 .overview-index-change{font-size:11px;font-weight:700;font-family:var(--font-body)}
-.overview-chart-wrap{position:relative;height:300px}
+.overview-chart-wrap{position:relative;height:280px}
 .overview-flow-wrap{position:relative;height:250px}
 .overview-dom-row{display:flex;align-items:center;gap:10px}
 .overview-dom-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#334155;font-family:var(--font-body)}
 .overview-dom-value{font-size:16px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.02em}
 .overview-dom-bar{height:8px;border-radius:999px;background:#EEF2FF;overflow:hidden;margin-top:8px}
-.overview-mini-line{height:54px}
+.overview-mini-line{height:54px;display:block;max-width:100%;overflow:hidden}
 .overview-skeleton{background:linear-gradient(90deg,#F8FAFC 0%,#EEF2F7 50%,#F8FAFC 100%);background-size:200% 100%;animation:shimmer 1.8s linear infinite;border-radius:10px}
 
 /* ── COIN TLDR ── */
@@ -295,7 +296,7 @@ p,span,div,input,button{
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .chart-grid{grid-template-columns:1fr}
   .two-col{grid-template-columns:1fr}
-  .overview-spotlight-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .overview-spotlight-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
   .overview-main-grid,
   .overview-bottom-grid{grid-template-columns:1fr}
   .coin-tldr-grid{grid-template-columns:1fr}
@@ -312,7 +313,11 @@ p,span,div,input,button{
   .kpi-grid{grid-template-columns:1fr 1fr}
   .content{padding:12px 12px 24px}
   .topbar{padding:10px 12px;gap:6px}
-  .overview-spotlight-grid{grid-template-columns:1fr 1fr}
+  .overview-spotlight-grid{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:10px;padding-bottom:4px}
+  .overview-spotlight-grid::-webkit-scrollbar{display:none}
+  .overview-spot-card{min-width:150px;max-width:170px;flex-shrink:0;padding:12px 13px}
+  .overview-spot-price{font-size:18px}
+  .overview-spot-title span{font-size:11px}
   /* Hide secondary topbar items on mobile — keep only Run Analysis + Add Entry */
   #topbar-eye,
   #topbar-bell,
@@ -392,8 +397,6 @@ p,span,div,input,button{
   #cd-cycles-grid { grid-template-columns: repeat(2,1fr) !important; }
 }
 @media(max-width:640px){
-  .overview-spotlight-grid{grid-template-columns:1fr}
-  .overview-spot-card{padding:13px 14px}
   .overview-section-pad{padding:14px 14px 16px}
   .overview-chart-wrap{height:240px}
   .overview-flow-wrap{height:220px}
@@ -891,7 +894,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Fear & Greed Index</div>
+                <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Fear & Greed Index</div>
                 <div class="muted" id="overview-fg-sub">Live breadth pulse from tracked crypto leaders</div>
               </div>
             </div>
@@ -901,7 +904,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Altcoin Season Index</div>
+                <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Altcoin Season Index</div>
                 <div class="muted">Outperformance versus Bitcoin across tracked leaders</div>
               </div>
             </div>
@@ -911,7 +914,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Tracked Market Index</div>
+                <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Tracked Market Index</div>
                 <div class="muted">Weighted performance basket of the market leaders we monitor</div>
               </div>
             </div>
@@ -922,7 +925,7 @@ p,span,div,input,button{
         <div class="card">
           <div class="card-head" style="padding-bottom:10px">
             <div>
-              <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Crypto Market Snapshot</div>
+              <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Crypto Market Snapshot</div>
               <div class="muted" id="overview-snapshot-sub">Aggregated view across the largest tracked assets</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
@@ -950,7 +953,7 @@ p,span,div,input,button{
         <div class="card">
           <div class="card-head" style="padding-bottom:10px">
             <div>
-              <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Capital Flow Pulse</div>
+              <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Capital Flow Pulse</div>
               <div class="muted">Daily pressure by asset using turnover and directional change</div>
             </div>
             <div style="font-size:10px;color:#94A3B8;font-family:var(--font-body)" id="overview-flow-label">Top flow movers</div>
@@ -967,7 +970,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Market Dominance</div>
+                <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Market Dominance</div>
                 <div class="muted">Share of tracked market cap by the biggest leaders</div>
               </div>
             </div>
@@ -977,7 +980,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Positioning Pressure</div>
+                <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Positioning Pressure</div>
                 <div class="muted">Spot-based proxy for conviction, turnover, and realized volatility</div>
               </div>
             </div>
@@ -1235,7 +1238,7 @@ p,span,div,input,button{
     <div class="perf-chart-card" id="perf-chart-card">
       <div class="card-head" style="padding-bottom:8px">
         <div>
-          <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Positions Performance</div>
+          <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Positions Performance</div>
           <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Cumulative P&L · all entries</div>
         </div>
         <div class="periods" id="perf-period-tabs">
@@ -1255,7 +1258,7 @@ p,span,div,input,button{
     <div class="pos-card" id="positions-card">
       <div class="card-head" style="padding-bottom:10px">
         <div>
-          <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Open Positions</div>
+          <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Open Positions</div>
           <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Live entries · P&L updates in real time</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
@@ -1292,7 +1295,7 @@ p,span,div,input,button{
       <div class="coin-strip-head">
         <div style="display:flex;align-items:baseline;gap:8px">
           <!-- Proxima Nova section title -->
-          <span class="section-title" style="font-size:14px;font-weight:700;color:#0F172A">Top 7 Performers</span>
+          <span class="section-title" style="font-size:15px;font-weight:800;color:#0F172A">Top 7 Performers</span>
           <!-- Inter subtext -->
           <span style="font-size:10px;color:#94A3B8;font-family:var(--font-body)">24h · Ranked by gain</span>
         </div>
@@ -1316,7 +1319,7 @@ p,span,div,input,button{
         <div class="card-head">
           <div>
             <!-- Proxima Nova card title -->
-            <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Confidence History</div>
+            <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Confidence History</div>
             <!-- Inter subtext -->
             <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Long vs Short conviction · session</div>
           </div>
@@ -1331,7 +1334,7 @@ p,span,div,input,button{
       <div class="card" style="animation:fadeUp .5s ease .35s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">MA Stack — 15m</div>
+            <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">MA Stack — 15m</div>
             <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Gap from current price</div>
           </div>
         </div>
@@ -1350,7 +1353,7 @@ p,span,div,input,button{
       <div class="card" style="animation:fadeUp .5s ease .4s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Price Ladder</div>
+            <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Price Ladder</div>
             <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Entry / TP / SL levels</div>
           </div>
           <div class="periods" id="setup-tabs"></div>
@@ -1361,7 +1364,7 @@ p,span,div,input,button{
       <div class="card" style="animation:fadeUp .5s ease .45s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Macro Risk Calendar</div>
+            <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Macro Risk Calendar</div>
             <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Events that override technicals</div>
           </div>
         </div>
@@ -1374,7 +1377,7 @@ p,span,div,input,button{
       <div class="card" style="animation:fadeUp .5s ease .5s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Session Timeline</div>
+            <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Session Timeline</div>
             <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Chronological analysis log</div>
           </div>
           <button class="vflink">View All <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
@@ -1384,7 +1387,7 @@ p,span,div,input,button{
       <div class="card" style="animation:fadeUp .5s ease .55s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Active Setups</div>
+            <div class="card-title" style="font-size:15px;font-weight:800;color:#0F172A">Active Setups</div>
             <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Confidence by direction</div>
           </div>
         </div>
