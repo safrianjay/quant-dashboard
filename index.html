@@ -182,6 +182,47 @@ p,span,div,input,button{
 .change-bar-fill{height:100%;border-radius:2px;animation:barFill .8s ease both}
 .range-labels{display:flex;justify-content:space-between}
 
+/* ── MARKET OVERVIEW ── */
+.overview-shell{display:flex;flex-direction:column;gap:14px}
+.overview-spotlight-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.overview-spot-card{background:white;border:1px solid #F1F5F9;border-radius:13px;padding:14px 15px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;transition:all .18s}
+.overview-spot-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08);border-color:#E2E8F0}
+.overview-spot-meta{min-width:0;display:flex;flex-direction:column;gap:4px}
+.overview-spot-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#0F172A;font-family:var(--font-heading)}
+.overview-spot-price{font-size:24px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.03em}
+.overview-spot-change{font-size:11px;font-weight:700;font-family:var(--font-body)}
+.overview-main-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:12px}
+.overview-stack{display:flex;flex-direction:column;gap:12px}
+.overview-bottom-grid{display:grid;grid-template-columns:minmax(0,1.45fr) 320px;gap:12px}
+.overview-section-pad{padding:16px 18px 18px}
+.overview-pillbar{display:flex;gap:4px;background:#F1F5F9;border-radius:8px;padding:3px}
+.overview-pill{padding:4px 10px;border:none;border-radius:6px;background:transparent;color:#64748B;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.overview-pill.active{background:white;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.overview-stat-row{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:10px}
+.overview-stat-block{display:flex;flex-direction:column;gap:4px}
+.overview-stat-label{font-size:10px;color:#94A3B8;font-weight:600;font-family:var(--font-body)}
+.overview-stat-value{font-size:18px;color:#0F172A;font-weight:700;font-family:var(--font-mono);letter-spacing:-.02em}
+.overview-fg-gauge{width:124px;height:124px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:6px auto 10px;position:relative}
+.overview-fg-gauge::before{content:'';position:absolute;inset:12px;border-radius:50%;background:white;border:1px solid #F1F5F9}
+.overview-fg-inner{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;z-index:1}
+.overview-fg-score{font-size:32px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.04em}
+.overview-fg-label{font-size:11px;font-weight:700;color:#64748B;font-family:var(--font-body)}
+.overview-helper{font-size:11px;line-height:1.6;color:#64748B;font-family:var(--font-body)}
+.overview-range-bar{position:relative;height:8px;border-radius:999px;background:#E2E8F0;overflow:hidden}
+.overview-range-fill{position:absolute;top:0;left:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,#F59E0B,#FCD34D,#3B82F6)}
+.overview-range-knob{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:#0F172A;border:2px solid white;box-shadow:0 2px 6px rgba(15,23,42,.18);transform:translate(-50%,-50%)}
+.overview-index-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
+.overview-index-value{font-size:22px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.03em}
+.overview-index-change{font-size:11px;font-weight:700;font-family:var(--font-body)}
+.overview-chart-wrap{position:relative;height:300px}
+.overview-flow-wrap{position:relative;height:250px}
+.overview-dom-row{display:flex;align-items:center;gap:10px}
+.overview-dom-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#334155;font-family:var(--font-body)}
+.overview-dom-value{font-size:16px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.02em}
+.overview-dom-bar{height:8px;border-radius:999px;background:#EEF2FF;overflow:hidden;margin-top:8px}
+.overview-mini-line{height:54px}
+.overview-skeleton{background:linear-gradient(90deg,#F8FAFC 0%,#EEF2F7 50%,#F8FAFC 100%);background-size:200% 100%;animation:shimmer 1.8s linear infinite;border-radius:10px}
+
 /* ── COIN TLDR ── */
 .coin-tldr-wrap{margin-bottom:14px;animation:fadeUp .5s ease .16s both}
 .coin-tldr-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px}
@@ -254,6 +295,9 @@ p,span,div,input,button{
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .chart-grid{grid-template-columns:1fr}
   .two-col{grid-template-columns:1fr}
+  .overview-spotlight-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .overview-main-grid,
+  .overview-bottom-grid{grid-template-columns:1fr}
   .coin-tldr-grid{grid-template-columns:1fr}
   .coin-tldr-side{grid-template-columns:1fr 1fr;grid-template-rows:none}
 }
@@ -268,6 +312,7 @@ p,span,div,input,button{
   .kpi-grid{grid-template-columns:1fr 1fr}
   .content{padding:12px 12px 24px}
   .topbar{padding:10px 12px;gap:6px}
+  .overview-spotlight-grid{grid-template-columns:1fr 1fr}
   /* Hide secondary topbar items on mobile — keep only Run Analysis + Add Entry */
   #topbar-eye,
   #topbar-bell,
@@ -347,6 +392,12 @@ p,span,div,input,button{
   #cd-cycles-grid { grid-template-columns: repeat(2,1fr) !important; }
 }
 @media(max-width:640px){
+  .overview-spotlight-grid{grid-template-columns:1fr}
+  .overview-spot-card{padding:13px 14px}
+  .overview-section-pad{padding:14px 14px 16px}
+  .overview-chart-wrap{height:240px}
+  .overview-flow-wrap{height:220px}
+  .overview-stat-row{gap:14px}
   #cd-grid  { grid-template-columns: 1fr !important; }
   #coin-detail-view { padding:12px 12px 40px !important; }
   #cd-tv-container  { height:260px !important; }
@@ -724,9 +775,13 @@ p,span,div,input,button{
 
   <div style="padding:6px 8px 10px;flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0">
     <div class="nav-section-label">Analysis</div>
-    <div class="nav-item active">
+    <div class="nav-item active" id="nav-market-overview" onclick="switchAppView('overview')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 4-6"/></svg>
+      <span class="nav-item-text">Market Overview</span>
+    </div>
+    <div class="nav-item" id="nav-live-trade" onclick="switchAppView('trade')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <span class="nav-item-text">Live Dashboard</span>
+      <span class="nav-item-text">Live Trade</span>
     </div>
     <div class="nav-item">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -779,6 +834,10 @@ p,span,div,input,button{
   <!-- Topbar -->
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px;min-width:0">
+    <div id="overview-topbar-copy" style="display:none;min-width:0">
+      <div class="topbar-title" style="font-size:16px;font-weight:700;color:#0F172A;line-height:1.2">Market Overview</div>
+      <div id="overview-topbar-sub" style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Breadth, dominance and capital rotation</div>
+    </div>
     <button onclick="openMarketSelector()" id="market-title-btn" style="min-width:0;text-align:left;background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:10px;transition:background .15s;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
       <div style="min-width:0">
         <div style="display:flex;align-items:center;gap:6px">
@@ -801,7 +860,7 @@ p,span,div,input,button{
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="dot-pulse"></div>
       </div>
-      <button id="refresh-btn" onclick="fetchLiveData()" title="Fetch live price from CoinGecko" style="display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:white;color:#334155;font-size:11px;font-weight:600;cursor:pointer;border:1px solid #E2E8F0;font-family:var(--font-body);transition:all .2s">
+      <button id="refresh-btn" onclick="handleTopbarRefresh()" title="Refresh active view" style="display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:white;color:#334155;font-size:11px;font-weight:600;cursor:pointer;border:1px solid #E2E8F0;font-family:var(--font-body);transition:all .2s">
         <svg id="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span class="entry-btn-label">Refresh</span>
       </button>
@@ -823,6 +882,112 @@ p,span,div,input,button{
     </div>
   </div>
 
+  <div class="content" id="market-overview-view">
+    <div class="overview-shell">
+      <div id="overview-spotlight-grid" class="overview-spotlight-grid"></div>
+
+      <div class="overview-main-grid">
+        <div class="overview-stack">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Fear & Greed Index</div>
+                <div class="muted" id="overview-fg-sub">Live breadth pulse from tracked crypto leaders</div>
+              </div>
+            </div>
+            <div class="overview-section-pad" id="overview-fear-greed-card"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Altcoin Season Index</div>
+                <div class="muted">Outperformance versus Bitcoin across tracked leaders</div>
+              </div>
+            </div>
+            <div class="overview-section-pad" id="overview-alt-season-card"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Tracked Market Index</div>
+                <div class="muted">Weighted performance basket of the market leaders we monitor</div>
+              </div>
+            </div>
+            <div class="overview-section-pad" id="overview-tracked-index-card"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head" style="padding-bottom:10px">
+            <div>
+              <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Crypto Market Snapshot</div>
+              <div class="muted" id="overview-snapshot-sub">Aggregated view across the largest tracked assets</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+              <div class="overview-pillbar" id="overview-mode-tabs">
+                <button class="overview-pill active" data-mode="overview" onclick="setMarketOverviewMode('overview')">Overview</button>
+                <button class="overview-pill" data-mode="breadth" onclick="setMarketOverviewMode('breadth')">Breadth</button>
+              </div>
+              <div class="overview-pillbar" id="overview-range-tabs">
+                <button class="overview-pill" data-range="7d" onclick="setMarketOverviewRange('7d')">7d</button>
+                <button class="overview-pill active" data-range="30d" onclick="setMarketOverviewRange('30d')">30d</button>
+                <button class="overview-pill" data-range="1y" onclick="setMarketOverviewRange('1y')">1y</button>
+              </div>
+            </div>
+          </div>
+          <div class="overview-section-pad" style="padding-top:4px">
+            <div class="overview-stat-row" id="overview-market-stats"></div>
+            <div class="overview-chart-wrap">
+              <canvas id="overview-market-cap-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-bottom-grid">
+        <div class="card">
+          <div class="card-head" style="padding-bottom:10px">
+            <div>
+              <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Capital Flow Pulse</div>
+              <div class="muted">Daily pressure by asset using turnover and directional change</div>
+            </div>
+            <div style="font-size:10px;color:#94A3B8;font-family:var(--font-body)" id="overview-flow-label">Top flow movers</div>
+          </div>
+          <div class="overview-section-pad" style="padding-top:2px">
+            <div id="overview-flow-summary" class="overview-helper" style="margin-bottom:10px"></div>
+            <div class="overview-flow-wrap">
+              <canvas id="overview-flow-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="overview-stack">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Market Dominance</div>
+                <div class="muted">Share of tracked market cap by the biggest leaders</div>
+              </div>
+            </div>
+            <div class="overview-section-pad" id="overview-dominance-card"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Positioning Pressure</div>
+                <div class="muted">Spot-based proxy for conviction, turnover, and realized volatility</div>
+              </div>
+            </div>
+            <div class="overview-section-pad" id="overview-pressure-card"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Coin Detail View (hidden by default, swaps with .content) -->
   <div id="coin-detail-view" style="display:none;padding:18px 24px 32px;flex:1;overflow-y:auto">
@@ -830,7 +995,7 @@ p,span,div,input,button{
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
       <button onclick="closeCoinDetail()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid #E2E8F0;background:white;font-size:12px;font-weight:600;color:#64748B;cursor:pointer;font-family:var(--font-body);transition:all .15s" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
-        Back to Dashboard
+        Back to Live Trade
       </button>
       <span id="cd-breadcrumb" style="font-size:12px;color:#94A3B8;font-family:var(--font-body)"></span>
     </div>
@@ -1256,6 +1421,17 @@ p,span,div,input,button{
 let PRICE=68957.00, HIGH=69050.00, LOW=68715.00, CHG="+0.51", VOL=523.84, MA10=448.62, CONF=7.2;
 let showBal=true, activeCoinTab="gainers", activeSetup=0, activeTF="1H";
 let isPaywallActive = false;
+let _primaryView = 'overview';
+let _marketOverviewLoading = false;
+let _marketOverviewSnapshot = [];
+let _marketOverviewUpdatedAt = 0;
+let _marketOverviewRange = '30d';
+let _marketOverviewMode = 'overview';
+let _marketOverviewSeries = {};
+let _overviewMarketChart = null;
+let _overviewFlowChart = null;
+let _MARKET_OVERVIEW_IDS = [];
+const _MARKET_OVERVIEW_LEADERS = ['BTC','ETH','BNB','SOL','XRP'];
 /* Restore last selected coin from localStorage */
 const _savedCoin = (()=>{ try{ return JSON.parse(localStorage.getItem('q_coin')||'null'); }catch(_){return null;} })();
 let currentSymbol = _savedCoin?.sym || 'BTCUSDT';
@@ -1835,6 +2011,7 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
     tvSym = mkt && mkt.tvSym ? mkt.tvSym : 'BINANCE:' + sym + 'USDT';
   }
   _cdSym = sym;
+  _primaryView = 'trade';
   const requestToken = ++_cdRequestToken;
 
   /* Persist state so page reload stays on coin detail */
@@ -1842,9 +2019,11 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
 
   /* Show detail, hide main content + topbar */
   document.querySelector('.topbar').style.display = 'none';
+  document.getElementById('market-overview-view').style.display = 'none';
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('coin-detail-view').style.display = 'block';
-  document.getElementById('cd-breadcrumb').textContent = 'Dashboard › ' + name;
+  document.getElementById('cd-breadcrumb').textContent = 'Live Trade › ' + name;
+  _setActiveNav('trade');
 
   /* Set avatar — use real logo */
   const av = document.getElementById('cd-avatar');
@@ -1900,11 +2079,7 @@ function openCoinDetailByBase(base){
 }
 
 function closeCoinDetail(){
-  document.querySelector('.topbar').style.display = '';
-  document.getElementById('coin-detail-view').style.display = 'none';
-  document.getElementById('main-content').style.display = 'block';
-  _cdSym = null;
-  try{ sessionStorage.removeItem('q_coin_detail'); }catch(_){}
+  switchAppView('trade');
 }
 
 function _fmtNum(n){
@@ -2909,6 +3084,7 @@ const MARKET_LIST = [
   { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'Quant AI', grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W', icon:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg' },
   { sym:'RAVEUSDT', base:'RAVE', name:'Rave',             cgId:'rave-token',             cat:'BSC',      grad:'linear-gradient(135deg,#FF6B6B,#FF8E53)', letter:'R', tvSym:'RAVEUSDT.P', icon:'' },
 ];
+_MARKET_OVERVIEW_IDS = MARKET_LIST.filter(m => m.cgId && m.cgId !== 'rave-token').slice(0, 20).map(m => m.cgId);
 
 /* Returns coin icon HTML — real logo with gradient fallback */
 function coinIcon(m, size){
@@ -3006,6 +3182,577 @@ async function _getChartData(cgId, days){
 
   return _chartInflight[key];
 }
+
+function _overviewRangeDays(range){
+  return range === '7d' ? 7 : range === '1y' ? 365 : 30;
+}
+
+function _overviewFmtMoney(n){
+  if(n == null || !isFinite(n)) return '—';
+  if(Math.abs(n) >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T';
+  if(Math.abs(n) >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+  if(Math.abs(n) >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+  return '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+
+function _overviewFmtPrice(n){
+  if(n == null || !isFinite(n)) return '—';
+  const abs = Math.abs(n);
+  const decimals = abs >= 1000 ? 2 : abs >= 1 ? 2 : abs >= 0.01 ? 4 : 6;
+  return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function _overviewFmtPct(n){
+  if(n == null || !isFinite(n)) return '—';
+  return `${n >= 0 ? '+' : ''}${n.toFixed(2)}%`;
+}
+
+function _overviewToneColor(value){
+  return value >= 0 ? '#16A34A' : '#DC2626';
+}
+
+function _overviewLeaderMarket(base){
+  return MARKET_LIST.find(m => m.base === base);
+}
+
+function _overviewLeaderSnapshot(base){
+  return _marketOverviewSnapshot.find(coin => {
+    const market = _overviewLeaderMarket(base);
+    return market && coin.id === market.cgId;
+  }) || null;
+}
+
+function _overviewLiveTicker(base, fallbackPrice){
+  const market = _overviewLeaderMarket(base);
+  const live = market ? _marketPrices[market.sym] : null;
+  return {
+    price: Number.isFinite(live?.price) ? live.price : fallbackPrice,
+    change: Number.isFinite(live?.chg) ? live.chg : null
+  };
+}
+
+function _overviewSparkline(points, color){
+  if(!Array.isArray(points) || points.length < 2){
+    return `<svg class="overview-mini-line" viewBox="0 0 120 54" preserveAspectRatio="none"><path d="M4 34 L116 20" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+  }
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const span = Math.max(1e-9, max - min);
+  const coords = points.map((p, idx) => {
+    const x = (idx / (points.length - 1)) * 116 + 2;
+    const y = 46 - (((p - min) / span) * 34);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  return `<svg class="overview-mini-line" viewBox="0 0 120 54" preserveAspectRatio="none">
+    <polyline fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${coords}"></polyline>
+  </svg>`;
+}
+
+function _setActiveNav(view){
+  const overview = document.getElementById('nav-market-overview');
+  const trade = document.getElementById('nav-live-trade');
+  if(overview) overview.classList.toggle('active', view === 'overview');
+  if(trade) trade.classList.toggle('active', view === 'trade');
+}
+
+function _updateTopbarForPrimaryView(){
+  const isOverview = _primaryView === 'overview';
+  const overviewCopy = document.getElementById('overview-topbar-copy');
+  const marketBtn = document.getElementById('market-title-btn');
+  const detailBtn = document.getElementById('coin-detail-btn');
+  const tfWrap = document.getElementById('unified-tf-wrap');
+  const runBtn = document.getElementById('run-analysis-btn');
+  const addBtn = document.getElementById('add-entry-btn');
+  const refreshLabel = document.querySelector('#refresh-btn .entry-btn-label');
+  const overviewSub = document.getElementById('overview-topbar-sub');
+
+  if(overviewCopy) overviewCopy.style.display = isOverview ? 'block' : 'none';
+  if(marketBtn) marketBtn.style.display = isOverview ? 'none' : 'flex';
+  if(detailBtn) detailBtn.style.display = isOverview ? 'none' : 'flex';
+  if(tfWrap) tfWrap.style.display = isOverview ? 'none' : 'flex';
+  if(runBtn) runBtn.style.display = isOverview ? 'none' : 'flex';
+  if(addBtn) addBtn.style.display = isOverview ? 'none' : 'flex';
+  if(refreshLabel) refreshLabel.textContent = 'Refresh';
+  if(overviewSub){
+    overviewSub.textContent = isOverview
+      ? (_marketOverviewUpdatedAt ? `Updated ${_coinRelativeTime(_marketOverviewUpdatedAt)}` : 'Breadth, dominance and capital rotation')
+      : '';
+  }
+}
+
+function _showPrimaryView(){
+  const overview = document.getElementById('market-overview-view');
+  const trade = document.getElementById('main-content');
+  const detail = document.getElementById('coin-detail-view');
+  if(overview) overview.style.display = _primaryView === 'overview' ? 'block' : 'none';
+  if(trade) trade.style.display = _primaryView === 'trade' ? 'block' : 'none';
+  if(detail) detail.style.display = 'none';
+  const topbar = document.querySelector('.topbar');
+  if(topbar) topbar.style.display = 'flex';
+  _cdSym = null;
+  _setActiveNav(_primaryView);
+  _updateTopbarForPrimaryView();
+}
+
+window.switchAppView = function(view){
+  _primaryView = view === 'trade' ? 'trade' : 'overview';
+  try { sessionStorage.removeItem('q_coin_detail'); } catch(_){}
+  _showPrimaryView();
+  if(_primaryView === 'overview') loadMarketOverview();
+};
+
+function _renderMarketOverviewLoading(){
+  const spotlight = document.getElementById('overview-spotlight-grid');
+  if(spotlight && !spotlight.innerHTML.trim()){
+    spotlight.innerHTML = new Array(5).fill('').map(() => `
+      <div class="overview-spot-card">
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+          <div class="overview-skeleton" style="height:12px;width:72px"></div>
+          <div class="overview-skeleton" style="height:22px;width:108px"></div>
+          <div class="overview-skeleton" style="height:12px;width:56px"></div>
+        </div>
+        <div class="overview-skeleton" style="width:96px;height:50px"></div>
+      </div>`).join('');
+  }
+}
+
+async function _ensureMarketOverviewSeries(range='30d'){
+  if(_marketOverviewSeries[range]?.length) return _marketOverviewSeries[range];
+  const days = _overviewRangeDays(range);
+  const leaders = _MARKET_OVERVIEW_LEADERS.map(base => _overviewLeaderMarket(base)).filter(Boolean);
+  const series = await Promise.all(leaders.map(async market => {
+    try {
+      return { market, chart: await _getChartData(market.cgId, days) };
+    } catch(err) {
+      console.warn('Overview chart fetch failed:', market.base, err.message);
+      return { market, chart: null };
+    }
+  }));
+  _marketOverviewSeries[range] = series;
+  return series;
+}
+
+function _buildOverviewAggregate(range='30d'){
+  const pack = _marketOverviewSeries[range];
+  if(!Array.isArray(pack) || !pack.length) return null;
+  const valid = pack.filter(item => item.chart?.prices?.length && _overviewLeaderSnapshot(item.market.base));
+  if(!valid.length) return null;
+  const minLen = Math.min(...valid.map(item => item.chart.prices.length));
+  const trimmed = valid.map(item => {
+    const prices = item.chart.prices.slice(-minLen);
+    const snapshot = _overviewLeaderSnapshot(item.market.base);
+    return { ...item, snapshot, prices };
+  });
+  const labels = trimmed[0].prices.map(([ts]) => {
+    const d = new Date(ts);
+    return range === '1y'
+      ? d.toLocaleDateString('en-US', { month: 'short' })
+      : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+  const marketCapSeries = labels.map((_, idx) => trimmed.reduce((sum, item) => {
+    const latest = item.prices[item.prices.length - 1][1] || 1;
+    const point = item.prices[idx][1] || latest;
+    return sum + ((item.snapshot.market_cap || 0) * (point / latest));
+  }, 0));
+  const volumeSeries = labels.map((_, idx) => trimmed.reduce((sum, item) => {
+    const latest = item.prices[item.prices.length - 1][1] || 1;
+    const point = item.prices[idx][1] || latest;
+    return sum + ((item.snapshot.total_volume || 0) * (point / latest));
+  }, 0));
+  const breadthSeries = labels.map((_, idx) => {
+    const score = trimmed.reduce((sum, item) => {
+      const base = item.prices[0][1] || 1;
+      const point = item.prices[idx][1] || base;
+      return sum + (((point / base) - 1) * 100);
+    }, 0);
+    return score / trimmed.length;
+  });
+  const trackedIndex = marketCapSeries.map(point => 100 * (point / marketCapSeries[0]));
+  return { labels, marketCapSeries, volumeSeries, breadthSeries, trackedIndex, trimmed };
+}
+
+function _buildOverviewMetrics(){
+  const snapshot = _marketOverviewSnapshot;
+  const aggregate = _buildOverviewAggregate(_marketOverviewRange) || _buildOverviewAggregate('30d');
+  const totalMarketCap = snapshot.reduce((sum, coin) => sum + (coin.market_cap || 0), 0);
+  const totalVolume = snapshot.reduce((sum, coin) => sum + (coin.total_volume || 0), 0);
+  const changes = snapshot.map(coin => coin.price_change_percentage_24h_in_currency ?? coin.price_change_percentage_24h ?? 0);
+  const positiveCount = changes.filter(v => v >= 0).length;
+  const avgChange = changes.length ? changes.reduce((sum, v) => sum + v, 0) / changes.length : 0;
+  const breadthPct = snapshot.length ? (positiveCount / snapshot.length) * 100 : 50;
+  const btc = _overviewLeaderSnapshot('BTC');
+  const eth = _overviewLeaderSnapshot('ETH');
+  const btcDominance = totalMarketCap ? ((btc?.market_cap || 0) / totalMarketCap) * 100 : 0;
+  const ethDominance = totalMarketCap ? ((eth?.market_cap || 0) / totalMarketCap) * 100 : 0;
+  const othersDominance = Math.max(0, 100 - btcDominance - ethDominance);
+  const trackedIndex = aggregate?.trackedIndex || [100];
+  const trackedChange = trackedIndex.length > 1 ? ((trackedIndex[trackedIndex.length - 1] / trackedIndex[Math.max(0, trackedIndex.length - 2)]) - 1) * 100 : 0;
+  const fgRaw = 50 + (avgChange * 5) + ((breadthPct - 50) * 0.55) + ((trackedIndex[trackedIndex.length - 1] - 100) * 0.9) - Math.max(0, btcDominance - 52) * 0.3;
+  const fearGreed = Math.max(5, Math.min(95, Math.round(fgRaw)));
+  const fearGreedLabel = fearGreed >= 75 ? 'Greed' : fearGreed >= 56 ? 'Risk-On' : fearGreed >= 45 ? 'Neutral' : fearGreed >= 26 ? 'Fear' : 'Capitulation';
+  const altPack = _marketOverviewSeries['30d'] || [];
+  const leaderReturns = altPack.map(item => {
+    const prices = item.chart?.prices || [];
+    if(prices.length < 2) return { base: item.market.base, ret: 0 };
+    return { base: item.market.base, ret: ((prices[prices.length - 1][1] / prices[0][1]) - 1) * 100 };
+  });
+  const btcReturn = leaderReturns.find(item => item.base === 'BTC')?.ret || 0;
+  const altReturns = leaderReturns.filter(item => item.base !== 'BTC');
+  const outperformers = altReturns.filter(item => item.ret > btcReturn).length;
+  const altSeason = altReturns.length ? Math.round((outperformers / altReturns.length) * 100) : 50;
+  const flowItems = snapshot
+    .filter(coin => _MARKET_OVERVIEW_LEADERS.some(base => _overviewLeaderMarket(base)?.cgId === coin.id))
+    .map(coin => ({
+      label: coin.symbol.toUpperCase(),
+      value: (coin.total_volume || 0) * ((coin.price_change_percentage_24h_in_currency ?? coin.price_change_percentage_24h ?? 0) / 100),
+      change: coin.price_change_percentage_24h_in_currency ?? coin.price_change_percentage_24h ?? 0
+    }))
+    .sort((a,b) => Math.abs(b.value) - Math.abs(a.value));
+  const btcVol = (_marketOverviewSeries['30d'] || []).find(item => item.market.base === 'BTC')?.chart?.prices || [];
+  let realizedVol = 0;
+  if(btcVol.length > 2){
+    const returns = [];
+    for(let i = 1; i < btcVol.length; i++){
+      returns.push(Math.log((btcVol[i][1] || 1) / (btcVol[i - 1][1] || 1)));
+    }
+    const mean = returns.reduce((sum, v) => sum + v, 0) / returns.length;
+    const variance = returns.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / returns.length;
+    realizedVol = Math.sqrt(variance) * Math.sqrt(365) * 100;
+  }
+  return {
+    totalMarketCap,
+    totalVolume,
+    breadthPct,
+    avgChange,
+    fearGreed,
+    fearGreedLabel,
+    altSeason,
+    trackedIndex,
+    trackedChange,
+    btcDominance,
+    ethDominance,
+    othersDominance,
+    flowItems,
+    realizedVol
+  };
+}
+
+function _renderOverviewSpotlights(){
+  const spotlight = document.getElementById('overview-spotlight-grid');
+  if(!spotlight) return;
+  const cards = _MARKET_OVERVIEW_LEADERS.map(base => {
+    const market = _overviewLeaderMarket(base);
+    const snapshot = _overviewLeaderSnapshot(base);
+    if(!market || !snapshot) return '';
+    const live = _overviewLiveTicker(base, snapshot.current_price);
+    const series = (_marketOverviewSeries['30d'] || []).find(item => item.market.base === base)?.chart?.prices || [];
+    const spark = series.slice(-10).map(point => point[1]);
+    const change = live.change ?? (snapshot.price_change_percentage_24h_in_currency ?? snapshot.price_change_percentage_24h ?? 0);
+    const tone = _overviewToneColor(change);
+    return `
+      <div class="overview-spot-card" onclick="switchAppView('trade');selectMarket('${market.sym}','${market.base}','${market.name.replace(/'/g, "\\'")}')">
+        <div class="overview-spot-meta">
+          <div class="overview-spot-title">${coinIcon(market, 20)}<span>${market.name}</span></div>
+          <div class="overview-spot-price">${_overviewFmtPrice(live.price)}</div>
+          <div class="overview-spot-change" style="color:${tone}">${_overviewFmtPct(change)}</div>
+        </div>
+        <div style="width:96px;flex-shrink:0">${_overviewSparkline(spark, tone)}</div>
+      </div>`;
+  }).join('');
+  spotlight.innerHTML = cards;
+}
+
+function _renderOverviewCards(){
+  const metrics = _buildOverviewMetrics();
+  const aggregate = _buildOverviewAggregate(_marketOverviewRange) || _buildOverviewAggregate('30d');
+  if(!metrics || !aggregate) return;
+
+  const fgEl = document.getElementById('overview-fear-greed-card');
+  if(fgEl){
+    const color = metrics.fearGreed >= 70 ? '#16A34A' : metrics.fearGreed >= 45 ? '#F59E0B' : '#DC2626';
+    fgEl.innerHTML = `
+      <div class="overview-fg-gauge" style="background:conic-gradient(${color} 0 ${metrics.fearGreed * 3.6}deg,#E2E8F0 ${metrics.fearGreed * 3.6}deg 360deg)">
+        <div class="overview-fg-inner">
+          <div class="overview-fg-score">${metrics.fearGreed}</div>
+          <div class="overview-fg-label">${metrics.fearGreedLabel}</div>
+        </div>
+      </div>
+      <div class="overview-helper">Breadth is ${metrics.breadthPct.toFixed(0)}% positive with an average 24h move of ${_overviewFmtPct(metrics.avgChange)} across the tracked universe.</div>`;
+  }
+
+  const altEl = document.getElementById('overview-alt-season-card');
+  if(altEl){
+    const knob = Math.max(6, Math.min(94, metrics.altSeason));
+    const seasonLabel = metrics.altSeason >= 65 ? 'Altcoin Season' : metrics.altSeason <= 35 ? 'Bitcoin Season' : 'Rotation';
+    altEl.innerHTML = `
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px">
+        <div>
+          <div style="font-size:28px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.03em">${metrics.altSeason}<span style="font-size:14px;color:#94A3B8">/100</span></div>
+          <div style="font-size:11px;font-weight:700;color:#64748B;font-family:var(--font-body)">${seasonLabel}</div>
+        </div>
+        <div class="overview-helper" style="max-width:150px;text-align:right">Measures how many leaders are beating Bitcoin over the last 30 days.</div>
+      </div>
+      <div class="overview-range-bar">
+        <div class="overview-range-fill" style="width:${knob}%"></div>
+        <div class="overview-range-knob" style="left:${knob}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px">
+        <span class="muted" style="font-size:10px">Bitcoin Season</span>
+        <span class="muted" style="font-size:10px">Altcoin Season</span>
+      </div>`;
+  }
+
+  const trackedEl = document.getElementById('overview-tracked-index-card');
+  if(trackedEl){
+    trackedEl.innerHTML = `
+      <div class="overview-index-head">
+        <div>
+          <div class="overview-index-value">${aggregate.trackedIndex[aggregate.trackedIndex.length - 1].toFixed(1)}</div>
+          <div class="overview-index-change" style="color:${_overviewToneColor(metrics.trackedChange)}">${_overviewFmtPct(metrics.trackedChange)} today</div>
+        </div>
+        <div class="muted" style="font-size:10px">Base 100</div>
+      </div>
+      <div>${_overviewSparkline(aggregate.trackedIndex.slice(-12), _overviewToneColor(metrics.trackedChange))}</div>`;
+  }
+
+  const marketStats = document.getElementById('overview-market-stats');
+  if(marketStats){
+    marketStats.innerHTML = [
+      ['Market Cap', _overviewFmtMoney(metrics.totalMarketCap)],
+      ['Volume', _overviewFmtMoney(metrics.totalVolume)],
+      ['Positive Breadth', `${metrics.breadthPct.toFixed(0)}%`],
+      ['Tracked Index', `${aggregate.trackedIndex[aggregate.trackedIndex.length - 1].toFixed(1)}`]
+    ].map(([label, value]) => `
+      <div class="overview-stat-block">
+        <div class="overview-stat-label">${label}</div>
+        <div class="overview-stat-value">${value}</div>
+      </div>`).join('');
+  }
+
+  const dominanceEl = document.getElementById('overview-dominance-card');
+  if(dominanceEl){
+    dominanceEl.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:14px">
+        ${[
+          ['Bitcoin', metrics.btcDominance, '#F59E0B'],
+          ['Ethereum', metrics.ethDominance, '#3B82F6'],
+          ['Others', metrics.othersDominance, '#CBD5E1']
+        ].map(([label, value, color]) => `
+          <div>
+            <div class="overview-dom-row">
+              <div class="overview-dom-label"><span style="width:8px;height:8px;border-radius:50%;background:${color};display:inline-block"></span>${label}</div>
+              <div class="overview-dom-value">${value.toFixed(1)}%</div>
+            </div>
+            <div class="overview-dom-bar"><div style="height:100%;width:${value}%;background:${color}"></div></div>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  const pressureEl = document.getElementById('overview-pressure-card');
+  if(pressureEl){
+    const topFlow = metrics.flowItems[0];
+    pressureEl.innerHTML = `
+      <div class="overview-stat-row" style="margin-bottom:14px">
+        <div class="overview-stat-block">
+          <div class="overview-stat-label">Turnover / MCap</div>
+          <div class="overview-stat-value">${((metrics.totalVolume / Math.max(metrics.totalMarketCap, 1)) * 100).toFixed(2)}%</div>
+        </div>
+        <div class="overview-stat-block">
+          <div class="overview-stat-label">BTC Realized Vol</div>
+          <div class="overview-stat-value">${metrics.realizedVol.toFixed(1)}%</div>
+        </div>
+      </div>
+      <div class="overview-helper">${topFlow ? `${topFlow.label} is carrying the strongest ${topFlow.value >= 0 ? 'upside' : 'downside'} pressure with a ${_overviewFmtPct(topFlow.change)} move on elevated turnover.` : 'Waiting for enough market data to identify the strongest positioning signal.'}</div>`;
+  }
+
+  const flowSummary = document.getElementById('overview-flow-summary');
+  if(flowSummary){
+    const positive = metrics.flowItems.filter(item => item.value >= 0).length;
+    flowSummary.textContent = `${positive} of ${metrics.flowItems.length} tracked leaders are printing positive capital pressure right now.`;
+  }
+
+  const flowLabel = document.getElementById('overview-flow-label');
+  if(flowLabel) flowLabel.textContent = _marketOverviewUpdatedAt ? `Updated ${_coinRelativeTime(_marketOverviewUpdatedAt)}` : 'Top flow movers';
+}
+
+function _renderOverviewCharts(){
+  const aggregate = _buildOverviewAggregate(_marketOverviewRange) || _buildOverviewAggregate('30d');
+  const metrics = _buildOverviewMetrics();
+  if(!aggregate || !metrics) return;
+
+  const marketCanvas = document.getElementById('overview-market-cap-chart');
+  if(marketCanvas){
+    if(_overviewMarketChart) _overviewMarketChart.destroy();
+    const dataset = _marketOverviewMode === 'breadth'
+      ? aggregate.breadthSeries
+      : aggregate.marketCapSeries;
+    _overviewMarketChart = new Chart(marketCanvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: aggregate.labels,
+        datasets: [{
+          data: dataset,
+          borderWidth: 2.5,
+          tension: 0.32,
+          pointRadius: 0,
+          fill: _marketOverviewMode === 'breadth',
+          borderColor: _marketOverviewMode === 'breadth' ? '#3B82F6' : '#10B981',
+          backgroundColor: _marketOverviewMode === 'breadth' ? 'rgba(59,130,246,.12)' : 'rgba(16,185,129,.10)',
+          segment: _marketOverviewMode === 'overview' ? {
+            borderColor: ctx => ctx.p1.parsed.y >= ctx.p0.parsed.y ? '#16A34A' : '#EF4444'
+          } : undefined
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0F172A',
+            titleColor: '#E2E8F0',
+            bodyColor: '#CBD5E1',
+            padding: 10,
+            callbacks: {
+              label: (ctx) => _marketOverviewMode === 'breadth'
+                ? `Breadth ${ctx.parsed.y.toFixed(2)}%`
+                : `Market cap ${_overviewFmtMoney(ctx.parsed.y)}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#94A3B8', font: { size: 10, family: 'Inter' }, maxRotation: 0 }
+          },
+          y: {
+            grid: { color: '#F1F5F9' },
+            ticks: {
+              color: '#94A3B8',
+              font: { size: 10, family: 'Space Mono' },
+              callback: value => _marketOverviewMode === 'breadth'
+                ? `${Number(value).toFixed(0)}%`
+                : _overviewFmtMoney(value)
+            }
+          }
+        }
+      }
+    });
+  }
+
+  const flowCanvas = document.getElementById('overview-flow-chart');
+  if(flowCanvas){
+    if(_overviewFlowChart) _overviewFlowChart.destroy();
+    _overviewFlowChart = new Chart(flowCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: metrics.flowItems.map(item => item.label),
+        datasets: [{
+          data: metrics.flowItems.map(item => item.value / 1e9),
+          backgroundColor: metrics.flowItems.map(item => item.value >= 0 ? 'rgba(16,185,129,.8)' : 'rgba(239,68,68,.8)'),
+          borderRadius: 6,
+          maxBarThickness: 34
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0F172A',
+            titleColor: '#E2E8F0',
+            bodyColor: '#CBD5E1',
+            padding: 10,
+            callbacks: {
+              label: (ctx) => `Flow score ${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}B`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#94A3B8', font: { size: 10, family: 'Inter' } }
+          },
+          y: {
+            grid: { color: '#F1F5F9' },
+            ticks: {
+              color: '#94A3B8',
+              font: { size: 10, family: 'Space Mono' },
+              callback: value => `${Number(value).toFixed(0)}B`
+            }
+          }
+        }
+      }
+    });
+  }
+}
+
+function renderMarketOverview(){
+  if(!_marketOverviewSnapshot.length) return _renderMarketOverviewLoading();
+  _renderOverviewSpotlights();
+  _renderOverviewCards();
+  _renderOverviewCharts();
+  _updateTopbarForPrimaryView();
+}
+
+async function loadMarketOverview(force=false){
+  const cached = _readClientCache('q_market_overview_snapshot', 15 * 60 * 1000);
+  if(!_marketOverviewSnapshot.length && cached?.data?.length){
+    _marketOverviewSnapshot = cached.data;
+    _marketOverviewUpdatedAt = cached.ts;
+    renderMarketOverview();
+  }
+  if(_marketOverviewLoading) return;
+  if(!force && _marketOverviewSnapshot.length && (Date.now() - _marketOverviewUpdatedAt) < 5 * 60 * 1000){
+    if(!_marketOverviewSeries['30d']) await _ensureMarketOverviewSeries('30d');
+    if(!_marketOverviewSeries[_marketOverviewRange]) await _ensureMarketOverviewSeries(_marketOverviewRange);
+    renderMarketOverview();
+    return;
+  }
+  _marketOverviewLoading = true;
+  _renderMarketOverviewLoading();
+  try {
+    const res = await fetch(_cgUrl('market', { ids: _MARKET_OVERVIEW_IDS.join(',') }));
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if(Array.isArray(data) && data.length){
+      _marketOverviewSnapshot = data;
+      _marketOverviewUpdatedAt = Date.now();
+      _writeClientCache('q_market_overview_snapshot', data);
+    }
+    await _ensureMarketOverviewSeries('30d');
+    if(_marketOverviewRange !== '30d') await _ensureMarketOverviewSeries(_marketOverviewRange);
+    renderMarketOverview();
+  } catch(err){
+    console.warn('Market overview refresh failed:', err.message);
+    if(!_marketOverviewSnapshot.length && cached?.data?.length){
+      _marketOverviewSnapshot = cached.data;
+      _marketOverviewUpdatedAt = cached.ts;
+      await _ensureMarketOverviewSeries('30d');
+      if(_marketOverviewRange !== '30d') await _ensureMarketOverviewSeries(_marketOverviewRange);
+      renderMarketOverview();
+    } else if(!_marketOverviewSnapshot.length){
+      showToast('Market overview is temporarily unavailable', 'error');
+    }
+  } finally {
+    _marketOverviewLoading = false;
+  }
+}
+
+window.setMarketOverviewRange = async function(range){
+  if(range === _marketOverviewRange) return;
+  _marketOverviewRange = range;
+  document.querySelectorAll('#overview-range-tabs .overview-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.range === range));
+  await _ensureMarketOverviewSeries(range);
+  renderMarketOverview();
+};
+
+window.setMarketOverviewMode = function(mode){
+  _marketOverviewMode = mode === 'breadth' ? 'breadth' : 'overview';
+  document.querySelectorAll('#overview-mode-tabs .overview-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === _marketOverviewMode));
+  renderMarketOverview();
+};
 
 let _selectMarketBusy = false; /* guard against concurrent coin-switch calls */
 
@@ -3144,6 +3891,7 @@ async function fetchAllMarketPrices(){
         vol:   parseFloat(t.quoteVolume)
       }, false);
     });
+    if(_marketOverviewSnapshot.length && _primaryView === 'overview') renderMarketOverview();
   } catch(e){
     console.error('Fetch prices failed:', e);
   }
@@ -3626,6 +4374,54 @@ document.addEventListener('keydown', (event) => {
   if(event.key === 'Escape') closeCoinTLDRModal();
 });
 
+window.handleTopbarRefresh = async function(){
+  if(_primaryView !== 'overview') return fetchLiveData();
+  const btn  = document.getElementById('refresh-btn');
+  const icon = document.getElementById('refresh-icon');
+  if(!btn) return;
+
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+  icon.style.animation = 'spin 0.8s linear infinite';
+
+  try {
+    _lastMarketFetch = 0;
+    await Promise.all([fetchAllMarketPrices(), loadMarketOverview(true)]);
+    icon.style.animation = '';
+    btn.style.opacity = '1';
+    btn.style.background = '#F0FDF4';
+    btn.style.borderColor = '#A7F3D0';
+    btn.style.color = '#059669';
+    btn.querySelector('span').textContent = 'Updated ✓';
+    icon.setAttribute('stroke','#059669');
+    setTimeout(() => {
+      btn.style.background = 'white';
+      btn.style.borderColor = '#E2E8F0';
+      btn.style.color = '#334155';
+      btn.querySelector('span').textContent = 'Refresh';
+      icon.setAttribute('stroke','#64748B');
+      btn.disabled = false;
+    }, 2200);
+  } catch(err){
+    console.error('Overview refresh error:', err);
+    icon.style.animation = '';
+    btn.style.opacity = '1';
+    btn.style.background = '#FEF2F2';
+    btn.style.borderColor = '#FECACA';
+    btn.style.color = '#DC2626';
+    btn.querySelector('span').textContent = 'Failed ✕';
+    icon.setAttribute('stroke','#DC2626');
+    setTimeout(() => {
+      btn.style.background = 'white';
+      btn.style.borderColor = '#E2E8F0';
+      btn.style.color = '#334155';
+      btn.querySelector('span').textContent = 'Refresh';
+      icon.setAttribute('stroke','#64748B');
+      btn.disabled = false;
+    }, 2200);
+  }
+};
+
 /* ══ LIVE DATA REFRESH (manual Refresh button) ══ */
 window.fetchLiveData = async function(){
   if(_selectMarketBusy) return;
@@ -3800,6 +4596,8 @@ renderSetupsList();
 renderConfChart(TF_DATA['1H'].confHistory);
 renderPositions();
 renderPerfChart();
+_showPrimaryView();
+loadMarketOverview();
 
 if(DEMO_MODE){
   initDemoMode();
