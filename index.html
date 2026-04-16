@@ -776,14 +776,6 @@ p,span,div,input,button{
     </button>
   </div>
 
-  <!-- Language switcher -->
-  <div style="padding:8px 12px;border-bottom:1px solid #F1F5F9">
-    <div id="lang-switcher" style="display:flex;align-items:center;border-radius:8px;background:#F1F5F9;padding:3px;gap:2px;cursor:pointer">
-      <button class="lang-btn active" data-lang="en" onclick="_switchLang('en')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 8px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s;background:white;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,.08)">&#x1F1FA;&#x1F1F8; EN</button>
-      <button class="lang-btn" data-lang="id" onclick="_switchLang('id')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 8px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s;background:transparent;color:#64748B">&#x1F1EE;&#x1F1E9; ID</button>
-    </div>
-  </div>
-
   <div style="padding:6px 8px 10px;flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0">
     <div class="nav-section-label" data-i18n="nav_analysis">Analysis</div>
     <div class="nav-item active" id="nav-market-overview" onclick="switchAppView('overview')">
@@ -809,8 +801,16 @@ p,span,div,input,button{
 
     <div id="levels-list"></div>
 
-    <!-- User profile & Back link (Now Inside Scrollable Area for reachability) -->
-    <div style="padding:10px 8px 10px;border-top:1px solid #F1F5F9;margin-top:auto">
+    <!-- Language switcher -->
+    <div style="padding:6px 8px 8px;margin-top:auto">
+      <div id="lang-switcher" style="display:flex;align-items:center;border-radius:8px;background:#F1F5F9;padding:3px;gap:2px">
+        <button class="lang-btn active" data-lang="en" onclick="_switchLang('en')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 8px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s;background:white;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,.08)">🇺🇸 EN</button>
+        <button class="lang-btn" data-lang="id" onclick="_switchLang('id')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 8px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s;background:transparent;color:#64748B">🇮🇩 ID</button>
+      </div>
+    </div>
+
+    <!-- User profile -->
+    <div style="padding:10px 8px 10px;border-top:1px solid #F1F5F9">
       <div class="user-footer-row" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:#F8FAFC">
         <div id="sb-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#10B981,#3B82F6);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
           <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
