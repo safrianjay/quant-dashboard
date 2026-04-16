@@ -252,22 +252,23 @@ p,span,div,input,button{
   font-family:var(--font-body);transition:all .15s;flex-shrink:0;padding:0;line-height:1;
 }
 .info-btn:hover{border-color:#64748B;color:#64748B;background:#F8FAFC}
+/* Always hide tooltip text — desktop shows on hover, mobile uses bottom sheet */
+.info-tooltip{display:none !important}
+.info-wrap{position:relative;display:inline-flex}
 
-/* Desktop tooltip */
+/* Desktop tooltip on hover */
 @media(min-width:641px){
-  .info-tooltip{
-    display:none;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  .info-wrap:hover .info-tooltip{
+    display:block !important;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
     background:#0F172A;color:white;font-size:11px;font-weight:400;line-height:1.5;
     padding:10px 14px;border-radius:10px;width:240px;z-index:100;
     font-family:var(--font-body);box-shadow:0 8px 24px rgba(0,0,0,.18);pointer-events:none;
   }
-  .info-tooltip::before{
-    content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+  .info-wrap:hover .info-tooltip::before{
+    content:'';position:absolute;top:-5px;left:50%;
     width:10px;height:10px;background:#0F172A;border-radius:2px;
     transform:translateX(-50%) rotate(45deg);
   }
-  .info-wrap{position:relative;display:inline-flex}
-  .info-wrap:hover .info-tooltip{display:block}
 }
 
 /* Mobile bottom sheet */
@@ -301,7 +302,8 @@ p,span,div,input,button{
   #cd-grid  { grid-template-columns: 1fr !important; }
   #coin-detail-view { padding:12px 12px 40px !important; }
   #cd-tv-container  { height:260px !important; }
-  #cd-cycles-grid { grid-template-columns: 1fr !important; }
+  #cd-cycles-grid { grid-template-columns: 1fr !important; gap:10px !important; }
+  #cd-cycles-grid > div { padding:14px !important; }
 
   /* Collapsible stats on mobile */
   .cd-stats-list {
