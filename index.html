@@ -902,7 +902,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_fear_greed">Fear & Greed Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Fear &amp; Greed Index','A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).')" type="button">?</button><span class="info-tooltip">A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_fear_greed">Fear & Greed Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('fg_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_fg_overview_d">A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).</span></span></div>
                 <div class="muted" data-i18n="sub_fear_greed" id="overview-fg-sub">Live breadth pulse from tracked crypto leaders</div>
               </div>
             </div>
@@ -912,7 +912,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_altcoin_season">Altcoin Season Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Altcoin Season Index','Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).')" type="button">?</button><span class="info-tooltip">Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_altcoin_season">Altcoin Season Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('alt_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_alt_overview_d">Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).</span></span></div>
                 <div class="muted" data-i18n="sub_altcoin_season">Outperformance versus Bitcoin across tracked leaders</div>
               </div>
             </div>
@@ -922,7 +922,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_tracked_index">Tracked Market Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Tracked Market Index','A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.')" type="button">?</button><span class="info-tooltip">A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_tracked_index">Tracked Market Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('ti_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_ti_overview_d">A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.</span></span></div>
                 <div class="muted" data-i18n="sub_tracked_index">Weighted performance basket of the market leaders we monitor</div>
               </div>
             </div>
@@ -933,7 +933,7 @@ p,span,div,input,button{
         <div class="card">
           <div class="card-head" style="padding-bottom:10px">
             <div>
-              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_market_snapshot">Crypto Market Snapshot</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Crypto Market Snapshot','Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.')" type="button">?</button><span class="info-tooltip">Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.</span></span></div>
+              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_market_snapshot">Crypto Market Snapshot</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('ms_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_ms_overview_d">Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.</span></span></div>
               <div class="muted" data-i18n="sub_market_snapshot" id="overview-snapshot-sub">Aggregated view across the largest tracked assets</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
@@ -961,7 +961,7 @@ p,span,div,input,button{
         <div class="card">
           <div class="card-head" style="padding-bottom:10px">
             <div>
-              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_capital_flow">Capital Flow Pulse</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Capital Flow Pulse','Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.')" type="button">?</button><span class="info-tooltip">Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.</span></span></div>
+              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_capital_flow">Capital Flow Pulse</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('cf_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_cf_overview_d">Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.</span></span></div>
               <div class="muted" data-i18n="sub_capital_flow">Daily pressure by asset using turnover and directional change</div>
             </div>
             <div style="font-size:10px;color:#94A3B8;font-family:var(--font-body)" id="overview-flow-label">Top flow movers</div>
@@ -978,7 +978,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_market_dominance">Market Dominance</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Market Dominance','Shows each asset&#39;s share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.')" type="button">?</button><span class="info-tooltip">Shows each asset's share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_market_dominance">Market Dominance</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('md_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_md_overview_d">Shows each asset's share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.</span></span></div>
                 <div class="muted" data-i18n="sub_market_dominance">Share of tracked market cap by the biggest leaders</div>
               </div>
             </div>
@@ -988,7 +988,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_positioning_pressure">Positioning Pressure</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('Positioning Pressure','Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.')" type="button">?</button><span class="info-tooltip">Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_positioning_pressure">Positioning Pressure</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('pp_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_pp_overview_d">Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.</span></span></div>
                 <div class="muted" data-i18n="sub_positioning_pressure">Spot-based proxy for conviction, turnover, and realized volatility</div>
               </div>
             </div>
@@ -1123,8 +1123,8 @@ p,span,div,input,button{
           <div style="display:flex;align-items:center;gap:6px;min-width:0">
             <span class="section-title" id="coin-tldr-section-title" style="font-size:16px;font-weight:800;color:#0F172A">Coin TLDR</span>
             <span class="info-wrap">
-              <button class="info-btn" onclick="showInfo('Coin TLDR','A live short-form summary for the coin currently open in detail view. It updates from the latest market tape and QuantAnalyst signal stack, then saves a rolling history per asset.')" type="button">?</button>
-              <span class="info-tooltip">A live short-form summary for the coin currently open in detail view.</span>
+              <button class="info-btn" onclick="showInfo('coin_tldr')" type="button">?</button>
+              <span class="info-tooltip" data-i18n="info_coin_tldr_d">A live short-form summary for the coin currently open in detail view. It updates from the latest market tape and QuantAnalyst signal stack, then saves a rolling history per asset.</span>
             </span>
           </div>
         </div>
@@ -1652,6 +1652,38 @@ const _i18n = {
   alt_season:{en:'Altcoin Season',id:'Musim Altcoin'},
   btc_season:{en:'Bitcoin Season',id:'Musim Bitcoin'},
   alt_rotation:{en:'Rotation',id:'Rotasi'},
+  /* ── Info tooltip translations (overview cards) ── */
+  info_fg_overview_t:{en:'Fear & Greed Index',id:'Indeks Ketakutan & Keserakahan'},
+  info_fg_overview_d:{en:'A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).',id:'Skor komposit 0–100 yang dihitung dari keluasan pasar, rata-rata perubahan 24 jam, tren moving average, dan dominasi BTC. Di bawah 25 menandakan ketakutan ekstrem (zona beli potensial), di atas 75 menandakan keserakahan (zona distribusi potensial).'},
+  info_alt_overview_t:{en:'Altcoin Season Index',id:'Indeks Musim Altcoin'},
+  info_alt_overview_d:{en:'Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).',id:'Mengukur berapa banyak altcoin terpantau yang mengungguli Bitcoin selama 30 hari terakhir. Di atas 65 menandakan Musim Altcoin (altcoin memimpin), di bawah 35 menandakan Musim Bitcoin (dominasi BTC naik).'},
+  info_ti_overview_t:{en:'Tracked Market Index',id:'Indeks Pasar Terpantau'},
+  info_ti_overview_d:{en:'A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.',id:'Keranjang kinerja tertimbang dari aset kripto terbesar yang kami pantau, diindeks ke 100 pada awal rentang waktu yang dipilih. Nilai di atas 100 menunjukkan pasar naik, di bawah 100 menunjukkan penurunan.'},
+  info_ms_overview_t:{en:'Crypto Market Snapshot',id:'Ringkasan Pasar Kripto'},
+  info_ms_overview_d:{en:'Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.',id:'Kapitalisasi pasar dan volume agregat dari aset kripto terbesar yang dipantau. Grafik menunjukkan total kapitalisasi pasar dari waktu ke waktu dengan segmen hijau/merah menandakan pergerakan naik/turun. Beralih ke mode Keluasan untuk melihat rata-rata kinerja semua aset.'},
+  info_cf_overview_t:{en:'Capital Flow Pulse',id:'Aliran Modal'},
+  info_cf_overview_d:{en:'Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.',id:'Menunjukkan tekanan modal harian untuk setiap aset yang dipantau, dihitung dengan mengalikan volume 24 jam dengan perubahan harga arah. Batang positif (hijau) menandakan tekanan beli, batang negatif (merah) menandakan tekanan jual.'},
+  info_md_overview_t:{en:'Market Dominance',id:'Dominasi Pasar'},
+  info_md_overview_d:{en:"Shows each asset's share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.",id:'Menunjukkan pangsa setiap aset dari total kapitalisasi pasar yang dipantau. Dominasi BTC yang meningkat sering menandakan sentimen risk-off, sementara dominasi yang menurun menunjukkan rotasi modal ke altcoin.'},
+  info_pp_overview_t:{en:'Positioning Pressure',id:'Tekanan Posisi'},
+  info_pp_overview_d:{en:'Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.',id:'Mengukur keyakinan pasar menggunakan rasio turnover (volume / kapitalisasi pasar) dan volatilitas terealisasi BTC. Turnover tinggi dengan volatilitas rendah menunjukkan akumulasi, sementara volatilitas tinggi dengan turnover menurun menandakan distribusi.'},
+  info_coin_tldr_t:{en:'Coin TLDR',id:'Ringkasan Koin'},
+  info_coin_tldr_d:{en:'A live short-form summary for the coin currently open in detail view. It updates from the latest market tape and QuantAnalyst signal stack, then saves a rolling history per asset.',id:'Ringkasan singkat langsung untuk koin yang sedang dibuka di tampilan detail. Diperbarui dari data pasar terbaru dan sinyal QuantAnalyst, lalu menyimpan riwayat bergulir per aset.'},
+  /* ── Info tooltip translations (market cycle indicators) ── */
+  info_fg_cycle_t:{en:'Fear & Greed Index',id:'Indeks Ketakutan & Keserakahan'},
+  info_fg_cycle_d:{en:'A composite score from 0-100 based on RSI momentum, moving average trends, and price distance from highs. Below 25 signals extreme fear (potential buy), above 75 signals extreme greed (potential sell).',id:'Skor komposit 0-100 berdasarkan momentum RSI, tren moving average, dan jarak harga dari titik tertinggi. Di bawah 25 menandakan ketakutan ekstrem (potensi beli), di atas 75 menandakan keserakahan ekstrem (potensi jual).'},
+  info_mayer_t:{en:'Mayer Multiple',id:'Mayer Multiple'},
+  info_mayer_d:{en:'The ratio of current price to the 200-day moving average. Values below 0.8 suggest the asset is undervalued, while values above 2.4 historically indicate overheated conditions and potential cycle tops.',id:'Rasio harga saat ini terhadap moving average 200 hari. Nilai di bawah 0,8 menunjukkan aset undervalued, sementara nilai di atas 2,4 secara historis menandakan kondisi jenuh beli dan potensi puncak siklus.'},
+  info_rsi_t:{en:'RSI (14)',id:'RSI (14)'},
+  info_rsi_d:{en:'Relative Strength Index measures the speed and magnitude of recent price changes. Values below 30 indicate oversold conditions (potential bounce), while values above 70 indicate overbought conditions (potential pullback).',id:'Relative Strength Index mengukur kecepatan dan besarnya perubahan harga terkini. Nilai di bawah 30 menandakan kondisi oversold (potensi rebound), sementara nilai di atas 70 menandakan kondisi overbought (potensi koreksi).'},
+  info_ma_stack_t:{en:'MA Stack Order',id:'Urutan Tumpukan MA'},
+  info_ma_stack_d:{en:'Shows the alignment of key moving averages (50, 100, 200-day). When price is above all MAs and they are stacked in order, it signals a strong bullish trend. Reverse order signals bearish momentum.',id:'Menunjukkan susunan moving average utama (50, 100, 200 hari). Ketika harga di atas semua MA dan tersusun berurutan, ini menandakan tren bullish yang kuat. Urutan terbalik menandakan momentum bearish.'},
+  info_week52_t:{en:'52-Week Range',id:'Rentang 52 Minggu'},
+  info_week52_d:{en:'Shows where the current price sits between the lowest and highest prices over the past 365 days. Near the bottom suggests a potential value opportunity, near the top suggests caution.',id:'Menunjukkan posisi harga saat ini antara harga terendah dan tertinggi selama 365 hari terakhir. Dekat dasar menunjukkan peluang nilai potensial, dekat puncak menunjukkan kehati-hatian.'},
+  info_pi_cycle_t:{en:'Pi Cycle Top',id:'Pi Cycle Top'},
+  info_pi_cycle_d:{en:'A Bitcoin-specific indicator that compares the 111-day moving average with 2x the 350-day moving average. Historically, when the 111DMA crosses above the 350DMA x2, it has signaled major cycle tops with remarkable accuracy.',id:'Indikator khusus Bitcoin yang membandingkan moving average 111 hari dengan 2x moving average 350 hari. Secara historis, ketika 111DMA melintasi di atas 350DMA x2, ini menandakan puncak siklus besar dengan akurasi yang luar biasa.'},
+  info_volatility_t:{en:'Volatility',id:'Volatilitas'},
+  info_volatility_d:{en:'30-day annualized volatility measures the magnitude of daily price swings projected over a year. Low volatility (<50%) suggests consolidation, high volatility (>80%) suggests rapid price movement and higher risk.',id:'Volatilitas tahunan 30 hari mengukur besarnya ayunan harga harian yang diproyeksikan selama setahun. Volatilitas rendah (<50%) menunjukkan konsolidasi, volatilitas tinggi (>80%) menunjukkan pergerakan harga cepat dan risiko lebih tinggi.'},
 };
 
 function _t(key){ const e = _i18n[key]; return e ? (e[_currentLang] || e.en) : key; }
@@ -2427,22 +2459,20 @@ function toggleCDStats(){
 
 /* ── Info tooltip / bottom sheet system ── */
 const _isMobile = () => window.innerWidth <= 640;
-function showInfo(title, desc){
+function showInfo(key){
   if(_isMobile()){
-    document.getElementById('info-sheet-title').textContent = title;
-    document.getElementById('info-sheet-body').textContent = desc;
+    document.getElementById('info-sheet-title').textContent = _t('info_'+key+'_t');
+    document.getElementById('info-sheet-body').textContent = _t('info_'+key+'_d');
     document.getElementById('info-sheet-overlay').classList.add('open');
   }
 }
 function closeInfoSheet(){
   document.getElementById('info-sheet-overlay').classList.remove('open');
 }
-function infoBtn(title, desc){
-  const escaped = desc.replace(/'/g,'&#39;').replace(/"/g,'&quot;');
-  const escapedTitle = title.replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+function infoBtn(key){
   return `<span class="info-wrap">
-    <button class="info-btn" onclick="showInfo('${escapedTitle}','${escaped}')" type="button">?</button>
-    <span class="info-tooltip">${desc}</span>
+    <button class="info-btn" onclick="showInfo('${key}')" type="button">?</button>
+    <span class="info-tooltip">${_t('info_'+key+'_d')}</span>
   </span>`;
 }
 
@@ -2590,7 +2620,7 @@ async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:6px">
           <span style="${titleStyle}">Fear & Greed Index</span>
-          ${infoBtn('Fear & Greed Index','A composite score from 0-100 based on RSI momentum, moving average trends, and price distance from highs. Below 25 signals extreme fear (potential buy), above 75 signals extreme greed (potential sell).')}
+          ${infoBtn('fg_cycle')}
         </div>
         <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Technical</span>
       </div>
@@ -2610,7 +2640,7 @@ async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:6px">
           <span style="${titleStyle}">Mayer Multiple</span>
-          ${infoBtn('Mayer Multiple','The ratio of current price to the 200-day moving average. Values below 0.8 suggest the asset is undervalued, while values above 2.4 historically indicate overheated conditions and potential cycle tops.')}
+          ${infoBtn('mayer')}
         </div>
         <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Price / MA200</span>
       </div>
@@ -2636,7 +2666,7 @@ async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:6px">
           <span style="${titleStyle}">RSI (14)</span>
-          ${infoBtn('RSI (14)','Relative Strength Index measures the speed and magnitude of recent price changes. Values below 30 indicate oversold conditions (potential bounce), while values above 70 indicate overbought conditions (potential pullback).')}
+          ${infoBtn('rsi')}
         </div>
         <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Relative Strength</span>
       </div>
@@ -2656,7 +2686,7 @@ async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:6px">
           <span style="${titleStyle}">MA Stack Order</span>
-          ${infoBtn('MA Stack Order','Shows the alignment of key moving averages (50, 100, 200-day). When price is above all MAs and they are stacked in order, it signals a strong bullish trend. Reverse order signals bearish momentum.')}
+          ${infoBtn('ma_stack')}
         </div>
         <span style="padding:3px 8px;border-radius:100px;font-size:9px;font-weight:700;color:white;background:${maSignalColor};font-family:var(--font-body)">${maSignal}</span>
       </div>
@@ -2678,7 +2708,7 @@ async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:6px">
           <span style="${titleStyle}">52-Week Range</span>
-          ${infoBtn('52-Week Range','Shows where the current price sits between the lowest and highest prices over the past 365 days. Near the bottom suggests a potential value opportunity, near the top suggests caution.')}
+          ${infoBtn('week52')}
         </div>
         <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">365 days</span>
       </div>
@@ -2701,7 +2731,7 @@ async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <div style="display:flex;align-items:center;gap:6px">
             <span style="${titleStyle}">Pi Cycle Top</span>
-            ${infoBtn('Pi Cycle Top','A Bitcoin-specific indicator that compares the 111-day moving average with 2x the 350-day moving average. Historically, when the 111DMA crosses above the 350DMA x2, it has signaled major cycle tops with remarkable accuracy.')}
+            ${infoBtn('pi_cycle')}
           </div>
           <span style="padding:3px 8px;border-radius:100px;font-size:9px;font-weight:700;color:white;background:${piCrossed ? '#DC2626' : '#10B981'};font-family:var(--font-body)">${piCrossed ? 'CROSSED' : 'Not Crossed'}</span>
         </div>
@@ -2731,7 +2761,7 @@ async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <div style="display:flex;align-items:center;gap:6px">
             <span style="${titleStyle}">Volatility</span>
-            ${infoBtn('Volatility','30-day annualized volatility measures the magnitude of daily price swings projected over a year. Low volatility (<50%) suggests consolidation, high volatility (>80%) suggests rapid price movement and higher risk.')}
+            ${infoBtn('volatility')}
           </div>
           <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">30-day annualized</span>
         </div>
