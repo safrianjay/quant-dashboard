@@ -243,11 +243,15 @@ p,span,div,input,button{
 .cd-stats-toggle { display:none; }
 .cd-stats-list   { display:flex; flex-direction:column; gap:9px; }
 
+@media(max-width:960px){
+  #cd-cycles-grid { grid-template-columns: repeat(2,1fr) !important; }
+}
 @media(max-width:640px){
   #cd-grid  { grid-template-columns: 1fr !important; }
   #cd-left  { position:static !important; }
   #coin-detail-view { padding:12px 12px 40px !important; }
   #cd-tv-container  { height:260px !important; }
+  #cd-cycles-grid { grid-template-columns: 1fr !important; }
 
   /* Collapsible stats on mobile */
   .cd-stats-list {
@@ -806,6 +810,19 @@ p,span,div,input,button{
         <div id="cd-links" style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;flex-wrap:wrap;gap:7px"></div>
       </div>
 
+    </div>
+
+    <!-- ── Market Cycles Section ── -->
+    <div style="margin-top:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-family:var(--font-heading);font-size:14px;font-weight:800;color:#0F172A;display:flex;align-items:center;gap:6px">
+          <span>📊</span> Market Cycles
+        </div>
+        <span id="cd-cycle-status" style="font-size:10px;color:#94A3B8;font-family:var(--font-body)"></span>
+      </div>
+      <div id="cd-cycles-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div style="grid-column:1/-1;text-align:center;padding:24px;color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading market cycle data...</div>
+      </div>
     </div>
   </div>
 
@@ -1608,6 +1625,9 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
   /* Load sentiment votes from localStorage */
   _cdLoadSentiment(sym);
 
+  /* Load market cycle indicators */
+  _cdLoadCycleData(cgId, sym);
+
   /* Scroll to top */
   document.getElementById('coin-detail-view').scrollTop = 0;
 }
@@ -1762,6 +1782,273 @@ function toggleCDStats(){
   if(!list || !btn) return;
   const expanded = list.classList.toggle('expanded');
   btn.textContent = expanded ? 'Less details ▴' : 'More details ▾';
+}
+
+/* ── Market Cycles Indicators ── */
+async function _cdLoadCycleData(cgId, sym){
+  const grid = document.getElementById('cd-cycles-grid');
+  const status = document.getElementById('cd-cycle-status');
+  if(!grid) return;
+
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading market cycle data...</div>';
+
+  try {
+    /* Fetch 365-day daily chart for MA calculations */
+    const chartRes = await fetch(`/.netlify/functions/cg?type=chart&id=${encodeURIComponent(cgId)}&days=365`);
+    let closes = [], timestamps = [];
+    if(chartRes.ok){
+      const chart = await chartRes.json();
+      if(chart.prices && chart.prices.length){
+        timestamps = chart.prices.map(p => p[0]);
+        closes = chart.prices.map(p => p[1]);
+      }
+    }
+    if(!closes.length){ grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#94A3B8;font-size:11px">No chart data available</div>'; return; }
+
+    const price = closes[closes.length - 1];
+    const sma = (n) => { const s = closes.slice(-n); return s.length >= n ? s.reduce((a,b)=>a+b,0)/s.length : null; };
+
+    /* Calculate indicators */
+    const ma50  = sma(50);
+    const ma100 = sma(100);
+    const ma200 = sma(200);
+
+    /* RSI (14-day) */
+    const rsiPeriod = 14;
+    let gains = 0, losses = 0;
+    const recent = closes.slice(-(rsiPeriod+1));
+    for(let i=1; i<recent.length; i++){
+      const diff = recent[i] - recent[i-1];
+      if(diff > 0) gains += diff; else losses -= diff;
+    }
+    const avgGain = gains / rsiPeriod;
+    const avgLoss = losses / rsiPeriod;
+    const rsi = avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss));
+
+    /* MA200 Multiplier (Mayer Multiple) — price / MA200 */
+    const mayerMult = ma200 ? price / ma200 : null;
+
+    /* 52-week high/low */
+    const high52 = Math.max(...closes);
+    const low52  = Math.min(...closes);
+    const fromATH = ((price - high52) / high52 * 100);
+    const fromLow = ((price - low52) / low52 * 100);
+
+    /* Pi Cycle Top: 111DMA & 350DMA×2 (Bitcoin-specific) */
+    const isBTC = cgId === 'bitcoin';
+    const ma111 = closes.length >= 111 ? closes.slice(-111).reduce((a,b)=>a+b,0)/111 : null;
+    const ma350x2 = closes.length >= 350 ? (closes.slice(-350).reduce((a,b)=>a+b,0)/350) * 2 : null;
+    const piCrossed = ma111 && ma350x2 ? ma111 >= ma350x2 : false;
+    const piDist = ma111 && ma350x2 ? ((ma350x2 - ma111) / ma350x2 * 100) : null;
+
+    /* NVT-like signal from volume trend (simplified) */
+    const recentCloses = closes.slice(-30);
+    const volatility30d = recentCloses.length > 1 ? Math.sqrt(recentCloses.reduce((acc, p, i, arr) => {
+      if(i === 0) return 0;
+      const ret = Math.log(p / arr[i-1]);
+      return acc + ret * ret;
+    }, 0) / (recentCloses.length - 1)) * Math.sqrt(365) * 100 : 0;
+
+    /* Fear & Greed approximation from technical signals */
+    let fgScore = 50;
+    if(rsi < 30) fgScore -= 20; else if(rsi > 70) fgScore += 20; else fgScore += (rsi - 50) * 0.8;
+    if(ma200 && price > ma200) fgScore += 10; else if(ma200) fgScore -= 10;
+    if(mayerMult && mayerMult > 2.4) fgScore += 15;
+    if(mayerMult && mayerMult < 0.8) fgScore -= 15;
+    fgScore += fromATH > -10 ? 10 : fromATH > -30 ? 0 : -10;
+    fgScore = Math.max(0, Math.min(100, Math.round(fgScore)));
+    const fgLabel = fgScore <= 20 ? 'Extreme Fear' : fgScore <= 40 ? 'Fear' : fgScore <= 60 ? 'Neutral' : fgScore <= 80 ? 'Greed' : 'Extreme Greed';
+    const fgColor = fgScore <= 20 ? '#DC2626' : fgScore <= 40 ? '#F97316' : fgScore <= 60 ? '#94A3B8' : fgScore <= 80 ? '#10B981' : '#16A34A';
+
+    /* MA Stack Order */
+    const maStack = [];
+    if(ma50)  maStack.push({l:'MA50',  v:ma50});
+    if(ma100) maStack.push({l:'MA100', v:ma100});
+    if(ma200) maStack.push({l:'MA200', v:ma200});
+    const priceAboveAll = maStack.every(m => price > m.v);
+    const priceBelowAll = maStack.every(m => price < m.v);
+    const maSignal = priceAboveAll ? 'Full Bullish' : priceBelowAll ? 'Full Bearish' : 'Mixed';
+    const maSignalColor = priceAboveAll ? '#16A34A' : priceBelowAll ? '#DC2626' : '#F59E0B';
+
+    /* Cycle phase estimation */
+    const cyclePhase = mayerMult ? (
+      mayerMult >= 2.4 ? 'Euphoria' :
+      mayerMult >= 1.4 ? 'Bull Run' :
+      mayerMult >= 1.0 ? 'Expansion' :
+      mayerMult >= 0.8 ? 'Recovery' :
+      mayerMult >= 0.6 ? 'Accumulation' : 'Capitulation'
+    ) : 'Unknown';
+    const cycleColor = mayerMult ? (
+      mayerMult >= 2.4 ? '#DC2626' :
+      mayerMult >= 1.4 ? '#F59E0B' :
+      mayerMult >= 1.0 ? '#10B981' :
+      mayerMult >= 0.8 ? '#3B82F6' :
+      mayerMult >= 0.6 ? '#6366F1' : '#DC2626'
+    ) : '#94A3B8';
+
+    const fmtP = (v) => v < 1 ? '$'+v.toFixed(4) : v < 10 ? '$'+v.toFixed(3) : '$'+v.toLocaleString('en-US',{maximumFractionDigits:2});
+
+    /* ── Render gauge helper ── */
+    function gauge(value, min, max, colors){
+      const pct = Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100));
+      const gradient = colors || 'linear-gradient(90deg,#DC2626,#F97316,#FBBF24,#10B981,#16A34A)';
+      return `<div style="position:relative;height:8px;border-radius:4px;background:#F1F5F9;overflow:visible;margin-top:8px">
+        <div style="height:100%;border-radius:4px;background:${gradient};opacity:0.2;width:100%"></div>
+        <div style="position:absolute;top:-2px;left:calc(${pct}% - 6px);width:12px;height:12px;border-radius:50%;background:white;border:2.5px solid #0F172A;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .5s ease"></div>
+      </div>`;
+    }
+
+    /* ── Build cards ── */
+    let html = '';
+
+    /* 1. Fear & Greed */
+    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">Fear & Greed Index</span>
+        <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Technical</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+        <span style="font-family:var(--font-mono);font-size:28px;font-weight:800;color:${fgColor}">${fgScore}</span>
+        <span style="font-size:11px;font-weight:700;color:${fgColor};font-family:var(--font-body)">${fgLabel}</span>
+      </div>
+      ${gauge(fgScore, 0, 100)}
+      <div style="display:flex;justify-content:space-between;margin-top:6px">
+        <span style="font-size:9px;color:#DC2626;font-family:var(--font-body)">Extreme Fear</span>
+        <span style="font-size:9px;color:#16A34A;font-family:var(--font-body)">Extreme Greed</span>
+      </div>
+    </div>`;
+
+    /* 2. Mayer Multiple / MA200 status */
+    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">Mayer Multiple</span>
+        <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Price / MA200</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+        <span style="font-family:var(--font-mono);font-size:28px;font-weight:800;color:${cycleColor}">${mayerMult ? mayerMult.toFixed(2) : '—'}</span>
+        <span style="font-size:11px;font-weight:700;color:${cycleColor};font-family:var(--font-body)">${cyclePhase}</span>
+      </div>
+      ${mayerMult ? gauge(mayerMult, 0.4, 3.0, 'linear-gradient(90deg,#3B82F6,#10B981,#FBBF24,#DC2626)') : ''}
+      <div style="display:flex;justify-content:space-between;margin-top:6px">
+        <span style="font-size:9px;color:#3B82F6;font-family:var(--font-body)">Undervalued</span>
+        <span style="font-size:9px;color:#DC2626;font-family:var(--font-body)">Overvalued</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid #F1F5F9">
+        <div><div style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">MA200</div><div style="font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-mono)">${ma200 ? fmtP(ma200) : '—'}</div></div>
+        <div style="text-align:right"><div style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Distance</div><div style="font-size:11px;font-weight:700;color:${ma200 && price>ma200?'#16A34A':'#DC2626'};font-family:var(--font-mono)">${ma200 ? (price>ma200?'+':'')+ ((price/ma200-1)*100).toFixed(1) + '%' : '—'}</div></div>
+      </div>
+    </div>`;
+
+    /* 3. RSI */
+    const rsiColor = rsi <= 30 ? '#16A34A' : rsi >= 70 ? '#DC2626' : '#F59E0B';
+    const rsiLabel = rsi <= 30 ? 'Oversold' : rsi >= 70 ? 'Overbought' : 'Neutral';
+    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">RSI (14)</span>
+        <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Relative Strength</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+        <span style="font-family:var(--font-mono);font-size:28px;font-weight:800;color:${rsiColor}">${rsi.toFixed(1)}</span>
+        <span style="font-size:11px;font-weight:700;color:${rsiColor};font-family:var(--font-body)">${rsiLabel}</span>
+      </div>
+      ${gauge(rsi, 0, 100, 'linear-gradient(90deg,#16A34A,#10B981,#FBBF24,#F97316,#DC2626)')}
+      <div style="display:flex;justify-content:space-between;margin-top:6px">
+        <span style="font-size:9px;color:#16A34A;font-family:var(--font-body)">Oversold (&lt;30)</span>
+        <span style="font-size:9px;color:#DC2626;font-family:var(--font-body)">Overbought (&gt;70)</span>
+      </div>
+    </div>`;
+
+    /* 4. MA Stack Status */
+    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">MA Stack Order</span>
+        <span style="padding:3px 8px;border-radius:100px;font-size:9px;font-weight:700;color:white;background:${maSignalColor};font-family:var(--font-body)">${maSignal}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${[{l:'Price',v:price,c:'#0F172A'},{l:'MA50',v:ma50,c:'#10B981'},{l:'MA100',v:ma100,c:'#3B82F6'},{l:'MA200',v:ma200,c:'#F59E0B'}].map(m => m.v ? `
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="width:8px;height:8px;border-radius:2px;background:${m.c}"></div>
+            <span style="font-size:11px;font-weight:600;color:#64748B;font-family:var(--font-body)">${m.l}</span>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-mono)">${fmtP(m.v)}</span>
+        </div>` : '').join('')}
+      </div>
+    </div>`;
+
+    /* 5. 52-Week Range */
+    const rangePct = high52 !== low52 ? ((price - low52) / (high52 - low52)) * 100 : 50;
+    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">52-Week Range</span>
+        <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">365 days</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:700;color:#DC2626;font-family:var(--font-mono)">${fmtP(low52)}</span>
+        <span style="font-size:11px;font-weight:700;color:#16A34A;font-family:var(--font-mono)">${fmtP(high52)}</span>
+      </div>
+      <div style="position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,#FEE2E2,#F1F5F9,#D1FAE5);overflow:visible">
+        <div style="position:absolute;top:-2px;left:calc(${rangePct}% - 6px);width:12px;height:12px;border-radius:50%;background:white;border:2.5px solid #0F172A;box-shadow:0 1px 4px rgba(0,0,0,.2)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid #F1F5F9">
+        <div><div style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">From Low</div><div style="font-size:11px;font-weight:700;color:#16A34A;font-family:var(--font-mono)">+${fromLow.toFixed(1)}%</div></div>
+        <div style="text-align:right"><div style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">From High</div><div style="font-size:11px;font-weight:700;color:#DC2626;font-family:var(--font-mono)">${fromATH.toFixed(1)}%</div></div>
+      </div>
+    </div>`;
+
+    /* 6. Volatility + Pi Cycle (Bitcoin) or general stats */
+    if(isBTC && ma111 && ma350x2){
+      html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">Pi Cycle Top</span>
+          <span style="padding:3px 8px;border-radius:100px;font-size:9px;font-weight:700;color:white;background:${piCrossed ? '#DC2626' : '#10B981'};font-family:var(--font-body)">${piCrossed ? 'CROSSED ⚠️' : 'Not Crossed'}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="width:8px;height:8px;border-radius:2px;background:#F59E0B"></div>
+              <span style="font-size:11px;font-weight:600;color:#64748B;font-family:var(--font-body)">111DMA</span>
+            </div>
+            <span style="font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-mono)">${fmtP(ma111)}</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="width:8px;height:8px;border-radius:2px;background:#DC2626"></div>
+              <span style="font-size:11px;font-weight:600;color:#64748B;font-family:var(--font-body)">350DMA ×2</span>
+            </div>
+            <span style="font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-mono)">${fmtP(ma350x2)}</span>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #F1F5F9">
+          <div style="font-size:9px;color:#94A3B8;font-family:var(--font-body);margin-bottom:2px">Distance to cross</div>
+          <div style="font-size:11px;font-weight:700;color:${piCrossed?'#DC2626':'#10B981'};font-family:var(--font-mono)">${piDist !== null ? piDist.toFixed(1)+'%' : '—'}</div>
+        </div>
+      </div>`;
+    } else {
+      html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">Volatility</span>
+          <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">30-day annualized</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+          <span style="font-family:var(--font-mono);font-size:28px;font-weight:800;color:#0F172A">${volatility30d.toFixed(1)}%</span>
+          <span style="font-size:11px;font-weight:700;color:${volatility30d > 80 ? '#DC2626' : volatility30d > 50 ? '#F59E0B' : '#10B981'};font-family:var(--font-body)">${volatility30d > 80 ? 'High' : volatility30d > 50 ? 'Moderate' : 'Low'}</span>
+        </div>
+        ${gauge(volatility30d, 0, 150, 'linear-gradient(90deg,#10B981,#FBBF24,#DC2626)')}
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <span style="font-size:9px;color:#10B981;font-family:var(--font-body)">Low</span>
+          <span style="font-size:9px;color:#DC2626;font-family:var(--font-body)">High</span>
+        </div>
+      </div>`;
+    }
+
+    grid.innerHTML = html;
+    if(status) status.textContent = 'Updated ' + new Date().toLocaleTimeString();
+
+  } catch(err) {
+    console.error('Cycle data error:', err);
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#DC2626;font-size:11px;font-family:var(--font-body)">Failed to load cycle data</div>';
+  }
 }
 
 function _cdLoadSentiment(sym){
