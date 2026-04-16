@@ -237,7 +237,6 @@ p,span,div,input,button{
 /* ── Coin detail responsive ── */
 @media(max-width:960px){
   #cd-grid { grid-template-columns: 1fr 1fr !important; }
-  #cd-left  { position:static !important; }
 }
 /* Collapsible stats toggle — hidden on desktop */
 .cd-stats-toggle { display:none; }
@@ -298,7 +297,6 @@ p,span,div,input,button{
 }
 @media(max-width:640px){
   #cd-grid  { grid-template-columns: 1fr !important; }
-  #cd-left  { position:static !important; }
   #coin-detail-view { padding:12px 12px 40px !important; }
   #cd-tv-container  { height:260px !important; }
   #cd-cycles-grid { grid-template-columns: 1fr !important; }
@@ -773,7 +771,7 @@ p,span,div,input,button{
     <div id="cd-grid" style="display:grid;grid-template-columns:240px 1fr 260px;gap:14px;align-items:start">
 
       <!-- LEFT: Coin Info Panel -->
-      <div id="cd-left" style="display:flex;flex-direction:column;gap:12px;position:sticky;top:0">
+      <div id="cd-left" style="display:flex;flex-direction:column;gap:12px">
 
         <!-- Identity card -->
         <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
