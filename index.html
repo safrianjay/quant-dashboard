@@ -182,6 +182,51 @@ p,span,div,input,button{
 .change-bar-fill{height:100%;border-radius:2px;animation:barFill .8s ease both}
 .range-labels{display:flex;justify-content:space-between}
 
+/* ── COIN TLDR ── */
+.coin-tldr-wrap{margin-bottom:14px;animation:fadeUp .5s ease .16s both}
+.coin-tldr-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px}
+.coin-tldr-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:12px}
+.coin-tldr-side{display:grid;grid-template-rows:1fr 1fr;gap:12px}
+.coin-tldr-card{background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden}
+.coin-tldr-body{padding:18px}
+.coin-tldr-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.coin-tldr-title{font-family:var(--font-heading);font-size:20px;font-weight:800;color:#0F172A;letter-spacing:-.02em}
+.coin-tldr-subtitle{font-size:10px;color:#94A3B8;font-family:var(--font-body);margin-top:4px}
+.coin-tldr-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:10px;font-weight:700;font-family:var(--font-body);white-space:nowrap}
+.coin-tldr-badge.bull{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0}
+.coin-tldr-badge.bear{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA}
+.coin-tldr-badge.neutral{background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE}
+.coin-tldr-list{display:flex;flex-direction:column;gap:12px}
+.coin-tldr-bullet{display:flex;align-items:flex-start;gap:10px}
+.coin-tldr-bullet-icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.coin-tldr-bullet-copy{font-size:14px;line-height:1.6;color:#334155;font-family:var(--font-body)}
+.coin-tldr-emph{color:#2563EB;font-weight:600}
+.coin-tldr-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid #F1F5F9;font-size:11px;color:#94A3B8;font-family:var(--font-body)}
+.coin-tldr-mini{padding:16px;cursor:pointer;transition:all .18s}
+.coin-tldr-mini:hover{border-color:#E2E8F0;box-shadow:0 8px 18px rgba(15,23,42,.08);transform:translateY(-1px)}
+.coin-tldr-mini-title{font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.coin-tldr-mini-copy{font-size:12px;line-height:1.6;color:#475569;font-family:var(--font-body);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.coin-tldr-empty{padding:22px 18px;text-align:center;color:#94A3B8;font-size:12px;font-family:var(--font-body)}
+.coin-tldr-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.56);z-index:1002;backdrop-filter:blur(4px)}
+.coin-tldr-modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.97);z-index:1003;width:min(760px,94vw);max-height:min(86vh,920px);background:white;border-radius:18px;border:1px solid #E2E8F0;box-shadow:0 24px 64px rgba(15,23,42,.22);overflow:hidden;flex-direction:column;transition:transform .18s ease,opacity .18s ease;opacity:0}
+.coin-tldr-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 16px;border-bottom:1px solid #F1F5F9}
+.coin-tldr-modal-title{font-family:var(--font-heading);font-size:22px;font-weight:800;color:#0F172A;letter-spacing:-.02em}
+.coin-tldr-modal-sub{font-size:11px;color:#94A3B8;font-family:var(--font-body);margin-top:4px}
+.coin-tldr-close{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;border:1px solid #E2E8F0;background:white;color:#64748B;cursor:pointer;transition:all .15s}
+.coin-tldr-close:hover{background:#F8FAFC;border-color:#CBD5E1;color:#0F172A}
+.coin-tldr-modal-body{padding:18px 20px 22px;overflow-y:auto}
+.coin-tldr-timeline{position:relative;padding-left:18px}
+.coin-tldr-timeline::before{content:'';position:absolute;left:5px;top:2px;bottom:2px;width:1px;background:#E2E8F0}
+.coin-tldr-entry{position:relative;padding-left:18px;margin-bottom:22px}
+.coin-tldr-entry:last-child{margin-bottom:0}
+.coin-tldr-entry-dot{position:absolute;left:-1px;top:6px;width:12px;height:12px;border-radius:50%;background:white;border:3px solid #BFDBFE;box-shadow:0 0 0 4px #EFF6FF}
+.coin-tldr-entry-card{background:#FBFDFF;border:1px solid #E2E8F0;border-radius:14px;padding:16px}
+.coin-tldr-entry-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.coin-tldr-entry-time{font-size:12px;font-weight:700;color:#0F172A;font-family:var(--font-body)}
+.coin-tldr-entry-tf{padding:4px 8px;border-radius:999px;background:#F1F5F9;color:#64748B;font-size:10px;font-weight:700;font-family:var(--font-mono)}
+.coin-tldr-entry-list{display:flex;flex-direction:column;gap:10px}
+.coin-tldr-entry-empty{padding:20px;text-align:center;color:#94A3B8;font-size:12px;font-family:var(--font-body)}
+
 /* ── TP/SL MODE TOGGLE ── */
 .tpsl-mode{display:flex;gap:2px;background:#F1F5F9;border-radius:6px;padding:2px}
 .tpsl-mode-btn{padding:2px 7px;border-radius:4px;border:none;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font-mono);background:transparent;color:#94A3B8;transition:all .15s}
@@ -208,6 +253,8 @@ p,span,div,input,button{
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .chart-grid{grid-template-columns:1fr}
   .two-col{grid-template-columns:1fr}
+  .coin-tldr-grid{grid-template-columns:1fr}
+  .coin-tldr-side{grid-template-columns:1fr 1fr;grid-template-rows:none}
 }
 @media(max-width:768px){
   /* Sidebar becomes a slide-in drawer — override desktop width/collapse behavior */
@@ -349,6 +396,10 @@ p,span,div,input,button{
   #add-entry-btn    { padding:8px 10px!important; }
   /* Reduce grid gaps on very small screens */
   .two-col,.chart-grid,.kpi-grid{gap:8px}
+  .coin-tldr-side{grid-template-columns:1fr}
+  .coin-tldr-title{font-size:18px}
+  .coin-tldr-body{padding:16px}
+  .coin-tldr-modal{width:min(94vw,94vw);max-height:88vh}
   /* Price ladder footer: stack */
   .ladder-footer{grid-template-columns:1fr 1fr!important}
 }
@@ -874,6 +925,38 @@ p,span,div,input,button{
     </div>
 
     <!-- ── Market Cycles Section ── -->
+    <div class="coin-tldr-wrap" style="margin-top:16px">
+      <div class="coin-tldr-head">
+        <div style="display:flex;align-items:center;gap:8px;min-width:0">
+          <div style="width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#DBEAFE,#EFF6FF);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;min-width:0">
+            <span class="section-title" id="coin-tldr-section-title" style="font-size:16px;font-weight:800;color:#0F172A">Coin TLDR</span>
+            <span class="info-wrap">
+              <button class="info-btn" onclick="showInfo('Coin TLDR','A live short-form summary for the coin currently open in detail view. It updates from the latest market tape and QuantAnalyst signal stack, then saves a rolling history per asset.')" type="button">?</button>
+              <span class="info-tooltip">A live short-form summary for the coin currently open in detail view.</span>
+            </span>
+          </div>
+        </div>
+        <button class="vflink" onclick="openCoinTLDRModal()">
+          View All
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+      <div class="coin-tldr-grid">
+        <div id="coin-tldr-feature" class="coin-tldr-card">
+          <div class="coin-tldr-empty">Building the latest TLDR...</div>
+        </div>
+        <div id="coin-tldr-side" class="coin-tldr-side">
+          <div class="coin-tldr-card coin-tldr-mini">
+            <div class="coin-tldr-mini-title">Waiting for the first snapshot</div>
+            <div class="coin-tldr-mini-copy">Open a coin detail view and the latest TLDR snapshots for that asset will appear here.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div style="margin-top:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="font-family:var(--font-heading);font-size:16px;font-weight:800;color:#0F172A;display:flex;align-items:center;gap:6px">
@@ -883,6 +966,22 @@ p,span,div,input,button{
       </div>
       <div id="cd-cycles-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
         <div style="grid-column:1/-1;text-align:center;padding:24px;color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading market cycle data...</div>
+      </div>
+    </div>
+
+    <div id="coin-tldr-overlay" class="coin-tldr-overlay" onclick="if(event.target===this)closeCoinTLDRModal()"></div>
+    <div id="coin-tldr-modal" class="coin-tldr-modal">
+      <div class="coin-tldr-modal-head">
+        <div>
+          <div class="coin-tldr-modal-title" id="coin-tldr-modal-title">Coin TLDR</div>
+          <div class="coin-tldr-modal-sub" id="coin-tldr-modal-sub">Recent snapshots for the selected coin</div>
+        </div>
+        <button class="coin-tldr-close" onclick="closeCoinTLDRModal()" aria-label="Close TLDR history">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="coin-tldr-modal-body" id="coin-tldr-modal-body">
+        <div class="coin-tldr-entry-empty">No snapshots yet.</div>
       </div>
     </div>
   </div>
@@ -1149,6 +1248,10 @@ let currentSymbol = _savedCoin?.sym || 'BTCUSDT';
 let currentBase   = _savedCoin?.base || 'BTC';
 let currentCgId   = _savedCoin?.cgId || 'bitcoin';
 let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
+let _coinTLDRHistory = (function(){
+  try { return JSON.parse(localStorage.getItem('q_coin_tldr_history_v1') || '{}'); }
+  catch(_) { return {}; }
+})();
 
 /* ── Firebase config ── */
 const _fbConfig = {
@@ -1701,6 +1804,7 @@ function closeUpgradePopup(){
 
 /* ══ COIN DETAIL VIEW ══ */
 let _cdSym = null;
+let _cdRequestToken = 0;
 
 function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
   /* Block in demo mode — show upgrade popup */
@@ -1717,6 +1821,7 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
     tvSym = mkt && mkt.tvSym ? mkt.tvSym : 'BINANCE:' + sym + 'USDT';
   }
   _cdSym = sym;
+  const requestToken = ++_cdRequestToken;
 
   /* Persist state so page reload stays on coin detail */
   try{ sessionStorage.setItem('q_coin_detail', JSON.stringify({sym,cgId,name,grad,letter,tvSym})); }catch(_){}
@@ -1747,6 +1852,7 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
   document.getElementById('cd-stats').innerHTML   = '<div style="color:#94A3B8;font-size:11px;text-align:center;font-family:var(--font-body)">Loading...</div>';
   document.getElementById('cd-price-stats').innerHTML = '<div style="color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading...</div>';
   document.getElementById('cd-links').innerHTML   = '';
+  document.getElementById('cd-links').style.display = 'none';
 
   /* Update chart label */
   document.getElementById('cd-chart-label').textContent = sym + '/USDT';
@@ -1757,13 +1863,16 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
   _cdLoadTVChart('60');
 
   /* Fetch coin data from CoinGecko */
-  _cdLoadData(cgId, sym);
+  _cdLoadData(cgId, sym, requestToken);
 
   /* Load sentiment votes from localStorage */
   _cdLoadSentiment(sym);
 
+  renderCoinTLDR(sym);
+  refreshCoinTLDR(sym);
+
   /* Load market cycle indicators */
-  _cdLoadCycleData(cgId, sym);
+  _cdLoadCycleData(cgId, sym, requestToken);
 
   /* Scroll to top */
   document.getElementById('coin-detail-view').scrollTop = 0;
@@ -1800,11 +1909,73 @@ function _fmtSupply(n, sym){
   return n.toLocaleString() + ' ' + sym;
 }
 
-async function _cdLoadData(cgId, sym){
+async function _cdLoadData(cgId, sym, requestToken){
+  const marketSym = sym.endsWith('USDT') ? sym : `${sym}USDT`;
+  const cached = _marketPrices[marketSym] || _marketPrices[sym] || null;
+  const isActiveView = () => _cdSym === sym && requestToken === _cdRequestToken;
+
+  function renderCachedState(message){
+    if(!cached || !isActiveView()) return false;
+    const price = Number.isFinite(cached.price) ? cached.price : 0;
+    const change = Number.isFinite(cached.chg) ? cached.chg : 0;
+    const pos = change >= 0;
+    const dec = price < 0.001 ? 8 : price < 1 ? 4 : 2;
+
+    document.getElementById('cd-price').textContent = price
+      ? '$' + price.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec})
+      : '—';
+
+    const chgEl = document.getElementById('cd-chg');
+    chgEl.textContent = (pos ? '+' : '') + change.toFixed(2) + '%';
+    chgEl.style.background = pos ? '#F0FDF4' : '#FEF2F2';
+    chgEl.style.color = pos ? '#16A34A' : '#DC2626';
+
+    const stats = [
+      ['24h Volume', _fmtNum(cached.vol)],
+      ['24h High', _fmtNum(cached.high)],
+      ['24h Low', _fmtNum(cached.low)],
+      ['Live Change', (pos ? '+' : '') + change.toFixed(2) + '%'],
+      ['Data Source', cached.source === 'live' ? 'Live market feed' : 'Cached market feed'],
+      ['Status', message]
+    ];
+    document.getElementById('cd-stats').innerHTML = stats.map(([label, val]) => `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:#94A3B8;font-family:var(--font-body);font-weight:500">${label}</span>
+        <span style="font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-mono);text-align:right">${val}</span>
+      </div>`).join('<div style="height:1px;background:#F8FAFC"></div>');
+
+    document.getElementById('cd-price-stats').innerHTML = [
+      ['24h High', _fmtNum(cached.high), true],
+      ['24h Low', _fmtNum(cached.low), false],
+      ['24h Change', (pos ? '+' : '') + change.toFixed(2) + '%', pos],
+      ['Last Price', price ? '$' + price.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}) : '—', pos],
+      ['Feed Status', cached.source === 'live' ? 'Live' : 'Cached', true],
+    ].map(([label, val, up]) => `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:#94A3B8;font-family:var(--font-body)">${label}</span>
+        <span style="font-size:11px;font-weight:700;font-family:var(--font-mono);color:${label.includes('Change') ? (up?'#16A34A':'#DC2626') : '#0F172A'}">${val}</span>
+      </div>`).join('<div style="height:1px;background:#F8FAFC;margin:1px 0"></div>');
+
+    document.getElementById('cd-ohlc').innerHTML = [
+      ['Open', '—'],
+      ['High', _fmtNum(cached.high)],
+      ['Low', _fmtNum(cached.low)],
+      ['Close', price ? '$'+price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'],
+      ['Vol', _fmtNum(cached.vol)],
+    ].map(([l,v]) => `
+      <div>
+        <div style="font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;font-family:var(--font-body);margin-bottom:2px">${l}</div>
+        <div style="font-size:11px;font-weight:700;font-family:var(--font-mono);color:#0F172A">${v}</div>
+      </div>`).join('');
+    return true;
+  }
+
+  renderCachedState('Loading full coin stats…');
   try {
     const res = await fetch('/.netlify/functions/cg?type=coin&id=' + encodeURIComponent(cgId));
     if(!res.ok) throw new Error('HTTP ' + res.status);
     const d = await res.json();
+    if(!isActiveView()) return;
     const md = d.market_data || {};
     const p  = md.current_price?.usd || 0;
     const chg= md.price_change_percentage_24h || 0;
@@ -1877,11 +2048,17 @@ async function _cdLoadData(cgId, sym){
     if(d.links?.twitter_screen_name) links.push(['𝕏 Twitter', 'https://twitter.com/'+d.links.twitter_screen_name]);
     document.getElementById('cd-links').innerHTML = links.map(([label, url]) => `
       <a href="${url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;border:1px solid #E2E8F0;background:white;font-size:11px;font-weight:600;color:#334155;text-decoration:none;font-family:var(--font-body);transition:all .15s" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">${label}</a>`).join('');
-    if(!links.length) document.getElementById('cd-links').style.display = 'none';
+    document.getElementById('cd-links').style.display = links.length ? 'flex' : 'none';
 
   } catch(err) {
     console.error('Coin detail load error:', err);
-    document.getElementById('cd-stats').innerHTML = '<div style="font-size:11px;color:#DC2626;font-family:var(--font-body)">Failed to load data</div>';
+    if(!isActiveView()) return;
+    const reusedCache = renderCachedState(err.message === 'HTTP 429'
+      ? 'Rate limited by CoinGecko. Showing cached market data.'
+      : 'Live market data loaded. Full coin stats are temporarily unavailable.');
+    if(!reusedCache){
+      document.getElementById('cd-stats').innerHTML = '<div style="font-size:11px;color:#DC2626;font-family:var(--font-body)">Failed to load data</div>';
+    }
   }
 }
 
@@ -1944,23 +2121,22 @@ function infoBtn(title, desc){
 }
 
 /* ── Market Cycles Indicators ── */
-async function _cdLoadCycleData(cgId, sym){
+async function _cdLoadCycleData(cgId, sym, requestToken){
   const grid = document.getElementById('cd-cycles-grid');
   const status = document.getElementById('cd-cycle-status');
   if(!grid) return;
+  const isActiveView = () => _cdSym === sym && requestToken === _cdRequestToken;
 
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading market cycle data...</div>';
 
   try {
     /* Fetch 365-day daily chart for MA calculations */
-    const chartRes = await fetch(`/.netlify/functions/cg?type=chart&id=${encodeURIComponent(cgId)}&days=365`);
+    const chart = await _getChartData(cgId, 365);
+    if(!isActiveView()) return;
     let closes = [], timestamps = [];
-    if(chartRes.ok){
-      const chart = await chartRes.json();
-      if(chart.prices && chart.prices.length){
-        timestamps = chart.prices.map(p => p[0]);
-        closes = chart.prices.map(p => p[1]);
-      }
+    if(chart.prices && chart.prices.length){
+      timestamps = chart.prices.map(p => p[0]);
+      closes = chart.prices.map(p => p[1]);
     }
     if(!closes.length){ grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#94A3B8;font-size:11px">No chart data available</div>'; return; }
 
@@ -2229,6 +2405,7 @@ async function _cdLoadCycleData(cgId, sym){
 
   } catch(err) {
     console.error('Cycle data error:', err);
+    if(!isActiveView()) return;
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#DC2626;font-size:11px;font-family:var(--font-body)">Failed to load cycle data</div>';
   }
 }
@@ -2704,7 +2881,35 @@ function _updatePrice(sym, data, isLive){
     localStorage.setItem('vf_market_prices', JSON.stringify(_marketPrices));
   } catch(_) {}
 }
-let _chartCache   = {}; /* cache: { cgId: closes[] } — avoid re-fetching same coin chart */
+let _chartCache   = {}; /* cache: { key: { data, ts } } — avoid re-fetching same coin chart */
+let _chartInflight = {}; /* de-duplicate concurrent chart requests */
+const _CHART_CACHE_TTL = 15 * 60 * 1000;
+
+async function _getChartData(cgId, days){
+  const key = `${cgId}:${days || 99}`;
+  const hit = _chartCache[key];
+  if(hit && (Date.now() - hit.ts) < _CHART_CACHE_TTL) return hit.data;
+  if(_chartInflight[key]) return _chartInflight[key];
+
+  _chartInflight[key] = (async () => {
+    try {
+      const res = await fetch(`/.netlify/functions/cg?type=chart&id=${encodeURIComponent(cgId)}&days=${days || 99}`);
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if(!data?.prices?.length) throw new Error('No chart data available');
+      _chartCache[key] = { data, ts: Date.now() };
+      return data;
+    } catch(err){
+      if(hit?.data) return hit.data;
+      throw err;
+    } finally {
+      delete _chartInflight[key];
+    }
+  })();
+
+  return _chartInflight[key];
+}
+
 let _selectMarketBusy = false; /* guard against concurrent coin-switch calls */
 
 window.openMarketSelector = function(){
@@ -2855,6 +3060,7 @@ window.selectMarket = async function(sym, base, name){
   closeMarketSelector();
   currentSymbol = sym;
   currentBase   = base;
+  renderCoinTLDR();
 
   /* Persist selection so it survives page reload */
   try { localStorage.setItem('q_coin', JSON.stringify({ sym, base, cgId: MARKET_LIST.find(m=>m.sym===sym)?.cgId || sym.replace('USDT','').toLowerCase() })); } catch(_){}
@@ -3003,6 +3209,7 @@ window.selectMarket = async function(sym, base, name){
     renderKPIs(); renderMAStack(); renderLadder(); renderSessionLog();
     renderSetupsList(); renderConfChart(TF_DATA[activeTF].confHistory); renderLevelsSB();
     initTVWidget(base);
+    runLiveAnalysis();
 
     /* Success feedback */
     if(btn){
@@ -3038,6 +3245,262 @@ function showToast(msg, type='info'){
   t._timer = setTimeout(()=>{ t.style.opacity='0'; }, 3500);
 }
 
+function _persistCoinTLDRHistory(){
+  try { localStorage.setItem('q_coin_tldr_history_v1', JSON.stringify(_coinTLDRHistory)); } catch(_){}
+}
+
+function _activeTLDRBase(preferred){
+  return preferred || _cdSym || currentBase;
+}
+
+function _marketSymbolForBase(base){
+  return MARKET_LIST.find(m => m.base === base || m.sym === base)?.sym || (String(base || '').endsWith('USDT') ? base : `${base}USDT`);
+}
+
+function _coinDisplayName(base=_activeTLDRBase()){
+  return MARKET_LIST.find(m => m.base === base || m.sym === base)?.name || base;
+}
+
+function _coinTimeframeLabel(tf){
+  const map = { '5m':'5m', '15m':'15m', '1h':'1H', '4h':'4H', '1d':'1D', '1w':'1W' };
+  return map[String(tf || '').toLowerCase()] || String(tf || '').toUpperCase();
+}
+
+function _coinRelativeTime(timestamp){
+  const diffMs = Math.max(0, Date.now() - new Date(timestamp).getTime());
+  const mins = Math.floor(diffMs / 60000);
+  if(mins < 1) return 'just now';
+  if(mins < 60) return `${mins} min${mins === 1 ? '' : 's'} ago`;
+  const hours = Math.floor(mins / 60);
+  if(hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day${days === 1 ? '' : 's'} ago`;
+}
+
+function _stripCoinTLDRHTML(html){
+  return String(html || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function _coinToneMeta(tone){
+  if(tone === 'bull') return { label:'Bullish Bias', pill:'bull' };
+  if(tone === 'bear') return { label:'Bearish Bias', pill:'bear' };
+  return { label:'Range / Neutral', pill:'neutral' };
+}
+
+function _coinTLDRBulletIcon(kind='diamond'){
+  if(kind === 'tape'){
+    return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg>`;
+  }
+  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#2563EB"><path d="M12 3l8 9-8 9-8-9 8-9z"/></svg>`;
+}
+
+function _buildCoinTLDRSnapshot(base, analysis, marketData, macro){
+  const tone = analysis.bias === 'BULLISH' ? 'bull' : analysis.bias === 'BEARISH' ? 'bear' : 'neutral';
+  const activeBase = _activeTLDRBase(base);
+  const marketSym = _marketSymbolForBase(activeBase);
+  const name = _coinDisplayName(activeBase);
+  const price = Number.isFinite(marketData?.price) ? marketData.price : (_marketPrices[marketSym]?.price || PRICE || 0);
+  const changePct = Number.isFinite(marketData?.changePct) ? marketData.changePct : parseFloat(_marketPrices[marketSym]?.chg || 0);
+  const volumeUsd = _marketPrices[marketSym]?.vol || 0;
+  const activeSetup = tone === 'bear' ? analysis.shortSetup : analysis.longSetup;
+  const opposingSetup = tone === 'bear' ? analysis.longSetup : analysis.shortSetup;
+  const support = analysis.levels?.supports?.[0];
+  const resistance = analysis.levels?.resistances?.[0];
+  const actionLow = activeSetup?.entryLow || marketData?.low24 || price;
+  const actionHigh = activeSetup?.entryHigh || marketData?.high24 || price;
+  const invalidation = activeSetup?.stopLoss || opposingSetup?.entryLow || marketData?.low24 || price;
+  const tfLabel = _coinTimeframeLabel(analysis.timeframe || _analystTF);
+
+  const bullets = [
+    `<span class="coin-tldr-emph">${name}</span> leans <span class="coin-tldr-emph">${tone === 'bull' ? 'bullish' : tone === 'bear' ? 'bearish' : 'neutral'}</span> on the ${tfLabel} map as <span class="coin-tldr-emph">${analysis.maStack.signal}</span> and model confidence prints <span class="coin-tldr-emph">${analysis.confidence}/10</span>.`,
+    `In the last 24 hours, ${name}'s price moved <span class="coin-tldr-emph">${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%</span> to <span class="coin-tldr-emph">${pFmt(price)}</span> and trading volume moved to <span class="coin-tldr-emph">${_fmtNum(volumeUsd)}</span>.`,
+    tone === 'neutral'
+      ? `${name} is compressed between <span class="coin-tldr-emph">${pFmt(marketData?.low24 || price)}</span> support and <span class="coin-tldr-emph">${pFmt(marketData?.high24 || price)}</span> resistance, so the next clean break is the higher-value trigger.`
+      : `Action zone sits near <span class="coin-tldr-emph">${pFmt(actionLow)}</span> to <span class="coin-tldr-emph">${pFmt(actionHigh)}</span> with invalidation at <span class="coin-tldr-emph">${pFmt(invalidation)}</span>${macro?.label ? ` while <span class="coin-tldr-emph">${macro.label}</span> keeps macro pressure in play.` : resistance || support ? ` as ${resistance ? `<span class="coin-tldr-emph">${resistance.label}</span>` : 'resistance'} and ${support ? `<span class="coin-tldr-emph">${support.label}</span>` : 'support'} define the next decision zone.` : '.'}`
+  ];
+
+  return {
+    id: `${activeBase}-${Date.now()}`,
+    coin: activeBase,
+    name,
+    tone,
+    timeframe: tfLabel,
+    timestamp: new Date().toISOString(),
+    subtitle: `${analysis.bias} · ${tfLabel} · ${analysis.volume.signal}`,
+    bullets
+  };
+}
+
+function updateCoinTLDR(base, analysis, marketData, macro){
+  const activeBase = _activeTLDRBase(base);
+  const snapshot = _buildCoinTLDRSnapshot(activeBase, analysis, marketData, macro);
+  _storeCoinTLDRSnapshot(snapshot);
+  if(_activeTLDRBase() === activeBase) renderCoinTLDR(activeBase);
+  return snapshot;
+}
+
+function _storeCoinTLDRSnapshot(snapshot){
+  const list = Array.isArray(_coinTLDRHistory[snapshot.coin]) ? _coinTLDRHistory[snapshot.coin] : [];
+  const last = list[0];
+  const thresholdMs = 45 * 60 * 1000;
+  if(last && (new Date(snapshot.timestamp).getTime() - new Date(last.timestamp).getTime()) < thresholdMs){
+    list[0] = snapshot;
+  } else {
+    list.unshift(snapshot);
+  }
+  _coinTLDRHistory[snapshot.coin] = list.slice(0, 12);
+  _persistCoinTLDRHistory();
+}
+
+function _renderCoinTLDRFeature(snapshot){
+  const tone = _coinToneMeta(snapshot.tone);
+  return `
+    <div class="coin-tldr-body">
+      <div class="coin-tldr-header-row">
+        <div style="min-width:0">
+          <div class="coin-tldr-title">${snapshot.name} TLDR</div>
+          <div class="coin-tldr-subtitle">${snapshot.subtitle}</div>
+        </div>
+        <span class="coin-tldr-badge ${tone.pill}">${tone.label}</span>
+      </div>
+      <div class="coin-tldr-list">
+        ${snapshot.bullets.map((bullet, idx) => `
+          <div class="coin-tldr-bullet">
+            <span class="coin-tldr-bullet-icon">${_coinTLDRBulletIcon(idx === 2 ? 'tape' : 'diamond')}</span>
+            <div class="coin-tldr-bullet-copy">${bullet}</div>
+          </div>`).join('')}
+      </div>
+      <div class="coin-tldr-footer">
+        <span>${_coinRelativeTime(snapshot.timestamp)}</span>
+        <span>${snapshot.timeframe} · Updated TLDR</span>
+      </div>
+    </div>`;
+}
+
+function _renderCoinTLDRMini(snapshot){
+  return `
+    <div class="coin-tldr-card coin-tldr-mini" onclick="openCoinTLDRModal()">
+      <div class="coin-tldr-mini-title">
+        <span>${_coinRelativeTime(snapshot.timestamp)}</span>
+        <span class="coin-tldr-entry-tf">${snapshot.timeframe}</span>
+      </div>
+      <div class="coin-tldr-mini-copy">${snapshot.bullets.map(_stripCoinTLDRHTML).join(' ')}</div>
+    </div>`;
+}
+
+function renderCoinTLDR(base){
+  const title = document.getElementById('coin-tldr-section-title');
+  const feature = document.getElementById('coin-tldr-feature');
+  const side = document.getElementById('coin-tldr-side');
+  if(!title || !feature || !side) return;
+
+  const activeBase = _activeTLDRBase(base);
+  const history = Array.isArray(_coinTLDRHistory[activeBase]) ? _coinTLDRHistory[activeBase] : [];
+  title.textContent = `${_coinDisplayName(activeBase)} TLDR`;
+
+  if(!history.length){
+    feature.innerHTML = `<div class="coin-tldr-empty">Run analysis to generate the first live TLDR for ${_coinDisplayName(activeBase)}.</div>`;
+    side.innerHTML = `
+      <div class="coin-tldr-card coin-tldr-mini">
+        <div class="coin-tldr-mini-title">Fresh snapshots will appear here</div>
+        <div class="coin-tldr-mini-copy">Each coin keeps its own rolling TLDR history so you can revisit the last market read quickly.</div>
+      </div>`;
+    return;
+  }
+
+  feature.innerHTML = _renderCoinTLDRFeature(history[0]);
+  const previews = history.slice(1, 3);
+  side.innerHTML = previews.length
+    ? previews.map(_renderCoinTLDRMini).join('')
+    : `<div class="coin-tldr-card coin-tldr-mini">
+         <div class="coin-tldr-mini-title">No older snapshots yet</div>
+         <div class="coin-tldr-mini-copy">As new analysis runs land for ${_coinDisplayName(activeBase)}, older TLDR snapshots will stack here automatically.</div>
+       </div>`;
+}
+
+function renderCoinTLDRModal(base){
+  const body = document.getElementById('coin-tldr-modal-body');
+  const title = document.getElementById('coin-tldr-modal-title');
+  const sub = document.getElementById('coin-tldr-modal-sub');
+  if(!body || !title || !sub) return;
+
+  const activeBase = _activeTLDRBase(base);
+  const name = _coinDisplayName(activeBase);
+  const history = Array.isArray(_coinTLDRHistory[activeBase]) ? _coinTLDRHistory[activeBase] : [];
+  title.textContent = `${name} TLDR`;
+  sub.textContent = `${history.length} snapshot${history.length === 1 ? '' : 's'} saved for the current coin`;
+
+  if(!history.length){
+    body.innerHTML = `<div class="coin-tldr-entry-empty">No TLDR snapshots yet for ${name}.</div>`;
+    return;
+  }
+
+  body.innerHTML = `
+    <div class="coin-tldr-timeline">
+      ${history.map(entry => `
+        <div class="coin-tldr-entry">
+          <div class="coin-tldr-entry-dot"></div>
+          <div class="coin-tldr-entry-card">
+            <div class="coin-tldr-entry-head">
+              <span class="coin-tldr-entry-time">${_coinRelativeTime(entry.timestamp)}</span>
+              <span class="coin-tldr-entry-tf">${entry.timeframe}</span>
+            </div>
+            <div class="coin-tldr-entry-list">
+              ${entry.bullets.map((bullet, idx) => `
+                <div class="coin-tldr-bullet">
+                  <span class="coin-tldr-bullet-icon">${_coinTLDRBulletIcon(idx === 2 ? 'tape' : 'diamond')}</span>
+                  <div class="coin-tldr-bullet-copy">${bullet}</div>
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function openCoinTLDRModal(base){
+  renderCoinTLDRModal(base);
+  const overlay = document.getElementById('coin-tldr-overlay');
+  const modal = document.getElementById('coin-tldr-modal');
+  if(!overlay || !modal) return;
+  overlay.style.display = 'block';
+  modal.style.display = 'flex';
+  requestAnimationFrame(() => {
+    modal.style.opacity = '1';
+    modal.style.transform = 'translate(-50%,-50%) scale(1)';
+  });
+}
+
+async function refreshCoinTLDR(base){
+  const activeBase = _activeTLDRBase(base);
+  const asset = CG_IDS[activeBase] ? activeBase : 'BTC';
+  try {
+    const marketData = await fetchLiveMarketData(asset, _analystTF);
+    const macro = detectMacroBias();
+    marketData.macroBias = macro.bias;
+    const analysis = QuantAnalyst.run(marketData);
+    updateCoinTLDR(activeBase, analysis, marketData, macro);
+  } catch(err){
+    console.warn('Coin TLDR refresh failed:', err.message);
+    renderCoinTLDR(activeBase);
+  }
+}
+
+function closeCoinTLDRModal(){
+  const overlay = document.getElementById('coin-tldr-overlay');
+  const modal = document.getElementById('coin-tldr-modal');
+  if(!overlay || !modal) return;
+  modal.style.opacity = '0';
+  modal.style.transform = 'translate(-50%,-50%) scale(.97)';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    modal.style.display = 'none';
+  }, 180);
+}
+
+document.addEventListener('keydown', (event) => {
+  if(event.key === 'Escape') closeCoinTLDRModal();
+});
+
 /* ══ LIVE DATA REFRESH (manual Refresh button) ══ */
 window.fetchLiveData = async function(){
   if(_selectMarketBusy) return;
@@ -3052,6 +3515,7 @@ window.fetchLiveData = async function(){
     /* Force-expire the throttle so a manual click always fetches fresh data */
     _lastMarketFetch = 0;
     await refreshAllCoins();
+    runLiveAnalysis();
 
     icon.style.animation = ''; btn.style.opacity = '1';
     btn.style.background = '#F0FDF4'; btn.style.borderColor = '#A7F3D0'; btn.style.color = '#059669';
@@ -3103,6 +3567,7 @@ window.unifiedTF = function(tf){
   if(TF_DATA[tf]) window.switchTF(tf);
   /* Update TradingView interval */
   if(_tfTVMap[tf]) initTVWidget(currentBase, _tfTVMap[tf]);
+  runLiveAnalysis();
 };
 
 /* ══ TRADINGVIEW WIDGET ══ */
@@ -4297,20 +4762,18 @@ const CG_IDS = {
 async function fetchLiveMarketData(asset="BTC", timeframe="15m") {
   const cgId=CG_IDS[asset]||"bitcoin";
   const days=timeframe==="1d"?365:timeframe==="4h"?90:timeframe==="1h"?30:1;
+  const marketSym = _marketSymbolForBase(asset);
 
   // Use our synchronized Binance data for real-time metadata
-  const cache = _marketPrices[currentSymbol] || { price: 0, high: 0, low: 0, vol: 0, chg: 0 };
+  const cache = _marketPrices[marketSym] || _marketPrices[currentSymbol] || { price: 0, high: 0, low: 0, vol: 0, chg: 0 };
   
   /* Fetch OHLC via cg.js (cached, rate-limit safe) — graceful fallback */
   let ohlc = [];
   try {
-    const ohlcRes = await fetch(`/.netlify/functions/cg?type=chart&id=${encodeURIComponent(cgId)}&days=${days}`);
-    if(ohlcRes.ok) {
-      const chartData = await ohlcRes.json();
-      /* chart endpoint returns { prices:[[ts,p],...] } — convert to pseudo-OHLC */
-      if(chartData.prices && chartData.prices.length) {
-        ohlc = chartData.prices.map(([ts, p]) => [ts, p, p, p, p]);
-      }
+    const chartData = await _getChartData(cgId, days);
+    /* chart endpoint returns { prices:[[ts,p],...] } — convert to pseudo-OHLC */
+    if(chartData.prices && chartData.prices.length) {
+      ohlc = chartData.prices.map(([ts, p]) => [ts, p, p, p, p]);
     }
   } catch(e) { console.warn('OHLC fetch failed:', e.message); }
 
@@ -4380,12 +4843,19 @@ async function runLiveAnalysis(){
   if(btn){btn.textContent="Fetching…";btn.disabled=true;}
   try {
     /* Use current dashboard coin if in CG_IDS, else fall back to BTC */
-    const asset=CG_IDS[currentBase]?currentBase:"BTC";
+    const requestedBase=currentBase;
+    const asset=CG_IDS[requestedBase]?requestedBase:"BTC";
     const marketData=await fetchLiveMarketData(asset,_analystTF);
+    if(currentBase !== requestedBase){
+      _isAnalysisRunning=false;
+      runLiveAnalysis();
+      return;
+    }
     const macro=detectMacroBias();
     marketData.macroBias=macro.bias;
     const analysis=QuantAnalyst.run(marketData);
     QuantAnalyst.pushToCards(analysis);
+    updateCoinTLDR(requestedBase, analysis, marketData, macro);
 
     /* Update perf list */
     const perfEl=document.getElementById("perf-list");
@@ -4431,6 +4901,8 @@ function startAutoRefresh(intervalMinutes=15){
   if(_autoRefreshTimer) clearInterval(_autoRefreshTimer);
   _autoRefreshTimer=setInterval(()=>runLiveAnalysis(),intervalMinutes*60*1000);
 }
+
+renderCoinTLDR();
 
 /* Auto-run on page load after existing init settles */
 setTimeout(()=>{
