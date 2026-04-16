@@ -243,6 +243,56 @@ p,span,div,input,button{
 .cd-stats-toggle { display:none; }
 .cd-stats-list   { display:flex; flex-direction:column; gap:9px; }
 
+/* ── Info tooltip (desktop) ── */
+.info-btn {
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:50%;border:1.5px solid #CBD5E1;background:none;
+  font-size:9px;font-weight:700;color:#94A3B8;cursor:pointer;
+  font-family:var(--font-body);transition:all .15s;flex-shrink:0;padding:0;line-height:1;
+}
+.info-btn:hover{border-color:#64748B;color:#64748B;background:#F8FAFC}
+
+/* Desktop tooltip */
+@media(min-width:641px){
+  .info-tooltip{
+    display:none;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
+    background:#0F172A;color:white;font-size:11px;font-weight:400;line-height:1.5;
+    padding:10px 14px;border-radius:10px;width:240px;z-index:100;
+    font-family:var(--font-body);box-shadow:0 8px 24px rgba(0,0,0,.18);pointer-events:none;
+  }
+  .info-tooltip::before{
+    content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+    width:10px;height:10px;background:#0F172A;border-radius:2px;
+    transform:translateX(-50%) rotate(45deg);
+  }
+  .info-wrap{position:relative;display:inline-flex}
+  .info-wrap:hover .info-tooltip{display:block}
+}
+
+/* Mobile bottom sheet */
+.info-sheet-overlay{
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.4);z-index:9999;
+  align-items:flex-end;justify-content:center;
+}
+.info-sheet-overlay.open{display:flex}
+.info-sheet{
+  background:white;border-radius:20px 20px 0 0;padding:20px 24px 32px;
+  width:100%;max-width:480px;max-height:70vh;overflow-y:auto;
+  animation:sheetUp .25s ease;
+}
+.info-sheet-title{
+  font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:8px;
+}
+.info-sheet-body{
+  font-family:var(--font-body);font-size:13px;color:#475569;line-height:1.6;
+}
+.info-sheet-handle{
+  width:40px;height:4px;border-radius:2px;background:#E2E8F0;
+  margin:0 auto 16px;
+}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
 @media(max-width:960px){
   #cd-cycles-grid { grid-template-columns: repeat(2,1fr) !important; }
 }
@@ -648,6 +698,15 @@ p,span,div,input,button{
   </div>
 </aside>
 
+<!-- Info bottom sheet (mobile) -->
+<div class="info-sheet-overlay" id="info-sheet-overlay" onclick="if(event.target===this)closeInfoSheet()">
+  <div class="info-sheet">
+    <div class="info-sheet-handle"></div>
+    <div class="info-sheet-title" id="info-sheet-title"></div>
+    <div class="info-sheet-body" id="info-sheet-body"></div>
+  </div>
+</div>
+
 <!-- ═══ MAIN ═══ -->
 <div class="main">
 
@@ -782,7 +841,7 @@ p,span,div,input,button{
 
         <!-- Sentiment card -->
         <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-          <div style="font-family:var(--font-heading);font-size:12px;font-weight:700;color:#0F172A;margin-bottom:12px">Community Sentiment</div>
+          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:12px">Community Sentiment</div>
           <div style="margin-bottom:10px">
             <div style="display:flex;justify-content:space-between;margin-bottom:4px">
               <span style="font-size:11px;font-weight:700;color:#16A34A;font-family:var(--font-body)">🐂 Bullish <span id="cd-bull-pct">50</span>%</span>
@@ -800,7 +859,7 @@ p,span,div,input,button{
 
         <!-- Price stats card -->
         <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-          <div style="font-family:var(--font-heading);font-size:12px;font-weight:700;color:#0F172A;margin-bottom:12px">Price Statistics</div>
+          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:12px">Price Statistics</div>
           <div style="display:flex;flex-direction:column;gap:10px" id="cd-price-stats">
             <div style="color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading...</div>
           </div>
@@ -815,7 +874,7 @@ p,span,div,input,button{
     <!-- ── Market Cycles Section ── -->
     <div style="margin-top:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-family:var(--font-heading);font-size:14px;font-weight:800;color:#0F172A;display:flex;align-items:center;gap:6px">
+        <div style="font-family:var(--font-heading);font-size:16px;font-weight:800;color:#0F172A;display:flex;align-items:center;gap:6px">
           <span>📊</span> Market Cycles
         </div>
         <span id="cd-cycle-status" style="font-size:10px;color:#94A3B8;font-family:var(--font-body)"></span>
@@ -1784,6 +1843,27 @@ function toggleCDStats(){
   btn.textContent = expanded ? 'Less details ▴' : 'More details ▾';
 }
 
+/* ── Info tooltip / bottom sheet system ── */
+const _isMobile = () => window.innerWidth <= 640;
+function showInfo(title, desc){
+  if(_isMobile()){
+    document.getElementById('info-sheet-title').textContent = title;
+    document.getElementById('info-sheet-body').textContent = desc;
+    document.getElementById('info-sheet-overlay').classList.add('open');
+  }
+}
+function closeInfoSheet(){
+  document.getElementById('info-sheet-overlay').classList.remove('open');
+}
+function infoBtn(title, desc){
+  const escaped = desc.replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+  const escapedTitle = title.replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+  return `<span class="info-wrap">
+    <button class="info-btn" onclick="showInfo('${escapedTitle}','${escaped}')" type="button">?</button>
+    <span class="info-tooltip">${desc}</span>
+  </span>`;
+}
+
 /* ── Market Cycles Indicators ── */
 async function _cdLoadCycleData(cgId, sym){
   const grid = document.getElementById('cd-cycles-grid');
@@ -1900,11 +1980,16 @@ async function _cdLoadCycleData(cgId, sym){
 
     /* ── Build cards ── */
     let html = '';
+    const card = 'background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)';
+    const titleStyle = 'font-family:var(--font-heading);font-size:12px;font-weight:500;color:#0F172A';
 
     /* 1. Fear & Greed */
-    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">Fear & Greed Index</span>
+    html += `<div style="${card}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="${titleStyle}">Fear & Greed Index</span>
+          ${infoBtn('Fear & Greed Index','A composite score from 0-100 based on RSI momentum, moving average trends, and price distance from highs. Below 25 signals extreme fear (potential buy), above 75 signals extreme greed (potential sell).')}
+        </div>
         <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Technical</span>
       </div>
       <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
@@ -1919,9 +2004,12 @@ async function _cdLoadCycleData(cgId, sym){
     </div>`;
 
     /* 2. Mayer Multiple / MA200 status */
-    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">Mayer Multiple</span>
+    html += `<div style="${card}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="${titleStyle}">Mayer Multiple</span>
+          ${infoBtn('Mayer Multiple','The ratio of current price to the 200-day moving average. Values below 0.8 suggest the asset is undervalued, while values above 2.4 historically indicate overheated conditions and potential cycle tops.')}
+        </div>
         <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Price / MA200</span>
       </div>
       <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
@@ -1942,9 +2030,12 @@ async function _cdLoadCycleData(cgId, sym){
     /* 3. RSI */
     const rsiColor = rsi <= 30 ? '#16A34A' : rsi >= 70 ? '#DC2626' : '#F59E0B';
     const rsiLabel = rsi <= 30 ? 'Oversold' : rsi >= 70 ? 'Overbought' : 'Neutral';
-    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">RSI (14)</span>
+    html += `<div style="${card}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="${titleStyle}">RSI (14)</span>
+          ${infoBtn('RSI (14)','Relative Strength Index measures the speed and magnitude of recent price changes. Values below 30 indicate oversold conditions (potential bounce), while values above 70 indicate overbought conditions (potential pullback).')}
+        </div>
         <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">Relative Strength</span>
       </div>
       <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
@@ -1959,9 +2050,12 @@ async function _cdLoadCycleData(cgId, sym){
     </div>`;
 
     /* 4. MA Stack Status */
-    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">MA Stack Order</span>
+    html += `<div style="${card}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="${titleStyle}">MA Stack Order</span>
+          ${infoBtn('MA Stack Order','Shows the alignment of key moving averages (50, 100, 200-day). When price is above all MAs and they are stacked in order, it signals a strong bullish trend. Reverse order signals bearish momentum.')}
+        </div>
         <span style="padding:3px 8px;border-radius:100px;font-size:9px;font-weight:700;color:white;background:${maSignalColor};font-family:var(--font-body)">${maSignal}</span>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -1978,9 +2072,12 @@ async function _cdLoadCycleData(cgId, sym){
 
     /* 5. 52-Week Range */
     const rangePct = high52 !== low52 ? ((price - low52) / (high52 - low52)) * 100 : 50;
-    html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">52-Week Range</span>
+    html += `<div style="${card}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="${titleStyle}">52-Week Range</span>
+          ${infoBtn('52-Week Range','Shows where the current price sits between the lowest and highest prices over the past 365 days. Near the bottom suggests a potential value opportunity, near the top suggests caution.')}
+        </div>
         <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">365 days</span>
       </div>
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
@@ -1998,10 +2095,13 @@ async function _cdLoadCycleData(cgId, sym){
 
     /* 6. Volatility + Pi Cycle (Bitcoin) or general stats */
     if(isBTC && ma111 && ma350x2){
-      html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">Pi Cycle Top</span>
-          <span style="padding:3px 8px;border-radius:100px;font-size:9px;font-weight:700;color:white;background:${piCrossed ? '#DC2626' : '#10B981'};font-family:var(--font-body)">${piCrossed ? 'CROSSED ⚠️' : 'Not Crossed'}</span>
+      html += `<div style="${card}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="${titleStyle}">Pi Cycle Top</span>
+            ${infoBtn('Pi Cycle Top','A Bitcoin-specific indicator that compares the 111-day moving average with 2x the 350-day moving average. Historically, when the 111DMA crosses above the 350DMA x2, it has signaled major cycle tops with remarkable accuracy.')}
+          </div>
+          <span style="padding:3px 8px;border-radius:100px;font-size:9px;font-weight:700;color:white;background:${piCrossed ? '#DC2626' : '#10B981'};font-family:var(--font-body)">${piCrossed ? 'CROSSED' : 'Not Crossed'}</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <div style="display:flex;align-items:center;justify-content:space-between">
@@ -2025,9 +2125,12 @@ async function _cdLoadCycleData(cgId, sym){
         </div>
       </div>`;
     } else {
-      html += `<div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <span style="font-family:var(--font-heading);font-size:11px;font-weight:700;color:#0F172A">Volatility</span>
+      html += `<div style="${card}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="${titleStyle}">Volatility</span>
+            ${infoBtn('Volatility','30-day annualized volatility measures the magnitude of daily price swings projected over a year. Low volatility (<50%) suggests consolidation, high volatility (>80%) suggests rapid price movement and higher risk.')}
+          </div>
           <span style="font-size:9px;color:#94A3B8;font-family:var(--font-body)">30-day annualized</span>
         </div>
         <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
