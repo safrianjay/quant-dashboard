@@ -434,29 +434,16 @@ const _fbConfig = {
   appId: "1:812483550152:web:quantichy"
 };
 
-if (!firebase.apps.length) firebase.initializeApp(_fbConfig);
-
-firebase.auth().onAuthStateChanged(user => {
-  if (!user) {
-    const redir = encodeURIComponent('/coin?' + window.location.search.slice(1));
-    window.location.href = '/app?redirect=' + redir;
-    return;
+/* Redirect all /coin traffic to the main dashboard — coin detail lives inline there */
+(function(){
+  const ps = new URLSearchParams(window.location.search);
+  const sym = ps.get('sym'), cgId = ps.get('cgId'), name = ps.get('name'), tvSym = ps.get('tvSym');
+  let target = '/app';
+  if(sym && cgId && name){
+    target += '#coin=' + encodeURIComponent(JSON.stringify({sym,cgId,name,tvSym:tvSym||''}));
   }
-  // Show nav user
-  const navUser = document.getElementById('nav-user');
-  const navEmail = document.getElementById('nav-email');
-  if (navUser) { navUser.style.display = 'flex'; }
-  if (navEmail) { navEmail.textContent = user.email || ''; }
-
-  // Show page, hide splash
-  document.getElementById('loading-splash').style.display = 'none';
-  document.getElementById('page-body').style.display = 'block';
-
-  // Init everything
-  initTV();
-  loadSentiment();
-  fetchCoinData();
-});
+  window.location.replace(target);
+})();
 
 function doSignOut() {
   firebase.auth().signOut().then(() => { window.location.href = '/'; });
