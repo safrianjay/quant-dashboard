@@ -3,7 +3,7 @@ const https = require('https');
 /* In-memory cache — persists across warm Lambda invocations.
    Prevents multiple browser tabs / rapid retries from hitting CoinGecko. */
 const _cache = {};
-const CACHE_TTL = 600000; /* 10 minutes — detail/chart endpoints can reuse stale data far longer than live tape */
+const CACHE_TTL = { market: 300000, chart: 1800000, coin: 900000, 'okx-tickers': 60000 };
 
 const HEADERS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
 
@@ -37,7 +37,8 @@ exports.handler = async (event) => {
 
   /* Return cached if fresh */
   const hit = _cache[url];
-  if (hit && Date.now() - hit.ts < CACHE_TTL) {
+  const ttl = CACHE_TTL[q.type] || 600000;
+  if (hit && Date.now() - hit.ts < ttl) {
     console.log('[cg] Cache hit:', q.type, q.id || '');
     return { statusCode: 200, headers: HEADERS, body: hit.body };
   }

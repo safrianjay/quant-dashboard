@@ -3285,6 +3285,19 @@ let _chartInflight = {}; /* de-duplicate concurrent chart requests */
 const _CHART_CACHE_TTL = 15 * 60 * 1000;
 const _PERSISTED_CHART_CACHE_TTL = 12 * 60 * 60 * 1000;
 
+/* ── CoinGecko request throttle ── */
+let _cgLastRequest = 0;
+const _CG_MIN_GAP = 250; /* ms between CoinGecko requests */
+async function _cgFetchThrottled(url) {
+  const now = Date.now();
+  const wait = Math.max(0, _CG_MIN_GAP - (now - _cgLastRequest));
+  if(wait > 0) await new Promise(r => setTimeout(r, wait));
+  _cgLastRequest = Date.now();
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
 async function _getChartData(cgId, days){
   const key = `${cgId}:${days || 99}`;
   const hit = _chartCache[key];
@@ -3298,9 +3311,7 @@ async function _getChartData(cgId, days){
 
   _chartInflight[key] = (async () => {
     try {
-      const res = await fetch(`/.netlify/functions/cg?type=chart&id=${encodeURIComponent(cgId)}&days=${days || 99}`);
-      if(!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
+      const data = await _cgFetchThrottled(`/.netlify/functions/cg?type=chart&id=${encodeURIComponent(cgId)}&days=${days || 99}`);
       if(!data?.prices?.length) throw new Error('No chart data available');
       _chartCache[key] = { data, ts: Date.now() };
       _writeClientCache(`q_chart_cache_${key}`, data);
@@ -3457,14 +3468,16 @@ async function _ensureMarketOverviewSeries(range='30d'){
   if(_marketOverviewSeries[range]?.length) return _marketOverviewSeries[range];
   const days = _overviewRangeDays(range);
   const leaders = _MARKET_OVERVIEW_LEADERS.map(base => _overviewLeaderMarket(base)).filter(Boolean);
-  const series = await Promise.all(leaders.map(async market => {
+  const series = [];
+  for(const market of leaders) {
     try {
-      return { market, chart: await _getChartData(market.cgId, days) };
+      series.push({ market, chart: await _getChartData(market.cgId, days) });
     } catch(err) {
       console.warn('Overview chart fetch failed:', market.base, err.message);
-      return { market, chart: null };
+      series.push({ market, chart: null });
     }
-  }));
+    if(series.length < leaders.length) await new Promise(r => setTimeout(r, 300));
+  }
   _marketOverviewSeries[range] = series;
   return series;
 }
@@ -4097,26 +4110,17 @@ window.selectMarket = async function(sym, base, name){
     if(!_marketPrices[sym]) await fetchAllMarketPrices();
     const cached = _marketPrices[sym]; /* may still be undefined if API failed */
 
-    /* Use cached chart data if available — avoids re-fetching same coin repeatedly */
+    /* Use _getChartData() for full caching pipeline (in-memory + localStorage + dedup) */
     let closes, confLabels;
-    if(_chartCache[cgId]) {
-      closes = _chartCache[cgId].closes;
-      confLabels = _chartCache[cgId].labels;
-    } else if(cgId) {
+    if(cgId) {
       try {
-        const chartRes = await fetch(_cgUrl('chart', { id: cgId, days: 99 }));
-        if(chartRes.ok) {
-          const chart = await chartRes.json();
-          if(chart.prices && chart.prices.length) {
-            closes = chart.prices.map(p => p[1]);
-            confLabels = chart.prices.slice(-10).map(p=>{ const d=new Date(p[0]); return (d.getMonth()+1)+'/'+(d.getDate()); });
-            _chartCache[cgId] = { closes, labels: confLabels };
-          }
-        } else {
-          console.warn(`CoinGecko chart not found for ${cgId} (${chartRes.status}) — TradingView chart still works`);
+        const chart = await _getChartData(cgId, 99);
+        if(chart?.prices?.length) {
+          closes = chart.prices.map(p => p[1]);
+          confLabels = chart.prices.slice(-10).map(p=>{ const d=new Date(p[0]); return (d.getMonth()+1)+'/'+(d.getDate()); });
         }
       } catch(cgErr) {
-        console.warn('CoinGecko chart fetch failed:', cgErr.message);
+        console.warn('CoinGecko chart fetch failed:', cgErr.message, '— TradingView chart still works');
       }
     }
 
