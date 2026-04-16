@@ -3370,8 +3370,9 @@ function _buildOverviewAggregate(range='30d'){
     }, 0);
     return score / trimmed.length;
   });
+  const timestamps = trimmed[0].prices.map(([ts]) => ts);
   const trackedIndex = marketCapSeries.map(point => 100 * (point / marketCapSeries[0]));
-  return { labels, marketCapSeries, volumeSeries, breadthSeries, trackedIndex, trimmed };
+  return { labels, timestamps, marketCapSeries, volumeSeries, breadthSeries, trackedIndex, trimmed };
 }
 
 function _buildOverviewMetrics(){
@@ -3589,6 +3590,8 @@ function _renderOverviewCharts(){
     const dataset = _marketOverviewMode === 'breadth'
       ? aggregate.breadthSeries
       : aggregate.marketCapSeries;
+    const volData = aggregate.volumeSeries;
+    const tsData = aggregate.timestamps;
     _overviewMarketChart = new Chart(marketCanvas.getContext('2d'), {
       type: 'line',
       data: {
@@ -3598,6 +3601,10 @@ function _renderOverviewCharts(){
           borderWidth: 2.5,
           tension: 0.32,
           pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: _marketOverviewMode === 'breadth' ? '#3B82F6' : '#EF4444',
+          pointHoverBorderColor: 'white',
+          pointHoverBorderWidth: 2,
           fill: _marketOverviewMode === 'breadth',
           borderColor: _marketOverviewMode === 'breadth' ? '#3B82F6' : '#10B981',
           backgroundColor: _marketOverviewMode === 'breadth' ? 'rgba(59,130,246,.12)' : 'rgba(16,185,129,.10)',
@@ -3609,17 +3616,43 @@ function _renderOverviewCharts(){
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#0F172A',
-            titleColor: '#E2E8F0',
-            bodyColor: '#CBD5E1',
-            padding: 10,
-            callbacks: {
-              label: (ctx) => _marketOverviewMode === 'breadth'
-                ? `Breadth ${ctx.parsed.y.toFixed(2)}%`
-                : `Market cap ${_overviewFmtMoney(ctx.parsed.y)}`
+            enabled: false,
+            external: function(context){
+              let el = document.getElementById('overview-chart-tooltip');
+              if(!el){
+                el = document.createElement('div');
+                el.id = 'overview-chart-tooltip';
+                el.style.cssText = 'position:absolute;pointer-events:none;background:white;border:1px solid #E2E8F0;border-radius:12px;padding:14px 18px;box-shadow:0 8px 32px rgba(15,23,42,.14);font-family:Inter,sans-serif;z-index:20;transition:opacity .12s;min-width:200px';
+                marketCanvas.parentElement.appendChild(el);
+              }
+              const tip = context.tooltip;
+              if(tip.opacity === 0){ el.style.opacity = '0'; return; }
+              const idx = tip.dataPoints?.[0]?.dataIndex;
+              if(idx == null){ el.style.opacity = '0'; return; }
+              const ts = tsData[idx];
+              const d = new Date(ts);
+              const dateStr = d.toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
+              const timeStr = d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+              const mcap = dataset[idx];
+              const vol = volData[idx];
+              if(_marketOverviewMode === 'breadth'){
+                el.innerHTML = `<div style="display:flex;gap:20px;margin-bottom:10px"><span style="font-size:12px;color:#64748B;font-weight:600">${dateStr}</span><span style="font-size:12px;color:#94A3B8">${timeStr}</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#3B82F6;flex-shrink:0"></span><span style="font-size:12px;color:#64748B;min-width:80px">Breadth</span><span style="font-size:13px;font-weight:700;color:#0F172A;font-family:'Space Mono',monospace">${dataset[idx].toFixed(2)}%</span></div>`;
+              } else {
+                el.innerHTML = `<div style="display:flex;gap:20px;margin-bottom:10px"><span style="font-size:12px;color:#64748B;font-weight:600">${dateStr}</span><span style="font-size:12px;color:#94A3B8">${timeStr}</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:8px;height:8px;border-radius:50%;background:#EF4444;flex-shrink:0"></span><span style="font-size:12px;color:#64748B;min-width:80px">Market Cap</span><span style="font-size:13px;font-weight:700;color:#0F172A;font-family:'Space Mono',monospace">${_overviewFmtMoney(mcap)}</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#CBD5E1;flex-shrink:0"></span><span style="font-size:12px;color:#64748B;min-width:80px">Volume</span><span style="font-size:13px;font-weight:700;color:#0F172A;font-family:'Space Mono',monospace">${_overviewFmtMoney(vol)}</span></div>`;
+              }
+              el.style.opacity = '1';
+              const pos = tip.caretX;
+              const chartW = marketCanvas.parentElement.offsetWidth;
+              const tipW = el.offsetWidth || 220;
+              let left = pos - tipW / 2;
+              if(left < 0) left = 0;
+              if(left + tipW > chartW) left = chartW - tipW;
+              el.style.left = left + 'px';
+              el.style.top = (tip.caretY - el.offsetHeight - 14) + 'px';
             }
           }
         },
