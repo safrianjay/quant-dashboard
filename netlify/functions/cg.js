@@ -3,7 +3,7 @@ const https = require('https');
 /* In-memory cache — persists across warm Lambda invocations.
    Prevents multiple browser tabs / rapid retries from hitting CoinGecko. */
 const _cache = {};
-const CACHE_TTL = 120000; /* 2 minutes — CoinGecko free tier allows ~30 req/min */
+const CACHE_TTL = 600000; /* 10 minutes — detail/chart endpoints can reuse stale data far longer than live tape */
 
 const HEADERS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
 
