@@ -204,6 +204,19 @@
   margin-bottom: var(--space-3);
 }
 
+/* Eyebrow/kicker — tiny uppercase caption that sits above a value or
+   metric. Used over KPI numbers, table cells, etc. Direct successor
+   to the bespoke `.label` rule. */
+.qds-eyebrow {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
 
 /* ============================================================================
  * PILLS / TABS / BADGES

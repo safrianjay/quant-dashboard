@@ -142,7 +142,6 @@ p,span,div,input,button{
 .kpi-card{background:white;border-radius:13px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04);border:1px solid var(--neutral-100);position:relative;overflow:hidden;animation:fadeUp .5s ease both}
 
 /* ── LABELS — Inter ── */
-.label{font-size:10px;font-weight:600;color:var(--neutral-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;font-family:var(--font-body)}
 .muted{font-size:11px;color:var(--neutral-400);font-family:var(--font-body)}
 
 /* ── VALUES — Space Mono ── */
@@ -2860,7 +2859,7 @@ function renderKPIs(){
     <div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div style="min-width:0;flex:1">
         <!-- Inter label -->
-        <div class="label">${k.title}</div>
+        <div class="qds-eyebrow">${k.title}</div>
         <!-- Space Mono value -->
         <div class="val" id="kv${i}" style="font-size:${valFs}">${valStr}</div>
         <!-- Inter sub -->
@@ -3000,9 +2999,9 @@ function renderLadder(){
     </div>`;
   }).join("");
   const ft = `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:12px 18px 16px;border-top:1px solid #F1F5F9;margin-top:4px">
-    <div><div class="label">R:R</div><div style="font-size:12px;font-weight:700;font-family:var(--font-mono);color:${s.accent}">${s.rr}</div></div>
-    <div><div class="label">Trigger</div><div style="font-size:10px;color:#334155;line-height:1.4;font-family:var(--font-body)">${s.trigger}</div></div>
-    <div><div class="label">Invalidation</div><div style="font-size:10px;color:#DC2626;line-height:1.4;font-family:var(--font-body)">${s.inv}</div></div>
+    <div><div class="qds-eyebrow">R:R</div><div style="font-size:12px;font-weight:700;font-family:var(--font-mono);color:${s.accent}">${s.rr}</div></div>
+    <div><div class="qds-eyebrow">Trigger</div><div style="font-size:10px;color:#334155;line-height:1.4;font-family:var(--font-body)">${s.trigger}</div></div>
+    <div><div class="qds-eyebrow">Invalidation</div><div style="font-size:10px;color:#DC2626;line-height:1.4;font-family:var(--font-body)">${s.inv}</div></div>
   </div>`;
   document.getElementById("price-ladder").innerHTML = leg + rows + ft;
 }
