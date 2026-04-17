@@ -184,6 +184,57 @@ When you build a new component that will be reused:
 4. If it introduces new visual values (a new color, spacing, shadow), define
    them as tokens in `tokens.css` first — components should never hard-code.
 
+## Contributing — Rules for All New Work
+
+These rules apply to **every new component, page, or feature** added to the
+project from this point on. They are not suggestions.
+
+1. **No hard-coded colors.** Every color value must reference a token —
+   `var(--brand-primary)`, `var(--text-secondary)`, `var(--success)`, etc.
+   Hex codes (`#0F172A`, `#64748B`, …) are not allowed in new code. If the
+   color you need doesn't exist, add it to `tokens.css` first.
+
+2. **No hard-coded font sizes, weights, or families.** Use `var(--fs-*)`,
+   `var(--fw-*)`, `var(--font-*)`. The same applies to `--tracking-*` and
+   `--lh-*`.
+
+3. **No hard-coded spacing/radius/shadow.** Use `var(--space-*)`,
+   `var(--radius-*)`, `var(--shadow-*)`. Off-scale pixel values are only
+   acceptable when matching an existing legacy element you're sitting next
+   to — and even then, prefer the closest token.
+
+4. **No JS-driven hover.** Never write `onmouseover="this.style…"` or
+   `el.onmouseover = …`. Use a CSS `:hover` rule, or compose one of the
+   existing utilities: `qds-hover-wash`, `qds-hover-lift`,
+   `qds-hover-lift-lg`, `qds-hover-scale`, `qds-hover-danger`,
+   `qds-hover-success`, `qds-link-row`.
+
+5. **Reuse `qds-*` components before writing new CSS.** Need a button? Use
+   `qds-btn qds-btn--primary`. A pill? Use `qds-pillbar` + `qds-pill`. A
+   card? Use `qds-card`. Only write bespoke styles when no existing
+   component fits.
+
+6. **Promote reusable patterns.** If you build the same component in two
+   places, move it into `components.css` as a `qds-*` class and add an
+   example to `preview.html` so future contributors discover it.
+
+7. **State naming.** Active state: `is-active`. Error: `is-error`. Loading:
+   `is-loading`. Disabled: `is-disabled`. Don't invent new state names.
+
+8. **When in doubt, open `preview.html`** in a browser to see what's
+   already available before building anything from scratch.
+
+### Quick PR checklist
+
+Before opening a pull request that touches UI, verify:
+
+- [ ] No hex colors in new code
+- [ ] No magic px values for spacing/radius/shadow that have a matching token
+- [ ] No `onmouseover` / `onmouseout` attributes
+- [ ] Existing `qds-*` components reused where applicable
+- [ ] Any new reusable component added to `components.css` + `preview.html`
+
+
 ## Why a Design System
 
 - **Consistency** between landing, dashboard, and marketing surfaces.
