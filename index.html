@@ -154,9 +154,9 @@ p,span,div,input,button{
 .icon-wrap{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px}
 
 /* ── CONTROLS ── */
-.periods{display:flex;gap:2px;background:#F1F5F9;border-radius:7px;padding:3px}
-.period{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;border:none;font-family:var(--font-body);background:transparent;color:#64748B;transition:all .15s}
-.period.active{background:white;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:600}
+.periods{display:flex;gap:var(--space-1);background:var(--surface-sunken);border-radius:7px;padding:3px}
+.period{padding:var(--space-2) var(--space-5);border-radius:var(--radius-sm);font-size:var(--fs-sm);font-weight:var(--fw-medium);cursor:pointer;border:none;font-family:var(--font-body);background:transparent;color:var(--text-secondary);transition:all var(--dur-fast)}
+.period.active{background:var(--surface-card);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:var(--fw-semibold)}
 .vflink{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#3B82F6;cursor:pointer;background:none;border:none;font-family:var(--font-body)}
 
 /* ── LIST ROWS ── */
