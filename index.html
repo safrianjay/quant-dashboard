@@ -67,7 +67,7 @@
 .sk-shimmer {
   position: relative;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--neutral-100);
 }
 .sk-shimmer::after {
   content: "";
@@ -87,7 +87,7 @@
 .loading-splash {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: #F8FAFC;
+  background: var(--neutral-50);
   z-index: 10000;
   display: flex;
   transition: opacity 0.4s ease, visibility 0.4s;
@@ -101,7 +101,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;font-family:var(--font-body)}
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:#E2E8F0;border-radius:3px}
+::-webkit-scrollbar-thumb{background:var(--neutral-200);border-radius:3px}
 
 /* ── TYPOGRAPHY SYSTEM ── */
 h1,h2,h3,.heading,.nav-brand-name,.section-title,.card-title,.kpi-title-text,.topbar-title{
@@ -116,8 +116,8 @@ p,span,div,input,button{
 }
 
 /* ── LAYOUT ── */
-.root{display:flex;height:100vh;width:100%;background:#F8FAFC;color:#0F172A;overflow:hidden}
-.sidebar{width:224px;background:white;border-right:1px solid #F1F5F9;display:flex;flex-direction:column;flex-shrink:0;animation:slideIn .4s ease both;transition:width .3s cubic-bezier(.22,1,.36,1);overflow:hidden;min-width:0}
+.root{display:flex;height:100vh;width:100%;background:var(--neutral-50);color:var(--neutral-900);overflow:hidden}
+.sidebar{width:224px;background:white;border-right:1px solid var(--neutral-100);display:flex;flex-direction:column;flex-shrink:0;animation:slideIn .4s ease both;transition:width .3s cubic-bezier(.22,1,.36,1);overflow:hidden;min-width:0}
 .sidebar.collapsed{width:56px}
 /* Icon-only collapsed state */
 .sidebar.collapsed .nav-item-text,
@@ -130,7 +130,7 @@ p,span,div,input,button{
 .sidebar.collapsed .user-footer-row{justify-content:center;padding:10px 0;background:transparent}
 .sidebar.collapsed .user-status-dot{display:none}
 .main{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:white;border-bottom:1px solid #F1F5F9;position:sticky;top:0;z-index:10;gap:8px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:white;border-bottom:1px solid var(--neutral-100);position:sticky;top:0;z-index:10;gap:8px}
 .content{padding:18px 24px 32px;flex:1}
 
 /* ── GRID ── */
@@ -139,17 +139,17 @@ p,span,div,input,button{
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 
 /* ── CARDS ── */
-.kpi-card{background:white;border-radius:13px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04);border:1px solid #F1F5F9;position:relative;overflow:hidden;animation:fadeUp .5s ease both}
-.card{background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden}
+.kpi-card{background:white;border-radius:13px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04);border:1px solid var(--neutral-100);position:relative;overflow:hidden;animation:fadeUp .5s ease both}
+.card{background:white;border-radius:13px;border:1px solid var(--neutral-100);box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden}
 .card-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px 12px}
 .card-head .muted{margin-top:4px}
 
 /* ── LABELS — Inter ── */
-.label{font-size:10px;font-weight:600;color:#94A3B8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;font-family:var(--font-body)}
-.muted{font-size:11px;color:#94A3B8;font-family:var(--font-body)}
+.label{font-size:10px;font-weight:600;color:var(--neutral-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;font-family:var(--font-body)}
+.muted{font-size:11px;color:var(--neutral-400);font-family:var(--font-body)}
 
 /* ── VALUES — Space Mono ── */
-.val{font-size:19px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.val{font-size:19px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sub{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;margin-top:6px;font-family:var(--font-body)}
 .icon-wrap{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px}
 
@@ -160,142 +160,142 @@ p,span,div,input,button{
 .lang-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:var(--space-2);padding:5px var(--space-4);border:none;border-radius:var(--radius-md);font-size:var(--fs-sm);font-weight:var(--fw-semibold);cursor:pointer;font-family:var(--font-body);transition:all var(--dur-fast);background:transparent;color:var(--text-secondary)}
 .lang-btn:hover:not(.active){color:var(--text-primary)}
 .lang-btn.active{background:var(--surface-card);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.vflink{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#3B82F6;cursor:pointer;background:none;border:none;font-family:var(--font-body)}
+.vflink{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--info);cursor:pointer;background:none;border:none;font-family:var(--font-body)}
 
 /* ── LIST ROWS ── */
-.row-item{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid #F8FAFC;cursor:pointer}
+.row-item{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--neutral-50);cursor:pointer}
 .row-item:last-child{border-bottom:none}
 
 /* ── SIDEBAR NAV ── */
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:500;margin-bottom:2px;transition:all .2s;color:#64748B;font-family:var(--font-body)}
-.nav-item.active{background:#0F172A;color:white}
-.nav-section-label{font-size:9px;font-weight:700;color:#94A3B8;letter-spacing:.12em;text-transform:uppercase;padding:14px 10px 5px;font-family:var(--font-heading)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:500;margin-bottom:2px;transition:all .2s;color:var(--neutral-500);font-family:var(--font-body)}
+.nav-item.active{background:var(--neutral-900);color:white}
+.nav-section-label{font-size:9px;font-weight:700;color:var(--neutral-400);letter-spacing:.12em;text-transform:uppercase;padding:14px 10px 5px;font-family:var(--font-heading)}
 
 /* ── BADGE / PULSE ── */
-.dot-pulse{width:7px;height:7px;border-radius:50%;background:#10B981;border:1px solid white;animation:softBreathe 2.5s ease-in-out infinite;position:absolute;top:9px;right:9px}
+.dot-pulse{width:7px;height:7px;border-radius:50%;background:var(--success);border:1px solid white;animation:softBreathe 2.5s ease-in-out infinite;position:absolute;top:9px;right:9px}
 
 /* ── COIN STRIP ── */
 .coin-strip-wrap{margin-bottom:14px;animation:fadeUp .5s ease .22s both}
 .coin-strip-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .coin-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
-.coin-card{background:white;border:1px solid #F1F5F9;border-radius:13px;padding:14px 15px;flex-shrink:0;width:168px;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.coin-card:hover{border-color:#E2E8F0;box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
-.coin-card.r1{border-top:3px solid #10B981}
-.coin-card.r2{border-top:3px solid #3B82F6}
-.coin-card.r3{border-top:3px solid #F59E0B}
-.coin-card.r4{border-top:3px solid #8B5CF6}
-.coin-card.r5{border-top:3px solid #EC4899}
-.coin-card.r6{border-top:3px solid #06B6D4}
-.coin-card.r7{border-top:3px solid #F97316}
+.coin-card{background:white;border:1px solid var(--neutral-100);border-radius:13px;padding:14px 15px;flex-shrink:0;width:168px;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.coin-card:hover{border-color:var(--neutral-200);box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
+.coin-card.r1{border-top:3px solid var(--success)}
+.coin-card.r2{border-top:3px solid var(--info)}
+.coin-card.r3{border-top:3px solid var(--warning)}
+.coin-card.r4{border-top:3px solid var(--series-4)}
+.coin-card.r5{border-top:3px solid var(--series-5)}
+.coin-card.r6{border-top:3px solid var(--series-6)}
+.coin-card.r7{border-top:3px solid var(--warning-strong)}
 .coin-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;font-size:12px;font-family:var(--font-heading)}
 .rank-badge{position:absolute;top:9px;right:9px;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;font-family:var(--font-heading)}
-.change-bar-wrap{height:4px;border-radius:2px;background:#F1F5F9;overflow:hidden;margin:6px 0 4px;position:relative}
+.change-bar-wrap{height:4px;border-radius:2px;background:var(--neutral-100);overflow:hidden;margin:6px 0 4px;position:relative}
 .change-bar-fill{height:100%;border-radius:2px;animation:barFill .8s ease both}
 .range-labels{display:flex;justify-content:space-between}
 
 /* ── MARKET OVERVIEW ── */
 .overview-shell{display:flex;flex-direction:column;gap:14px}
 .overview-spotlight-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-.overview-spot-card{background:white;border:1px solid #F1F5F9;border-radius:13px;padding:14px 15px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:all .18s;overflow:hidden}
-.overview-spot-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08);border-color:#E2E8F0}
+.overview-spot-card{background:white;border:1px solid var(--neutral-100);border-radius:13px;padding:14px 15px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:all .18s;overflow:hidden}
+.overview-spot-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08);border-color:var(--neutral-200)}
 .overview-spot-meta{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
-.overview-spot-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#0F172A;font-family:var(--font-heading)}
-.overview-spot-price{font-size:20px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.overview-spot-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--neutral-900);font-family:var(--font-heading)}
+.overview-spot-price{font-size:20px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .overview-spot-change{font-size:11px;font-weight:700;font-family:var(--font-body)}
 .overview-main-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:12px}
 .overview-stack{display:flex;flex-direction:column;gap:12px}
 .overview-bottom-grid{display:grid;grid-template-columns:minmax(0,1.45fr) 320px;gap:12px}
 .overview-section-pad{padding:14px 18px 16px}
-.overview-pillbar{display:flex;gap:4px;background:#F1F5F9;border-radius:8px;padding:3px}
-.overview-pill{padding:4px 10px;border:none;border-radius:6px;background:transparent;color:#64748B;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s}
-.overview-pill.active{background:white;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.overview-pillbar{display:flex;gap:4px;background:var(--neutral-100);border-radius:8px;padding:3px}
+.overview-pill{padding:4px 10px;border:none;border-radius:6px;background:transparent;color:var(--neutral-500);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.overview-pill.active{background:white;color:var(--neutral-900);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .overview-stat-row{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:6px}
 .overview-stat-block{display:flex;flex-direction:column;gap:4px}
-.overview-stat-label{font-size:10px;color:#94A3B8;font-weight:600;font-family:var(--font-body)}
-.overview-stat-value{font-size:18px;color:#0F172A;font-weight:700;font-family:var(--font-mono);letter-spacing:-.02em}
+.overview-stat-label{font-size:10px;color:var(--neutral-400);font-weight:600;font-family:var(--font-body)}
+.overview-stat-value{font-size:18px;color:var(--neutral-900);font-weight:700;font-family:var(--font-mono);letter-spacing:-.02em}
 .overview-fg-gauge{width:124px;height:124px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:6px auto 10px;position:relative}
-.overview-fg-gauge::before{content:'';position:absolute;inset:12px;border-radius:50%;background:white;border:1px solid #F1F5F9}
+.overview-fg-gauge::before{content:'';position:absolute;inset:12px;border-radius:50%;background:white;border:1px solid var(--neutral-100)}
 .overview-fg-inner{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;z-index:1}
-.overview-fg-score{font-size:32px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.04em}
-.overview-fg-label{font-size:11px;font-weight:700;color:#64748B;font-family:var(--font-body)}
-.overview-helper{font-size:11px;line-height:1.6;color:#64748B;font-family:var(--font-body)}
-.overview-range-bar{position:relative;height:8px;border-radius:999px;background:#E2E8F0;overflow:hidden}
-.overview-range-fill{position:absolute;top:0;left:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,#F59E0B,#FCD34D,#3B82F6)}
-.overview-range-knob{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:#0F172A;border:2px solid white;box-shadow:0 2px 6px rgba(15,23,42,.18);transform:translate(-50%,-50%)}
+.overview-fg-score{font-size:32px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.04em}
+.overview-fg-label{font-size:11px;font-weight:700;color:var(--neutral-500);font-family:var(--font-body)}
+.overview-helper{font-size:11px;line-height:1.6;color:var(--neutral-500);font-family:var(--font-body)}
+.overview-range-bar{position:relative;height:8px;border-radius:999px;background:var(--neutral-200);overflow:hidden}
+.overview-range-fill{position:absolute;top:0;left:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,var(--warning),var(--warning-border),var(--info))}
+.overview-range-knob{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:var(--neutral-900);border:2px solid white;box-shadow:0 2px 6px rgba(15,23,42,.18);transform:translate(-50%,-50%)}
 .overview-index-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
-.overview-index-value{font-size:22px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.03em}
+.overview-index-value{font-size:22px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.03em}
 .overview-index-change{font-size:11px;font-weight:700;font-family:var(--font-body)}
 .overview-chart-wrap{position:relative;height:320px}
 .overview-flow-wrap{position:relative;height:250px}
 .overview-dom-row{display:flex;align-items:center;gap:10px}
-.overview-dom-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#334155;font-family:var(--font-body)}
-.overview-dom-value{font-size:16px;font-weight:700;color:#0F172A;font-family:var(--font-mono);letter-spacing:-.02em}
+.overview-dom-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--neutral-700);font-family:var(--font-body)}
+.overview-dom-value{font-size:16px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.02em}
 .overview-dom-bar{height:8px;border-radius:999px;background:#EEF2FF;overflow:hidden;margin-top:8px}
 .overview-mini-line{height:36px;width:100%;display:block;overflow:hidden}
-.overview-skeleton{background:linear-gradient(90deg,#F8FAFC 0%,#EEF2F7 50%,#F8FAFC 100%);background-size:200% 100%;animation:shimmer 1.8s linear infinite;border-radius:10px}
+.overview-skeleton{background:linear-gradient(90deg,var(--neutral-50) 0%,#EEF2F7 50%,var(--neutral-50) 100%);background-size:200% 100%;animation:shimmer 1.8s linear infinite;border-radius:10px}
 
 /* ── COIN TLDR ── */
 .coin-tldr-wrap{margin-bottom:14px;animation:fadeUp .5s ease .16s both}
 .coin-tldr-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px}
 .coin-tldr-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:12px}
 .coin-tldr-side{display:grid;grid-template-rows:1fr 1fr;gap:12px}
-.coin-tldr-card{background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);border-radius:16px;border:1px solid #E2E8F0;box-shadow:0 8px 26px rgba(15,23,42,.06);overflow:hidden}
+.coin-tldr-card{background:linear-gradient(180deg,var(--neutral-0) 0%,#fbfdff 100%);border-radius:16px;border:1px solid var(--neutral-200);box-shadow:0 8px 26px rgba(15,23,42,.06);overflow:hidden}
 .coin-tldr-body{padding:20px 22px}
 .coin-tldr-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}
-.coin-tldr-title{font-family:var(--font-heading);font-size:18px;font-weight:800;color:#0F172A;letter-spacing:-.02em;line-height:1.15}
-.coin-tldr-subtitle{font-size:11px;color:#64748B;font-family:var(--font-body);margin-top:6px;line-height:1.45;max-width:420px}
+.coin-tldr-title{font-family:var(--font-heading);font-size:18px;font-weight:800;color:var(--neutral-900);letter-spacing:-.02em;line-height:1.15}
+.coin-tldr-subtitle{font-size:11px;color:var(--neutral-500);font-family:var(--font-body);margin-top:6px;line-height:1.45;max-width:420px}
 .coin-tldr-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font-size:11px;font-weight:700;font-family:var(--font-body);white-space:nowrap;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55)}
-.coin-tldr-badge.bull{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0}
-.coin-tldr-badge.bear{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA}
-.coin-tldr-badge.neutral{background:#EEF4FF;color:#365EDC;border:1px solid #BFD0FF}
+.coin-tldr-badge.bull{background:var(--success-bg);color:var(--success-strong);border:1px solid var(--success-border)}
+.coin-tldr-badge.bear{background:var(--danger-bg);color:var(--danger-strong);border:1px solid var(--danger-border)}
+.coin-tldr-badge.neutral{background:var(--info-bg);color:#365EDC;border:1px solid var(--info-border)}
 .coin-tldr-list{display:flex;flex-direction:column;gap:14px}
 .coin-tldr-bullet{display:flex;align-items:flex-start;gap:12px}
 .coin-tldr-bullet-icon{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;opacity:.92}
-.coin-tldr-bullet-copy{font-size:12px;line-height:1.62;color:#334155;font-family:var(--font-body);letter-spacing:-.01em}
+.coin-tldr-bullet-copy{font-size:12px;line-height:1.62;color:var(--neutral-700);font-family:var(--font-body);letter-spacing:-.01em}
 .coin-tldr-emph{color:#365EDC;font-weight:700}
-.coin-tldr-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:20px;padding-top:14px;border-top:1px solid #E5EDF8;font-size:11px;color:#94A3B8;font-family:var(--font-body)}
+.coin-tldr-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:20px;padding-top:14px;border-top:1px solid #E5EDF8;font-size:11px;color:var(--neutral-400);font-family:var(--font-body)}
 .coin-tldr-mini{padding:16px;cursor:pointer;transition:all .18s}
 .coin-tldr-mini:hover{border-color:#D8E3F3;box-shadow:0 10px 24px rgba(15,23,42,.08);transform:translateY(-1px)}
-.coin-tldr-mini-title{font-family:var(--font-heading);font-size:12px;font-weight:700;color:#0F172A;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-.coin-tldr-mini-copy{font-size:11px;line-height:1.58;color:#64748B;font-family:var(--font-body);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.coin-tldr-empty{padding:24px 20px;text-align:center;color:#94A3B8;font-size:12px;font-family:var(--font-body);line-height:1.6}
+.coin-tldr-mini-title{font-family:var(--font-heading);font-size:12px;font-weight:700;color:var(--neutral-900);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.coin-tldr-mini-copy{font-size:11px;line-height:1.58;color:var(--neutral-500);font-family:var(--font-body);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.coin-tldr-empty{padding:24px 20px;text-align:center;color:var(--neutral-400);font-size:12px;font-family:var(--font-body);line-height:1.6}
 .coin-tldr-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.56);z-index:1002;backdrop-filter:blur(4px)}
-.coin-tldr-modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.97);z-index:1003;width:min(760px,94vw);max-height:min(86vh,920px);background:white;border-radius:18px;border:1px solid #E2E8F0;box-shadow:0 24px 64px rgba(15,23,42,.22);overflow:hidden;flex-direction:column;transition:transform .18s ease,opacity .18s ease;opacity:0}
-.coin-tldr-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 16px;border-bottom:1px solid #F1F5F9}
-.coin-tldr-modal-title{font-family:var(--font-heading);font-size:20px;font-weight:800;color:#0F172A;letter-spacing:-.02em}
-.coin-tldr-modal-sub{font-size:11px;color:#64748B;font-family:var(--font-body);margin-top:4px}
+.coin-tldr-modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.97);z-index:1003;width:min(760px,94vw);max-height:min(86vh,920px);background:white;border-radius:18px;border:1px solid var(--neutral-200);box-shadow:0 24px 64px rgba(15,23,42,.22);overflow:hidden;flex-direction:column;transition:transform .18s ease,opacity .18s ease;opacity:0}
+.coin-tldr-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 16px;border-bottom:1px solid var(--neutral-100)}
+.coin-tldr-modal-title{font-family:var(--font-heading);font-size:20px;font-weight:800;color:var(--neutral-900);letter-spacing:-.02em}
+.coin-tldr-modal-sub{font-size:11px;color:var(--neutral-500);font-family:var(--font-body);margin-top:4px}
 .coin-tldr-sheet-handle{display:none;width:42px;height:4px;border-radius:999px;background:#D8E3F3;margin:12px auto 0;flex-shrink:0}
-.coin-tldr-close{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;border:1px solid #E2E8F0;background:white;color:#64748B;cursor:pointer;transition:all .15s}
-.coin-tldr-close:hover{background:#F8FAFC;border-color:#CBD5E1;color:#0F172A}
+.coin-tldr-close{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;border:1px solid var(--neutral-200);background:white;color:var(--neutral-500);cursor:pointer;transition:all .15s}
+.coin-tldr-close:hover{background:var(--neutral-50);border-color:var(--neutral-300);color:var(--neutral-900)}
 .coin-tldr-modal-body{padding:18px 20px 22px;overflow-y:auto}
 .coin-tldr-timeline{position:relative;padding-left:18px}
-.coin-tldr-timeline::before{content:'';position:absolute;left:5px;top:2px;bottom:2px;width:1px;background:#E2E8F0}
+.coin-tldr-timeline::before{content:'';position:absolute;left:5px;top:2px;bottom:2px;width:1px;background:var(--neutral-200)}
 .coin-tldr-entry{position:relative;padding-left:18px;margin-bottom:22px}
 .coin-tldr-entry:last-child{margin-bottom:0}
 .coin-tldr-entry-dot{position:absolute;left:-1px;top:6px;width:12px;height:12px;border-radius:50%;background:white;border:3px solid #BFDBFE;box-shadow:0 0 0 4px #EFF6FF}
-.coin-tldr-entry-card{background:#FBFDFF;border:1px solid #E2E8F0;border-radius:14px;padding:16px 16px 15px}
+.coin-tldr-entry-card{background:#FBFDFF;border:1px solid var(--neutral-200);border-radius:14px;padding:16px 16px 15px}
 .coin-tldr-entry-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.coin-tldr-entry-time{font-size:12px;font-weight:700;color:#0F172A;font-family:var(--font-body)}
-.coin-tldr-entry-tf{padding:4px 8px;border-radius:999px;background:#F1F5F9;color:#64748B;font-size:10px;font-weight:700;font-family:var(--font-mono)}
+.coin-tldr-entry-time{font-size:12px;font-weight:700;color:var(--neutral-900);font-family:var(--font-body)}
+.coin-tldr-entry-tf{padding:4px 8px;border-radius:999px;background:var(--neutral-100);color:var(--neutral-500);font-size:10px;font-weight:700;font-family:var(--font-mono)}
 .coin-tldr-entry-list{display:flex;flex-direction:column;gap:10px}
-.coin-tldr-entry-empty{padding:20px;text-align:center;color:#94A3B8;font-size:12px;font-family:var(--font-body)}
+.coin-tldr-entry-empty{padding:20px;text-align:center;color:var(--neutral-400);font-size:12px;font-family:var(--font-body)}
 
 /* ── TP/SL MODE TOGGLE ── */
-.tpsl-mode{display:flex;gap:2px;background:#F1F5F9;border-radius:6px;padding:2px}
-.tpsl-mode-btn{padding:2px 7px;border-radius:4px;border:none;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font-mono);background:transparent;color:#94A3B8;transition:all .15s}
-.tpsl-mode-btn.active{background:white;color:#0F172A;box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.tpsl-computed{font-size:10px;color:#94A3B8;font-family:var(--font-mono);margin-top:4px;min-height:14px}
+.tpsl-mode{display:flex;gap:2px;background:var(--neutral-100);border-radius:6px;padding:2px}
+.tpsl-mode-btn{padding:2px 7px;border-radius:4px;border:none;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font-mono);background:transparent;color:var(--neutral-400);transition:all .15s}
+.tpsl-mode-btn.active{background:white;color:var(--neutral-900);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.tpsl-computed{font-size:10px;color:var(--neutral-400);font-family:var(--font-mono);margin-top:4px;min-height:14px}
 
 /* ── SIDEBAR TOGGLE BUTTON (inside sidebar brand row) ── */
-.sidebar-toggle-btn{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;border:1px solid #E2E8F0;background:white;cursor:pointer;flex-shrink:0;padding:0;margin-left:auto;transition:all .2s}
-.sidebar-toggle-btn:hover{background:#F1F5F9;border-color:#CBD5E1}
+.sidebar-toggle-btn{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;border:1px solid var(--neutral-200);background:white;cursor:pointer;flex-shrink:0;padding:0;margin-left:auto;transition:all .2s}
+.sidebar-toggle-btn:hover{background:var(--neutral-100);border-color:var(--neutral-300)}
 .sidebar-toggle-btn svg{transition:transform .3s cubic-bezier(.22,1,.36,1)}
 .sidebar.collapsed .sidebar-toggle-btn svg{transform:rotate(180deg)}
 /* When collapsed: hide logo so only the toggle btn shows centered */
 .sidebar.collapsed .nav-brand-logo{display:none}
 /* Expand tab — shown outside sidebar when it's closed (desktop collapsed or mobile closed) */
-.sidebar-expand-tab{display:none;position:fixed;left:0;top:50%;transform:translateY(-50%);width:20px;height:48px;background:white;border:1px solid #E2E8F0;border-left:none;border-radius:0 8px 8px 0;cursor:pointer;align-items:center;justify-content:center;z-index:61;box-shadow:2px 0 8px rgba(0,0,0,.06)}
-.sidebar-expand-tab:hover{background:#F8FAFC}
+.sidebar-expand-tab{display:none;position:fixed;left:0;top:50%;transform:translateY(-50%);width:20px;height:48px;background:white;border:1px solid var(--neutral-200);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;align-items:center;justify-content:center;z-index:61;box-shadow:2px 0 8px rgba(0,0,0,.06)}
+.sidebar-expand-tab:hover{background:var(--neutral-50)}
 
 /* ── MOBILE OVERLAY ── */
 .mob-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:59;display:none;backdrop-filter:blur(2px)}
@@ -355,11 +355,11 @@ p,span,div,input,button{
 /* ── Info tooltip (desktop) ── */
 .info-btn {
   display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;border-radius:50%;border:1.5px solid #CBD5E1;background:none;
-  font-size:9px;font-weight:700;color:#94A3B8;cursor:pointer;
+  width:16px;height:16px;border-radius:50%;border:1.5px solid var(--neutral-300);background:none;
+  font-size:9px;font-weight:700;color:var(--neutral-400);cursor:pointer;
   font-family:var(--font-body);transition:all .15s;flex-shrink:0;padding:0;line-height:1;
 }
-.info-btn:hover{border-color:#64748B;color:#64748B;background:#F8FAFC}
+.info-btn:hover{border-color:var(--neutral-500);color:var(--neutral-500);background:var(--neutral-50)}
 /* Always hide tooltip text — desktop shows on hover, mobile uses bottom sheet */
 .info-tooltip{display:none !important}
 .info-wrap{position:relative;display:inline-flex}
@@ -368,13 +368,13 @@ p,span,div,input,button{
 @media(min-width:641px){
   .info-wrap:hover .info-tooltip{
     display:block !important;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
-    background:#0F172A;color:white;font-size:11px;font-weight:400;line-height:1.5;
+    background:var(--neutral-900);color:white;font-size:11px;font-weight:400;line-height:1.5;
     padding:10px 14px;border-radius:10px;width:240px;z-index:100;
     font-family:var(--font-body);box-shadow:0 8px 24px rgba(0,0,0,.18);pointer-events:none;
   }
   .info-wrap:hover .info-tooltip::before{
     content:'';position:absolute;top:-5px;left:50%;
-    width:10px;height:10px;background:#0F172A;border-radius:2px;
+    width:10px;height:10px;background:var(--neutral-900);border-radius:2px;
     transform:translateX(-50%) rotate(45deg);
   }
 }
@@ -392,13 +392,13 @@ p,span,div,input,button{
   animation:sheetUp .25s ease;
 }
 .info-sheet-title{
-  font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:8px;
+  font-family:var(--font-heading);font-size:14px;font-weight:700;color:var(--neutral-900);margin-bottom:8px;
 }
 .info-sheet-body{
-  font-family:var(--font-body);font-size:13px;color:#475569;line-height:1.6;
+  font-family:var(--font-body);font-size:13px;color:var(--neutral-600);line-height:1.6;
 }
 .info-sheet-handle{
-  width:40px;height:4px;border-radius:2px;background:#E2E8F0;
+  width:40px;height:4px;border-radius:2px;background:var(--neutral-200);
   margin:0 auto 16px;
 }
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -436,14 +436,14 @@ p,span,div,input,button{
     border: none;
     font-size: 11px;
     font-weight: 600;
-    color: #94A3B8;
+    color: var(--neutral-400);
     font-family: var(--font-body);
     cursor: pointer;
     transition: color .15s;
     text-align: center;
     letter-spacing: .02em;
   }
-  .cd-stats-toggle:hover { color: #64748B; }
+  .cd-stats-toggle:hover { color: var(--neutral-500); }
 }
 @media(max-width:480px){
   /* KPI stays 2-col but smaller padding */
@@ -482,13 +482,13 @@ p,span,div,input,button{
 }
 
 /* ══ POSITIONS PERF CHART CARD ══ */
-.perf-chart-card{background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease .18s both;display:none}
+.perf-chart-card{background:white;border-radius:13px;border:1px solid var(--neutral-100);box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease .18s both;display:none}
 .perf-tabs-row{display:flex;gap:4px;padding:0 18px 14px}
-.perf-stat-row{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid #F1F5F9}
-.perf-cell{padding:12px 14px;border-right:1px solid #F1F5F9;text-align:center}
+.perf-stat-row{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid var(--neutral-100)}
+.perf-cell{padding:12px 14px;border-right:1px solid var(--neutral-100);text-align:center}
 .perf-cell:last-child{border-right:none}
-.perf-cell-val{font-size:14px;font-weight:700;font-family:var(--font-mono);color:#0F172A;line-height:1}
-.perf-cell-lbl{font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-top:4px;font-family:var(--font-body)}
+.perf-cell-val{font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--neutral-900);line-height:1}
+.perf-cell-lbl{font-size:9px;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;font-family:var(--font-body)}
 
 /* ══ ENTRY PANEL ══ */
 @keyframes panelIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
@@ -500,109 +500,109 @@ p,span,div,input,button{
 .entry-panel{position:fixed;top:0;right:0;bottom:0;width:420px;background:white;z-index:51;animation:panelIn .32s cubic-bezier(.22,1,.36,1) both;display:flex;flex-direction:column;box-shadow:-12px 0 48px rgba(0,0,0,.12)}
 @media(max-width:480px){.entry-panel{width:100%}}
 
-.panel-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid #F1F5F9}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--neutral-100)}
 .panel-body{flex:1;overflow-y:auto;padding:24px}
-.panel-footer{padding:16px 24px;border-top:1px solid #F1F5F9}
+.panel-footer{padding:16px 24px;border-top:1px solid var(--neutral-100)}
 
 /* Direction buttons — always distinctly colored */
 .dir-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
 .dir-tab{padding:14px 10px;border-radius:11px;border:none;cursor:pointer;font-size:14px;font-weight:700;font-family:var(--font-heading);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:.01em}
-.dir-tab.long{background:#ECFDF5;color:#059669;border:2px solid #A7F3D0}
+.dir-tab.long{background:#ECFDF5;color:var(--success-deep);border:2px solid #A7F3D0}
 .dir-tab.long:hover{background:#D1FAE5}
-.dir-tab.long.active{background:#10B981;color:white;border-color:#10B981;box-shadow:0 4px 14px rgba(16,185,129,.4)}
-.dir-tab.short{background:#FEF2F2;color:#DC2626;border:2px solid #FECACA}
+.dir-tab.long.active{background:var(--success);color:white;border-color:var(--success);box-shadow:0 4px 14px rgba(16,185,129,.4)}
+.dir-tab.short{background:var(--danger-bg);color:var(--danger-strong);border:2px solid var(--danger-border)}
 .dir-tab.short:hover{background:#FEE2E2}
-.dir-tab.short.active{background:#EF4444;color:white;border-color:#EF4444;box-shadow:0 4px 14px rgba(239,68,68,.4)}
+.dir-tab.short.active{background:var(--danger);color:white;border-color:var(--danger);box-shadow:0 4px 14px rgba(239,68,68,.4)}
 
 /* Form fields */
 .field-group{margin-bottom:18px}
-.field-label{font-size:10px;font-weight:600;color:#94A3B8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px;display:block;font-family:var(--font-body)}
-.field-input{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid #E2E8F0;background:#F8FAFC;font-size:14px;font-weight:500;color:#0F172A;outline:none;transition:all .15s;font-family:var(--font-body)}
-.field-input:focus{border-color:#3B82F6;background:white;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
-.field-input.error{border-color:#EF4444;background:#FEF2F2;animation:shakeX .4s ease}
-.field-input::placeholder{color:#CBD5E1}
-.field-prefix{display:flex;align-items:center;border-radius:10px;border:1.5px solid #E2E8F0;background:#F8FAFC;overflow:hidden;transition:all .15s}
-.field-prefix:focus-within{border-color:#3B82F6;background:white;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
-.field-prefix-label{padding:11px 12px;font-size:14px;font-weight:700;background:#F1F5F9;border-right:1px solid #E2E8F0;color:#64748B;flex-shrink:0;font-family:var(--font-mono)}
-.field-prefix input{flex:1;border:none;background:transparent;outline:none;padding:11px 14px;font-size:15px;font-weight:700;color:#0F172A;font-family:var(--font-mono);width:100%}
+.field-label{font-size:10px;font-weight:600;color:var(--neutral-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px;display:block;font-family:var(--font-body)}
+.field-input{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid var(--neutral-200);background:var(--neutral-50);font-size:14px;font-weight:500;color:var(--neutral-900);outline:none;transition:all .15s;font-family:var(--font-body)}
+.field-input:focus{border-color:var(--info);background:white;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.field-input.error{border-color:var(--danger);background:var(--danger-bg);animation:shakeX .4s ease}
+.field-input::placeholder{color:var(--neutral-300)}
+.field-prefix{display:flex;align-items:center;border-radius:10px;border:1.5px solid var(--neutral-200);background:var(--neutral-50);overflow:hidden;transition:all .15s}
+.field-prefix:focus-within{border-color:var(--info);background:white;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.field-prefix-label{padding:11px 12px;font-size:14px;font-weight:700;background:var(--neutral-100);border-right:1px solid var(--neutral-200);color:var(--neutral-500);flex-shrink:0;font-family:var(--font-mono)}
+.field-prefix input{flex:1;border:none;background:transparent;outline:none;padding:11px 14px;font-size:15px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);width:100%}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .coin-select-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:2px}
 .coin-select-wrap{max-height:168px;overflow-y:auto;border-radius:10px;scrollbar-width:thin}
-.coin-select-wrap::-webkit-scrollbar{width:4px}.coin-select-wrap::-webkit-scrollbar-track{background:transparent}.coin-select-wrap::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px}
-.coin-search-inp{width:100%;padding:8px 10px 8px 32px;border-radius:8px;border:1.5px solid #E2E8F0;background:#F8FAFC;font-size:12px;font-family:var(--font-body);color:#0F172A;outline:none;box-sizing:border-box;transition:border-color .15s}
-.coin-search-inp:focus{border-color:#3B82F6;background:white}
+.coin-select-wrap::-webkit-scrollbar{width:4px}.coin-select-wrap::-webkit-scrollbar-track{background:transparent}.coin-select-wrap::-webkit-scrollbar-thumb{background:var(--neutral-300);border-radius:4px}
+.coin-search-inp{width:100%;padding:8px 10px 8px 32px;border-radius:8px;border:1.5px solid var(--neutral-200);background:var(--neutral-50);font-size:12px;font-family:var(--font-body);color:var(--neutral-900);outline:none;box-sizing:border-box;transition:border-color .15s}
+.coin-search-inp:focus{border-color:var(--info);background:white}
 .coin-search-wrap{position:relative;margin-bottom:6px}
-.coin-opt{padding:7px 4px;border-radius:8px;border:1.5px solid #E2E8F0;cursor:pointer;text-align:center;transition:all .15s;background:white}
-.coin-opt:hover{border-color:#94A3B8}
-.coin-opt.selected{border-color:#3B82F6;background:#EFF6FF}
-.coin-opt .co-sym{font-size:11px;font-weight:700;color:#0F172A;font-family:var(--font-heading)}
+.coin-opt{padding:7px 4px;border-radius:8px;border:1.5px solid var(--neutral-200);cursor:pointer;text-align:center;transition:all .15s;background:white}
+.coin-opt:hover{border-color:var(--neutral-400)}
+.coin-opt.selected{border-color:var(--info);background:#EFF6FF}
+.coin-opt .co-sym{font-size:11px;font-weight:700;color:var(--neutral-900);font-family:var(--font-heading)}
 .coin-opt .co-chg{font-size:9px;font-family:var(--font-mono)}
 .submit-btn{width:100%;padding:14px;border-radius:11px;border:none;cursor:pointer;font-size:14px;font-weight:700;font-family:var(--font-heading);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.01em}
 .submit-btn:hover{transform:translateY(-1px)}
 .submit-btn:active{transform:translateY(0) scale(.98)}
-.err-msg{display:flex;align-items:center;gap:5px;margin-top:6px;font-size:11px;color:#DC2626;font-family:var(--font-body)}
+.err-msg{display:flex;align-items:center;gap:5px;margin-top:6px;font-size:11px;color:var(--danger-strong);font-family:var(--font-body)}
 
 /* ══ POSITIONS CARD ══ */
-.pos-card{background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease both}
+.pos-card{background:white;border-radius:13px;border:1px solid var(--neutral-100);box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease both}
 .pos-empty{padding:32px 18px;text-align:center}
-.pos-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid #F8FAFC}
+.pos-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--neutral-50)}
 .pos-row:last-child{border-bottom:none}
 .pos-dir{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:700;font-family:var(--font-heading)}
-.pos-dir.long{background:#F0FDF4;color:#16A34A}
-.pos-dir.short{background:#FEF2F2;color:#DC2626}
+.pos-dir.long{background:var(--success-bg);color:var(--success-strong)}
+.pos-dir.short{background:var(--danger-bg);color:var(--danger-strong)}
 .pnl-pill{padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--font-mono)}
-.pnl-pos{background:#F0FDF4;color:#16A34A}
-.pnl-neg{background:#FEF2F2;color:#DC2626}
+.pnl-pos{background:var(--success-bg);color:var(--success-strong)}
+.pnl-neg{background:var(--danger-bg);color:var(--danger-strong)}
 
 /* ══ SUMMARY STATS STRIP ══ */
-.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 18px;background:#F8FAFC;border-top:1px solid #F1F5F9}
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 18px;background:var(--neutral-50);border-top:1px solid var(--neutral-100)}
 .stat-cell{text-align:center}
-.stat-val{font-size:13px;font-weight:700;font-family:var(--font-mono);color:#0F172A}
-.stat-lbl{font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;font-family:var(--font-body)}
+.stat-val{font-size:13px;font-weight:700;font-family:var(--font-mono);color:var(--neutral-900)}
+.stat-lbl{font-size:9px;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;font-family:var(--font-body)}
 
 /* ══ TIMEFRAME BAR ══ */
-.tf-bar{display:flex;align-items:center;gap:12px;padding:8px 24px;background:white;border-bottom:1px solid #F1F5F9;position:sticky;top:57px;z-index:9;flex-shrink:0}
-.tf-bar-label{font-size:10px;font-weight:600;color:#94A3B8;letter-spacing:.06em;text-transform:uppercase;font-family:var(--font-body);white-space:nowrap}
-.tf-bar-sub{font-size:10px;color:#94A3B8;font-family:var(--font-body);margin-left:auto;white-space:nowrap}
+.tf-bar{display:flex;align-items:center;gap:12px;padding:8px 24px;background:white;border-bottom:1px solid var(--neutral-100);position:sticky;top:57px;z-index:9;flex-shrink:0}
+.tf-bar-label{font-size:10px;font-weight:600;color:var(--neutral-400);letter-spacing:.06em;text-transform:uppercase;font-family:var(--font-body);white-space:nowrap}
+.tf-bar-sub{font-size:10px;color:var(--neutral-400);font-family:var(--font-body);margin-left:auto;white-space:nowrap}
 @media(max-width:480px){.entry-btn-label{display:none}}
 @media(max-width:768px){#analyst-tf-wrap,#unified-tf-wrap{display:none!important}}
 
 /* ═══ AUTH SCREEN ═══ */
-#auth-screen{position:fixed;inset:0;z-index:200;background:linear-gradient(135deg,#0F172A 0%,#1E293B 60%,#0F2027 100%);display:flex;align-items:center;justify-content:center;padding:16px;transition:opacity .4s ease}
+#auth-screen{position:fixed;inset:0;z-index:200;background:linear-gradient(135deg,var(--neutral-900) 0%,var(--neutral-800) 60%,#0F2027 100%);display:flex;align-items:center;justify-content:center;padding:16px;transition:opacity .4s ease}
 #auth-screen.hidden{opacity:0;pointer-events:none}
 .auth-card{background:white;border-radius:20px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 32px 80px rgba(0,0,0,.4)}
 .auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;justify-content:center}
-.auth-logo-icon{width:44px;height:44px;border-radius:12px;background:#0F172A;display:flex;align-items:center;justify-content:center}
-.auth-title{font-family:var(--font-heading);font-size:22px;font-weight:700;color:#0F172A;letter-spacing:-.5px}
-.auth-sub{font-family:var(--font-body);font-size:13px;color:#64748B;text-align:center;margin-bottom:24px}
+.auth-logo-icon{width:44px;height:44px;border-radius:12px;background:var(--neutral-900);display:flex;align-items:center;justify-content:center}
+.auth-title{font-family:var(--font-heading);font-size:22px;font-weight:700;color:var(--neutral-900);letter-spacing:-.5px}
+.auth-sub{font-family:var(--font-body);font-size:13px;color:var(--neutral-500);text-align:center;margin-bottom:24px}
 .auth-tabs{display:flex;background:var(--surface-sunken);border-radius:var(--radius-xl);padding:3px;margin-bottom:var(--space-11)}
 .auth-tab{flex:1;padding:var(--space-4);border:none;background:none;cursor:pointer;font-family:var(--font-body);font-size:var(--fs-base);font-weight:var(--fw-semibold);color:var(--text-secondary);border-radius:var(--radius-lg);transition:all var(--dur-fast)}
 .auth-tab.active{background:var(--surface-card);color:var(--text-primary);box-shadow:var(--shadow-md)}
 .auth-field{margin-bottom:14px}
-.auth-field label{display:block;font-family:var(--font-body);font-size:11px;font-weight:600;color:#64748B;letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px}
+.auth-field label{display:block;font-family:var(--font-body);font-size:11px;font-weight:600;color:var(--neutral-500);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px}
 .auth-field input{width:100%;padding:10px 12px;border:1px solid var(--border-default);border-radius:9px;font-family:var(--font-body);font-size:var(--fs-base);color:var(--text-primary);outline:none;transition:border var(--dur-fast);box-sizing:border-box}
 .auth-field input:focus{border-color:var(--brand-primary)}
 .auth-btn{width:100%;padding:11px;border:none;border-radius:9px;background:var(--brand-primary);color:var(--text-inverse);font-family:var(--font-heading);font-size:var(--fs-lg);font-weight:var(--fw-bold);cursor:pointer;transition:opacity var(--dur-fast);margin-top:var(--space-2)}
 .auth-btn:hover{opacity:.85}
 .auth-btn:disabled{opacity:.5;cursor:default}
-.auth-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:#CBD5E1;font-size:11px;font-family:var(--font-body)}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:#E2E8F0}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--neutral-300);font-size:11px;font-family:var(--font-body)}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--neutral-200)}
 .auth-google{width:100%;padding:var(--space-5);border:1.5px solid var(--border-default);border-radius:9px;background:var(--surface-card);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;font-family:var(--font-body);font-size:var(--fs-base);font-weight:var(--fw-semibold);color:var(--neutral-700);transition:all var(--dur-fast)}
 .auth-google:hover{border-color:var(--border-strong);background:var(--surface-hover)}
 .auth-error{background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius-lg);padding:9px 12px;font-size:var(--fs-md);color:var(--danger-strong);font-family:var(--font-body);margin-bottom:var(--space-6);display:none}
-.user-chip{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:20px;border:1px solid #E2E8F0;background:white;cursor:pointer;transition:all .15s}
-.user-chip:hover{background:#F8FAFC;border-color:#CBD5E1}
+.user-chip{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:20px;border:1px solid var(--neutral-200);background:white;cursor:pointer;transition:all .15s}
+.user-chip:hover{background:var(--neutral-50);border-color:var(--neutral-300)}
 .user-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#F7931A,#FBBF24);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;font-family:var(--font-heading);flex-shrink:0;overflow:hidden}
 .user-avatar img{width:100%;height:100%;object-fit:cover}
-.user-email{font-size:10px;font-weight:600;color:#334155;font-family:var(--font-body);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-email{font-size:10px;font-weight:600;color:var(--neutral-700);font-family:var(--font-body);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:480px){.user-email{display:none}}
 </style>
 </head>
-<body style="background:#0F172A">
+<body style="background:var(--neutral-900)">
 
 <!-- ═══ LOADING SPLASH (Skeleton) ═══ -->
 <div id="app-splash" class="loading-splash">
-  <div style="width:224px;border-right:1px solid #F1F5F9;background:white;padding:24px 16px;display:flex;flex-direction:column;gap:20px">
+  <div style="width:224px;border-right:1px solid var(--neutral-100);background:white;padding:24px 16px;display:flex;flex-direction:column;gap:20px">
     <div class="sk-shimmer" style="height:32px;width:120px;border-radius:8px;margin-bottom:20px"></div>
     <div class="sk-shimmer" style="height:20px;width:100%;border-radius:6px"></div>
     <div class="sk-shimmer" style="height:20px;width:90%;border-radius:6px"></div>
@@ -611,7 +611,7 @@ p,span,div,input,button{
     <div class="sk-shimmer" style="height:32px;width:100%;border-radius:10px;margin-top:auto"></div>
   </div>
   <div style="flex:1;display:flex;flex-direction:column">
-    <div style="height:64px;background:white;border-bottom:1px solid #F1F5F9;padding:0 24px;display:flex;align-items:center;justify-content:space-between">
+    <div style="height:64px;background:white;border-bottom:1px solid var(--neutral-100);padding:0 24px;display:flex;align-items:center;justify-content:space-between">
       <div class="sk-shimmer" style="height:24px;width:200px;border-radius:6px"></div>
       <div style="display:flex;gap:10px">
         <div class="sk-shimmer" style="height:32px;width:32px;border-radius:8px"></div>
@@ -688,9 +688,9 @@ p,span,div,input,button{
       <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       </div>
-      <div style="font-family:var(--font-heading);font-size:17px;font-weight:700;color:#0F172A;margin-bottom:6px">Verify your email</div>
-      <div style="font-size:13px;color:#64748B;font-family:var(--font-body);margin-bottom:4px;line-height:1.5">We sent a verification link to</div>
-      <div id="auth-verify-email" style="font-size:13px;font-weight:700;color:#0F172A;font-family:var(--font-body);margin-bottom:20px"></div>
+      <div style="font-family:var(--font-heading);font-size:17px;font-weight:700;color:var(--neutral-900);margin-bottom:6px">Verify your email</div>
+      <div style="font-size:13px;color:var(--neutral-500);font-family:var(--font-body);margin-bottom:4px;line-height:1.5">We sent a verification link to</div>
+      <div id="auth-verify-email" style="font-size:13px;font-weight:700;color:var(--neutral-900);font-family:var(--font-body);margin-bottom:20px"></div>
       <div id="auth-verify-error" class="auth-error" style="text-align:left"></div>
       <button class="auth-btn" id="auth-verify-btn" onclick="authCheckVerified()" style="margin-bottom:10px">I've verified my email ✓</button>
       <button id="auth-resend-btn" onclick="authResendVerification()" style="width:100%;padding:var(--space-5);background:var(--surface-page);border:1px solid var(--border-default);border-radius:var(--radius-xl);font-size:var(--fs-md);font-weight:var(--fw-semibold);color:var(--text-secondary);cursor:pointer;font-family:var(--font-body);margin-bottom:var(--space-4)">Resend verification email</button>
@@ -701,17 +701,17 @@ p,span,div,input,button{
     <div id="auth-fp-view" style="display:none">
       <!-- Sent state (hidden until email is sent) -->
       <div id="auth-fp-sent" style="display:none;text-align:center;padding:8px 0 16px">
-        <div style="width:52px;height:52px;border-radius:50%;background:#F0FDF4;display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <div style="font-family:var(--font-heading);font-size:16px;font-weight:700;color:#0F172A;margin-bottom:6px">Check your inbox</div>
-        <div style="font-size:13px;color:#64748B;font-family:var(--font-body);line-height:1.5">A password reset link has been sent to<br><strong id="auth-fp-sent-email" style="color:#0F172A"></strong></div>
+        <div style="font-family:var(--font-heading);font-size:16px;font-weight:700;color:var(--neutral-900);margin-bottom:6px">Check your inbox</div>
+        <div style="font-size:13px;color:var(--neutral-500);font-family:var(--font-body);line-height:1.5">A password reset link has been sent to<br><strong id="auth-fp-sent-email" style="color:var(--neutral-900)"></strong></div>
       </div>
 
       <!-- Input state -->
       <div id="auth-fp-form">
-        <div style="font-family:var(--font-heading);font-size:17px;font-weight:700;color:#0F172A;margin-bottom:6px">Reset password</div>
-        <div style="font-size:13px;color:#64748B;font-family:var(--font-body);margin-bottom:20px;line-height:1.5">Enter your email and we'll send a reset link.</div>
+        <div style="font-family:var(--font-heading);font-size:17px;font-weight:700;color:var(--neutral-900);margin-bottom:6px">Reset password</div>
+        <div style="font-size:13px;color:var(--neutral-500);font-family:var(--font-body);margin-bottom:20px;line-height:1.5">Enter your email and we'll send a reset link.</div>
 
         <div id="auth-fp-error" class="auth-error"></div>
 
@@ -739,21 +739,21 @@ p,span,div,input,button{
 <div id="market-overlay" onclick="closeMarketSelector()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:80;backdrop-filter:blur(3px)"></div>
 <div id="market-modal" style="display:none;opacity:0;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.97);z-index:81;width:min(580px,94vw);max-height:80vh;background:white;border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.18);flex-direction:column;overflow:hidden;transition:transform .2s cubic-bezier(.22,1,.36,1),opacity .18s">
   <!-- Modal header -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid #F1F5F9;flex-shrink:0">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid var(--neutral-100);flex-shrink:0">
     <div>
-      <div style="font-family:var(--font-heading);font-size:16px;font-weight:700;color:#0F172A">Select Market</div>
-      <div style="font-size:11px;color:#94A3B8;font-family:var(--font-body);margin-top:2px">CoinGecko live market data</div>
+      <div style="font-family:var(--font-heading);font-size:16px;font-weight:700;color:var(--neutral-900)">Select Market</div>
+      <div style="font-size:11px;color:var(--neutral-400);font-family:var(--font-body);margin-top:2px">CoinGecko live market data</div>
     </div>
     <button onclick="closeMarketSelector()" class="qds-hover-wash" style="width:30px;height:30px;border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--surface-card);cursor:pointer;display:flex;align-items:center;justify-content:center">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
   <!-- Search -->
-  <div style="padding:12px 20px;border-bottom:1px solid #F1F5F9;flex-shrink:0">
-    <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;background:#F8FAFC;border-radius:10px;border:1px solid #E2E8F0">
+  <div style="padding:12px 20px;border-bottom:1px solid var(--neutral-100);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--neutral-50);border-radius:10px;border:1px solid var(--neutral-200)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="market-search-input" placeholder="Search coin or token..." oninput="filterMarkets(this.value)"
-        style="border:none;background:none;outline:none;font-size:13px;color:#334155;width:100%;font-family:var(--font-body)">
+        style="border:none;background:none;outline:none;font-size:13px;color:var(--neutral-700);width:100%;font-family:var(--font-body)">
     </div>
   </div>
   <!-- Coin grid -->
@@ -764,8 +764,8 @@ p,span,div,input,button{
 <aside class="sidebar">
 
   <!-- Brand -->
-  <div class="sidebar-brand" style="padding:14px 12px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #F1F5F9">
-    <div class="nav-brand-logo" style="width:34px;height:34px;border-radius:9px;background:#0F172A;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+  <div class="sidebar-brand" style="padding:14px 12px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--neutral-100)">
+    <div class="nav-brand-logo" style="width:34px;height:34px;border-radius:9px;background:var(--neutral-900);display:flex;align-items:center;justify-content:center;flex-shrink:0">
       <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: white">
         <defs>
           <linearGradient id="logo-g1b" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.2"/></linearGradient>
@@ -778,8 +778,8 @@ p,span,div,input,button{
       </svg>
     </div>
     <div class="nav-brand-text" style="min-width:0;flex:1">
-      <div class="nav-brand-name" style="font-size:14px;font-weight:700;color:#0F172A;line-height:1.2">Quantichy</div>
-      <div style="font-size:10px;color:#94A3B8;font-family:var(--font-body);margin-top:1px">Make it easy</div>
+      <div class="nav-brand-name" style="font-size:14px;font-weight:700;color:var(--neutral-900);line-height:1.2">Quantichy</div>
+      <div style="font-size:10px;color:var(--neutral-400);font-family:var(--font-body);margin-top:1px">Make it easy</div>
     </div>
     <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle menu">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -820,17 +820,17 @@ p,span,div,input,button{
     </div>
 
     <!-- User profile -->
-    <div style="padding:10px 8px 10px;border-top:1px solid #F1F5F9">
-      <div class="user-footer-row" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:#F8FAFC">
-        <div id="sb-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#10B981,#3B82F6);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
+    <div style="padding:10px 8px 10px;border-top:1px solid var(--neutral-100)">
+      <div class="user-footer-row" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--neutral-50)">
+        <div id="sb-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--success),var(--info));display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
           <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
         </div>
         <div class="user-info-text" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
           <span id="sb-plan-badge" style="display:none;font-family:var(--font-heading);font-size:8px;font-weight:800;padding:3px 9px;border-radius:100px;background:linear-gradient(135deg,#B8860B,#FFD700);color:#3B1F00;text-transform:uppercase;letter-spacing:.09em;line-height:1.6;box-shadow:0 1px 5px rgba(184,134,11,.4);align-self:flex-start"></span>
-          <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A;line-height:1.3">—</div>
-          <div id="sb-user-email" style="font-family:var(--font-body);font-size:10px;color:#94A3B8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Not signed in</div>
+          <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:var(--neutral-900);line-height:1.3">—</div>
+          <div id="sb-user-email" style="font-family:var(--font-body);font-size:10px;color:var(--neutral-400);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Not signed in</div>
         </div>
-        <div style="width:6px;height:6px;border-radius:50%;background:#10B981;flex-shrink:0"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--success);flex-shrink:0"></div>
       </div>
       <button onclick="doSignOut()" class="qds-hover-danger" style="width:100%;margin-top:var(--space-3);padding:7px;border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--surface-card);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:var(--space-3);font-family:var(--font-body);font-size:var(--fs-sm);font-weight:var(--fw-semibold);color:var(--text-secondary)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -856,16 +856,16 @@ p,span,div,input,button{
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px;min-width:0">
     <div id="overview-topbar-copy" style="display:none;min-width:0">
-      <div class="topbar-title" data-i18n="nav_market_overview" style="font-size:16px;font-weight:700;color:#0F172A;line-height:1.2">Market Overview</div>
-      <div id="overview-topbar-sub" data-i18n="topbar_overview_sub" style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Breadth, dominance and capital rotation</div>
+      <div class="topbar-title" data-i18n="nav_market_overview" style="font-size:16px;font-weight:700;color:var(--neutral-900);line-height:1.2">Market Overview</div>
+      <div id="overview-topbar-sub" data-i18n="topbar_overview_sub" style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Breadth, dominance and capital rotation</div>
     </div>
     <button onclick="openMarketSelector()" id="market-title-btn" class="qds-hover-wash" style="min-width:0;text-align:left;background:none;border:none;cursor:pointer;padding:var(--space-3) var(--space-5);border-radius:var(--radius-xl);display:flex;align-items:center;gap:var(--space-4)">
       <div style="min-width:0">
         <div style="display:flex;align-items:center;gap:6px">
-          <div class="topbar-title" id="market-title" style="font-size:16px;font-weight:700;color:#0F172A;line-height:1.2">BTC/USDT</div>
+          <div class="topbar-title" id="market-title" style="font-size:16px;font-weight:700;color:var(--neutral-900);line-height:1.2">BTC/USDT</div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)" id="topbar-date">Real-time Analysis</div>
+        <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)" id="topbar-date">Real-time Analysis</div>
       </div>
     </button>
     <button id="coin-detail-btn" onclick="openCoinDetail()" title="View coin detail" class="qds-hover-wash" style="display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-5);border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--surface-card);color:var(--text-secondary);font-size:var(--fs-sm);font-weight:var(--fw-semibold);cursor:pointer;font-family:var(--font-body)">
@@ -874,7 +874,7 @@ p,span,div,input,button{
     </button>
     </div>
     <div style="display:flex;align-items:center;gap:7px;flex-shrink:0">
-      <div id="topbar-eye" onclick="toggleBal()" style="width:32px;height:32px;border-radius:8px;border:1px solid #E2E8F0;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer" title="Toggle visibility">
+      <div id="topbar-eye" onclick="toggleBal()" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--neutral-200);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer" title="Toggle visibility">
         <svg id="eye-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       </div>
       <div id="topbar-bell" class="qds-hover-wash" style="width:32px;height:32px;border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--surface-card);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative">
@@ -912,7 +912,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_fear_greed">Fear & Greed Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('fg_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_fg_overview_d">A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_fear_greed">Fear & Greed Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('fg_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_fg_overview_d">A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).</span></span></div>
                 <div class="muted" data-i18n="sub_fear_greed" id="overview-fg-sub">Live breadth pulse from tracked crypto leaders</div>
               </div>
             </div>
@@ -922,7 +922,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_altcoin_season">Altcoin Season Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('alt_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_alt_overview_d">Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_altcoin_season">Altcoin Season Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('alt_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_alt_overview_d">Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).</span></span></div>
                 <div class="muted" data-i18n="sub_altcoin_season">Outperformance versus Bitcoin across tracked leaders</div>
               </div>
             </div>
@@ -932,7 +932,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_tracked_index">Tracked Market Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('ti_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_ti_overview_d">A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_tracked_index">Tracked Market Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('ti_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_ti_overview_d">A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.</span></span></div>
                 <div class="muted" data-i18n="sub_tracked_index">Weighted performance basket of the market leaders we monitor</div>
               </div>
             </div>
@@ -943,7 +943,7 @@ p,span,div,input,button{
         <div class="card">
           <div class="card-head" style="padding-bottom:10px">
             <div>
-              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_market_snapshot">Crypto Market Snapshot</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('ms_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_ms_overview_d">Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.</span></span></div>
+              <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_market_snapshot">Crypto Market Snapshot</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('ms_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_ms_overview_d">Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.</span></span></div>
               <div class="muted" data-i18n="sub_market_snapshot" id="overview-snapshot-sub">Aggregated view across the largest tracked assets</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
@@ -971,10 +971,10 @@ p,span,div,input,button{
         <div class="card">
           <div class="card-head" style="padding-bottom:10px">
             <div>
-              <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_capital_flow">Capital Flow Pulse</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('cf_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_cf_overview_d">Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.</span></span></div>
+              <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_capital_flow">Capital Flow Pulse</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('cf_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_cf_overview_d">Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.</span></span></div>
               <div class="muted" data-i18n="sub_capital_flow">Daily pressure by asset using turnover and directional change</div>
             </div>
-            <div style="font-size:10px;color:#94A3B8;font-family:var(--font-body)" id="overview-flow-label">Top flow movers</div>
+            <div style="font-size:10px;color:var(--neutral-400);font-family:var(--font-body)" id="overview-flow-label">Top flow movers</div>
           </div>
           <div class="overview-section-pad" style="padding-top:2px">
             <div id="overview-flow-summary" class="overview-helper" style="margin-bottom:10px"></div>
@@ -988,7 +988,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_market_dominance">Market Dominance</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('md_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_md_overview_d">Shows each asset's share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_market_dominance">Market Dominance</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('md_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_md_overview_d">Shows each asset's share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.</span></span></div>
                 <div class="muted" data-i18n="sub_market_dominance">Share of tracked market cap by the biggest leaders</div>
               </div>
             </div>
@@ -998,7 +998,7 @@ p,span,div,input,button{
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px"><span data-i18n="card_positioning_pressure">Positioning Pressure</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('pp_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_pp_overview_d">Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.</span></span></div>
+                <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_positioning_pressure">Positioning Pressure</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('pp_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_pp_overview_d">Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.</span></span></div>
                 <div class="muted" data-i18n="sub_positioning_pressure">Spot-based proxy for conviction, turnover, and realized volatility</div>
               </div>
             </div>
@@ -1018,7 +1018,7 @@ p,span,div,input,button{
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
         <span data-i18n="cd_back_live">Back to Live Trade</span>
       </button>
-      <span id="cd-breadcrumb" style="font-size:12px;color:#94A3B8;font-family:var(--font-body)"></span>
+      <span id="cd-breadcrumb" style="font-size:12px;color:var(--neutral-400);font-family:var(--font-body)"></span>
     </div>
 
     <!-- 3-column layout -->
@@ -1028,29 +1028,29 @@ p,span,div,input,button{
       <div id="cd-left" style="display:flex;flex-direction:column;gap:12px">
 
         <!-- Identity card -->
-        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="background:white;border-radius:13px;border:1px solid var(--neutral-200);padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
             <div id="cd-avatar" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:800;font-size:16px;color:white;flex-shrink:0"></div>
             <div>
               <div style="display:flex;align-items:center;gap:6px">
-                <span id="cd-name" style="font-family:var(--font-heading);font-size:15px;font-weight:800;color:#0F172A"></span>
-                <span id="cd-rank" style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:#F1F5F9;color:#64748B;font-family:var(--font-body)"></span>
+                <span id="cd-name" style="font-family:var(--font-heading);font-size:15px;font-weight:800;color:var(--neutral-900)"></span>
+                <span id="cd-rank" style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--neutral-100);color:var(--neutral-500);font-family:var(--font-body)"></span>
               </div>
-              <span id="cd-sym" style="font-size:11px;color:#94A3B8;font-family:var(--font-mono);font-weight:600"></span>
+              <span id="cd-sym" style="font-size:11px;color:var(--neutral-400);font-family:var(--font-mono);font-weight:600"></span>
             </div>
           </div>
 
-          <div id="cd-price" style="font-family:var(--font-mono);font-size:28px;font-weight:700;color:#0F172A;letter-spacing:-.02em;margin-bottom:6px"></div>
+          <div id="cd-price" style="font-family:var(--font-mono);font-size:28px;font-weight:700;color:var(--neutral-900);letter-spacing:-.02em;margin-bottom:6px"></div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
             <span id="cd-chg" style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:var(--font-mono)"></span>
-            <span style="font-size:10px;color:#94A3B8;font-family:var(--font-body)">24h</span>
+            <span style="font-size:10px;color:var(--neutral-400);font-family:var(--font-body)">24h</span>
           </div>
 
-          <div style="height:1px;background:#F1F5F9;margin-bottom:12px"></div>
+          <div style="height:1px;background:var(--neutral-100);margin-bottom:12px"></div>
 
           <!-- Stats -->
           <div style="display:flex;flex-direction:column;gap:9px" id="cd-stats">
-            <div style="color:#94A3B8;font-size:11px;text-align:center;font-family:var(--font-body)">Loading...</div>
+            <div style="color:var(--neutral-400);font-size:11px;text-align:center;font-family:var(--font-body)">Loading...</div>
           </div>
         </div>
 
@@ -1060,20 +1060,20 @@ p,span,div,input,button{
       <div style="display:flex;flex-direction:column;gap:12px">
 
         <!-- Chart card — same style as main dashboard -->
-        <div style="background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;display:flex;flex-direction:column">
+        <div style="background:white;border-radius:13px;border:1px solid var(--neutral-100);box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;display:flex;flex-direction:column">
           <!-- Card header -->
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid #F1F5F9;flex-shrink:0">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid var(--neutral-100);flex-shrink:0">
             <div style="display:flex;align-items:center;gap:8px">
-              <div style="width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></div>
-              <span id="cd-chart-label" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:#0F172A">—/USDT</span>
-              <span style="font-size:10px;font-weight:500;color:#94A3B8;font-family:var(--font-body)">Candlestick</span>
+              <div style="width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success)"></div>
+              <span id="cd-chart-label" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:var(--neutral-900)">—/USDT</span>
+              <span style="font-size:10px;font-weight:500;color:var(--neutral-400);font-family:var(--font-body)">Candlestick</span>
             </div>
             <div style="display:flex;gap:4px" id="cd-tf-tabs">
-              <button onclick="setCDInterval('15')"  class="cd-tf-btn" data-tf="15"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">15m</button>
-              <button onclick="setCDInterval('60')"  class="cd-tf-btn" data-tf="60"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#10B981;color:white;transition:all .15s">1H</button>
-              <button onclick="setCDInterval('240')" class="cd-tf-btn" data-tf="240" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">4H</button>
-              <button onclick="setCDInterval('D')"   class="cd-tf-btn" data-tf="D"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">1D</button>
-              <button onclick="setCDInterval('W')"   class="cd-tf-btn" data-tf="W"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:#F1F5F9;color:#64748B;transition:all .15s">1W</button>
+              <button onclick="setCDInterval('15')"  class="cd-tf-btn" data-tf="15"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">15m</button>
+              <button onclick="setCDInterval('60')"  class="cd-tf-btn" data-tf="60"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:var(--success);color:white;transition:all .15s">1H</button>
+              <button onclick="setCDInterval('240')" class="cd-tf-btn" data-tf="240" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">4H</button>
+              <button onclick="setCDInterval('D')"   class="cd-tf-btn" data-tf="D"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">1D</button>
+              <button onclick="setCDInterval('W')"   class="cd-tf-btn" data-tf="W"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--font-body);background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">1W</button>
             </div>
           </div>
           <!-- Widget -->
@@ -1081,9 +1081,9 @@ p,span,div,input,button{
         </div>
 
         <!-- OHLC bar -->
-        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:14px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="background:white;border-radius:13px;border:1px solid var(--neutral-200);padding:14px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px" id="cd-ohlc">
-            <div style="color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading OHLC...</div>
+            <div style="color:var(--neutral-400);font-size:11px;font-family:var(--font-body)">Loading OHLC...</div>
           </div>
         </div>
       </div>
@@ -1092,33 +1092,33 @@ p,span,div,input,button{
       <div style="display:flex;flex-direction:column;gap:12px">
 
         <!-- Sentiment card -->
-        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:12px" data-i18n="cd_community_sentiment">Community Sentiment</div>
+        <div style="background:white;border-radius:13px;border:1px solid var(--neutral-200);padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:var(--neutral-900);margin-bottom:12px" data-i18n="cd_community_sentiment">Community Sentiment</div>
           <div style="margin-bottom:10px">
             <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-              <span style="font-size:11px;font-weight:700;color:#16A34A;font-family:var(--font-body)">🐂 Bullish <span id="cd-bull-pct">50</span>%</span>
-              <span style="font-size:11px;font-weight:700;color:#DC2626;font-family:var(--font-body)"><span id="cd-bear-pct">50</span>% Bearish 🐻</span>
+              <span style="font-size:11px;font-weight:700;color:var(--success-strong);font-family:var(--font-body)">🐂 Bullish <span id="cd-bull-pct">50</span>%</span>
+              <span style="font-size:11px;font-weight:700;color:var(--danger-strong);font-family:var(--font-body)"><span id="cd-bear-pct">50</span>% Bearish 🐻</span>
             </div>
             <div style="height:8px;border-radius:4px;background:#FEE2E2;overflow:hidden">
-              <div id="cd-bull-bar" style="height:100%;border-radius:4px;background:linear-gradient(90deg,#10B981,#34D399);width:50%;transition:width .5s ease"></div>
+              <div id="cd-bull-bar" style="height:100%;border-radius:4px;background:linear-gradient(90deg,var(--success),var(--success-soft));width:50%;transition:width .5s ease"></div>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <button id="cd-bull-btn" onclick="cdVote('bull')" style="padding:9px;border-radius:9px;border:1.5px solid #BBF7D0;background:#F0FDF4;color:#16A34A;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-heading);transition:all .15s">🐂 Bullish</button>
-            <button id="cd-bear-btn" onclick="cdVote('bear')" style="padding:9px;border-radius:9px;border:1.5px solid #FECACA;background:#FEF2F2;color:#DC2626;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-heading);transition:all .15s">🐻 Bearish</button>
+            <button id="cd-bull-btn" onclick="cdVote('bull')" style="padding:9px;border-radius:9px;border:1.5px solid var(--success-border);background:var(--success-bg);color:var(--success-strong);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-heading);transition:all .15s">🐂 Bullish</button>
+            <button id="cd-bear-btn" onclick="cdVote('bear')" style="padding:9px;border-radius:9px;border:1.5px solid var(--danger-border);background:var(--danger-bg);color:var(--danger-strong);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-heading);transition:all .15s">🐻 Bearish</button>
           </div>
         </div>
 
         <!-- Price stats card -->
-        <div style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:#0F172A;margin-bottom:12px" data-i18n="cd_price_stats">Price Statistics</div>
+        <div style="background:white;border-radius:13px;border:1px solid var(--neutral-200);padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:var(--neutral-900);margin-bottom:12px" data-i18n="cd_price_stats">Price Statistics</div>
           <div style="display:flex;flex-direction:column;gap:10px" id="cd-price-stats">
-            <div style="color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading...</div>
+            <div style="color:var(--neutral-400);font-size:11px;font-family:var(--font-body)">Loading...</div>
           </div>
         </div>
 
         <!-- Links card -->
-        <div id="cd-links" style="background:white;border-radius:13px;border:1px solid #E2E8F0;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;flex-wrap:wrap;gap:7px"></div>
+        <div id="cd-links" style="background:white;border-radius:13px;border:1px solid var(--neutral-200);padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;flex-wrap:wrap;gap:7px"></div>
       </div>
 
     </div>
@@ -1131,7 +1131,7 @@ p,span,div,input,button{
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
           </div>
           <div style="display:flex;align-items:center;gap:6px;min-width:0">
-            <span class="section-title" id="coin-tldr-section-title" style="font-size:16px;font-weight:800;color:#0F172A">Coin TLDR</span>
+            <span class="section-title" id="coin-tldr-section-title" style="font-size:16px;font-weight:800;color:var(--neutral-900)">Coin TLDR</span>
             <span class="info-wrap">
               <button class="info-btn" onclick="showInfo('coin_tldr')" type="button">?</button>
               <span class="info-tooltip" data-i18n="info_coin_tldr_d">A live short-form summary for the coin currently open in detail view. It updates from the latest market tape and QuantAnalyst signal stack, then saves a rolling history per asset.</span>
@@ -1158,13 +1158,13 @@ p,span,div,input,button{
 
     <div style="margin-top:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-family:var(--font-heading);font-size:16px;font-weight:800;color:#0F172A;display:flex;align-items:center;gap:6px">
+        <div style="font-family:var(--font-heading);font-size:16px;font-weight:800;color:var(--neutral-900);display:flex;align-items:center;gap:6px">
           <span>📊</span> <span data-i18n="cd_market_cycles">Market Cycles</span>
         </div>
-        <span id="cd-cycle-status" style="font-size:10px;color:#94A3B8;font-family:var(--font-body)"></span>
+        <span id="cd-cycle-status" style="font-size:10px;color:var(--neutral-400);font-family:var(--font-body)"></span>
       </div>
       <div id="cd-cycles-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-        <div style="grid-column:1/-1;text-align:center;padding:24px;color:#94A3B8;font-size:11px;font-family:var(--font-body)">Loading market cycle data...</div>
+        <div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--neutral-400);font-size:11px;font-family:var(--font-body)">Loading market cycle data...</div>
       </div>
     </div>
 
@@ -1193,22 +1193,22 @@ p,span,div,input,button{
     <div class="kpi-grid" id="kpi-grid"></div>
 
     <!-- ══ TRADINGVIEW CANDLESTICK CHART ══ -->
-    <div id="tv-chart-card" style="background:white;border-radius:13px;border:1px solid #F1F5F9;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease .1s both">
+    <div id="tv-chart-card" style="background:white;border-radius:13px;border:1px solid var(--neutral-100);box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease .1s both">
       <!-- Card header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid #F1F5F9">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid var(--neutral-100)">
         <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></div>
-          <span id="tv-chart-label" style="font-family:'Proxima Nova','Montserrat',sans-serif;font-size:13px;font-weight:700;color:#0F172A;letter-spacing:-.01em">BTC/USDT</span>
-          <span style="font-size:10px;font-weight:500;color:#94A3B8;font-family:'Inter',sans-serif">Binance · Candlestick</span>
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success)"></div>
+          <span id="tv-chart-label" style="font-family:'Proxima Nova','Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--neutral-900);letter-spacing:-.01em">BTC/USDT</span>
+          <span style="font-size:10px;font-weight:500;color:var(--neutral-400);font-family:'Inter',sans-serif">Binance · Candlestick</span>
         </div>
         <!-- TF pills + fullscreen -->
         <div style="display:flex;align-items:center;gap:6px">
           <div style="display:flex;gap:4px" id="tv-tf-tabs">
-            <button onclick="setTVInterval('15')"  class="tv-tf-btn" data-tf="15"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">15m</button>
-            <button onclick="setTVInterval('60')"  class="tv-tf-btn" data-tf="60"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#10B981;color:white;transition:all .15s">1H</button>
-            <button onclick="setTVInterval('240')" class="tv-tf-btn" data-tf="240" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">4H</button>
-            <button onclick="setTVInterval('D')"   class="tv-tf-btn" data-tf="D"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1D</button>
-            <button onclick="setTVInterval('W')"   class="tv-tf-btn" data-tf="W"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1W</button>
+            <button onclick="setTVInterval('15')"  class="tv-tf-btn" data-tf="15"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">15m</button>
+            <button onclick="setTVInterval('60')"  class="tv-tf-btn" data-tf="60"  style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--success);color:white;transition:all .15s">1H</button>
+            <button onclick="setTVInterval('240')" class="tv-tf-btn" data-tf="240" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">4H</button>
+            <button onclick="setTVInterval('D')"   class="tv-tf-btn" data-tf="D"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">1D</button>
+            <button onclick="setTVInterval('W')"   class="tv-tf-btn" data-tf="W"   style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">1W</button>
           </div>
           <button onclick="openTVFullscreen()" title="Full screen" class="qds-hover-success" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:var(--radius-md);border:1px solid var(--border-default);background:var(--surface-card);cursor:pointer;flex-shrink:0">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
@@ -1223,22 +1223,22 @@ p,span,div,input,button{
 
     <!-- ══ TV FULLSCREEN MODAL ══ -->
     <div id="tv-fs-overlay" onclick="closeTVFullscreen()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:1000;backdrop-filter:blur(4px)"></div>
-    <div id="tv-fs-modal" style="display:none;position:fixed;inset:16px;z-index:1001;background:white;border-radius:16px;border:1px solid #F1F5F9;box-shadow:0 24px 64px rgba(0,0,0,.18);overflow:hidden;flex-direction:column">
+    <div id="tv-fs-modal" style="display:none;position:fixed;inset:16px;z-index:1001;background:white;border-radius:16px;border:1px solid var(--neutral-100);box-shadow:0 24px 64px rgba(0,0,0,.18);overflow:hidden;flex-direction:column">
       <!-- Modal header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #F1F5F9;flex-shrink:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--neutral-100);flex-shrink:0">
         <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></div>
-          <span id="tv-fs-label" style="font-family:'Proxima Nova','Montserrat',sans-serif;font-size:14px;font-weight:700;color:#0F172A;letter-spacing:-.01em">BTC/USDT</span>
-          <span style="font-size:10px;font-weight:500;color:#94A3B8;font-family:'Inter',sans-serif">Binance · Candlestick</span>
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success)"></div>
+          <span id="tv-fs-label" style="font-family:'Proxima Nova','Montserrat',sans-serif;font-size:14px;font-weight:700;color:var(--neutral-900);letter-spacing:-.01em">BTC/USDT</span>
+          <span style="font-size:10px;font-weight:500;color:var(--neutral-400);font-family:'Inter',sans-serif">Binance · Candlestick</span>
         </div>
         <div style="display:flex;align-items:center;gap:6px">
           <!-- TF pills -->
           <div style="display:flex;gap:4px" id="tv-fs-tf-tabs">
-            <button onclick="setTVFsInterval('15')"  class="tv-fs-btn" data-tf="15"  style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">15m</button>
-            <button onclick="setTVFsInterval('60')"  class="tv-fs-btn" data-tf="60"  style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#10B981;color:white;transition:all .15s">1H</button>
-            <button onclick="setTVFsInterval('240')" class="tv-fs-btn" data-tf="240" style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">4H</button>
-            <button onclick="setTVFsInterval('D')"   class="tv-fs-btn" data-tf="D"   style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1D</button>
-            <button onclick="setTVFsInterval('W')"   class="tv-fs-btn" data-tf="W"   style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:#F1F5F9;color:#64748B;transition:all .15s">1W</button>
+            <button onclick="setTVFsInterval('15')"  class="tv-fs-btn" data-tf="15"  style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">15m</button>
+            <button onclick="setTVFsInterval('60')"  class="tv-fs-btn" data-tf="60"  style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--success);color:white;transition:all .15s">1H</button>
+            <button onclick="setTVFsInterval('240')" class="tv-fs-btn" data-tf="240" style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">4H</button>
+            <button onclick="setTVFsInterval('D')"   class="tv-fs-btn" data-tf="D"   style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">1D</button>
+            <button onclick="setTVFsInterval('W')"   class="tv-fs-btn" data-tf="W"   style="padding:3px 9px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;background:var(--neutral-100);color:var(--neutral-500);transition:all .15s">1W</button>
           </div>
           <!-- Close -->
           <button onclick="closeTVFullscreen()" class="qds-hover-danger" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;border:1px solid var(--border-default);background:var(--surface-card);cursor:pointer;margin-left:var(--space-2)">
@@ -1256,8 +1256,8 @@ p,span,div,input,button{
     <div class="perf-chart-card" id="perf-chart-card">
       <div class="card-head" style="padding-bottom:8px">
         <div>
-          <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A"><span data-i18n="card_positions_perf">Positions Performance</span></div>
-          <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Cumulative P&L · all entries</div>
+          <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900)"><span data-i18n="card_positions_perf">Positions Performance</span></div>
+          <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Cumulative P&L · all entries</div>
         </div>
         <div class="periods" id="perf-period-tabs">
           <button class="period active" onclick="setPerfView('pnl')">P&L</button>
@@ -1276,16 +1276,16 @@ p,span,div,input,button{
     <div class="pos-card" id="positions-card">
       <div class="card-head" style="padding-bottom:10px">
         <div>
-          <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A"><span data-i18n="card_open_positions">Open Positions</span></div>
-          <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Live entries · P&L updates in real time</div>
+          <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900)"><span data-i18n="card_open_positions">Open Positions</span></div>
+          <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Live entries · P&L updates in real time</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <span id="pos-count-badge" style="display:none;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#F1F5F9;color:#64748B;font-family:var(--font-mono)">0 open</span>
+          <span id="pos-count-badge" style="display:none;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:var(--neutral-100);color:var(--neutral-500);font-family:var(--font-mono)">0 open</span>
           <div style="display:flex;gap:5px">
-            <button onclick="openPanel('long')" style="display:flex;align-items:center;gap:3px;padding:3px 9px;border-radius:6px;background:#F0FDF4;color:#16A34A;font-size:10px;font-weight:700;border:1px solid #BBF7D0;cursor:pointer;font-family:var(--font-heading)">
+            <button onclick="openPanel('long')" style="display:flex;align-items:center;gap:3px;padding:3px 9px;border-radius:6px;background:var(--success-bg);color:var(--success-strong);font-size:10px;font-weight:700;border:1px solid var(--success-border);cursor:pointer;font-family:var(--font-heading)">
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>Long
             </button>
-            <button onclick="openPanel('short')" style="display:flex;align-items:center;gap:3px;padding:3px 9px;border-radius:6px;background:#FEF2F2;color:#DC2626;font-size:10px;font-weight:700;border:1px solid #FECACA;cursor:pointer;font-family:var(--font-heading)">
+            <button onclick="openPanel('short')" style="display:flex;align-items:center;gap:3px;padding:3px 9px;border-radius:6px;background:var(--danger-bg);color:var(--danger-strong);font-size:10px;font-weight:700;border:1px solid var(--danger-border);cursor:pointer;font-family:var(--font-heading)">
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>Short
             </button>
           </div>
@@ -1293,11 +1293,11 @@ p,span,div,input,button{
       </div>
       <!-- Empty state -->
       <div class="pos-empty" id="pos-empty">
-        <div style="width:44px;height:44px;border-radius:12px;background:#F1F5F9;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--neutral-100);display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         </div>
-        <div style="font-size:13px;font-weight:600;color:#64748B;font-family:var(--font-heading)">No open positions yet</div>
-        <div style="font-size:11px;color:#94A3B8;margin-top:4px;font-family:var(--font-body)">Click "Add entry" to log your first trade</div>
+        <div style="font-size:13px;font-weight:600;color:var(--neutral-500);font-family:var(--font-heading)">No open positions yet</div>
+        <div style="font-size:11px;color:var(--neutral-400);margin-top:4px;font-family:var(--font-body)">Click "Add entry" to log your first trade</div>
       </div>
       <!-- Positions list -->
       <div id="pos-list"></div>
@@ -1313,9 +1313,9 @@ p,span,div,input,button{
       <div class="coin-strip-head">
         <div style="display:flex;align-items:baseline;gap:8px">
           <!-- Proxima Nova section title -->
-          <span class="section-title" style="font-size:15px;font-weight:800;color:#0F172A">Top 7 Performers</span>
+          <span class="section-title" style="font-size:15px;font-weight:800;color:var(--neutral-900)">Top 7 Performers</span>
           <!-- Inter subtext -->
-          <span style="font-size:10px;color:#94A3B8;font-family:var(--font-body)">24h · Ranked by gain</span>
+          <span style="font-size:10px;color:var(--neutral-400);font-family:var(--font-body)">24h · Ranked by gain</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <div class="periods">
@@ -1337,28 +1337,28 @@ p,span,div,input,button{
         <div class="card-head">
           <div>
             <!-- Proxima Nova card title -->
-            <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A">Confidence History</div>
+            <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900)">Confidence History</div>
             <!-- Inter subtext -->
-            <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Long vs Short conviction · session</div>
+            <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Long vs Short conviction · session</div>
           </div>
           <div class="periods"><button class="period active">Full</button><button class="period">Recent</button></div>
         </div>
         <div style="padding:0 14px 8px"><canvas id="confChart" height="195"></canvas></div>
         <div style="display:flex;justify-content:center;gap:16px;padding:0 14px 14px">
-          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#64748B;font-family:var(--font-body)"><span style="width:8px;height:8px;border-radius:2px;background:#10B981;display:inline-block"></span>Long</span>
-          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#64748B;font-family:var(--font-body)"><span style="width:8px;height:8px;border-radius:2px;background:#EF4444;display:inline-block"></span>Short</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--neutral-500);font-family:var(--font-body)"><span style="width:8px;height:8px;border-radius:2px;background:var(--success);display:inline-block"></span>Long</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--neutral-500);font-family:var(--font-body)"><span style="width:8px;height:8px;border-radius:2px;background:var(--danger);display:inline-block"></span>Short</span>
         </div>
       </div>
       <div class="card" style="animation:fadeUp .5s ease .35s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A">MA Stack — 15m</div>
-            <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Gap from current price</div>
+            <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900)">MA Stack — 15m</div>
+            <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Gap from current price</div>
           </div>
         </div>
         <div id="ma-stack"></div>
-        <div style="padding:12px 18px 14px;border-top:1px solid #F1F5F9;margin-top:4px">
-          <div style="font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-family:var(--font-heading)">Stack Status</div>
+        <div style="padding:12px 18px 14px;border-top:1px solid var(--neutral-100);margin-top:4px">
+          <div style="font-size:9px;font-weight:700;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-family:var(--font-heading)">Stack Status</div>
           <div id="quick-stats"></div>
         </div>
       </div>
@@ -1371,19 +1371,19 @@ p,span,div,input,button{
       <div class="card" style="animation:fadeUp .5s ease .4s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A">Price Ladder</div>
-            <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Entry / TP / SL levels</div>
+            <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900)">Price Ladder</div>
+            <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Entry / TP / SL levels</div>
           </div>
           <div class="periods" id="setup-tabs"></div>
         </div>
-        <div id="accent-bar" style="height:2px;margin:0 18px 4px;border-radius:2px;background:#10B981"></div>
+        <div id="accent-bar" style="height:2px;margin:0 18px 4px;border-radius:2px;background:var(--success)"></div>
         <div id="price-ladder"></div>
       </div>
       <div class="card" style="animation:fadeUp .5s ease .45s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A">Macro Risk Calendar</div>
-            <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Events that override technicals</div>
+            <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900)">Macro Risk Calendar</div>
+            <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Events that override technicals</div>
           </div>
         </div>
         <div id="macro-list"></div>
@@ -1395,8 +1395,8 @@ p,span,div,input,button{
       <div class="card" style="animation:fadeUp .5s ease .5s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A">Session Timeline</div>
-            <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Chronological analysis log</div>
+            <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900)">Session Timeline</div>
+            <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Chronological analysis log</div>
           </div>
           <button class="vflink">View All <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
         </div>
@@ -1405,13 +1405,13 @@ p,span,div,input,button{
       <div class="card" style="animation:fadeUp .5s ease .55s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:15px;font-weight:900;color:#0F172A">Active Setups</div>
-            <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Confidence by direction</div>
+            <div class="card-title" style="font-size:15px;font-weight:900;color:var(--neutral-900)">Active Setups</div>
+            <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Confidence by direction</div>
           </div>
         </div>
         <div id="setups-list"></div>
-        <div style="padding:12px 18px 16px;border-top:1px solid #F1F5F9;margin-top:4px">
-          <div style="font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-family:var(--font-heading)">Performance</div>
+        <div style="padding:12px 18px 16px;border-top:1px solid var(--neutral-100);margin-top:4px">
+          <div style="font-size:9px;font-weight:700;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-family:var(--font-heading)">Performance</div>
           <div id="perf-list"></div>
         </div>
       </div>
@@ -1419,10 +1419,10 @@ p,span,div,input,button{
     </div><!-- /demo-paywall-content -->
 
     <div id="demo-paywall-overlay" style="display:none;position:relative;z-index:10;align-items:center;justify-content:center;width:100%;animation:fadeUp .5s ease both">
-      <div style="background:white;padding:60px 40px;border-radius:24px;box-shadow:0 20px 50px rgba(15,23,42,0.06);text-align:center;width:100%;border:1px solid #F1F5F9">
-        <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#0F172A,#1E293B);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px">🔒</div>
-        <h3 style="font-size:24px;font-weight:800;color:#0F172A;margin-bottom:12px;font-family:var(--font-heading);letter-spacing:-0.02em">Unlock Professional Insights</h3>
-        <p style="font-size:15px;color:#64748B;line-height:1.6;margin-bottom:32px;font-family:var(--font-body);max-width:500px;margin-left:auto;margin-right:auto">Deep analysis widgets including the <b>Price Ladder</b>, <b>MA Stacks</b>, and <b>Risk Calendar</b> are reserved for Pro and Quant members.</p>
+      <div style="background:white;padding:60px 40px;border-radius:24px;box-shadow:0 20px 50px rgba(15,23,42,0.06);text-align:center;width:100%;border:1px solid var(--neutral-100)">
+        <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,var(--neutral-900),var(--neutral-800));display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px">🔒</div>
+        <h3 style="font-size:24px;font-weight:800;color:var(--neutral-900);margin-bottom:12px;font-family:var(--font-heading);letter-spacing:-0.02em">Unlock Professional Insights</h3>
+        <p style="font-size:15px;color:var(--neutral-500);line-height:1.6;margin-bottom:32px;font-family:var(--font-body);max-width:500px;margin-left:auto;margin-right:auto">Deep analysis widgets including the <b>Price Ladder</b>, <b>MA Stacks</b>, and <b>Risk Calendar</b> are reserved for Pro and Quant members.</p>
         <a href="/pricing" class="qds-hover-lift-lg" style="display:inline-block;background:linear-gradient(135deg,var(--brand-primary),var(--neutral-800));color:var(--text-inverse);padding:var(--space-8) var(--space-13);border-radius:var(--radius-3xl);font-size:var(--fs-xl);font-weight:var(--fw-bold);text-decoration:none;font-family:var(--font-heading);box-shadow:0 8px 20px rgba(15,23,42,0.15)">Upgrade Plan Now</a>
       </div>
     </div>

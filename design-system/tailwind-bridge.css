@@ -1,0 +1,97 @@
+/* ============================================================================
+ * Quantichy Design System — Tailwind v4 Bridge (landing page only)
+ * ----------------------------------------------------------------------------
+ * Goal: make the existing Tailwind utility classes on landing.html flow
+ * through our design tokens so brand updates propagate automatically.
+ *
+ * Strategy:
+ *   1. Re-bind Tailwind's CSS color variables to our tokens for any color
+ *      we have a 1:1 semantic match for. (Tailwind v4 stores its palette
+ *      as `--color-*` custom properties — overriding them here cascades
+ *      to every `bg-*`, `text-*`, `border-*` utility.)
+ *   2. Add a small set of `bg-brand-*` / `text-brand-*` / `border-brand-*`
+ *      utility classes that map directly to our tokens, for use in any
+ *      NEW landing component instead of hand-rolling Tailwind colors.
+ *
+ * Load AFTER /styles.css (Tailwind) but it does not matter relative to
+ * tokens.css; var() is resolved at render time.
+ * ========================================================================= */
+
+:root {
+  /* ── Re-bind Tailwind tokens to our design system ─────────────────── */
+
+  /* Brand — already aligned (#001f5c), this just makes the link explicit */
+  --color-navy: var(--brand-navy);
+
+  /* Semantic info / accent — Tailwind blue scale → our info family.
+     These are chromatic matches at the conceptual level (they were the
+     same hex codes already; this restates the relationship). */
+  --color-blue-500: var(--info);
+  --color-blue-600: var(--info-strong);
+  --color-blue-700: var(--info-deep);
+
+  /* Semantic danger — Tailwind red 500/600 → our danger family */
+  --color-red-500:  var(--danger);
+  --color-red-600:  var(--danger-strong);
+
+  /* Semantic warning — Tailwind amber 500 → our warning */
+  --color-amber-500: var(--warning);
+
+  /* Semantic success — Tailwind emerald 500 → our success.
+     (Tailwind 'green-500' is more lime; emerald maps to our --success.) */
+  --color-emerald-500: var(--success);
+  --color-emerald-600: var(--success-deep);
+}
+
+
+/* ── BRAND-PREFIXED UTILITY CLASSES ─────────────────────────────────────
+ * Use these in NEW landing markup instead of hand-rolling colors:
+ *
+ *   <div class="bg-brand-primary text-inverse p-6 rounded-2xl">...</div>
+ *
+ * They live alongside Tailwind utilities — no conflict, just additive.
+ * ===================================================================== */
+
+/* Backgrounds */
+.bg-brand-primary  { background-color: var(--brand-primary); }
+.bg-brand-navy     { background-color: var(--brand-navy); }
+.bg-brand-accent   { background-color: var(--brand-accent); }
+.bg-success        { background-color: var(--success); }
+.bg-success-bg     { background-color: var(--success-bg); }
+.bg-danger         { background-color: var(--danger); }
+.bg-danger-bg      { background-color: var(--danger-bg); }
+.bg-warning        { background-color: var(--warning); }
+.bg-info           { background-color: var(--info); }
+.bg-surface-page   { background-color: var(--surface-page); }
+.bg-surface-card   { background-color: var(--surface-card); }
+.bg-surface-sunken { background-color: var(--surface-sunken); }
+
+/* Text */
+.text-brand-primary { color: var(--brand-primary); }
+.text-brand-navy    { color: var(--brand-navy); }
+.text-brand-accent  { color: var(--brand-accent); }
+.text-success       { color: var(--success-strong); }
+.text-danger        { color: var(--danger-strong); }
+.text-warning       { color: var(--warning-strong); }
+.text-info          { color: var(--info-strong); }
+.text-primary       { color: var(--text-primary); }
+.text-secondary     { color: var(--text-secondary); }
+.text-muted         { color: var(--text-muted); }
+.text-inverse       { color: var(--text-inverse); }
+
+/* Borders */
+.border-brand-primary { border-color: var(--brand-primary); }
+.border-brand-navy    { border-color: var(--brand-navy); }
+.border-brand-accent  { border-color: var(--brand-accent); }
+.border-subtle        { border-color: var(--border-subtle); }
+.border-default       { border-color: var(--border-default); }
+.border-strong        { border-color: var(--border-strong); }
+.border-success       { border-color: var(--success-border); }
+.border-danger        { border-color: var(--danger-border); }
+.border-info          { border-color: var(--info-border); }
+
+/* Gradients (background-image variants for hero/CTA buttons) */
+.bg-grad-brand    { background-image: linear-gradient(135deg, var(--brand-primary), var(--neutral-800)); }
+.bg-grad-accent   { background-image: linear-gradient(135deg, var(--brand-accent), #7C3AED); }
+.bg-grad-success  { background-image: linear-gradient(135deg, var(--success), var(--success-deep)); }
+.bg-grad-warning  { background-image: linear-gradient(135deg, var(--warning), var(--warning-strong)); }
