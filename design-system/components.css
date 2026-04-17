@@ -454,3 +454,40 @@
   animation: qds-shimmer 2.5s infinite linear;
   border-radius: var(--radius-md);
 }
+
+
+/* ============================================================================
+ * HOVER UTILITIES
+ * ----------------------------------------------------------------------------
+ * Replaces inline `onmouseover`/`onmouseout` handlers on buttons & links.
+ * Compose with any element. All use CSS :hover so they work without JS.
+ * ========================================================================= */
+
+/* Subtle background wash — for ghost buttons, tile selectors, list rows */
+.qds-hover-wash { transition: background var(--dur-fast); }
+.qds-hover-wash:hover { background: var(--surface-hover) !important; }
+
+/* Lift on hover — for primary CTAs and submit buttons */
+.qds-hover-lift { transition: transform var(--dur-fast); }
+.qds-hover-lift:hover { transform: translateY(-1px); }
+.qds-hover-lift-lg { transition: transform var(--dur-fast); }
+.qds-hover-lift-lg:hover { transform: translateY(-2px); }
+
+/* Scale on hover — for badge-style CTAs */
+.qds-hover-scale { transition: transform var(--dur-fast); }
+.qds-hover-scale:hover { transform: scale(1.05); }
+
+/* Danger affordance — for destructive actions (sign out, close, delete) */
+.qds-hover-danger { transition: all var(--dur-fast); }
+.qds-hover-danger:hover {
+  border-color: var(--danger) !important;
+  color: var(--danger-strong) !important;
+  background: var(--danger-bg) !important;
+}
+
+/* Success affordance — for confirmation actions (fullscreen, expand) */
+.qds-hover-success { transition: all var(--dur-fast); }
+.qds-hover-success:hover {
+  border-color: var(--success) !important;
+  background: var(--success-bg) !important;
+}
