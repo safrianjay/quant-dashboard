@@ -491,3 +491,10 @@
   border-color: var(--success) !important;
   background: var(--success-bg) !important;
 }
+
+/* Subtle row link — text & bg both shift on hover (sidebar nav-style links) */
+.qds-link-row { transition: all var(--dur-fast); }
+.qds-link-row:hover {
+  color: var(--text-primary) !important;
+  background: var(--surface-sunken) !important;
+}
