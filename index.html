@@ -157,6 +157,9 @@ p,span,div,input,button{
 .periods{display:flex;gap:var(--space-1);background:var(--surface-sunken);border-radius:7px;padding:3px}
 .period{padding:var(--space-2) var(--space-5);border-radius:var(--radius-sm);font-size:var(--fs-sm);font-weight:var(--fw-medium);cursor:pointer;border:none;font-family:var(--font-body);background:transparent;color:var(--text-secondary);transition:all var(--dur-fast)}
 .period.active{background:var(--surface-card);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:var(--fw-semibold)}
+.lang-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:var(--space-2);padding:5px var(--space-4);border:none;border-radius:var(--radius-md);font-size:var(--fs-sm);font-weight:var(--fw-semibold);cursor:pointer;font-family:var(--font-body);transition:all var(--dur-fast);background:transparent;color:var(--text-secondary)}
+.lang-btn:hover:not(.active){color:var(--text-primary)}
+.lang-btn.active{background:var(--surface-card);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .vflink{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#3B82F6;cursor:pointer;background:none;border:none;font-family:var(--font-body)}
 
 /* ── LIST ROWS ── */
@@ -809,10 +812,10 @@ p,span,div,input,button{
     <div id="levels-list"></div>
 
     <!-- Language switcher -->
-    <div style="padding:6px 8px 8px;margin-top:auto">
-      <div id="lang-switcher" style="display:flex;align-items:center;border-radius:8px;background:#F1F5F9;padding:3px;gap:2px">
-        <button class="lang-btn active" data-lang="en" onclick="_switchLang('en')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 8px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s;background:white;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,.08)">🇺🇸 EN</button>
-        <button class="lang-btn" data-lang="id" onclick="_switchLang('id')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 8px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .15s;background:transparent;color:#64748B">🇮🇩 ID</button>
+    <div style="padding:var(--space-3) var(--space-4) var(--space-4);margin-top:auto">
+      <div id="lang-switcher" style="display:flex;align-items:center;border-radius:var(--radius-lg);background:var(--surface-sunken);padding:3px;gap:var(--space-1)">
+        <button class="lang-btn active" data-lang="en" onclick="_switchLang('en')">🇺🇸 EN</button>
+        <button class="lang-btn" data-lang="id" onclick="_switchLang('id')">🇮🇩 ID</button>
       </div>
     </div>
 
@@ -1699,10 +1702,7 @@ function _switchLang(lang){
   _currentLang = lang;
   localStorage.setItem('q_lang', lang);
   document.querySelectorAll('#lang-switcher .lang-btn').forEach(btn => {
-    const active = btn.dataset.lang === lang;
-    btn.style.background = active ? 'white' : 'transparent';
-    btn.style.color = active ? '#0F172A' : '#64748B';
-    btn.style.boxShadow = active ? '0 1px 3px rgba(0,0,0,.08)' : 'none';
+    btn.classList.toggle('active', btn.dataset.lang === lang);
   });
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const val = _t(el.dataset.i18n);
