@@ -142,7 +142,6 @@ p,span,div,input,button{
 .kpi-card{background:white;border-radius:13px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04);border:1px solid var(--neutral-100);position:relative;overflow:hidden;animation:fadeUp .5s ease both}
 
 /* ── LABELS — Inter ── */
-.muted{font-size:11px;color:var(--neutral-400);font-family:var(--font-body)}
 
 /* ── VALUES — Space Mono ── */
 .val{font-size:19px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -909,7 +908,7 @@ p,span,div,input,button{
             <div class="qds-card__head">
               <div>
                 <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_fear_greed">Fear & Greed Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('fg_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_fg_overview_d">A composite score from 0–100 derived from market breadth, average 24h change, moving average trends, and BTC dominance. Below 25 signals extreme fear (potential buy zone), above 75 signals greed (potential distribution zone).</span></span></div>
-                <div class="muted" data-i18n="sub_fear_greed" id="overview-fg-sub">Live breadth pulse from tracked crypto leaders</div>
+                <div class="qds-text-caption" data-i18n="sub_fear_greed" id="overview-fg-sub">Live breadth pulse from tracked crypto leaders</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-fear-greed-card"></div>
@@ -919,7 +918,7 @@ p,span,div,input,button{
             <div class="qds-card__head">
               <div>
                 <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_altcoin_season">Altcoin Season Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('alt_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_alt_overview_d">Measures how many tracked altcoins are outperforming Bitcoin over the last 30 days. Above 65 indicates Altcoin Season (alts leading), below 35 indicates Bitcoin Season (BTC dominance rising).</span></span></div>
-                <div class="muted" data-i18n="sub_altcoin_season">Outperformance versus Bitcoin across tracked leaders</div>
+                <div class="qds-text-caption" data-i18n="sub_altcoin_season">Outperformance versus Bitcoin across tracked leaders</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-alt-season-card"></div>
@@ -929,7 +928,7 @@ p,span,div,input,button{
             <div class="qds-card__head">
               <div>
                 <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_tracked_index">Tracked Market Index</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('ti_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_ti_overview_d">A weighted performance basket of the largest crypto assets we monitor, indexed to 100 at the start of the selected time range. Values above 100 indicate the market is up, below 100 indicates a decline.</span></span></div>
-                <div class="muted" data-i18n="sub_tracked_index">Weighted performance basket of the market leaders we monitor</div>
+                <div class="qds-text-caption" data-i18n="sub_tracked_index">Weighted performance basket of the market leaders we monitor</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-tracked-index-card"></div>
@@ -940,7 +939,7 @@ p,span,div,input,button{
           <div class="qds-card__head" style="padding-bottom:10px">
             <div>
               <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_market_snapshot">Crypto Market Snapshot</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('ms_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_ms_overview_d">Aggregated market cap and volume across the largest tracked crypto assets. The chart shows total market cap over time with green/red segments indicating upward/downward movements. Switch to Breadth mode to see the average performance of all tracked assets.</span></span></div>
-              <div class="muted" data-i18n="sub_market_snapshot" id="overview-snapshot-sub">Aggregated view across the largest tracked assets</div>
+              <div class="qds-text-caption" data-i18n="sub_market_snapshot" id="overview-snapshot-sub">Aggregated view across the largest tracked assets</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
               <div class="overview-pillbar" id="overview-mode-tabs">
@@ -968,7 +967,7 @@ p,span,div,input,button{
           <div class="qds-card__head" style="padding-bottom:10px">
             <div>
               <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_capital_flow">Capital Flow Pulse</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('cf_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_cf_overview_d">Shows the daily capital pressure for each tracked asset, calculated by multiplying 24h volume by directional price change. Positive bars (green) indicate buying pressure, negative bars (red) indicate selling pressure.</span></span></div>
-              <div class="muted" data-i18n="sub_capital_flow">Daily pressure by asset using turnover and directional change</div>
+              <div class="qds-text-caption" data-i18n="sub_capital_flow">Daily pressure by asset using turnover and directional change</div>
             </div>
             <div style="font-size:10px;color:var(--neutral-400);font-family:var(--font-body)" id="overview-flow-label">Top flow movers</div>
           </div>
@@ -985,7 +984,7 @@ p,span,div,input,button{
             <div class="qds-card__head">
               <div>
                 <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_market_dominance">Market Dominance</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('md_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_md_overview_d">Shows each asset's share of the total tracked market cap. Rising BTC dominance often signals risk-off sentiment, while falling dominance suggests capital rotation into altcoins.</span></span></div>
-                <div class="muted" data-i18n="sub_market_dominance">Share of tracked market cap by the biggest leaders</div>
+                <div class="qds-text-caption" data-i18n="sub_market_dominance">Share of tracked market cap by the biggest leaders</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-dominance-card"></div>
@@ -995,7 +994,7 @@ p,span,div,input,button{
             <div class="qds-card__head">
               <div>
                 <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_positioning_pressure">Positioning Pressure</span> <span class="info-wrap"><button class="info-btn" onclick="showInfo('pp_overview')" type="button">?</button><span class="info-tooltip" data-i18n="info_pp_overview_d">Measures market conviction using turnover ratio (volume / market cap) and BTC realized volatility. High turnover with low volatility suggests accumulation, while high volatility with declining turnover signals distribution.</span></span></div>
-                <div class="muted" data-i18n="sub_positioning_pressure">Spot-based proxy for conviction, turnover, and realized volatility</div>
+                <div class="qds-text-caption" data-i18n="sub_positioning_pressure">Spot-based proxy for conviction, turnover, and realized volatility</div>
               </div>
             </div>
             <div class="overview-section-pad" id="overview-pressure-card"></div>
@@ -3656,8 +3655,8 @@ function _renderOverviewCards(){
         <div class="overview-range-knob" style="left:${knob}%"></div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-top:8px">
-        <span class="muted" style="font-size:10px">Bitcoin Season</span>
-        <span class="muted" style="font-size:10px">Altcoin Season</span>
+        <span class="qds-text-caption" style="font-size:10px">Bitcoin Season</span>
+        <span class="qds-text-caption" style="font-size:10px">Altcoin Season</span>
       </div>`;
   }
 
@@ -3669,7 +3668,7 @@ function _renderOverviewCards(){
           <div class="overview-index-value">${aggregate.trackedIndex[aggregate.trackedIndex.length - 1].toFixed(1)}</div>
           <div class="overview-index-change" style="color:${_overviewToneColor(metrics.trackedChange)}">${_overviewFmtPct(metrics.trackedChange)} today</div>
         </div>
-        <div class="muted" style="font-size:10px">Base 100</div>
+        <div class="qds-text-caption" style="font-size:10px">Base 100</div>
       </div>
       <div>${_overviewSparkline(aggregate.trackedIndex.slice(-12), _overviewToneColor(metrics.trackedChange))}</div>`;
   }
