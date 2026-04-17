@@ -2203,8 +2203,8 @@ function openCoinDetail(sym, cgId, name, grad, letter, tvSym) {
   renderCoinTLDR(sym);
   refreshCoinTLDR(sym);
 
-  /* Load market cycle indicators */
-  _cdLoadCycleData(cgId, sym, requestToken);
+  /* Load market cycle indicators — delayed so coin detail fetch goes first in queue */
+  setTimeout(() => _cdLoadCycleData(cgId, sym, requestToken), 200);
 
   /* Scroll to top */
   document.getElementById('coin-detail-view').scrollTop = 0;
@@ -2486,11 +2486,11 @@ function _renderCycleRetryState(cgId, sym, requestToken, message){
   if(!grid) return;
   grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:24px;background:white;border:1px dashed #CBD5E1;border-radius:13px">
     <div style="color:#64748B;font-size:11px;font-family:var(--font-body);margin-bottom:12px">${message}</div>
-    <button onclick="_cdLoadCycleData('${cgId}','${sym}',${requestToken},0)" style="padding:8px 12px;border-radius:10px;border:1px solid #CBD5E1;background:#F8FAFC;color:#0F172A;font-size:11px;font-weight:700;font-family:var(--font-body);cursor:pointer">Retry market cycles</button>
+    <button onclick="_cdLoadCycleData('${cgId}','${sym}',${requestToken})" style="padding:8px 12px;border-radius:10px;border:1px solid #CBD5E1;background:#F8FAFC;color:#0F172A;font-size:11px;font-weight:700;font-family:var(--font-body);cursor:pointer">Retry market cycles</button>
   </div>`;
 }
 
-async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
+async function _cdLoadCycleData(cgId, sym, requestToken){
   const grid = document.getElementById('cd-cycles-grid');
   const status = document.getElementById('cd-cycle-status');
   if(!grid) return;
@@ -2787,20 +2787,13 @@ async function _cdLoadCycleData(cgId, sym, requestToken, retryCount=0){
       if(status) status.textContent = `Showing cached cycle data · ${_coinRelativeTime(persistedCycle.data.updatedAt || persistedCycle.ts)}`;
       return;
     }
-    if(err.message === 'HTTP 429' && retryCount < 2){
-      if(status) status.textContent = `Rate limit hit. Retrying${retryCount === 0 ? '' : ' again'}…`;
-      setTimeout(() => {
-        if(isActiveView()) _cdLoadCycleData(cgId, sym, requestToken, retryCount + 1);
-      }, 1200 * (retryCount + 1));
-      return;
-    }
-    if(status) status.textContent = err.message === 'HTTP 429' ? 'Cycle data unavailable right now' : 'Cycle data unavailable';
+    if(status) status.textContent = err.message === 'HTTP 429' ? 'Rate limited — showing cached data' : 'Cycle data unavailable';
     _renderCycleRetryState(
       cgId,
       sym,
       requestToken,
       err.message === 'HTTP 429'
-        ? 'Market cycle data is temporarily rate-limited, but you can retry without reopening the coin detail.'
+        ? 'Market cycle data is temporarily rate-limited. Wait a moment then tap Retry.'
         : 'Market cycle data could not be loaded right now.'
     );
   }
@@ -3285,10 +3278,14 @@ const _PERSISTED_CHART_CACHE_TTL = 12 * 60 * 60 * 1000;
 
 /* ── CoinGecko request throttle ── */
 let _cgLastRequest = 0;
-const _CG_MIN_GAP = 250; /* ms between CoinGecko requests */
-async function _cgFetchThrottled(url) {
-  const now = Date.now();
-  const wait = Math.max(0, _CG_MIN_GAP - (now - _cgLastRequest));
+const _CG_MIN_GAP = 1500; /* ms between CoinGecko requests — free tier ~30 req/min */
+let _cgQueue = Promise.resolve(); /* serializes all CG requests */
+function _cgFetchThrottled(url) {
+  _cgQueue = _cgQueue.then(() => _cgFetchOne(url), () => _cgFetchOne(url));
+  return _cgQueue;
+}
+async function _cgFetchOne(url) {
+  const wait = Math.max(0, _CG_MIN_GAP - (Date.now() - _cgLastRequest));
   if(wait > 0) await new Promise(r => setTimeout(r, wait));
   _cgLastRequest = Date.now();
   const res = await fetch(url);
@@ -3319,6 +3316,16 @@ async function _getChartData(cgId, days){
       if(persisted?.data){
         _chartCache[key] = { data: persisted.data, ts: persisted.ts };
         return persisted.data;
+      }
+      /* On 429, fall back to any shorter-period cache we already have for this coin */
+      if(err.message === 'HTTP 429'){
+        for(const fallbackDays of [365, 99, 30, 7]){
+          if(fallbackDays === (days || 99)) continue;
+          const fb = _chartCache[`${cgId}:${fallbackDays}`];
+          if(fb?.data) return fb.data;
+          const fbP = _readClientCache(`q_chart_cache_${cgId}:${fallbackDays}`, _PERSISTED_CHART_CACHE_TTL);
+          if(fbP?.data) return fbP.data;
+        }
       }
       throw err;
     } finally {

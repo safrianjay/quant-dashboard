@@ -3,7 +3,7 @@ const https = require('https');
 /* In-memory cache — persists across warm Lambda invocations.
    Prevents multiple browser tabs / rapid retries from hitting CoinGecko. */
 const _cache = {};
-const CACHE_TTL = { market: 300000, chart: 1800000, coin: 900000, 'okx-tickers': 60000 };
+const CACHE_TTL = { market: 300000, chart: 3600000, coin: 900000, 'okx-tickers': 60000 };
 
 const HEADERS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
 
