@@ -44,6 +44,14 @@
 .qds-card--interactive {
   cursor: pointer;
 }
+
+/* Flush variant: no wrapper padding (children manage their own padding).
+   Used by legacy patterns where .card-head / chart bodies set their own
+   spacing — direct successor to the bespoke .card rule. */
+.qds-card--flush {
+  padding: 0;
+  overflow: hidden;
+}
 .qds-card--interactive:hover {
   border-color: var(--border-default);
   box-shadow: var(--shadow-lg);
