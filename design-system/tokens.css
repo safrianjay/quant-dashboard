@@ -1,0 +1,241 @@
+/* ============================================================================
+ * Quantichy Design System — Design Tokens
+ * ----------------------------------------------------------------------------
+ * The single source of truth for all colors, typography, spacing, radius,
+ * and shadow values used across landing, dashboard, and marketing pages.
+ *
+ * Usage:
+ *   <link rel="stylesheet" href="/design-system/tokens.css">
+ *   <link rel="stylesheet" href="/design-system/components.css">
+ *
+ * All tokens are exposed as CSS custom properties on :root so they can
+ * be consumed inline (e.g. style="background:var(--surface)") or in any
+ * external stylesheet without an import step.
+ * ========================================================================= */
+
+:root {
+
+  /* ── TYPOGRAPHY ──────────────────────────────────────────────────────── */
+  --font-heading: 'Proxima Nova', 'Montserrat', 'DM Sans', sans-serif;
+  --font-body:    'Inter', 'DM Sans', sans-serif;
+  --font-mono:    'Space Mono', 'Fira Mono', ui-monospace, monospace;
+
+  /* Font sizes — limited set, ascending */
+  --fs-2xs:  9px;   /* uppercase labels, micro */
+  --fs-xs:  10px;   /* small labels */
+  --fs-sm:  11px;   /* sub-text, pills, links */
+  --fs-md:  12px;   /* nav items, body small */
+  --fs-base:13px;   /* default body */
+  --fs-lg:  14px;   /* card text */
+  --fs-xl:  15px;   /* card titles, buttons */
+  --fs-2xl: 16px;   /* data values */
+  --fs-3xl: 18px;   /* modal titles */
+  --fs-4xl: 22px;   /* large index values */
+  --fs-5xl: 28px;   /* hero metrics */
+  --fs-6xl: 32px;   /* page hero */
+  --fs-display: 48px; /* landing hero */
+
+  /* Font weights — only what we actually use */
+  --fw-regular:   400;
+  --fw-medium:    500;
+  --fw-semibold:  600;
+  --fw-bold:      700;
+  --fw-extrabold: 800;
+  --fw-black:     900;
+
+  /* Letter spacing */
+  --tracking-tight:    -.01em;  /* most headings */
+  --tracking-tighter:  -.02em;  /* numeric values */
+  --tracking-tightest: -.03em;  /* large values */
+  --tracking-wide:     .06em;   /* uppercase labels */
+  --tracking-widest:   .12em;   /* section labels */
+
+  /* Line heights */
+  --lh-tight:  1.2;
+  --lh-normal: 1.4;
+  --lh-relaxed: 1.6;
+
+
+  /* ── COLORS — BRAND ──────────────────────────────────────────────────── */
+  --brand-primary: #0F172A;  /* primary text, active nav, brand */
+  --brand-navy:    #001f5c;  /* pricing/marketing accent */
+  --brand-accent:  #2563EB;  /* CTA blue */
+
+
+  /* ── COLORS — NEUTRAL SCALE ──────────────────────────────────────────── */
+  --neutral-0:   #FFFFFF;
+  --neutral-50:  #F8FAFC;  /* page bg */
+  --neutral-100: #F1F5F9;  /* light bg, dividers */
+  --neutral-200: #E2E8F0;  /* card borders, hover borders */
+  --neutral-300: #CBD5E1;  /* lighter borders */
+  --neutral-400: #94A3B8;  /* muted text, micro labels */
+  --neutral-500: #64748B;  /* secondary text */
+  --neutral-600: #475569;  /* dark gray text */
+  --neutral-700: #334155;  /* darker text */
+  --neutral-800: #1E293B;  /* very dark */
+  --neutral-900: #0F172A;  /* primary text — same as brand-primary */
+
+
+  /* ── COLORS — SEMANTIC ───────────────────────────────────────────────── */
+  /* Success / Bull / Long */
+  --success:        #10B981;
+  --success-strong: #16A34A;
+  --success-deep:   #059669;
+  --success-soft:   #34D399;
+  --success-bg:     #F0FDF4;
+  --success-border: #BBF7D0;
+
+  /* Danger / Bear / Short */
+  --danger:        #EF4444;
+  --danger-strong: #DC2626;
+  --danger-deep:   #A32D2D;
+  --danger-bg:     #FEF2F2;
+  --danger-border: #FECACA;
+
+  /* Warning / Amber */
+  --warning:        #F59E0B;
+  --warning-strong: #F97316;
+  --warning-deep:   #D85A30;
+  --warning-bg:     #FEF3C7;
+  --warning-border: #FCD34D;
+
+  /* Info / Blue */
+  --info:        #3B82F6;
+  --info-strong: #2563EB;
+  --info-deep:   #1D4ED8;
+  --info-soft:   #60A5FA;
+  --info-bg:     #EEF4FF;
+  --info-border: #BFD0FF;
+
+
+  /* ── COLORS — SURFACES ───────────────────────────────────────────────── */
+  --surface-page:    var(--neutral-50);   /* dashboard background */
+  --surface-card:    var(--neutral-0);    /* card background */
+  --surface-raised:  var(--neutral-0);    /* modals, sheets, elevated */
+  --surface-sunken:  var(--neutral-100);  /* inputs, code blocks, pills */
+  --surface-hover:   var(--neutral-50);   /* subtle hover wash */
+
+
+  /* ── COLORS — TEXT ───────────────────────────────────────────────────── */
+  --text-primary:   var(--neutral-900);
+  --text-secondary: var(--neutral-500);
+  --text-muted:     var(--neutral-400);
+  --text-inverse:   var(--neutral-0);
+
+
+  /* ── COLORS — BORDERS ────────────────────────────────────────────────── */
+  --border-subtle:  var(--neutral-100);
+  --border-default: var(--neutral-200);
+  --border-strong:  var(--neutral-300);
+
+
+  /* ── COLORS — DATA / RANK SERIES ─────────────────────────────────────── */
+  /* Used for coin-rank top borders, chart series, and category accents */
+  --series-1: #10B981;  /* green   — rank 1 */
+  --series-2: #3B82F6;  /* blue    — rank 2 */
+  --series-3: #F59E0B;  /* amber   — rank 3 */
+  --series-4: #8B5CF6;  /* purple  — rank 4 */
+  --series-5: #EC4899;  /* pink    — rank 5 */
+  --series-6: #06B6D4;  /* cyan    — rank 6 */
+  --series-7: #F97316;  /* orange  — rank 7 */
+
+
+  /* ── COLORS — COIN GRADIENTS ─────────────────────────────────────────── */
+  /* Used as fallback avatars when a coin icon image fails to load */
+  --grad-btc:  linear-gradient(135deg, #F7931A, #FBBF24);
+  --grad-eth:  linear-gradient(135deg, #627EEA, #A78BFA);
+  --grad-bnb:  linear-gradient(135deg, #F3BA2F, #F59E0B);
+  --grad-sol:  linear-gradient(135deg, #9945FF, #14F195);
+  --grad-xrp:  linear-gradient(135deg, #0085C0, #38BDF8);
+
+
+  /* ── SPACING SCALE ───────────────────────────────────────────────────── */
+  --space-0:   0;
+  --space-1:   2px;
+  --space-2:   4px;
+  --space-3:   6px;
+  --space-4:   8px;
+  --space-5:  10px;
+  --space-6:  12px;   /* default gap */
+  --space-7:  14px;
+  --space-8:  16px;   /* default card padding */
+  --space-9:  18px;   /* large card padding */
+  --space-10: 20px;
+  --space-11: 24px;   /* content padding */
+  --space-12: 32px;   /* section padding */
+  --space-13: 40px;   /* large section spacing */
+  --space-14: 48px;
+  --space-15: 64px;
+  --space-16: 80px;
+
+
+  /* ── BORDER RADIUS ───────────────────────────────────────────────────── */
+  --radius-xs:   3px;   /* scrollbar, hairlines */
+  --radius-sm:   5px;   /* small buttons */
+  --radius-md:   6px;   /* pills */
+  --radius-lg:   8px;   /* pill containers, fields */
+  --radius-xl:  10px;   /* icon wraps, info buttons */
+  --radius-2xl: 12px;   /* secondary cards */
+  --radius-3xl: 13px;   /* primary cards */
+  --radius-4xl: 16px;   /* feature cards (Coin TLDR) */
+  --radius-5xl: 18px;   /* modals */
+  --radius-6xl: 20px;   /* bottom sheets */
+  --radius-7xl: 24px;   /* hero cards, pricing */
+  --radius-pill: 999px; /* fully rounded pills, gauges */
+  --radius-full: 50%;   /* circles, avatars */
+
+
+  /* ── SHADOWS ─────────────────────────────────────────────────────────── */
+  --shadow-xs:  0 1px 2px rgba(15, 23, 42, .04);                       /* hairline */
+  --shadow-sm:  0 1px 3px rgba(15, 23, 42, .06);                       /* default cards */
+  --shadow-md:  0 1px 4px rgba(15, 23, 42, .08);                       /* active states */
+  --shadow-lg:  0 4px 16px rgba(15, 23, 42, .08);                      /* hover lift */
+  --shadow-xl:  0 8px 26px rgba(15, 23, 42, .10);                      /* feature cards */
+  --shadow-2xl: 0 12px 32px rgba(15, 23, 42, .14);                     /* dropdowns, popovers */
+  --shadow-3xl: 0 24px 60px rgba(15, 23, 42, .18);                     /* modals, sheets */
+  --shadow-glow-success: 0 0 0 4px rgba(16, 185, 129, .15);            /* focus/glow success */
+  --shadow-glow-danger:  0 0 0 4px rgba(239, 68, 68, .15);             /* focus/glow danger */
+  --shadow-glow-info:    0 0 0 4px rgba(59, 130, 246, .15);            /* focus/glow info */
+  --shadow-inset-ring:   inset 0 0 0 1px rgba(255, 255, 255, .55);     /* badge ring */
+
+
+  /* ── LAYOUT ──────────────────────────────────────────────────────────── */
+  --sidebar-w:           224px;
+  --sidebar-w-collapsed:  56px;
+  --topbar-h:             56px;
+  --content-max:        1280px;
+  --content-pad-x:       18px;
+  --content-pad-y:       18px;
+  --content-pad-bottom:  32px;
+
+
+  /* ── BREAKPOINTS (reference only — use in @media) ────────────────────── */
+  /* --bp-sm: 480px;  Mobile               */
+  /* --bp-md: 640px;  Mobile landscape     */
+  /* --bp-lg: 768px;  Tablet               */
+  /* --bp-xl: 960px;  Desktop              */
+  /* --bp-2xl: 1100px; Wide content        */
+  /* --bp-3xl: 1280px; Landing max         */
+
+
+  /* ── MOTION ──────────────────────────────────────────────────────────── */
+  --ease-snap:    cubic-bezier(.22, 1, .36, 1);          /* fast snap */
+  --ease-smooth:  cubic-bezier(.4, 0, .2, 1);            /* default smooth */
+  --ease-spring:  cubic-bezier(.5, 1.4, .5, 1);          /* playful spring */
+
+  --dur-instant:  100ms;
+  --dur-fast:     150ms;
+  --dur-base:     200ms;
+  --dur-slow:     300ms;
+  --dur-slower:   500ms;
+
+
+  /* ── Z-INDEX SCALE ───────────────────────────────────────────────────── */
+  --z-base:        0;
+  --z-elevated:   10;   /* sticky topbar, sidebar */
+  --z-dropdown:  100;
+  --z-sticky:    200;
+  --z-overlay:  1000;   /* modal backdrop */
+  --z-modal:    1100;
+  --z-toast:    9999;
+}
