@@ -27,6 +27,13 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=3">
     <link rel="icon" type="image/svg+xml" href="/logo-icon.svg?v=3">
     <link rel="manifest" href="/manifest.json?v=3">
+
+    <!-- Quantichy Design System: tokens + reusable components.
+         New components should consume these tokens (var(--…)) and qds-* classes
+         instead of hard-coded values. See /design-system/README.md. -->
+    <link rel="stylesheet" href="/design-system/tokens.css">
+    <link rel="stylesheet" href="/design-system/components.css">
+
     <style>
         @media (max-width: 767px) {
             /* Platform bento grid: single column on mobile */
