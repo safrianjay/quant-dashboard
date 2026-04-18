@@ -2831,8 +2831,8 @@ function _cdUpdateSentiment(votes){
 const KPIS = [
   { title:"Price",      val:()=>{ const d=PRICE<0.00001?10:PRICE<0.0001?8:PRICE<0.01?6:PRICE<1?4:PRICE<1000?2:0; return maskBal('$'+PRICE.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})); }, sub:()=>`${CHG}% chg`, pos:()=>!String(CHG).startsWith('-'),  acc:"#10B981", path:"M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z" },
   { title:"Confidence", val:()=> CONF+"/10",                                                           sub:()=>"Long thesis active",        pos:true,  acc:"#3B82F6", path:"M22 12h-4l-3 9L9 3l-3 9H2" },
-  { title:"Volume",     val:()=> VOL.toFixed(0)+" "+currentBase,                                       sub:()=>`+${Math.round((VOL/MA10-1)*100)}% vs MA`, pos:true, acc:"#F59E0B", path:"M18 20V10M12 20V4M6 20v-6" },
-  { title:"Range",      val:()=> maskBal(pFmt(HIGH-LOW)), sub:()=>`${pFmt(LOW)} – ${pFmt(HIGH)}`, pos:false, acc:"#8B5CF6", path:"M22 2L11 13M22 2l-5 20-4-9-9-4 20-5z" },
+  { title:"Volume",     val:()=> Number.isFinite(VOL) && VOL>0 ? VOL.toFixed(0)+" "+currentBase : "— "+currentBase, sub:()=> Number.isFinite(VOL) && Number.isFinite(MA10) && MA10>0 ? `+${Math.round((VOL/MA10-1)*100)}% vs MA` : "Awaiting volume data", pos:true, acc:"#F59E0B", path:"M18 20V10M12 20V4M6 20v-6" },
+  { title:"Range",      val:()=> (Number.isFinite(HIGH) && Number.isFinite(LOW) && HIGH>0 && LOW>0 && HIGH>=LOW) ? maskBal(pFmt(HIGH-LOW)) : "—", sub:()=> (Number.isFinite(HIGH) && Number.isFinite(LOW) && HIGH>0 && LOW>0) ? `${pFmt(LOW)} – ${pFmt(HIGH)}` : "Awaiting 24h range", pos:false, acc:"#8B5CF6", path:"M22 2L11 13M22 2l-5 20-4-9-9-4 20-5z" },
 ];
 
 /* ── Price formatter: auto-decimals based on magnitude ── */
@@ -3244,6 +3244,18 @@ let _marketPrices = {}; /* cache: { BTCUSDT: { price, chg, high, low, vol, lastU
 function _updatePrice(sym, data, isLive){
   const now = Date.now();
   const existing = _marketPrices[sym] || { source: 'none', lastUpdate: 0 };
+
+  /* Filter out garbage fields (NaN / negative / undefined) so a single bad
+     batch can't poison the cache with zeros that later show as $0.00000000. */
+  const clean = {};
+  if(Number.isFinite(data.price) && data.price > 0) clean.price = data.price;
+  if(Number.isFinite(data.high)  && data.high  > 0) clean.high  = data.high;
+  if(Number.isFinite(data.low)   && data.low   > 0) clean.low   = data.low;
+  if(Number.isFinite(parseFloat(data.chg))) clean.chg = data.chg;
+  if(Number.isFinite(data.vol)   && data.vol  >= 0) clean.vol   = data.vol;
+  /* If nothing usable came in, do nothing (don't bump lastUpdate either). */
+  if(!clean.price && !existing.price) return;
+  data = clean;
   
   // Rule: If we have live data, don't let stale batch data overwrite it
   if (!isLive && existing.source === 'live' && (now - existing.lastUpdate < 15000)) {
@@ -4087,6 +4099,10 @@ window.selectMarket = async function(sym, base, name){
   if(_selectMarketBusy) return;
   _selectMarketBusy = true;
 
+  /* Snapshot previous selection so we can revert if the new coin has no data */
+  const _prevSym = currentSymbol, _prevBase = currentBase;
+  const _prevState = { PRICE, HIGH, LOW, CHG, VOL, MA10, CONF };
+
   closeMarketSelector();
   currentSymbol = sym;
   currentBase   = base;
@@ -4266,14 +4282,25 @@ window.selectMarket = async function(sym, base, name){
 
   } catch(err){
     console.error('selectMarket error:', err);
+    /* Revert to previous coin so the UI doesn't get stuck in a broken state
+       (zero prices, NaN volume, stale chart). User keeps a working dashboard. */
+    currentSymbol = _prevSym;
+    currentBase   = _prevBase;
+    PRICE = _prevState.PRICE; HIGH = _prevState.HIGH; LOW = _prevState.LOW;
+    CHG   = _prevState.CHG;   VOL  = _prevState.VOL;  MA10 = _prevState.MA10;
+    CONF  = _prevState.CONF;
+    try { localStorage.setItem('q_coin', JSON.stringify({ sym: _prevSym, base: _prevBase, cgId: MARKET_LIST.find(m=>m.sym===_prevSym)?.cgId || _prevSym.replace('USDT','').toLowerCase() })); } catch(_){}
+    const titleEl = document.getElementById('market-title');
+    if(titleEl) titleEl.textContent = `${_prevBase}/USDT`;
+    try { renderKPIs(); renderCoinTLDR(); } catch(_){}
     if(btn){
       icon.style.animation=''; btn.style.opacity='1';
       btn.style.background='#FEF2F2'; btn.style.borderColor='#FECACA'; btn.style.color='#DC2626';
       btn.querySelector('span').textContent='Failed ✕'; icon.setAttribute('stroke','#DC2626');
       setTimeout(()=>{ btn.style.background='white'; btn.style.borderColor='#E2E8F0'; btn.style.color='#334155'; btn.querySelector('span').textContent='Refresh'; icon.setAttribute('stroke','#64748B'); btn.disabled=false; }, 2200);
     }
-    /* Show toast */
-    showToast('Failed to load '+base+' data: '+err.message, 'error');
+    /* Show toast — explain why and that the previous coin is still active */
+    showToast(`${base} data unavailable (rate-limited or not listed) — kept ${_prevBase}`, 'error');
   } finally {
     _selectMarketBusy = false;
   }
@@ -4817,13 +4844,17 @@ let _prevPrice = 0;
 function _applyMarketCache(){
   const c = _marketPrices[currentSymbol];
   if(!c) return;
+  /* Don't overwrite live globals with junk — require at least a finite, positive price */
+  if(!Number.isFinite(c.price) || c.price <= 0) return;
 
   const oldPrice = PRICE;
   PRICE = c.price;
-  HIGH  = c.high;
-  LOW   = c.low;
-  CHG   = (c.chg >= 0 ? '+' : '') + parseFloat(c.chg).toFixed(2);
-  VOL   = parseFloat((c.vol / c.price / 1000).toFixed(2));
+  HIGH  = (Number.isFinite(c.high) && c.high > 0) ? c.high : HIGH;
+  LOW   = (Number.isFinite(c.low)  && c.low  > 0) ? c.low  : LOW;
+  CHG   = Number.isFinite(parseFloat(c.chg)) ? ((c.chg >= 0 ? '+' : '') + parseFloat(c.chg).toFixed(2)) : CHG;
+  if(Number.isFinite(c.vol) && c.vol > 0){
+    VOL = parseFloat((c.vol / c.price / 1000).toFixed(2));
+  }
 
   // Visual uptick/downtick animation
   const kv0 = document.getElementById('kv0-card');
