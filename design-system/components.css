@@ -245,6 +245,72 @@
 
 
 /* ============================================================================
+ * TOPBAR TYPOGRAPHY
+ * ----------------------------------------------------------------------------
+ * Used by the sticky page header that appears on every dashboard view.
+ * The pair (e.g. "BTC/USDT") or section ("Market Overview") goes in
+ * `.qds-topbar-title`; the helper line beneath uses `.qds-topbar-sub`.
+ * Both are intentionally stripped of inline overrides so the brand
+ * typography flows through automatically.
+ * ========================================================================= */
+.qds-topbar-title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-2xl);            /* 16px */
+  font-weight: var(--fw-bold);          /* 700 */
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-tighter);
+  line-height: 1.2;
+}
+.qds-topbar-sub {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);              /* 11px — readable, was 10px */
+  font-weight: var(--fw-medium);        /* 500 */
+  color: var(--text-secondary);         /* neutral-500, not the lighter neutral-400 */
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* Coin/section spotlight tile typography (top strip on Market Overview).
+   Title uses the eyebrow pattern (uppercase, muted, tracked) so the
+   eye lands on the price first. Price + change share the mono family
+   for tabular alignment across the row. */
+.qds-spot-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  color: var(--text-secondary);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.qds-spot-title span {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+}
+.qds-spot-price {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-tightest);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.qds-spot-change {
+  font-family: var(--font-mono);        /* tabular alignment */
+  font-size: var(--fs-sm);              /* 11px */
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-tighter);
+}
+
+
+/* ============================================================================
  * PILLS / TABS / BADGES
  * ========================================================================= */
 

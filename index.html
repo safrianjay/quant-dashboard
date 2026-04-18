@@ -192,10 +192,30 @@ p,span,div,input,button{
 .overview-spotlight-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
 .qds-overview-spot-card{background:white;border:1px solid var(--neutral-100);border-radius:13px;padding:14px 15px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:all .18s;overflow:hidden}
 .qds-overview-spot-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08);border-color:var(--neutral-200)}
-.overview-spot-meta{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
-.overview-spot-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--neutral-900);font-family:var(--font-heading)}
-.overview-spot-price{font-size:20px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.overview-spot-change{font-size:11px;font-weight:700;font-family:var(--font-body)}
+.overview-spot-meta{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}
+/* Spotlight tile typography — direct alias of the qds-spot-* tokens.
+   Title row puts the coin name in body weight (text-primary) so it
+   reads as a label, not a heading; price is mono/large; change is
+   mono so percentages tabular-align across the row. */
+.overview-spot-title{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-body);
+  font-size:12px;font-weight:600;
+  color:var(--text-primary);
+  letter-spacing:0;
+}
+.overview-spot-price{
+  font-family:var(--font-mono);
+  font-size:18px;font-weight:700;
+  color:var(--text-primary);
+  letter-spacing:-.03em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.overview-spot-change{
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:700;
+  letter-spacing:-.02em;
+}
 .overview-main-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:12px}
 .overview-stack{display:flex;flex-direction:column;gap:12px}
 .overview-bottom-grid{display:grid;grid-template-columns:minmax(0,1.45fr) 320px;gap:12px}
@@ -849,16 +869,16 @@ p,span,div,input,button{
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px;min-width:0">
     <div id="overview-topbar-copy" style="display:none;min-width:0">
-      <div class="topbar-title" data-i18n="nav_market_overview" style="font-size:16px;font-weight:700;color:var(--neutral-900);line-height:1.2">Market Overview</div>
-      <div id="overview-topbar-sub" data-i18n="topbar_overview_sub" style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Breadth, dominance and capital rotation</div>
+      <div class="qds-topbar-title" data-i18n="nav_market_overview">Market Overview</div>
+      <div class="qds-topbar-sub" id="overview-topbar-sub" data-i18n="topbar_overview_sub">Breadth, dominance and capital rotation</div>
     </div>
     <button onclick="openMarketSelector()" id="market-title-btn" class="qds-hover-wash" style="min-width:0;text-align:left;background:none;border:none;cursor:pointer;padding:var(--space-3) var(--space-5);border-radius:var(--radius-xl);display:flex;align-items:center;gap:var(--space-4)">
       <div style="min-width:0">
         <div style="display:flex;align-items:center;gap:6px">
-          <div class="topbar-title" id="market-title" style="font-size:16px;font-weight:700;color:var(--neutral-900);line-height:1.2">BTC/USDT</div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <div class="qds-topbar-title" id="market-title">BTC/USDT</div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)" id="topbar-date">Real-time Analysis</div>
+        <div class="qds-topbar-sub" id="topbar-date">Real-time Analysis</div>
       </div>
     </button>
     <button id="coin-detail-btn" onclick="openCoinDetail()" title="View coin detail" class="qds-hover-wash" style="display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-5);border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--surface-card);color:var(--text-secondary);font-size:var(--fs-sm);font-weight:var(--fw-semibold);cursor:pointer;font-family:var(--font-body)">
