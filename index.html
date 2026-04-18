@@ -1249,8 +1249,8 @@ p,span,div,input,button{
     <div class="qds-perf-chart-card" id="perf-chart-card">
       <div class="qds-card__head" style="padding-bottom:8px">
         <div>
-          <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900)"><span data-i18n="card_positions_perf">Positions Performance</span></div>
-          <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Cumulative P&L · all entries</div>
+          <div class="qds-card__title"><span data-i18n="card_positions_perf">Positions Performance</span></div>
+          <div class="qds-card__sub">Cumulative P&L · all entries</div>
         </div>
         <div class="periods" id="perf-period-tabs">
           <button class="period active" onclick="setPerfView('pnl')">P&L</button>
@@ -1269,8 +1269,8 @@ p,span,div,input,button{
     <div class="qds-pos-card" id="positions-card">
       <div class="qds-card__head" style="padding-bottom:10px">
         <div>
-          <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900)"><span data-i18n="card_open_positions">Open Positions</span></div>
-          <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Live entries · P&L updates in real time</div>
+          <div class="qds-card__title"><span data-i18n="card_open_positions">Open Positions</span></div>
+          <div class="qds-card__sub">Live entries · P&L updates in real time</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span id="pos-count-badge" style="display:none;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:var(--neutral-100);color:var(--neutral-500);font-family:var(--font-mono)">0 open</span>
@@ -2832,7 +2832,15 @@ const KPIS = [
   { title:"Price",      val:()=>{ const d=PRICE<0.00001?10:PRICE<0.0001?8:PRICE<0.01?6:PRICE<1?4:PRICE<1000?2:0; return maskBal('$'+PRICE.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})); }, sub:()=>`${CHG}% chg`, pos:()=>!String(CHG).startsWith('-'),  acc:"#10B981", path:"M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z" },
   { title:"Confidence", val:()=> CONF+"/10",                                                           sub:()=>"Long thesis active",        pos:true,  acc:"#3B82F6", path:"M22 12h-4l-3 9L9 3l-3 9H2" },
   { title:"Volume",     val:()=> Number.isFinite(VOL) && VOL>0 ? VOL.toFixed(0)+" "+currentBase : "— "+currentBase, sub:()=> Number.isFinite(VOL) && Number.isFinite(MA10) && MA10>0 ? `+${Math.round((VOL/MA10-1)*100)}% vs MA` : "Awaiting volume data", pos:true, acc:"#F59E0B", path:"M18 20V10M12 20V4M6 20v-6" },
-  { title:"Range",      val:()=> (Number.isFinite(HIGH) && Number.isFinite(LOW) && HIGH>LOW && LOW>0) ? maskBal(pFmt(HIGH-LOW)) : "—", sub:()=> (Number.isFinite(HIGH) && Number.isFinite(LOW) && HIGH>LOW && LOW>0) ? `${pFmt(LOW)} – ${pFmt(HIGH)}` : "Range unavailable", pos:false, acc:"#8B5CF6", path:"M22 2L11 13M22 2l-5 20-4-9-9-4 20-5z" },
+  /* Total P&L — live aggregate from open positions; same source of truth
+     as the Positions Performance card below, so the dashboard reads as
+     one connected story. */
+  { title:"Total P&L",
+    val:()=>{ const t = getPositionsTotalPnl(); return t.openCount === 0 ? "$0" : maskBal((t.pnl>=0?"+":"")+t.pnl.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0})); },
+    sub:()=>{ const t = getPositionsTotalPnl(); return t.openCount === 0 ? "No open positions" : `${t.openCount} open · ${t.wins}/${t.openCount} winning`; },
+    pos:()=> getPositionsTotalPnl().pnl >= 0,
+    acc:"#8B5CF6",
+    path:"M3 17l6-6 4 4 8-8M21 7v6h-6" },
 ];
 
 /* ── Price formatter: auto-decimals based on magnitude ── */
@@ -5393,6 +5401,21 @@ function renderPositions(){
   updateSummaryStats();
 }
 window.closePosition=function(id){positions=positions.filter(p=>p.id!==id);savePositions();renderPositions();renderPerfChart();};
+/* Single source of truth for positions P&L — used by both the Total
+   P&L KPI card (top of dashboard) and the Positions Performance card. */
+function getPositionsTotalPnl(){
+  const pnls = positions.map(p => {
+    const mSym = MARKET_LIST.find(m => m.base === p.symbol)?.sym;
+    const cp   = (mSym && _marketPrices[mSym]?.price) ? _marketPrices[mSym].price : (p.currentPrice || p.entry);
+    return (cp - p.entry) * p.qty * (p.dir === "long" ? 1 : -1);
+  });
+  return {
+    pnl:       pnls.reduce((a,b)=>a+b, 0),
+    wins:      pnls.filter(v => v > 0).length,
+    openCount: positions.length,
+  };
+}
+
 function updateSummaryStats(){
   const pnls=positions.map(p=>{
     const mSym = MARKET_LIST.find(m => m.base === p.symbol)?.sym;
@@ -5409,6 +5432,8 @@ function updateSummaryStats(){
   if(wrEl) wrEl.textContent=positions.length?Math.round(wins/positions.length*100)+"%":"—";
   if(expEl) expEl.textContent="$"+exposure.toLocaleString("en-US",{maximumFractionDigits:0});
   if(rrEl) rrEl.textContent=avgRR==="—"?"—":"1:"+avgRR;
+  /* Keep the Total P&L KPI card (kv3) in sync with this aggregate. */
+  if(typeof renderKPIs === 'function' && document.getElementById('kpi-grid')) renderKPIs();
 }
 window.setPerfView=function(view){
   perfView=view;
@@ -5783,12 +5808,9 @@ const QuantAnalyst = (() => {
     if(kv1) kv1.textContent=`${confidence}/10`;
 
     /* ── 3. KPI Volume — Use analysis volume for internal cards but skip global KPI override ── */
-    
-    /* ── 4. KPI 24H Range — Analysis derived ── */
-    const rangeHigh=levels.resistances.find(r=>r.label==="24H High")?.price;
-    const rangeLow=levels.supports.find(s=>s.label==="24H Low")?.price;
-    const kv3=document.getElementById("kv3");
-    if(kv3&&rangeHigh&&rangeLow) kv3.textContent=`$${Math.round(rangeHigh-rangeLow).toLocaleString()}`;
+
+    /* ── 4. KPI 4 (slot kv3) is now Total P&L — driven by getPositionsTotalPnl()
+           via renderKPIs() in updateSummaryStats(). Don't override here. ── */
 
     /* ── 5. MA STACK ── */
     const maEl=document.getElementById("ma-stack");
