@@ -25,24 +25,42 @@ function store(key, body) {
   _cache[key] = { body, ts: Date.now() };
 }
 
+/* Must mirror MARKET_LIST in index.html. Keep cgIds that actually
+   resolve on CoinGecko — coins without a real cgId belong to the
+   TradingView-only path in the client and should NOT be listed here
+   (otherwise they pollute the batch with zero rows). */
 const COIN_MAP = [
-  { cgId: 'bitcoin',       sym: 'BTC'  },
-  { cgId: 'ethereum',      sym: 'ETH'  },
-  { cgId: 'binancecoin',   sym: 'BNB'  },
-  { cgId: 'solana',        sym: 'SOL'  },
-  { cgId: 'ripple',        sym: 'XRP'  },
-  { cgId: 'cardano',       sym: 'ADA'  },
-  { cgId: 'dogecoin',      sym: 'DOGE' },
-  { cgId: 'avalanche-2',   sym: 'AVAX' },
-  { cgId: 'chainlink',     sym: 'LINK' },
-  { cgId: 'polkadot',      sym: 'DOT'  },
-  { cgId: 'matic-network', sym: 'MATIC'},
-  { cgId: 'uniswap',       sym: 'UNI'  },
-  { cgId: 'litecoin',      sym: 'LTC'  },
-  { cgId: 'near',          sym: 'NEAR' },
-  { cgId: 'aptos',         sym: 'APT'  },
-  { cgId: 'sui',           sym: 'SUI'  },
-  { cgId: 'rave-token',    sym: 'RAVE' },
+  /* Major */
+  { cgId: 'bitcoin',             sym: 'BTC'   },
+  { cgId: 'ethereum',            sym: 'ETH'   },
+  { cgId: 'binancecoin',         sym: 'BNB'   },
+  { cgId: 'solana',              sym: 'SOL'   },
+  { cgId: 'ripple',              sym: 'XRP'   },
+  { cgId: 'cardano',             sym: 'ADA'   },
+  { cgId: 'litecoin',            sym: 'LTC'   },
+  /* Layer1 */
+  { cgId: 'avalanche-2',         sym: 'AVAX'  },
+  { cgId: 'polkadot',            sym: 'DOT'   },
+  { cgId: 'cosmos',              sym: 'ATOM'  },
+  { cgId: 'near',                sym: 'NEAR'  },
+  { cgId: 'sui',                 sym: 'SUI'   },
+  { cgId: 'aptos',               sym: 'APT'   },
+  { cgId: 'internet-computer',   sym: 'ICP'   },
+  { cgId: 'injective-protocol',  sym: 'INJ'   },
+  /* DeFi */
+  { cgId: 'chainlink',           sym: 'LINK'  },
+  { cgId: 'uniswap',             sym: 'UNI'   },
+  { cgId: 'aave',                sym: 'AAVE'  },
+  /* Layer2 — note POL ticker maps to the matic-network cgId */
+  { cgId: 'matic-network',       sym: 'MATIC' },
+  { cgId: 'arbitrum',            sym: 'ARB'   },
+  { cgId: 'optimism',            sym: 'OP'    },
+  /* Meme */
+  { cgId: 'dogecoin',            sym: 'DOGE'  },
+  { cgId: 'shiba-inu',           sym: 'SHIB'  },
+  { cgId: 'pepe',                sym: 'PEPE'  },
+  /* Quant AI */
+  { cgId: 'worldcoin-wld',       sym: 'WLD'   },
 ];
 
 function httpsGet(url) {
@@ -83,11 +101,14 @@ function transformCG(data) {
 
 async function fetchKraken() {
   const pairs = [
-    ['XXBTZUSD','BTC'], ['XETHZUSD','ETH'], ['SOLUSDT','SOL'],
-    ['XXRPZUSD','XRP'], ['ADAUSD','ADA'],   ['XDGUSD','DOGE'],
-    ['AVAXUSD','AVAX'], ['LINKUSD','LINK'],  ['DOTUSD','DOT'],
-    ['UNIUSD','UNI'],   ['LTCUSD','LTC'],    ['NEARUSD','NEAR'],
-    ['APTUSD','APT'],   ['SUIUSD','SUI'],
+    ['XXBTZUSD','BTC'],  ['XETHZUSD','ETH'],  ['SOLUSDT','SOL'],
+    ['XXRPZUSD','XRP'],  ['ADAUSD','ADA'],    ['XDGUSD','DOGE'],
+    ['AVAXUSD','AVAX'],  ['LINKUSD','LINK'],  ['DOTUSD','DOT'],
+    ['UNIUSD','UNI'],    ['LTCUSD','LTC'],    ['NEARUSD','NEAR'],
+    ['APTUSD','APT'],    ['SUIUSD','SUI'],    ['ATOMUSD','ATOM'],
+    ['ICPUSD','ICP'],    ['INJUSD','INJ'],    ['AAVEUSD','AAVE'],
+    ['ARBUSD','ARB'],    ['OPUSD','OP'],      ['SHIBUSD','SHIB'],
+    ['PEPEUSD','PEPE'],  ['WLDUSD','WLD'],    ['MATICUSD','MATIC'],
   ];
   const json = await httpsGet(`https://api.kraken.com/0/public/Ticker?pair=${pairs.map(p=>p[0]).join(',')}`);
   if (json.error && json.error.length) throw new Error('Kraken: ' + json.error[0]);

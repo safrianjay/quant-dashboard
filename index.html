@@ -3218,9 +3218,24 @@ const MARKET_LIST = [
   { sym:'SHIBUSDT', base:'SHIB', name:'Shiba Inu',       cgId:'shiba-inu',              cat:'Meme',   grad:'linear-gradient(135deg,#E36D26,#F97316)', letter:'S', icon:'https://assets.coingecko.com/coins/images/11939/small/shiba.png' },
   { sym:'PEPEUSDT', base:'PEPE', name:'Pepe',            cgId:'pepe',                   cat:'Meme',   grad:'linear-gradient(135deg,#3D9900,#86EFAC)', letter:'P', icon:'https://assets.coingecko.com/coins/images/29850/small/pepe-token.jpeg' },
   { sym:'WLDUSDT',  base:'WLD',  name:'Worldcoin',       cgId:'worldcoin-wld',          cat:'Quant AI', grad:'linear-gradient(135deg,#7C3AED,#A78BFA)', letter:'W', icon:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg' },
-  { sym:'RAVEUSDT', base:'RAVE', name:'Rave',             cgId:'rave-token',             cat:'BSC',      grad:'linear-gradient(135deg,#FF6B6B,#FF8E53)', letter:'R', tvSym:'RAVEUSDT.P', icon:'' },
+  /* RAVE intentionally omitted: no working CoinGecko id (`rave-token`
+     returns 404), no Kraken/Binance USDT pair, so price/range KPIs would
+     render as zero. Re-add only with a verified data source. */
 ];
-_MARKET_OVERVIEW_IDS = MARKET_LIST.filter(m => m.cgId && m.cgId !== 'rave-token').slice(0, 20).map(m => m.cgId);
+_MARKET_OVERVIEW_IDS = MARKET_LIST.filter(m => m.cgId).slice(0, 20).map(m => m.cgId);
+
+/* Reconcile persisted selection against the current MARKET_LIST.
+   If the saved coin was removed from the list (e.g. RAVE retired
+   because no working data source), fall back to BTCUSDT and clear
+   stale localStorage so the boot sequence doesn't try to fetch it. */
+(function reconcilePersistedCoin(){
+  if(!MARKET_LIST.some(m => m.sym === currentSymbol)){
+    console.warn('[market] Saved coin', currentSymbol, 'no longer in MARKET_LIST — reverting to BTCUSDT');
+    currentSymbol = 'BTCUSDT';
+    currentBase   = 'BTC';
+    try { localStorage.removeItem('q_coin'); } catch(_){}
+  }
+})();
 
 /* Returns coin icon HTML — real logo with gradient fallback */
 function coinIcon(m, size){
