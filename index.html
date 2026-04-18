@@ -139,12 +139,11 @@ p,span,div,input,button{
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 
 /* ── CARDS ── */
-.kpi-card{background:white;border-radius:13px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04);border:1px solid var(--neutral-100);position:relative;overflow:hidden;animation:fadeUp .5s ease both}
+.qds-kpi-card{background:white;border-radius:13px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04);border:1px solid var(--neutral-100);position:relative;overflow:hidden;animation:fadeUp .5s ease both}
 
 /* ── LABELS — Inter ── */
 
 /* ── VALUES — Space Mono ── */
-.val{font-size:19px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sub{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;margin-top:6px;font-family:var(--font-body)}
 .icon-wrap{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px}
 
@@ -191,8 +190,8 @@ p,span,div,input,button{
 /* ── MARKET OVERVIEW ── */
 .overview-shell{display:flex;flex-direction:column;gap:14px}
 .overview-spotlight-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-.overview-spot-card{background:white;border:1px solid var(--neutral-100);border-radius:13px;padding:14px 15px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:all .18s;overflow:hidden}
-.overview-spot-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08);border-color:var(--neutral-200)}
+.qds-overview-spot-card{background:white;border:1px solid var(--neutral-100);border-radius:13px;padding:14px 15px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:all .18s;overflow:hidden}
+.qds-overview-spot-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08);border-color:var(--neutral-200)}
 .overview-spot-meta{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
 .overview-spot-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--neutral-900);font-family:var(--font-heading)}
 .overview-spot-price{font-size:20px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -320,7 +319,7 @@ p,span,div,input,button{
   .topbar{padding:10px 12px;gap:6px}
   .overview-spotlight-grid{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:10px;padding-bottom:4px}
   .overview-spotlight-grid::-webkit-scrollbar{display:none}
-  .overview-spot-card{min-width:150px;max-width:170px;flex-shrink:0;padding:12px 13px}
+  .qds-overview-spot-card{min-width:150px;max-width:170px;flex-shrink:0;padding:12px 13px}
   .overview-spot-price{font-size:18px}
   .overview-spot-title span{font-size:11px}
   /* Hide secondary topbar items on mobile — keep only Run Analysis + Add Entry */
@@ -442,8 +441,7 @@ p,span,div,input,button{
 }
 @media(max-width:480px){
   /* KPI stays 2-col but smaller padding */
-  .kpi-card{padding:12px 14px}
-  .val{font-size:16px}
+  .qds-kpi-card{padding:12px 14px}
   /* Perf stats: 2 cols */
   .perf-stat-row{grid-template-columns:repeat(2,1fr)}
   /* Stack TP/SL fields vertically in panel */
@@ -477,7 +475,7 @@ p,span,div,input,button{
 }
 
 /* ══ POSITIONS PERF CHART CARD ══ */
-.perf-chart-card{background:white;border-radius:13px;border:1px solid var(--neutral-100);box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease .18s both;display:none}
+.qds-perf-chart-card{background:white;border-radius:13px;border:1px solid var(--neutral-100);box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease .18s both;display:none}
 .perf-tabs-row{display:flex;gap:4px;padding:0 18px 14px}
 .perf-stat-row{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid var(--neutral-100)}
 .perf-cell{padding:12px 14px;border-right:1px solid var(--neutral-100);text-align:center}
@@ -538,7 +536,7 @@ p,span,div,input,button{
 .err-msg{display:flex;align-items:center;gap:5px;margin-top:6px;font-size:11px;color:var(--danger-strong);font-family:var(--font-body)}
 
 /* ══ POSITIONS CARD ══ */
-.pos-card{background:white;border-radius:13px;border:1px solid var(--neutral-100);box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease both}
+.qds-pos-card{background:white;border-radius:13px;border:1px solid var(--neutral-100);box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:14px;animation:fadeUp .5s ease both}
 .pos-empty{padding:32px 18px;text-align:center}
 .pos-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--neutral-50)}
 .pos-row:last-child{border-bottom:none}
@@ -1248,7 +1246,7 @@ p,span,div,input,button{
     </div>
 
     <!-- ══ POSITIONS PERFORMANCE CHART ══ -->
-    <div class="perf-chart-card" id="perf-chart-card">
+    <div class="qds-perf-chart-card" id="perf-chart-card">
       <div class="qds-card__head" style="padding-bottom:8px">
         <div>
           <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900)"><span data-i18n="card_positions_perf">Positions Performance</span></div>
@@ -1268,7 +1266,7 @@ p,span,div,input,button{
       </div>
       <div style="display:flex;justify-content:center;gap:16px;padding:6px 14px 14px" id="perf-legend"></div>
     </div>
-    <div class="pos-card" id="positions-card">
+    <div class="qds-pos-card" id="positions-card">
       <div class="qds-card__head" style="padding-bottom:10px">
         <div>
           <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900)"><span data-i18n="card_open_positions">Open Positions</span></div>
@@ -2853,14 +2851,14 @@ function renderKPIs(){
     /* Shrink font for long values (e.g. PEPE's 10-decimal price) */
     const valFs = valStr.length > 14 ? '11px' : valStr.length > 11 ? '13px' : valStr.length > 8 ? '15px' : '19px';
     return `
-  <div class="kpi-card" id="kv${i}-card" style="transition:background 0.3s;animation-delay:${.05 + i * .05}s">
+  <div class="qds-kpi-card" id="kv${i}-card" style="transition:background 0.3s;animation-delay:${.05 + i * .05}s">
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${k.acc};border-radius:13px 13px 0 0"></div>
     <div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div style="min-width:0;flex:1">
         <!-- Inter label -->
         <div class="qds-eyebrow">${k.title}</div>
         <!-- Space Mono value -->
-        <div class="val" id="kv${i}" style="font-size:${valFs}">${valStr}</div>
+        <div class="qds-value" id="kv${i}" style="font-size:${valFs}">${valStr}</div>
         <!-- Inter sub -->
         <div class="sub" style="color:${isPos ? "#16A34A" : "#DC2626"}">${isPos ? aUp : aDn}${k.sub()}</div>
       </div>
@@ -3460,7 +3458,7 @@ function _renderMarketOverviewLoading(){
   const spotlight = document.getElementById('overview-spotlight-grid');
   if(spotlight && !spotlight.innerHTML.trim()){
     spotlight.innerHTML = new Array(5).fill('').map(() => `
-      <div class="overview-spot-card">
+      <div class="qds-overview-spot-card">
         <div style="flex:1;display:flex;flex-direction:column;gap:8px">
           <div class="overview-skeleton" style="height:12px;width:72px"></div>
           <div class="overview-skeleton" style="height:22px;width:108px"></div>
@@ -3608,7 +3606,7 @@ function _renderOverviewSpotlights(){
     const change = live.change ?? (snapshot.price_change_percentage_24h_in_currency ?? snapshot.price_change_percentage_24h ?? 0);
     const tone = _overviewToneColor(change);
     return `
-      <div class="overview-spot-card" onclick="switchAppView('trade');selectMarket('${market.sym}','${market.base}','${market.name.replace(/'/g, "\\'")}')">
+      <div class="qds-overview-spot-card" onclick="switchAppView('trade');selectMarket('${market.sym}','${market.base}','${market.name.replace(/'/g, "\\'")}')">
         <div class="overview-spot-meta">
           <div class="overview-spot-title">${coinIcon(market, 20)}<span>${market.name}</span></div>
           <div class="overview-spot-price">${_overviewFmtPrice(live.price)}</div>
