@@ -2832,7 +2832,7 @@ const KPIS = [
   { title:"Price",      val:()=>{ const d=PRICE<0.00001?10:PRICE<0.0001?8:PRICE<0.01?6:PRICE<1?4:PRICE<1000?2:0; return maskBal('$'+PRICE.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})); }, sub:()=>`${CHG}% chg`, pos:()=>!String(CHG).startsWith('-'),  acc:"#10B981", path:"M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z" },
   { title:"Confidence", val:()=> CONF+"/10",                                                           sub:()=>"Long thesis active",        pos:true,  acc:"#3B82F6", path:"M22 12h-4l-3 9L9 3l-3 9H2" },
   { title:"Volume",     val:()=> Number.isFinite(VOL) && VOL>0 ? VOL.toFixed(0)+" "+currentBase : "— "+currentBase, sub:()=> Number.isFinite(VOL) && Number.isFinite(MA10) && MA10>0 ? `+${Math.round((VOL/MA10-1)*100)}% vs MA` : "Awaiting volume data", pos:true, acc:"#F59E0B", path:"M18 20V10M12 20V4M6 20v-6" },
-  { title:"Range",      val:()=> (Number.isFinite(HIGH) && Number.isFinite(LOW) && HIGH>0 && LOW>0 && HIGH>=LOW) ? maskBal(pFmt(HIGH-LOW)) : "—", sub:()=> (Number.isFinite(HIGH) && Number.isFinite(LOW) && HIGH>0 && LOW>0) ? `${pFmt(LOW)} – ${pFmt(HIGH)}` : "Awaiting 24h range", pos:false, acc:"#8B5CF6", path:"M22 2L11 13M22 2l-5 20-4-9-9-4 20-5z" },
+  { title:"Range",      val:()=> (Number.isFinite(HIGH) && Number.isFinite(LOW) && HIGH>LOW && LOW>0) ? maskBal(pFmt(HIGH-LOW)) : "—", sub:()=> (Number.isFinite(HIGH) && Number.isFinite(LOW) && HIGH>LOW && LOW>0) ? `${pFmt(LOW)} – ${pFmt(HIGH)}` : "Range unavailable", pos:false, acc:"#8B5CF6", path:"M22 2L11 13M22 2l-5 20-4-9-9-4 20-5z" },
 ];
 
 /* ── Price formatter: auto-decimals based on magnitude ── */
@@ -4142,44 +4142,63 @@ window.selectMarket = async function(sym, base, name){
       }
     }
 
-    /* If cache missing, fetch market data as fallback */
+    /* Resolve price + 24h high/low from any available source.
+       Order of preference per field:
+         price   : cached.price → CoinGecko market API → last chart close
+         high/low: cached.high|low → CoinGecko market API → derived from
+                   last ~7 daily chart closes (gives a real range, not a
+                   fabricated zero) → null → triggers "—" in the KPI. */
     let newPrice, newHigh, newLow, newChgPct, newVol;
-    if(cached?.high) {
-      newPrice = cached.price; newHigh = cached.high; newLow = cached.low;
-      newChgPct = cached.chg; newVol = cached.vol;
-    } else {
-      /* Try CoinGecko market API (throttled), with multiple fallback layers */
-      let mktLoaded = false;
+
+    if(Number.isFinite(cached?.price) && cached.price > 0){
+      newPrice  = cached.price;
+      newHigh   = cached.high;
+      newLow    = cached.low;
+      newChgPct = cached.chg;
+      newVol    = cached.vol;
+    }
+
+    /* If price is still missing OR high/low are missing, try the
+       CoinGecko market API (single-coin) — it reliably returns 24h
+       high/low even when /simple/price doesn't. */
+    if(!Number.isFinite(newPrice) || !Number.isFinite(newHigh) || !Number.isFinite(newLow)){
       try {
         const mktData = await _cgFetchThrottled(_cgUrl('market', { ids: cgId }));
         if(Array.isArray(mktData) && mktData[0]) {
           const mkt = mktData[0];
-          newPrice = mkt.current_price; newHigh = mkt.high_24h; newLow = mkt.low_24h;
-          newChgPct = mkt.price_change_percentage_24h; newVol = mkt.total_volume;
+          if(!Number.isFinite(newPrice))  newPrice  = mkt.current_price;
+          if(!Number.isFinite(newHigh))   newHigh   = mkt.high_24h;
+          if(!Number.isFinite(newLow))    newLow    = mkt.low_24h;
+          if(!Number.isFinite(newChgPct)) newChgPct = mkt.price_change_percentage_24h;
+          if(!Number.isFinite(newVol))    newVol    = mkt.total_volume;
           _updatePrice(sym, { price:newPrice, high:newHigh, low:newLow, chg:newChgPct, vol:newVol }, false);
-          mktLoaded = true;
         }
-      } catch(_) { /* will try fallbacks below */ }
-
-      if(!mktLoaded) {
-        /* Fallback 1: derive from chart closes if available */
-        if(closes?.length >= 2) {
-          newPrice = closes[closes.length - 1];
-          newHigh = Math.max(...closes.slice(-24));
-          newLow = Math.min(...closes.slice(-24));
-          newChgPct = ((closes[closes.length-1] / closes[closes.length-2]) - 1) * 100;
-          newVol = 0;
-          console.warn(`[selectMarket] Using chart-derived price for ${base} ($${newPrice.toFixed(2)})`);
-        /* Fallback 2: any cached price at all */
-        } else if(cached?.price) {
-          newPrice = cached.price; newHigh = cached.high || cached.price;
-          newLow = cached.low || cached.price; newChgPct = cached.chg || 0;
-          newVol = cached.vol || 0;
-        } else {
-          throw new Error('No price data available — try again in a moment');
-        }
-      }
+      } catch(_) { /* fall through to chart-derived fallback */ }
     }
+
+    /* Chart fallback: derive any still-missing field from daily closes.
+       For high/low we use the last 7 daily closes — close enough to a
+       short-term range to be informative, much better than fabricating
+       zero. (True 24h high/low requires intraday data we don't have.) */
+    if(closes?.length){
+      const last  = closes[closes.length - 1];
+      const prev  = closes.length >= 2 ? closes[closes.length - 2] : last;
+      const tail  = closes.slice(-7);
+      if(!Number.isFinite(newPrice))  newPrice  = last;
+      if(!Number.isFinite(newHigh))   newHigh   = Math.max(...tail);
+      if(!Number.isFinite(newLow))    newLow    = Math.min(...tail);
+      if(!Number.isFinite(newChgPct)) newChgPct = prev ? ((last / prev) - 1) * 100 : 0;
+      if(!Number.isFinite(newVol))    newVol    = 0;
+    }
+
+    /* Last-resort default: chgPct/vol can be zero, but if we have no
+       price at all the coin is genuinely unsupported (CoinGecko has no
+       record). Throw so the catch block reverts to the previous coin. */
+    if(!Number.isFinite(newPrice) || newPrice <= 0){
+      throw new Error('No price data available — try again in a moment');
+    }
+    if(!Number.isFinite(newChgPct)) newChgPct = 0;
+    if(!Number.isFinite(newVol))    newVol    = 0;
     const newChg = (newChgPct>=0?'+':'')+newChgPct.toFixed(2);
 
     /* Calculate MAs from daily closes (already populated from cache or fetch above) */

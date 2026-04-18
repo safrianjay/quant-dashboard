@@ -64,11 +64,17 @@ function httpsGet(url) {
 function transformCG(data) {
   return COIN_MAP.map(({ cgId, sym }) => {
     const d = data[cgId] || {};
+    /* Don't fabricate high/low from price — that produces a zero range
+       that the dashboard then renders as "$0.00000000". Pass null when
+       CoinGecko doesn't return the field; the client will derive a
+       real range from chart closes (or display "—"). */
+    const hasHigh = d.usd_24h_high != null;
+    const hasLow  = d.usd_24h_low  != null;
     return {
       symbol: sym + 'USDT',
       lastPrice: (d.usd || 0).toString(),
-      highPrice:  (d.usd_24h_high || d.usd || 0).toString(),
-      lowPrice:   (d.usd_24h_low  || d.usd || 0).toString(),
+      highPrice: hasHigh ? d.usd_24h_high.toString() : null,
+      lowPrice:  hasLow  ? d.usd_24h_low.toString()  : null,
       priceChangePercent: (d.usd_24h_change || 0).toFixed(4),
       quoteVolume: (d.usd_24h_vol || 0).toString()
     };
