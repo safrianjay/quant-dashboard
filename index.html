@@ -261,8 +261,12 @@ p,span,div,input,button{
   border-radius:10px;
   pointer-events:none;
 }
+/* Hide both canvas (Chart.js) and div (ECharts) chart roots while the
+   shimmer overlay is up — covers both libs during the migration. */
 .overview-chart-wrap.is-loading > canvas,
-.overview-flow-wrap.is-loading > canvas{visibility:hidden}
+.overview-chart-wrap.is-loading > div,
+.overview-flow-wrap.is-loading > canvas,
+.overview-flow-wrap.is-loading > div{visibility:hidden}
 
 /* ── COIN TLDR ── */
 .coin-tldr-wrap{margin-bottom:14px;animation:fadeUp .5s ease .16s both}
@@ -1008,7 +1012,8 @@ p,span,div,input,button{
           <div class="overview-section-pad" style="padding-top:2px">
             <div id="overview-flow-summary" class="overview-helper" style="margin-bottom:10px"></div>
             <div class="overview-flow-wrap">
-              <canvas id="overview-flow-chart"></canvas>
+              <!-- ECharts target (div, not canvas) — see _renderOverviewCharts -->
+              <div id="overview-flow-chart" style="width:100%;height:100%"></div>
             </div>
           </div>
         </div>
@@ -1466,6 +1471,13 @@ p,span,div,input,button{
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<!-- Apache ECharts — used by the migrated overview charts (theme below
+     gives them dashboard typography + tokens). Loaded alongside Chart.js
+     during the incremental migration; remove the Chart.js tag once the
+     last `new Chart()` is gone. -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script src="/design-system/echarts-theme.js"></script>
+<script>QDSCharts.register();</script>
 <script>
 /* ══ CONSTANTS ══ */
 let PRICE=68957.00, HIGH=69050.00, LOW=68715.00, CHG="+0.51", VOL=523.84, MA10=448.62, CONF=7.2;
@@ -4005,51 +4017,71 @@ function _renderOverviewCharts(){
     });
   }
 
-  const flowCanvas = document.getElementById('overview-flow-chart');
-  if(flowCanvas){
-    if(_overviewFlowChart) _overviewFlowChart.destroy();
-    _overviewFlowChart = new Chart(flowCanvas.getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: metrics.flowItems.map(item => item.label),
-        datasets: [{
-          data: metrics.flowItems.map(item => item.value / 1e9),
-          backgroundColor: metrics.flowItems.map(item => item.value >= 0 ? 'rgba(16,185,129,.8)' : 'rgba(239,68,68,.8)'),
-          borderRadius: 6,
-          maxBarThickness: 34
-        }]
+  /* ── Capital Flow Pulse ── ECharts (migrated from Chart.js).
+     Theming, fonts, axis colors, tooltip card chrome — all flow from
+     the `quantichy` theme registered in design-system/echarts-theme.js;
+     this call site only specifies the data + the bits unique to this
+     chart (per-bar tone, value label format). */
+  const flowEl = document.getElementById('overview-flow-chart');
+  if(flowEl && typeof echarts !== 'undefined'){
+    /* Re-use the same ECharts instance across re-renders (range/mode
+       toggles) so we get a free animated transition; only init the
+       first time the slot is painted. */
+    if(!_overviewFlowChart || _overviewFlowChart.isDisposed()){
+      _overviewFlowChart = echarts.init(flowEl, 'quantichy');
+    }
+
+    const SUCCESS_S = getComputedStyle(document.documentElement).getPropertyValue('--success-strong').trim() || '#16A34A';
+    const DANGER_S  = getComputedStyle(document.documentElement).getPropertyValue('--danger-strong').trim()  || '#DC2626';
+
+    _overviewFlowChart.setOption({
+      grid: { left: 8, right: 12, top: 12, bottom: 4, containLabel: true },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: QDSCharts.tooltipFormatter(params => {
+          const p = params[0]; if(!p) return null;
+          const v = p.value;
+          return {
+            title: p.name,
+            rows: [{
+              label: 'Flow score',
+              value: `${v >= 0 ? '+' : ''}${v.toFixed(2)}B`,
+              color: v >= 0 ? SUCCESS_S : DANGER_S
+            }]
+          };
+        })
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#0F172A',
-            titleColor: '#E2E8F0',
-            bodyColor: '#CBD5E1',
-            padding: 10,
-            callbacks: {
-              label: (ctx) => `Flow score ${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}B`
-            }
+      xAxis: {
+        type: 'category',
+        data: metrics.flowItems.map(item => item.label)
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: { formatter: v => `${Number(v).toFixed(0)}B` }
+      },
+      series: [{
+        type: 'bar',
+        data: metrics.flowItems.map(item => ({
+          value: item.value / 1e9,
+          itemStyle: {
+            color: item.value >= 0 ? SUCCESS_S : DANGER_S,
+            opacity: 0.85
           }
-        },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { color: '#94A3B8', font: { size: 10, family: 'Inter' } }
-          },
-          y: {
-            grid: { color: '#F1F5F9' },
-            ticks: {
-              color: '#94A3B8',
-              font: { size: 10, family: 'Space Mono' },
-              callback: value => `${Number(value).toFixed(0)}B`
-            }
-          }
-        }
-      }
-    });
+        })),
+        barMaxWidth: 34,
+        itemStyle: { borderRadius: [6, 6, 0, 0] }
+      }]
+    }, /* notMerge */ true);
+
+    /* Wire window resize once per instance — ECharts doesn't auto-fit
+       its container the way Chart.js does. The cleanup fn returned by
+       resize() is dropped because the instance lives for the page's
+       lifetime; revisit if we ever start swapping instances per view. */
+    if(!_overviewFlowChart._qdsResizeWired){
+      QDSCharts.resize(_overviewFlowChart);
+      _overviewFlowChart._qdsResizeWired = true;
+    }
   }
 }
 
