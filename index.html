@@ -2857,7 +2857,12 @@ const KPIS = [
      one connected story. */
   { title:"Total P&L",
     val:()=>{ const t = getPositionsTotalPnl(); return t.openCount === 0 ? "$0" : maskBal((t.pnl>=0?"+":"")+t.pnl.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0})); },
-    sub:()=>{ const t = getPositionsTotalPnl(); return t.openCount === 0 ? "No open positions" : `${t.openCount} open · ${t.wins}/${t.openCount} winning`; },
+    sub:()=>{
+      const t = getPositionsTotalPnl();
+      if(t.openCount === 0) return "No open positions";
+      const wr = Math.round(t.wins / t.openCount * 100);
+      return `${wr}% win rate · ${t.openCount} open`;
+    },
     pos:()=> getPositionsTotalPnl().pnl >= 0,
     acc:"#8B5CF6",
     path:"M3 17l6-6 4 4 8-8M21 7v6h-6" },
