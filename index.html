@@ -247,6 +247,22 @@ p,span,div,input,button{
 .overview-dom-bar{height:8px;border-radius:999px;background:#EEF2FF;overflow:hidden;margin-top:8px}
 .overview-mini-line{height:36px;width:100%;display:block;overflow:hidden}
 .overview-skeleton{background:linear-gradient(90deg,var(--neutral-50) 0%,#EEF2F7 50%,var(--neutral-50) 100%);background-size:200% 100%;animation:shimmer 1.8s linear infinite;border-radius:10px}
+/* Chart-wrap shimmer overlay: applied while data is still loading.
+   Removed by _renderOverviewCharts() once Chart.js attaches. The
+   underlying canvas stays in the DOM so we never lose its ID. */
+.overview-chart-wrap.is-loading,
+.overview-flow-wrap.is-loading{position:relative}
+.overview-chart-wrap.is-loading::after,
+.overview-flow-wrap.is-loading::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,var(--neutral-50) 0%,#EEF2F7 50%,var(--neutral-50) 100%);
+  background-size:200% 100%;
+  animation:shimmer 1.8s linear infinite;
+  border-radius:10px;
+  pointer-events:none;
+}
+.overview-chart-wrap.is-loading > canvas,
+.overview-flow-wrap.is-loading > canvas{visibility:hidden}
 
 /* ── COIN TLDR ── */
 .coin-tldr-wrap{margin-bottom:14px;animation:fadeUp .5s ease .16s both}
@@ -3514,18 +3530,115 @@ window.switchAppView = function(view){
   if(_primaryView === 'overview') loadMarketOverview();
 };
 
+/* Skeleton/shimmer state for the entire Market Overview view.
+   Fills every card slot with content-shaped placeholders so the user
+   sees structure (not a blank rectangle) while CoinGecko is fetching.
+   Real-render functions overwrite each slot when data arrives — chart
+   wraps keep their canvas (only the .is-loading overlay is removed). */
 function _renderMarketOverviewLoading(){
+  const skel = (style) => `<div class="overview-skeleton" style="${style}"></div>`;
+
+  /* 1. Top spotlight strip — 5 coin tiles */
   const spotlight = document.getElementById('overview-spotlight-grid');
   if(spotlight && !spotlight.innerHTML.trim()){
     spotlight.innerHTML = new Array(5).fill('').map(() => `
       <div class="qds-overview-spot-card">
         <div style="flex:1;display:flex;flex-direction:column;gap:8px">
-          <div class="overview-skeleton" style="height:12px;width:72px"></div>
-          <div class="overview-skeleton" style="height:22px;width:108px"></div>
-          <div class="overview-skeleton" style="height:12px;width:56px"></div>
+          ${skel('height:12px;width:72px')}
+          ${skel('height:22px;width:108px')}
+          ${skel('height:12px;width:56px')}
         </div>
-        <div class="overview-skeleton" style="width:96px;height:50px"></div>
+        ${skel('width:96px;height:50px')}
       </div>`).join('');
+  }
+
+  /* 2. Fear & Greed gauge */
+  const fgEl = document.getElementById('overview-fear-greed-card');
+  if(fgEl && !fgEl.innerHTML.trim()){
+    fgEl.innerHTML = `
+      <div style="display:flex;justify-content:center;margin:6px auto 14px">
+        <div class="overview-skeleton" style="width:124px;height:124px;border-radius:50%"></div>
+      </div>
+      ${skel('height:11px;width:90%;margin:0 auto 6px')}
+      ${skel('height:11px;width:75%;margin:0 auto')}`;
+  }
+
+  /* 3. Altcoin Season meter */
+  const altEl = document.getElementById('overview-alt-season-card');
+  if(altEl && !altEl.innerHTML.trim()){
+    altEl.innerHTML = `
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${skel('height:28px;width:96px')}
+          ${skel('height:11px;width:64px')}
+        </div>
+        ${skel('height:32px;width:140px')}
+      </div>
+      ${skel('height:8px;width:100%;border-radius:999px')}
+      <div style="display:flex;justify-content:space-between;margin-top:10px">
+        ${skel('height:10px;width:74px')}
+        ${skel('height:10px;width:74px')}
+      </div>`;
+  }
+
+  /* 4. Tracked Market Index card */
+  const trackedEl = document.getElementById('overview-tracked-index-card');
+  if(trackedEl && !trackedEl.innerHTML.trim()){
+    trackedEl.innerHTML = `
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${skel('height:22px;width:110px')}
+          ${skel('height:11px;width:74px')}
+        </div>
+        ${skel('height:10px;width:50px')}
+      </div>
+      ${skel('height:36px;width:100%')}`;
+  }
+
+  /* 5. Market Snapshot stat row + chart wrap */
+  const marketStats = document.getElementById('overview-market-stats');
+  if(marketStats && !marketStats.innerHTML.trim()){
+    marketStats.innerHTML = new Array(4).fill('').map(() => `
+      <div class="overview-stat-block">
+        ${skel('height:10px;width:70px;margin-bottom:4px')}
+        ${skel('height:18px;width:96px')}
+      </div>`).join('');
+  }
+  document.querySelector('.overview-chart-wrap')?.classList.add('is-loading');
+
+  /* 6. Capital Flow Pulse summary line + chart wrap */
+  const flowSummary = document.getElementById('overview-flow-summary');
+  if(flowSummary && !flowSummary.innerHTML.trim()){
+    flowSummary.innerHTML = `${skel('height:11px;width:75%;margin-bottom:6px')}${skel('height:11px;width:55%')}`;
+  }
+  document.querySelector('.overview-flow-wrap')?.classList.add('is-loading');
+
+  /* 7. Market Dominance bars (BTC / ETH / Others) */
+  const dominanceEl = document.getElementById('overview-dominance-card');
+  if(dominanceEl && !dominanceEl.innerHTML.trim()){
+    dominanceEl.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:14px">
+        ${new Array(3).fill('').map(() => `
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              ${skel('height:11px;width:88px')}
+              ${skel('height:14px;width:48px')}
+            </div>
+            ${skel('height:8px;width:100%;border-radius:999px')}
+          </div>`).join('')}
+      </div>`;
+  }
+
+  /* 8. Positioning Pressure */
+  const pressureEl = document.getElementById('overview-pressure-card');
+  if(pressureEl && !pressureEl.innerHTML.trim()){
+    pressureEl.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${skel('height:14px;width:60%')}
+        ${skel('height:11px;width:90%')}
+        ${skel('height:11px;width:70%')}
+        ${skel('height:8px;width:100%;border-radius:999px;margin-top:4px')}
+      </div>`;
   }
 }
 
@@ -3795,6 +3908,10 @@ function _renderOverviewCharts(){
   const aggregate = _buildOverviewAggregate(_marketOverviewRange) || _buildOverviewAggregate('30d');
   const metrics = _buildOverviewMetrics();
   if(!aggregate || !metrics) return;
+
+  /* Drop the shimmer overlay now that we have data to draw. */
+  document.querySelector('.overview-chart-wrap')?.classList.remove('is-loading');
+  document.querySelector('.overview-flow-wrap')?.classList.remove('is-loading');
 
   const marketCanvas = document.getElementById('overview-market-cap-chart');
   if(marketCanvas){
