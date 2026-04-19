@@ -1416,9 +1416,10 @@ p,span,div,input,button{
       <div class="qds-card qds-card--flush" style="animation:fadeUp .5s ease .45s both">
         <div class="qds-card__head">
           <div>
-            <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900)">Macro Risk Calendar</div>
-            <div style="font-size:10px;color:var(--neutral-400);margin-top:2px;font-family:var(--font-body)">Events that override technicals</div>
+            <div class="qds-card__title">Macro Risk Calendar</div>
+            <div class="qds-card__sub" id="macro-sub">Events that override technicals</div>
           </div>
+          <span id="macro-status" class="qds-eyebrow" style="margin:0;display:none;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block"></span><span id="macro-status-text">Live</span></span>
         </div>
         <div id="macro-list"></div>
       </div>
@@ -3065,31 +3066,143 @@ function renderLadder(){
 }
 window.switchSetup = function(i){ activeSetup=i; renderLadder(); };
 
-/* ══ MACRO ══ */
-const MACRO = [
-  { time:"Apr 7 TODAY",  label:"US Trade Balance",  risk:"med",  desc:"Deficit widening = USD headwind" },
-  { time:"Apr 9 18:00",  label:"FOMC Minutes",      risk:"high", desc:"Hawkish tone = BTC headwind" },
-  { time:"Apr 10 12:30", label:"CPI + Core CPI",    risk:"high", desc:"Week's biggest release for rates" },
-  { time:"Apr 11 14:00", label:"Michigan Sentiment", risk:"med",  desc:"Consumer outlook on inflation" },
-  { time:"Apr 15 12:30", label:"Retail Sales",       risk:"med",  desc:"Strong data = risk-on catalyst" },
+/* ══ MACRO RISK CALENDAR ══
+   Live data from /.netlify/functions/macro-calendar (Trading Economics
+   guest endpoint, 1h server cache, 30min localStorage cache). Falls
+   back to a hard-coded list if the proxy 503s — covers offline preview,
+   first deploy without the function ready, and unplanned TE outages. */
+const MACRO_FALLBACK = [
+  { time:"FOMC week",   label:"FOMC Minutes",       risk:"high", desc:"Hawkish tone = BTC headwind" },
+  { time:"Monthly",     label:"CPI + Core CPI",     risk:"high", desc:"Biggest release for rates" },
+  { time:"Monthly",     label:"Non-Farm Payrolls",  risk:"high", desc:"Labor strength shapes Fed path" },
+  { time:"Monthly",     label:"Retail Sales",       risk:"med",  desc:"Strong data = risk-on catalyst" },
+  { time:"Monthly",     label:"Michigan Sentiment", risk:"med",  desc:"Consumer outlook on inflation" },
 ];
-const RS = { high:{bg:"#FEF2F2",col:"#DC2626"}, med:{bg:"#FFF7ED",col:"#EA580C"}, low:{bg:"#F0FDF4",col:"#16A34A"} };
-document.getElementById("macro-list").innerHTML = MACRO.map(m => {
-  const rs = RS[m.risk];
+const MACRO_RS = {
+  high:{ bg:"var(--danger-bg)",  col:"var(--danger-strong)"  },
+  med: { bg:"#FFF7ED",           col:"#EA580C"               },
+  low: { bg:"var(--success-bg)", col:"var(--success-strong)" }
+};
+
+/* Localised risk label so the "Live" badge can stay compact. */
+function _macroRiskLabel(risk){
+  return risk === 'high' ? 'High' : risk === 'med' ? 'Medium' : 'Low';
+}
+
+function _renderMacroRow(m){
+  const rs = MACRO_RS[m.risk] || MACRO_RS.med;
+  const country = m.country
+    ? `<span style="font-size:9px;font-weight:600;color:var(--text-muted);font-family:var(--font-body);text-transform:uppercase;letter-spacing:.05em;margin-right:6px">${m.country.split(' ').map(w=>w[0]).join('').slice(0,3)}</span>`
+    : '';
   return `<div class="row-item">
     <div style="width:36px;height:36px;border-radius:9px;background:${rs.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${rs.col}" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     </div>
     <div style="flex:1;min-width:0">
-      <div style="font-size:12px;font-weight:600;font-family:var(--font-heading);color:#0F172A">${m.label}</div>
-      <div style="font-size:10px;color:#94A3B8;font-family:var(--font-body)">${m.desc}</div>
+      <div style="font-size:12px;font-weight:600;font-family:var(--font-heading);color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${country}${m.label}</div>
+      <div style="font-size:10px;color:var(--text-muted);font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.desc}</div>
     </div>
     <div style="text-align:right;flex-shrink:0">
-      <span style="padding:2px 8px;border-radius:20px;font-size:9px;font-weight:600;background:${rs.bg};color:${rs.col};font-family:var(--font-body)">${m.risk==="high"?"High":m.risk==="med"?"Medium":"Low"}</span>
-      <div style="font-size:9px;color:#94A3B8;font-family:var(--font-mono);margin-top:3px">${m.time}</div>
+      <span style="padding:2px 8px;border-radius:20px;font-size:9px;font-weight:600;background:${rs.bg};color:${rs.col};font-family:var(--font-body)">${_macroRiskLabel(m.risk)}</span>
+      <div style="font-size:9px;color:var(--text-muted);font-family:var(--font-mono);margin-top:3px">${m.time}</div>
     </div>
   </div>`;
-}).join("");
+}
+
+function _renderMacroSkeleton(){
+  const el = document.getElementById('macro-list'); if(!el) return;
+  el.innerHTML = new Array(5).fill('').map(() => `
+    <div class="row-item" style="opacity:.7">
+      <div class="overview-skeleton" style="width:36px;height:36px;border-radius:9px;flex-shrink:0"></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+        <div class="overview-skeleton" style="height:11px;width:70%"></div>
+        <div class="overview-skeleton" style="height:9px;width:50%"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+        <div class="overview-skeleton" style="height:14px;width:48px;border-radius:20px"></div>
+        <div class="overview-skeleton" style="height:9px;width:60px"></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderMacroCalendar(events){
+  const el = document.getElementById('macro-list'); if(!el) return;
+  if(!Array.isArray(events) || !events.length){
+    el.innerHTML = MACRO_FALLBACK.map(_renderMacroRow).join('');
+    return;
+  }
+  el.innerHTML = events.map(_renderMacroRow).join('');
+}
+
+/* Compact "Live · 12m ago" or "Cached · 2h ago" indicator on the card head. */
+function _renderMacroStatus(updatedAt, source){
+  const wrap = document.getElementById('macro-status');
+  const text = document.getElementById('macro-status-text');
+  if(!wrap || !text) return;
+  if(!updatedAt){ wrap.style.display = 'none'; return; }
+  const mins = Math.max(0, Math.round((Date.now() - updatedAt) / 60000));
+  const ago  = mins < 1 ? 'just now' : mins < 60 ? `${mins}m ago` : `${Math.round(mins/60)}h ago`;
+  text.textContent = source === 'static' ? `Static · default events` : `Live · updated ${ago}`;
+  wrap.style.display = 'inline-flex';
+  /* Dot color: green for fresh live, amber for stale, slate for static */
+  const dot = wrap.querySelector('span');
+  if(dot) dot.style.background = source === 'static'
+    ? 'var(--text-muted)'
+    : (mins > 90 ? 'var(--warning)' : 'var(--success)');
+}
+
+let _macroEventsCache = null;       /* in-memory copy of last successful fetch */
+let _macroLoadingPromise = null;    /* dedup concurrent loads */
+
+async function loadMacroCalendar(force=false){
+  /* Hydrate from localStorage on first call so the panel paints fast. */
+  if(!_macroEventsCache && !force){
+    try {
+      const raw = localStorage.getItem('q_macro_calendar_v1');
+      if(raw){
+        const parsed = JSON.parse(raw);
+        if(parsed?.events?.length && (Date.now() - parsed.updatedAt) < 30 * 60 * 1000){
+          _macroEventsCache = parsed;
+          renderMacroCalendar(parsed.events);
+          _renderMacroStatus(parsed.updatedAt, parsed.source);
+        }
+      }
+    } catch(_){}
+  }
+
+  /* Dedup: a second call while the first is in flight just awaits it. */
+  if(_macroLoadingPromise) return _macroLoadingPromise;
+  if(!_macroEventsCache) _renderMacroSkeleton();
+
+  _macroLoadingPromise = (async () => {
+    try {
+      const res = await fetch('/.netlify/functions/macro-calendar');
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+      if(!json?.events?.length) throw new Error('Empty event list');
+      _macroEventsCache = json;
+      try { localStorage.setItem('q_macro_calendar_v1', JSON.stringify(json)); } catch(_){}
+      renderMacroCalendar(json.events);
+      _renderMacroStatus(json.updatedAt, json.source);
+    } catch(err){
+      console.warn('[macro-calendar] live fetch failed:', err.message);
+      /* Fall back to whatever we already showed; if nothing, show static. */
+      if(!_macroEventsCache){
+        renderMacroCalendar(MACRO_FALLBACK);
+        _renderMacroStatus(Date.now(), 'static');
+      }
+    } finally {
+      _macroLoadingPromise = null;
+    }
+  })();
+  return _macroLoadingPromise;
+}
+
+/* Initial render — kick off the live fetch (skeleton paints first). */
+loadMacroCalendar();
+
+/* Refresh every 30 minutes so a long-lived tab keeps the events fresh. */
+setInterval(() => loadMacroCalendar(true), 30 * 60 * 1000);
 
 /* ══ SESSION LOG ══ */
 let LOG = [
