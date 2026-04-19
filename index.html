@@ -60,6 +60,10 @@
 @keyframes uptickGlow {from{background:rgba(16,185,129,.15)}to{background:transparent}}
 @keyframes downtickGlow {from{background:rgba(239,68,68,.15)}to{background:transparent}}
 @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+/* Background-position variant: animates a wide gradient *across* an element
+   without translating the element itself. Used by inline skeleton blocks
+   (.overview-skeleton) and full-card loading wraps (.qds-skel-wrap). */
+@keyframes shimmerBg { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 .uptick { animation: uptickGlow .8s ease-out forwards; }
 .downtick { animation: downtickGlow .8s ease-out forwards; }
@@ -246,7 +250,7 @@ p,span,div,input,button{
 .overview-dom-value{font-size:16px;font-weight:700;color:var(--neutral-900);font-family:var(--font-mono);letter-spacing:-.02em}
 .overview-dom-bar{height:8px;border-radius:999px;background:#EEF2FF;overflow:hidden;margin-top:8px}
 .overview-mini-line{height:36px;width:100%;display:block;overflow:hidden}
-.overview-skeleton{background:linear-gradient(90deg,var(--neutral-50) 0%,#EEF2F7 50%,var(--neutral-50) 100%);background-size:200% 100%;animation:shimmer 1.8s linear infinite;border-radius:10px}
+.overview-skeleton{background:linear-gradient(90deg,var(--neutral-50) 0%,#EEF2F7 50%,var(--neutral-50) 100%);background-size:200% 100%;animation:shimmerBg 1.8s linear infinite;border-radius:10px}
 /* Chart-wrap shimmer overlay: applied while data is still loading.
    Removed by _renderOverviewCharts() once Chart.js attaches. The
    underlying canvas stays in the DOM so we never lose its ID. */
@@ -257,7 +261,7 @@ p,span,div,input,button{
   content:'';position:absolute;inset:0;
   background:linear-gradient(90deg,var(--neutral-50) 0%,#EEF2F7 50%,var(--neutral-50) 100%);
   background-size:200% 100%;
-  animation:shimmer 1.8s linear infinite;
+  animation:shimmerBg 1.8s linear infinite;
   border-radius:10px;
   pointer-events:none;
 }
@@ -267,6 +271,21 @@ p,span,div,input,button{
 .overview-chart-wrap.is-loading > div,
 .overview-flow-wrap.is-loading > canvas,
 .overview-flow-wrap.is-loading > div{visibility:hidden}
+
+/* Generic loading wrap for Live Trade widgets (KPIs, conf chart, levels,
+   positions, MA stack). Hides children behind a shimmer overlay while
+   the first market-data fetch is in flight, then is removed by JS. */
+.qds-skel-wrap{position:relative;overflow:hidden;border-radius:inherit;min-height:48px}
+.qds-skel-wrap > *{visibility:hidden !important}
+.qds-skel-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,var(--neutral-50) 0%,#EEF2F7 50%,var(--neutral-50) 100%);
+  background-size:200% 100%;
+  animation:shimmerBg 1.8s linear infinite;
+  border-radius:inherit;
+  pointer-events:none;
+  z-index:2;
+}
 
 /* ── COIN TLDR ── */
 .coin-tldr-wrap{margin-bottom:14px;animation:fadeUp .5s ease .16s both}
@@ -1377,7 +1396,7 @@ p,span,div,input,button{
           </div>
           <div class="periods"><button class="period active">Full</button><button class="period">Recent</button></div>
         </div>
-        <div style="padding:0 14px 8px"><canvas id="confChart" height="195"></canvas></div>
+        <div style="padding:0 14px 8px"><div id="conf-chart-wrap" style="position:relative;height:195px"><canvas id="confChart" height="195"></canvas></div></div>
         <div style="display:flex;justify-content:center;gap:16px;padding:0 14px 14px">
           <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--neutral-500);font-family:var(--font-body)"><span style="width:8px;height:8px;border-radius:2px;background:var(--success);display:inline-block"></span>Long</span>
           <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--neutral-500);font-family:var(--font-body)"><span style="width:8px;height:8px;border-radius:2px;background:var(--danger);display:inline-block"></span>Short</span>
@@ -1488,6 +1507,7 @@ let _primaryView = 'overview';
 let _marketOverviewLoading = false;
 let _marketOverviewSnapshot = [];
 let _marketOverviewUpdatedAt = 0;
+let _overviewSkeletonPainted = false;   /* session-scoped — paint skel exactly once on first call */
 let _marketOverviewRange = '30d';
 let _marketOverviewMode = 'overview';
 let _marketOverviewSeries = {};
@@ -3142,7 +3162,7 @@ function _renderMacroStatus(updatedAt, source){
   if(!updatedAt){ wrap.style.display = 'none'; return; }
   const mins = Math.max(0, Math.round((Date.now() - updatedAt) / 60000));
   const ago  = mins < 1 ? 'just now' : mins < 60 ? `${mins}m ago` : `${Math.round(mins/60)}h ago`;
-  text.textContent = source === 'static' ? `Static · default events` : `Live · updated ${ago}`;
+  text.textContent = source === 'static' ? `Live feed unavailable · showing recurring events` : `Live · updated ${ago}`;
   wrap.style.display = 'inline-flex';
   /* Dot color: green for fresh live, amber for stale, slate for static */
   const dot = wrap.querySelector('span');
@@ -3646,6 +3666,43 @@ function _showPrimaryView(){
   _cdSym = null;
   _setActiveNav(_primaryView);
   _updateTopbarForPrimaryView();
+}
+
+/* ── Live Trade loading state ──
+   The Live Trade view renders synchronously at boot with placeholder
+   values from KPIS / TF_DATA — that flash of "fake data" before real
+   prices arrive looks broken, especially on the demo dashboard where
+   the user hasn't seen the page before. This helper drapes a shimmer
+   wrap over the key surfaces (KPIs, conf chart, levels, positions, MA
+   stack, top-7 strip) until the first market-data fetch lands.
+
+   Targets are addressed by selector so a missing node (e.g. positions
+   card hidden by paywall) is silently skipped. */
+const _LIVE_TRADE_SKEL_TARGETS = [
+  '#kpi-grid',
+  '#conf-chart-wrap',
+  '#levels-list',
+  '#pos-list',
+  '#coin-strip',
+  '#ma-stack',
+  '#quick-stats'
+];
+let _liveTradeFirstLoadDone = false;
+
+function _setLiveTradeLoading(on){
+  _LIVE_TRADE_SKEL_TARGETS.forEach(sel => {
+    const el = document.querySelector(sel);
+    if(!el) return;
+    el.classList.toggle('qds-skel-wrap', !!on);
+  });
+}
+
+/* Called once after the first successful refreshAllCoins() so the
+   skeleton lifts and real data takes over. Idempotent. */
+function _markLiveTradeLoaded(){
+  if(_liveTradeFirstLoadDone) return;
+  _liveTradeFirstLoadDone = true;
+  _setLiveTradeLoading(false);
 }
 
 window.switchAppView = function(view){
@@ -4208,6 +4265,18 @@ function renderMarketOverview(){
 
 async function loadMarketOverview(force=false){
   const cached = _readClientCache('q_market_overview_snapshot', 15 * 60 * 1000);
+
+  /* On the first call of a session (no in-memory snapshot yet), always
+     paint the skeleton *before* cache hydration — a warm localStorage
+     cache would otherwise snap the page in with no visible loading
+     affordance. Yielding two animation frames guarantees the browser
+     commits at least one skeleton paint before real data overwrites it. */
+  if(!_marketOverviewSnapshot.length && !_overviewSkeletonPainted){
+    _overviewSkeletonPainted = true;
+    _renderMarketOverviewLoading();
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  }
+
   if(!_marketOverviewSnapshot.length && cached?.data?.length){
     _marketOverviewSnapshot = cached.data;
     _marketOverviewUpdatedAt = cached.ts;
@@ -5154,6 +5223,15 @@ renderPositions();
 renderPerfChart();
 _showPrimaryView();
 loadMarketOverview();
+/* Drape shimmer over Live Trade widgets until the first market-data
+   fetch lands (lifted by _applyMarketCache the first time real prices
+   arrive). Without this, KPIs/levels/positions briefly show stale
+   placeholder values from KPIS / TF_DATA. */
+_setLiveTradeLoading(true);
+/* Safety net: if every upstream price source fails (CoinGecko + Kraken
+   + cache), don't shimmer forever — lift after 8s and show whatever
+   placeholder data we have. */
+setTimeout(_markLiveTradeLoaded, 8000);
 
 if(DEMO_MODE){
   initDemoMode();
@@ -5205,6 +5283,8 @@ function _applyMarketCache(){
   TF_DATA[activeTF].subtitle = `${src} · ${activeTF} · ${utcTs}`;
   positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=PRICE; });
   renderKPIs(); renderLevelsSB(); renderPositions(); renderPerfChart();
+  /* First real price arrived — lift the boot-time skeleton overlay. */
+  _markLiveTradeLoaded();
 }
 
 async function refreshAllCoins(){
