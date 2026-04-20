@@ -354,6 +354,39 @@ p,span,div,input,button{
 .mob-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:59;display:none;backdrop-filter:blur(2px)}
 .mob-overlay.show{display:block}
 
+/* ── MOBILE BOTTOM NAVBAR ──
+   Replaces the slide-in sidebar drawer on small viewports with a fixed
+   bottom bar (Market Overview / Live Trade / Session / Others / Account).
+   Hidden on desktop; the .qds-bottom-nav itself is display:none until
+   the mobile media query overrides it. */
+.qds-bottom-nav{
+  /* z-index 55 sits *below* the slide-in sidebar drawer (60) and its
+     backdrop (59), so the drawer cleanly covers it when open. */
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:55;
+  background:var(--surface-card);
+  border-top:1px solid var(--border-subtle);
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -4px 18px rgba(15,23,42,.06);
+  font-family:var(--font-body);
+}
+.qds-bottom-nav-inner{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:2px;
+  max-width:560px;margin:0 auto;
+}
+.qds-bottom-nav-item{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;padding:7px 2px;border:none;background:none;cursor:pointer;
+  color:var(--text-muted);transition:color .15s,background .15s;
+  font-size:10px;font-weight:600;font-family:var(--font-body);
+  border-radius:10px;line-height:1.1;letter-spacing:.01em;
+  -webkit-tap-highlight-color:transparent;
+}
+.qds-bottom-nav-item.active{color:var(--text-primary)}
+.qds-bottom-nav-item:active{background:var(--neutral-50)}
+.qds-bottom-nav-item svg{flex-shrink:0;color:currentColor;transition:transform .15s}
+.qds-bottom-nav-item.active svg{transform:scale(1.08)}
+.qds-bottom-nav-item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
 /* ── RESPONSIVE ── */
 @media(max-width:1100px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
@@ -372,6 +405,13 @@ p,span,div,input,button{
   .sidebar.collapsed{width:224px!important}
   /* On mobile the toggle is inside the sidebar; expand tab handles opening */
   .sidebar-toggle-btn{display:flex!important}
+  /* Show bottom navbar; hide the desktop expand-tab (replaced by it) */
+  .qds-bottom-nav{display:block}
+  .sidebar-expand-tab{display:none!important}
+  /* Reserve space at the bottom of every scroll container so the
+     navbar doesn't overlap content. 76px ≈ icon + label + safe area. */
+  .content{padding-bottom:96px!important}
+  #coin-detail-view{padding-bottom:96px!important}
   /* Layout */
   .kpi-grid{grid-template-columns:1fr 1fr}
   .content{padding:12px 12px 24px}
@@ -1484,6 +1524,36 @@ p,span,div,input,button{
 
 </div><!-- /content -->
 </div><!-- /main -->
+
+<!-- ═══ MOBILE BOTTOM NAVBAR ═══
+     Visible at ≤768px only (display rule lives in the .qds-bottom-nav
+     CSS + the @media(max-width:768px) override). Icons are reused
+     verbatim from the desktop sidebar so the visual language matches. -->
+<nav class="qds-bottom-nav" id="qds-bottom-nav" aria-label="Primary">
+  <div class="qds-bottom-nav-inner">
+    <button class="qds-bottom-nav-item active" id="bn-overview" onclick="_bottomNav('overview')" aria-label="Market Overview">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 4-6"/></svg>
+      <span data-i18n="nav_market_overview">Overview</span>
+    </button>
+    <button class="qds-bottom-nav-item" id="bn-trade" onclick="_bottomNav('trade')" aria-label="Live Trade">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span data-i18n="nav_live_trade">Live Trade</span>
+    </button>
+    <button class="qds-bottom-nav-item" id="bn-session" onclick="_bottomNav('session')" aria-label="Session">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Session</span>
+    </button>
+    <button class="qds-bottom-nav-item" id="bn-others" onclick="_bottomNav('others')" aria-label="Others">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>
+      <span>Others</span>
+    </button>
+    <button class="qds-bottom-nav-item" id="bn-account" onclick="_bottomNav('account')" aria-label="Account">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Account</span>
+    </button>
+  </div>
+</nav>
+
 </div><!-- /root -->
 
 <!-- Firebase (loaded here so it doesn't block initial HTML render) -->
@@ -3627,7 +3697,57 @@ function _setActiveNav(view){
   const trade = document.getElementById('nav-live-trade');
   if(overview) overview.classList.toggle('active', view === 'overview');
   if(trade) trade.classList.toggle('active', view === 'trade');
+  /* Keep mobile bottom nav in sync — Overview/Trade are the only two
+     tabs that map to a primary view; Session/Others/Account stay
+     inactive until the user explicitly taps them. */
+  const bnOver = document.getElementById('bn-overview');
+  const bnTrade = document.getElementById('bn-trade');
+  if(bnOver)  bnOver.classList.toggle('active',  view === 'overview');
+  if(bnTrade) bnTrade.classList.toggle('active', view === 'trade');
 }
+
+/* Bottom-nav router. Overview/Trade switch primary view in place;
+   Session jumps to the Live Trade timeline; Others/Account open the
+   existing slide-in sidebar drawer (which holds Macro Events, Trade
+   Setups, the language switcher, and the user/sign-out block — none
+   of which have their own top-level view yet). */
+window._bottomNav = function(action){
+  if(action === 'overview' || action === 'trade'){
+    if(typeof switchAppView === 'function') switchAppView(action);
+    return;
+  }
+  if(action === 'session'){
+    /* Jump to the Live Trade view and scroll the Session Timeline
+       card into view. In demo mode the timeline is paywalled, so the
+       scroll just lands on the upgrade overlay — still a sensible
+       destination for the "Session" tap. */
+    if(typeof switchAppView === 'function') switchAppView('trade');
+    setTimeout(() => {
+      const target = document.getElementById('session-log') || document.getElementById('demo-paywall-wrapper');
+      target?.scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 80);
+    return;
+  }
+  /* Others / Account: briefly highlight the tapped tab so the gesture
+     feels confirmed, then open the drawer that holds the rest of the
+     menu. The active state reverts on the next view switch. */
+  const map = { others:'bn-others', account:'bn-account' };
+  const btn = document.getElementById(map[action]);
+  if(btn){
+    btn.classList.add('active');
+    setTimeout(() => btn.classList.remove('active'), 350);
+  }
+  if(typeof openSidebar === 'function') openSidebar();
+  else if(typeof toggleSidebar === 'function') toggleSidebar();
+  /* When the user taps Account, scroll the drawer to the user footer
+     so the avatar/name/sign-out are visible without scrolling. */
+  if(action === 'account'){
+    setTimeout(() => {
+      const footer = document.querySelector('.sidebar .user-footer-row');
+      footer?.scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 200);
+  }
+};
 
 function _updateTopbarForPrimaryView(){
   const isOverview = _primaryView === 'overview';
@@ -5916,6 +6036,19 @@ window.closeSidebar = function(){
   sb.classList.remove('open');
   document.getElementById('mob-overlay').classList.remove('show');
   document.body.style.overflow = '';
+  updateSidebarUI();
+};
+/* Idempotent open — safe to call from the bottom nav even if the
+   drawer is already showing. Mobile-only; on desktop the sidebar is
+   always visible so this is a no-op. */
+window.openSidebar = function(){
+  if(window.innerWidth > 768) return;
+  const sb = document.querySelector('.sidebar');
+  const ov = document.getElementById('mob-overlay');
+  if(!sb) return;
+  sb.classList.add('open');
+  if(ov) ov.classList.add('show');
+  document.body.style.overflow = 'hidden';
   updateSidebarUI();
 };
 /* Auto-collapse sidebar based on viewport width */
