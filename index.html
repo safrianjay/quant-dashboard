@@ -755,56 +755,7 @@ p,span,div,input,button{
 .user-email{font-size:10px;font-weight:600;color:var(--neutral-700);font-family:var(--font-body);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:480px){.user-email{display:none}}
 
-/* ── MOBILE QUICK TRADE BAR ── */
-.qds-mobile-trade-bar {
-  display: none;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-  z-index: 999;
-  padding: 16px;
-  background: linear-gradient(to top, #fff 60%, rgba(255,255,255,0));
-  pointer-events: none;
-}
-.qds-mtb-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  max-width: 520px;
-  margin: 0 auto;
-  pointer-events: auto;
-}
-.qds-mtb-btn {
-  height: 50px;
-  border-radius: 14px;
-  border: none;
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: white !important;
-  box-shadow: 0 8px 20px rgba(15,23,42,0.15);
-  transition: all 0.2s cubic-bezier(.22,1,.36,1);
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.qds-mtb-btn:active { transform: scale(0.95); }
-.qds-mtb-btn.long {
-  background: var(--success) !important;
-  border: 1px solid rgba(255,255,255,0.2);
-}
-.qds-mtb-btn.short {
-  background: var(--danger) !important;
-  border: 1px solid rgba(255,255,255,0.2);
-}
-@media(max-width: 768px) {
-  .qds-mobile-trade-bar { display: block; }
-}
+
 </style>
 </head>
 <body style="background:var(--neutral-900)">
@@ -1671,19 +1622,7 @@ p,span,div,input,button{
   </div>
 </nav>
 
-<!-- Mobile Quick Trade Bar -->
-<div class="qds-mobile-trade-bar">
-  <div class="qds-mtb-inner">
-    <button onclick="openPanel('long')" class="qds-mtb-btn long">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-      <span>Long</span>
-    </button>
-    <button onclick="openPanel('short')" class="qds-mtb-btn short">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
-      <span>Short</span>
-    </button>
-  </div>
-</div>
+
 
 </div><!-- /root -->
 

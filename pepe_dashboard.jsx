@@ -522,17 +522,6 @@ export default function PepeDashboard() {
       {/* ── FOOTER ── */}
       </div>
 
-      {/* ── STICKY MOBILE TRADE BAR ── */}
-      <div className="fixed left-0 right-0 bottom-[72px] z-[2000] px-4 py-4 bg-gradient-to-t from-[#06060f] via-[#06060f] to-transparent pointer-events-none md:hidden">
-        <div className="grid grid-cols-2 gap-4 max-w-[520px] mx-auto pointer-events-auto">
-          <button className="h-[54px] rounded-2xl bg-emerald-500 text-white font-black uppercase text-sm flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/30 active:scale-95 transition-all border border-white/10">
-            <TrendingUp size={18} /> Long
-          </button>
-          <button className="h-[54px] rounded-2xl bg-red-500 text-white font-black uppercase text-sm flex items-center justify-center gap-2 shadow-xl shadow-red-500/30 active:scale-95 transition-all border border-white/10">
-            <TrendingDown size={18} /> Short
-          </button>
-        </div>
-      </div>
 
       {/* ── STICKY BOTTOM NAV ── */}
       <nav className="fixed left-0 right-0 bottom-0 h-[72px] bg-[#0c0c14] border-t border-white/10 z-[1000] md:hidden px-2">
