@@ -236,9 +236,18 @@ export default function PepeDashboard() {
 
   return (
     <div
-      style={{ fontFamily: "'Inter', 'SF Pro Display', sans-serif", background: "#06060f", minHeight: "100vh", color: "#e2e8f0" }}
-      className="p-4"
+      style={{
+        fontFamily: "'Inter', 'SF Pro Display', sans-serif",
+        background: "#06060f",
+        height: "100vh",
+        color: "#e2e8f0",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column"
+      }}
     >
+      {/* Scrollable Content Wrapper */}
+      <div className="flex-1 overflow-y-auto pb-32">
       {/* ── HEADER ── */}
       <div className="flex flex-col gap-1 mb-6">
         <div className="flex items-center justify-between flex-wrap gap-2">
@@ -511,12 +520,41 @@ export default function PepeDashboard() {
       </div>
 
       {/* ── FOOTER ── */}
-      <div className="flex items-center justify-between text-xs text-slate-600 mt-2 flex-wrap gap-2">
-        <span className="flex items-center gap-1">
-          <Info size={11} /> Quant-Claude · Data-driven technical hypothesis — not financial advice
-        </span>
-        <span>PEPE/USDT · OKX Perp · 4H Analysis · Auto-refresh: 1h</span>
       </div>
+
+      {/* ── STICKY MOBILE TRADE BAR ── */}
+      <div className="fixed left-0 right-0 bottom-[72px] z-[2000] px-4 py-4 bg-gradient-to-t from-[#06060f] via-[#06060f] to-transparent pointer-events-none md:hidden">
+        <div className="grid grid-cols-2 gap-4 max-w-[520px] mx-auto pointer-events-auto">
+          <button className="h-[54px] rounded-2xl bg-emerald-500 text-white font-black uppercase text-sm flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/30 active:scale-95 transition-all border border-white/10">
+            <TrendingUp size={18} /> Long
+          </button>
+          <button className="h-[54px] rounded-2xl bg-red-500 text-white font-black uppercase text-sm flex items-center justify-center gap-2 shadow-xl shadow-red-500/30 active:scale-95 transition-all border border-white/10">
+            <TrendingDown size={18} /> Short
+          </button>
+        </div>
+      </div>
+
+      {/* ── STICKY BOTTOM NAV ── */}
+      <nav className="fixed left-0 right-0 bottom-0 h-[72px] bg-[#0c0c14] border-t border-white/10 z-[1000] md:hidden px-2">
+        <div className="flex items-center justify-around h-full max-w-[520px] mx-auto">
+          <button className="flex flex-col items-center gap-1 text-indigo-400">
+            <Activity size={20} />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Overview</span>
+          </button>
+          <button className="flex flex-col items-center gap-1 text-slate-500">
+            <Zap size={20} />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Live Trade</span>
+          </button>
+          <button className="flex flex-col items-center gap-1 text-slate-500">
+            <Clock size={20} />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Session</span>
+          </button>
+          <button className="flex flex-col items-center gap-1 text-slate-500">
+            <BarChart2 size={20} />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Others</span>
+          </button>
+        </div>
+      </nav>
 
       <style>{`
         @keyframes priceFlash {
