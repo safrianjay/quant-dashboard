@@ -816,8 +816,8 @@ p,span,div,input,button{
       <div class="card" style="animation:fadeUp .5s ease .45s both">
         <div class="card-head">
           <div>
-            <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Macro Risk Calendar</div>
-            <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Events that override technicals</div>
+            <div class="card-title" style="font-size:14px;font-weight:700;color:#0F172A">Live News Feed</div>
+            <div style="font-size:10px;color:#94A3B8;margin-top:2px;font-family:var(--font-body)">Real-time market catalysts and updates</div>
           </div>
         </div>
         <div id="macro-list"></div>
@@ -1458,18 +1458,18 @@ window.switchSetup = function(i){ activeSetup=i; renderLadder(); };
 
 /* ══ MACRO ══ */
 const MACRO = [
-  { time:"Apr 7 TODAY",  label:"US Trade Balance",  risk:"med",  desc:"Deficit widening = USD headwind" },
-  { time:"Apr 9 18:00",  label:"FOMC Minutes",      risk:"high", desc:"Hawkish tone = BTC headwind" },
-  { time:"Apr 10 12:30", label:"CPI + Core CPI",    risk:"high", desc:"Week's biggest release for rates" },
-  { time:"Apr 11 14:00", label:"Michigan Sentiment", risk:"med",  desc:"Consumer outlook on inflation" },
-  { time:"Apr 15 12:30", label:"Retail Sales",       risk:"med",  desc:"Strong data = risk-on catalyst" },
+  { time:"Just now", label:"Bitcoin Breaks Local Resistance", risk:"high", desc:"Strong volume pushing through key levels" },
+  { time:"10m ago",  label:"Ethereum ETF Inflows Surge",      risk:"high", desc:"Institutional buying accelerates this week" },
+  { time:"1h ago",   label:"SEC Signals Regulatory Shift",    risk:"med",  desc:"Potential easing of crypto constraints" },
+  { time:"2h ago",   label:"Market Sentiment Reaches Greed",  risk:"med",  desc:"Fear & Greed Index points to accumulation" },
+  { time:"4h ago",   label:"Major Network Upgrade Complete",  risk:"low",  desc:"No downtime reported during protocol update" },
 ];
 const RS = { high:{bg:"#FEF2F2",col:"#DC2626"}, med:{bg:"#FFF7ED",col:"#EA580C"}, low:{bg:"#F0FDF4",col:"#16A34A"} };
 document.getElementById("macro-list").innerHTML = MACRO.map(m => {
   const rs = RS[m.risk];
   return `<div class="row-item">
     <div style="width:36px;height:36px;border-radius:9px;background:${rs.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${rs.col}" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${rs.col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
     </div>
     <div style="flex:1;min-width:0">
       <div style="font-size:12px;font-weight:600;font-family:var(--font-heading);color:#0F172A">${m.label}</div>

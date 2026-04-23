@@ -1547,8 +1547,8 @@ p,span,div,input,button{
       <div class="qds-card qds-card--flush" style="animation:fadeUp .5s ease .45s both">
         <div class="qds-card__head">
           <div>
-            <div class="qds-card__title">Macro Risk Calendar</div>
-            <div class="qds-card__sub" id="macro-sub">Events that override technicals</div>
+            <div class="qds-card__title">Live News Feed</div>
+            <div class="qds-card__sub" id="macro-sub">Real-time market catalysts and updates</div>
           </div>
           <span id="macro-status" class="qds-eyebrow" style="margin:0;display:none;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block"></span><span id="macro-status-text">Live</span></span>
         </div>
@@ -3236,11 +3236,11 @@ window.switchSetup = function(i){ activeSetup=i; renderLadder(); };
    back to a hard-coded list if the proxy 503s — covers offline preview,
    first deploy without the function ready, and unplanned TE outages. */
 const MACRO_FALLBACK = [
-  { time:"FOMC week",   label:"FOMC Minutes",       risk:"high", desc:"Hawkish tone = BTC headwind" },
-  { time:"Monthly",     label:"CPI + Core CPI",     risk:"high", desc:"Biggest release for rates" },
-  { time:"Monthly",     label:"Non-Farm Payrolls",  risk:"high", desc:"Labor strength shapes Fed path" },
-  { time:"Monthly",     label:"Retail Sales",       risk:"med",  desc:"Strong data = risk-on catalyst" },
-  { time:"Monthly",     label:"Michigan Sentiment", risk:"med",  desc:"Consumer outlook on inflation" },
+  { time:"Just now", label:"Bitcoin Breaks Local Resistance", risk:"high", desc:"Strong volume pushing through key levels" },
+  { time:"10m ago",  label:"Ethereum ETF Inflows Surge",      risk:"high", desc:"Institutional buying accelerates this week" },
+  { time:"1h ago",   label:"SEC Signals Regulatory Shift",    risk:"med",  desc:"Potential easing of crypto constraints" },
+  { time:"2h ago",   label:"Market Sentiment Reaches Greed",  risk:"med",  desc:"Fear & Greed Index points to accumulation" },
+  { time:"4h ago",   label:"Major Network Upgrade Complete",  risk:"low",  desc:"No downtime reported during protocol update" },
 ];
 const MACRO_RS = {
   high:{ bg:"var(--danger-bg)",  col:"var(--danger-strong)"  },
@@ -3260,7 +3260,7 @@ function _renderMacroRow(m){
     : '';
   return `<div class="row-item">
     <div style="width:36px;height:36px;border-radius:9px;background:${rs.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${rs.col}" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${rs.col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
     </div>
     <div style="flex:1;min-width:0">
       <div style="font-size:12px;font-weight:600;font-family:var(--font-heading);color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${country}${m.label}</div>
