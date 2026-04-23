@@ -225,12 +225,13 @@ p,span,div,input,button{
 @media(max-width:768px){
   .entry-panel{
     width:100%;
-    bottom:calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom:0 !important;
     top:0 !important;
-    height: auto !important;
-    max-height:calc(100dvh - 72px - env(safe-area-inset-bottom, 0px)) !important;
-    border-radius:20px 20px 0 0;
-    z-index: 2000 !important;
+    height: 100dvh !important;
+    max-height:none !important;
+    border-radius:0 !important;
+    z-index: 9999 !important;
+    position: fixed !important;
   }
   .panel-overlay{
     bottom:calc(72px + env(safe-area-inset-bottom, 0px));
@@ -241,6 +242,20 @@ p,span,div,input,button{
 .panel-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid #F1F5F9}
 .panel-body{flex:1;overflow-y:auto;padding:24px}
 .panel-footer{padding:16px 24px;border-top:1px solid #F1F5F9}
+@media(max-width:768px){
+  .panel-footer {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: white !important;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 16px)) !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05) !important;
+  }
+  .panel-body {
+    padding-bottom: 120px !important;
+  }
+}
 
 /* Direction buttons — always distinctly colored */
 .dir-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
@@ -2433,7 +2448,7 @@ function buildPanelHTML(){
     </div>
   </div>
 
-  <div class="panel-footer">
+  <div class="panel-footer" style="background:white;z-index:10;width:100%">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <button class="submit-btn" id="btn-submit-long" style="background:#10B981;color:white;border-radius:11px;padding:14px;border:none;cursor:pointer;font-size:14px;font-weight:700;font-family:var(--font-heading);display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s" onclick="submitEntry('long')" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
