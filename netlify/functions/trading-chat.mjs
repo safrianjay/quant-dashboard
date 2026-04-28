@@ -223,6 +223,39 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
   };
 }
 
+export function buildFallbackTradingResponse({ prompt, snapshot }) {
+  const price = Number(snapshot.price);
+  const change = Number(snapshot.change24hPct || 0);
+  const direction = change > 0.25 ? "bullish" : change < -0.25 ? "bearish" : "neutral";
+  const formattedPrice = price.toLocaleString("en-US", {
+    minimumFractionDigits: price >= 1 ? 2 : 8,
+    maximumFractionDigits: price >= 1 ? 2 : 8
+  });
+  const lowerPrompt = String(prompt || "").toLowerCase();
+  const invalidationPct = Math.max(0.4, Math.min(2.5, Math.abs(change || 0.8)));
+  const longInvalidation = price * (1 - invalidationPct / 100);
+  const shortInvalidation = price * (1 + invalidationPct / 100);
+
+  if (lowerPrompt.includes("invalidat")) {
+    return [
+      `At the captured ${snapshot.symbol} price of $${formattedPrice}, a long idea weakens if price loses roughly $${longInvalidation.toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} without reclaiming quickly. A short idea weakens if price accepts above roughly $${shortInvalidation.toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}.`,
+      `Treat those as planning bands, not hard signals. Wait for candle close, volume confirmation, and define position size before entering.`
+    ].join("\n\n");
+  }
+
+  if (lowerPrompt.includes("risk")) {
+    return [
+      `At $${formattedPrice}, keep risk fixed before choosing direction: define invalidation first, size the trade so a stop costs only a small preset account percentage, and avoid adding if price moves against the plan.`,
+      `Because the current 24h change reads ${Number.isFinite(change) ? change.toFixed(2) : "0.00"}%, use smaller size if spreads or volatility expand. You are responsible for the final trading decision.`
+    ].join("\n\n");
+  }
+
+  return [
+    `At the captured ${snapshot.symbol} price of $${formattedPrice}, the short-term tape is ${direction}${Number.isFinite(change) ? ` with a 24h move of ${change.toFixed(2)}%` : ""}. For an entry, avoid chasing the middle of the move; prefer either a pullback that holds support for a long or a failed reclaim/rejection for a short.`,
+    `A practical plan is to mark the nearest invalidation before entry, then only take the trade if reward is meaningfully larger than risk. This fallback analysis uses the live snapshot but is not financial advice.`
+  ].join("\n\n");
+}
+
 function isTransientStatus(status) {
   return status === 408 || status === 409 || status === 425 || status === 429 || status >= 500;
 }
@@ -331,21 +364,49 @@ async function handlePost(req, context) {
   }
 
   const apiKey = getProviderApiKey();
+  const conversationId = body.conversationId || `conv_${crypto.randomUUID()}`;
+  const model = getEnv("GEMINI_MODEL") || FALLBACK_MODEL;
+  const startedAt = Date.now();
+
   if (!apiKey) {
-    return json(503, {
-      error:
-        "AI Entry Point is not configured yet. Add GEMINI_API_KEY in Netlify environment variables, then redeploy."
+    const assistantMessage = {
+      id: `msg_${crypto.randomUUID()}`,
+      role: "assistant",
+      content: buildFallbackTradingResponse({
+        prompt: body.prompt.trim(),
+        snapshot: body.snapshot
+      }),
+      createdAt: new Date().toISOString()
+    };
+    const userMessage = {
+      id: body.clientMessageId,
+      role: "user",
+      content: body.prompt.trim(),
+      createdAt: new Date().toISOString(),
+      snapshot: body.snapshot
+    };
+
+    upsertConversation(conversationId, userMessage, assistantMessage);
+
+    console.log("[trading-chat] fallback", {
+      requestId: context.requestId,
+      conversationId,
+      latencyMs: Date.now() - startedAt
+    });
+
+    return json(200, {
+      conversationId,
+      message: assistantMessage,
+      usage: { inputTokens: null, outputTokens: null },
+      provider: "fallback"
     });
   }
 
-  const conversationId = body.conversationId || `conv_${crypto.randomUUID()}`;
-  const model = getEnv("GEMINI_MODEL") || FALLBACK_MODEL;
   const providerPayload = buildGeminiPayload({
     prompt: body.prompt.trim(),
     history: body.history,
     snapshot: body.snapshot
   });
-  const startedAt = Date.now();
 
   try {
     const providerResult = await fetchGemini({

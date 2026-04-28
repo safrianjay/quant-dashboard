@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   buildConversationContext,
+  buildFallbackTradingResponse,
   checkRateLimit,
   default as tradingChat,
   validatePayload
@@ -82,7 +83,18 @@ test("checkRateLimit returns 429-ready state after the configured burst", () => 
   assert.equal(result.retryAfterSeconds, 60);
 });
 
-test("tradingChat returns a clear 503 when no provider key is configured", async () => {
+test("buildFallbackTradingResponse uses the current snapshot when no provider key is configured", () => {
+  const response = buildFallbackTradingResponse({
+    prompt: "What invalidates a long or short here?",
+    snapshot
+  });
+
+  assert.match(response, /64,512\.34/);
+  assert.match(response, /long idea weakens/);
+  assert.match(response, /short idea weakens/);
+});
+
+test("tradingChat returns fallback analysis when no provider key is configured", async () => {
   const previous = process.env.GEMINI_API_KEY;
   delete process.env.GEMINI_API_KEY;
   delete process.env.GOOGLE_GENERATIVE_AI_API_KEY;
@@ -102,8 +114,9 @@ test("tradingChat returns a clear 503 when no provider key is configured", async
   const response = await tradingChat(req, { ip: "127.0.0.1", requestId: "test" });
   const body = await response.json();
 
-  assert.equal(response.status, 503);
-  assert.match(body.error, /GEMINI_API_KEY/);
+  assert.equal(response.status, 200);
+  assert.equal(body.provider, "fallback");
+  assert.match(body.message.content, /64,512\.34/);
 
   if (previous) process.env.GEMINI_API_KEY = previous;
 });
