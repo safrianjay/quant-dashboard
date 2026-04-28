@@ -466,6 +466,7 @@ p,span,div,input,button{
   #coin-detail-btn { display:none!important; }
   /* Make the two CTA buttons fill nicely */
   #run-analysis-btn { padding:8px 14px!important; font-size:12px!important; }
+  #ai-entry-btn     { padding:8px 14px!important; font-size:12px!important; }
   #add-entry-btn    { padding:8px 14px!important; font-size:12px!important; }
   /* Stats row: 3 cols instead of 5 */
   .perf-stat-row{grid-template-columns:repeat(3,1fr)}
@@ -590,8 +591,9 @@ p,span,div,input,button{
   /* Topbar tighter */
   .topbar{padding:8px 10px;gap:6px}
   /* Shrink labels to just icons on very small screens */
-  .run-label, .entry-btn-label { display:none!important; }
+  .run-label, .ai-entry-label, .entry-btn-label { display:none!important; }
   #run-analysis-btn { padding:8px 10px!important; }
+  #ai-entry-btn     { padding:8px 10px!important; }
   #add-entry-btn    { padding:8px 10px!important; }
   /* Reduce grid gaps on very small screens */
   .two-col,.chart-grid,.kpi-grid{gap:8px}
@@ -632,7 +634,43 @@ p,span,div,input,button{
 
 .panel-overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:50;animation:overlayIn .2s ease both;backdrop-filter:blur(2px)}
 .entry-panel{position:fixed;top:0;right:0;bottom:0;width:420px;background:white;z-index:2000;animation:panelIn .32s cubic-bezier(.22,1,.36,1) both;display:flex;flex-direction:column;box-shadow:-12px 0 48px rgba(0,0,0,.12)}
+
+/* ══ AI ENTRY POINT DRAWER ══ */
+.ai-chat-overlay{position:fixed;inset:0;background:rgba(15,23,42,.36);z-index:1980;opacity:0;pointer-events:none;transition:opacity .22s var(--ease-smooth);backdrop-filter:blur(2px)}
+.ai-chat-overlay.open{opacity:1;pointer-events:auto}
+.ai-chat-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:calc(100vw - 24px);background:var(--surface-card);z-index:2001;display:flex;flex-direction:column;box-shadow:-14px 0 48px rgba(15,23,42,.16);transform:translateX(104%);transition:transform .32s cubic-bezier(.22,1,.36,1);border-left:1px solid var(--border-default)}
+.ai-chat-drawer.open{transform:translateX(0)}
+.ai-chat-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-6);padding:18px 20px 15px;border-bottom:1px solid var(--border-subtle);background:var(--surface-card)}
+.ai-chat-title{font-family:var(--font-heading);font-size:16px;font-weight:var(--fw-black);color:var(--text-primary);letter-spacing:var(--tracking-tight)}
+.ai-chat-sub{font-size:11px;color:var(--text-muted);font-family:var(--font-body);margin-top:2px}
+.ai-live-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:var(--radius-lg);border:1px solid var(--success-border);background:var(--success-bg);color:var(--success-deep);font-family:var(--font-mono);font-size:10px;font-weight:var(--fw-bold);white-space:nowrap}
+.ai-live-pill.is-down{border-color:var(--danger-border);background:var(--danger-bg);color:var(--danger-strong)}
+.ai-chat-close{width:32px;height:32px;border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--surface-card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary)}
+.ai-chat-close:hover{background:var(--surface-hover);color:var(--text-primary)}
+.ai-chat-messages{flex:1;overflow-y:auto;padding:18px 20px;background:linear-gradient(180deg,var(--surface-card),var(--neutral-50));display:flex;flex-direction:column;gap:12px}
+.ai-chat-msg{max-width:86%;display:flex;flex-direction:column;gap:4px}
+.ai-chat-msg.user{align-self:flex-end;align-items:flex-end}
+.ai-chat-msg.assistant{align-self:flex-start;align-items:flex-start}
+.ai-chat-msg-label{font-size:10px;color:var(--text-muted);font-family:var(--font-body);font-weight:var(--fw-semibold);padding:0 4px}
+.ai-chat-bubble{padding:11px 13px;border-radius:14px;font-size:13px;line-height:1.55;font-family:var(--font-body);white-space:pre-wrap;box-shadow:var(--shadow-xs)}
+.ai-chat-msg.user .ai-chat-bubble{background:var(--brand-primary);color:var(--text-inverse);border-top-right-radius:5px}
+.ai-chat-msg.assistant .ai-chat-bubble{background:var(--surface-card);color:var(--text-primary);border:1px solid var(--border-default);border-top-left-radius:5px}
+.ai-chat-snapshot{font-size:10px;color:var(--text-muted);font-family:var(--font-mono);padding:0 4px}
+.ai-chat-typing{display:none;align-self:flex-start;width:fit-content;border:1px solid var(--border-default);background:var(--surface-card);border-radius:var(--radius-pill);padding:7px 10px;font-size:11px;color:var(--text-secondary);font-family:var(--font-body);box-shadow:var(--shadow-xs)}
+.ai-chat-typing.show{display:block}
+.ai-chat-footer{border-top:1px solid var(--border-subtle);background:var(--surface-card);padding:14px 16px 16px}
+.ai-quick-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;scrollbar-width:thin}
+.ai-quick-btn{white-space:nowrap;border:1px solid var(--info-border);background:var(--info-bg);color:var(--info-deep);border-radius:var(--radius-pill);padding:6px 10px;font-size:11px;font-weight:var(--fw-semibold);font-family:var(--font-body);cursor:pointer}
+.ai-quick-btn:hover{border-color:var(--info);background:#E0ECFF}
+.ai-compose-row{display:flex;gap:8px}
+.ai-compose-row .qds-input{font-size:13px;padding:10px 12px}
+.ai-send-btn{padding:0 14px;border-radius:var(--radius-lg);border:none;background:var(--brand-primary);color:var(--text-inverse);font-size:12px;font-weight:var(--fw-bold);font-family:var(--font-heading);cursor:pointer;min-width:74px}
+.ai-send-btn:disabled{opacity:.55;cursor:not-allowed}
+.ai-chat-note{margin-top:8px;text-align:center;font-size:10px;color:var(--text-muted);font-family:var(--font-body)}
 @media(max-width:768px){
+  .ai-chat-drawer{width:100%!important;max-width:none!important;border-left:none;z-index:9999}
+  .ai-chat-overlay{z-index:9998}
+  .ai-chat-footer{padding-bottom:calc(16px + env(safe-area-inset-bottom, 10px))}
   .entry-panel{
     width:100% !important;
     bottom:0 !important;
@@ -1013,6 +1051,42 @@ p,span,div,input,button{
   </div>
 </div>
 
+<!-- AI Entry Point right drawer -->
+<div class="ai-chat-overlay" id="ai-chat-overlay" onclick="closeAIEntryDrawer()"></div>
+<aside class="ai-chat-drawer" id="ai-chat-drawer" aria-label="AI Entry Point" aria-hidden="true">
+  <header class="ai-chat-head">
+    <div style="min-width:0">
+      <div class="ai-chat-title">AI Entry Point</div>
+      <div class="ai-chat-sub" id="ai-chat-sub">Snapshot-aware trading copilot</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <div class="ai-live-pill" id="ai-live-pill">Live: —</div>
+      <button class="ai-chat-close" onclick="closeAIEntryDrawer()" aria-label="Close AI Entry Point">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="ai-chat-messages" id="ai-chat-messages">
+    <div class="ai-chat-msg assistant">
+      <span class="ai-chat-msg-label">Copilot</span>
+      <div class="ai-chat-bubble">I can help assess entries using the exact live price captured when you send. Ask about entries, invalidation, risk, or volatility.</div>
+    </div>
+  </div>
+  <div class="ai-chat-typing" id="ai-chat-typing">Analyzing live snapshot...</div>
+  <footer class="ai-chat-footer">
+    <div class="ai-quick-row">
+      <button class="ai-quick-btn" onclick="sendAIQuickPrompt('Analyze current entry points based on the live price.')">Analyze Entry</button>
+      <button class="ai-quick-btn" onclick="sendAIQuickPrompt('What invalidates a long or short here?')">Invalidation</button>
+      <button class="ai-quick-btn" onclick="sendAIQuickPrompt('Give me a concise risk-management checklist for this volatility.')">Risk Check</button>
+    </div>
+    <div class="ai-compose-row">
+      <input id="ai-chat-input" class="qds-input" placeholder="e.g. Is this a good entry?" autocomplete="off">
+      <button id="ai-chat-send" class="ai-send-btn" onclick="handleAIChatSend()">Send</button>
+    </div>
+    <div class="ai-chat-note">Answers use the immutable live price snapshot captured at send time.</div>
+  </footer>
+</aside>
+
 <!-- ═══ MAIN ═══ -->
 <div class="main">
 
@@ -1060,6 +1134,10 @@ p,span,div,input,button{
       </div>
       <!-- Run Analysis button -->
       <button onclick="handleRunAnalysis()" id="run-analysis-btn" class="qds-hover-lift" style="display:flex;align-items:center;gap:5px;padding:var(--space-3) var(--space-7);border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--brand-primary),var(--neutral-800));color:var(--text-inverse);font-size:var(--fs-sm);font-weight:var(--fw-bold);cursor:pointer;border:none;font-family:var(--font-heading);letter-spacing:.01em">⚡ <span class="run-label">Run Analysis</span></button>
+      <button onclick="toggleAIEntryDrawer()" id="ai-entry-btn" class="qds-hover-lift" style="display:flex;align-items:center;gap:5px;padding:var(--space-3) var(--space-7);border-radius:var(--radius-lg);background:var(--surface-card);color:var(--neutral-900);font-size:var(--fs-sm);font-weight:var(--fw-bold);cursor:pointer;border:1px solid var(--border-default);font-family:var(--font-heading);letter-spacing:.01em">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="m16.24 16.24 2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="m16.24 7.76 2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="ai-entry-label">Entry Point</span>
+      </button>
       <button onclick="openPanel('long')" id="add-entry-btn" class="qds-hover-lift" style="display:flex;align-items:center;gap:5px;padding:var(--space-3) var(--space-7);border-radius:var(--radius-lg);background:var(--brand-primary);color:var(--text-inverse);font-size:var(--fs-sm);font-weight:var(--fw-bold);cursor:pointer;border:none;font-family:var(--font-heading)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span class="entry-btn-label">Add Entry</span>
@@ -1682,6 +1760,200 @@ const _fbConfig = {
 let _db = null, _posRef = null, _posUnsubscribe = null, _firestoreUid = null, _planUnsubscribe = null;
 let currentUser = null;
 let _authTab = 'signin';
+let _aiConversationId = null;
+let _aiChatHistory = [];
+let _aiChatSending = false;
+
+function _aiFormatPrice(price){
+  const p = Number(price);
+  if(!Number.isFinite(p) || p <= 0) return '—';
+  if(p < 0.00001) return '$' + p.toFixed(8);
+  if(p < 0.0001)  return '$' + p.toFixed(7);
+  if(p < 0.001)   return '$' + p.toFixed(6);
+  if(p < 0.01)    return '$' + p.toFixed(5);
+  if(p < 1)       return '$' + p.toFixed(4);
+  if(p < 10)      return '$' + p.toFixed(3);
+  if(p < 1000)    return '$' + p.toFixed(2);
+  return '$' + Math.round(p).toLocaleString();
+}
+
+function _getAIEntrySnapshot(){
+  const cached = _marketPrices[currentSymbol] || {};
+  const price = Number.isFinite(cached.price) && cached.price > 0 ? cached.price : PRICE;
+  const chg = Number.isFinite(parseFloat(cached.chg)) ? parseFloat(cached.chg) : parseFloat(CHG);
+  return Object.freeze({
+    symbol: `${currentBase}/USDT`,
+    venue: 'Quantichy Market Feed',
+    instrumentType: 'perpetual',
+    price,
+    quoteCurrency: 'USDT',
+    pricePrecision: price < 1 ? 6 : 2,
+    change24hPct: Number.isFinite(chg) ? chg : undefined,
+    volume24h: Number.isFinite(cached.vol) ? cached.vol : undefined,
+    timestamp: new Date().toISOString()
+  });
+}
+
+function updateAIChatLiveBadge(){
+  const pill = document.getElementById('ai-live-pill');
+  const sub = document.getElementById('ai-chat-sub');
+  if(!pill) return;
+  const snapshot = _getAIEntrySnapshot();
+  const isDown = Number(snapshot.change24hPct || 0) < 0;
+  pill.classList.toggle('is-down', isDown);
+  pill.textContent = `Live: ${_aiFormatPrice(snapshot.price)}`;
+  if(sub) sub.textContent = `${snapshot.symbol} · ${snapshot.timestamp.slice(11,19)} UTC snapshot feed`;
+}
+
+function _setAIChatSending(isSending){
+  _aiChatSending = isSending;
+  const btn = document.getElementById('ai-chat-send');
+  const typing = document.getElementById('ai-chat-typing');
+  const input = document.getElementById('ai-chat-input');
+  if(btn){
+    btn.disabled = isSending;
+    btn.textContent = isSending ? 'Sending' : 'Send';
+  }
+  if(input) input.disabled = isSending;
+  if(typing) typing.classList.toggle('show', isSending);
+}
+
+function _appendAIMessage(message){
+  const list = document.getElementById('ai-chat-messages');
+  if(!list) return;
+  const row = document.createElement('div');
+  const role = message.role === 'user' ? 'user' : 'assistant';
+  row.className = `ai-chat-msg ${role}`;
+
+  const label = document.createElement('span');
+  label.className = 'ai-chat-msg-label';
+  label.textContent = role === 'user' ? 'You' : 'Copilot';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'ai-chat-bubble';
+  bubble.textContent = message.content;
+
+  row.appendChild(label);
+  row.appendChild(bubble);
+
+  if(message.snapshot){
+    const snap = document.createElement('div');
+    snap.className = 'ai-chat-snapshot';
+    snap.textContent = `Snapshot: ${_aiFormatPrice(message.snapshot.price)} · ${message.snapshot.timestamp.slice(11,19)} UTC`;
+    row.appendChild(snap);
+  }
+
+  list.appendChild(row);
+  list.scrollTop = list.scrollHeight;
+}
+
+async function _getAIAuthToken(){
+  try {
+    if(currentUser?.getIdToken) return await currentUser.getIdToken();
+  } catch(_) {}
+  return null;
+}
+
+window.openAIEntryDrawer = function(){
+  document.getElementById('ai-chat-overlay')?.classList.add('open');
+  const drawer = document.getElementById('ai-chat-drawer');
+  drawer?.classList.add('open');
+  drawer?.setAttribute('aria-hidden', 'false');
+  updateAIChatLiveBadge();
+  setTimeout(() => document.getElementById('ai-chat-input')?.focus(), 220);
+};
+
+window.closeAIEntryDrawer = function(){
+  document.getElementById('ai-chat-overlay')?.classList.remove('open');
+  const drawer = document.getElementById('ai-chat-drawer');
+  drawer?.classList.remove('open');
+  drawer?.setAttribute('aria-hidden', 'true');
+};
+
+window.toggleAIEntryDrawer = function(){
+  const drawer = document.getElementById('ai-chat-drawer');
+  if(drawer?.classList.contains('open')) closeAIEntryDrawer();
+  else openAIEntryDrawer();
+};
+
+window.sendAIQuickPrompt = function(prompt){
+  openAIEntryDrawer();
+  handleAIChatSend(prompt);
+};
+
+window.handleAIChatSend = async function(forcedPrompt){
+  if(_aiChatSending) return;
+  const input = document.getElementById('ai-chat-input');
+  const prompt = (forcedPrompt || input?.value || '').trim();
+  if(!prompt) return;
+  if(input && !forcedPrompt) input.value = '';
+
+  const snapshot = _getAIEntrySnapshot();
+  const clientMessageId = (window.crypto?.randomUUID?.() || `msg_${Date.now()}_${Math.random().toString(16).slice(2)}`);
+  const userMessage = {
+    id: clientMessageId,
+    role: 'user',
+    content: prompt,
+    createdAt: new Date().toISOString(),
+    snapshot
+  };
+  _aiChatHistory.push(userMessage);
+  _appendAIMessage(userMessage);
+  _setAIChatSending(true);
+
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    const token = await _getAIAuthToken();
+    if(token) headers.Authorization = `Bearer ${token}`;
+    const res = await fetch('/api/trading-chat/messages', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        conversationId: _aiConversationId,
+        clientMessageId,
+        prompt,
+        snapshot,
+        history: _aiChatHistory.slice(-40)
+      })
+    });
+    const body = await res.json().catch(() => ({}));
+    if(!res.ok) throw new Error(body.error || 'Analysis engine unavailable');
+
+    _aiConversationId = body.conversationId || _aiConversationId;
+    const assistantMessage = body.message || {
+      id: `msg_${Date.now()}`,
+      role: 'assistant',
+      content: 'I could not generate an analysis from the current context.',
+      createdAt: new Date().toISOString()
+    };
+    _aiChatHistory.push(assistantMessage);
+    _appendAIMessage(assistantMessage);
+  } catch(err) {
+    const errorMessage = {
+      id: `err_${Date.now()}`,
+      role: 'assistant',
+      content: 'The analysis engine is temporarily unavailable. Please try again shortly.',
+      createdAt: new Date().toISOString()
+    };
+    console.error('[ai-entry] chat failed:', err.message);
+    _appendAIMessage(errorMessage);
+  } finally {
+    _setAIChatSending(false);
+    if(input && !forcedPrompt) input.focus();
+  }
+};
+
+document.addEventListener('keydown', (event) => {
+  if(event.key === 'Escape') closeAIEntryDrawer();
+});
+
+setTimeout(() => {
+  const input = document.getElementById('ai-chat-input');
+  input?.addEventListener('keydown', (event) => {
+    if(event.key === 'Enter') handleAIChatSend();
+  });
+  updateAIChatLiveBadge();
+}, 0);
 
 /* ══ URL PARAMS ══ */
 const _urlParams = new URLSearchParams(window.location.search);
@@ -3830,6 +4102,7 @@ function _updateTopbarForPrimaryView(){
   const detailBtn = document.getElementById('coin-detail-btn');
   const tfWrap = document.getElementById('unified-tf-wrap');
   const runBtn = document.getElementById('run-analysis-btn');
+  const aiEntryBtn = document.getElementById('ai-entry-btn');
   const addBtn = document.getElementById('add-entry-btn');
   const refreshLabel = document.querySelector('#refresh-btn .entry-btn-label');
   const overviewSub = document.getElementById('overview-topbar-sub');
@@ -3839,6 +4112,7 @@ function _updateTopbarForPrimaryView(){
   if(detailBtn) detailBtn.style.display = isOverview ? 'none' : 'flex';
   if(tfWrap) tfWrap.style.display = isOverview ? 'none' : 'flex';
   if(runBtn) runBtn.style.display = isOverview ? 'none' : 'flex';
+  if(aiEntryBtn) aiEntryBtn.style.display = isOverview ? 'none' : 'flex';
   if(addBtn) addBtn.style.display = isOverview ? 'none' : 'flex';
   if(refreshLabel) refreshLabel.textContent = 'Refresh';
   if(overviewSub){
@@ -5477,6 +5751,7 @@ function _applyMarketCache(){
   TF_DATA[activeTF].subtitle = `${src} · ${activeTF} · ${utcTs}`;
   positions.forEach(p=>{ if(p.symbol===currentBase) p.currentPrice=PRICE; });
   renderKPIs(); renderLevelsSB(); renderPositions(); renderPerfChart();
+  updateAIChatLiveBadge();
   /* First real price arrived — lift the boot-time skeleton overlay. */
   _markLiveTradeLoaded();
 }
