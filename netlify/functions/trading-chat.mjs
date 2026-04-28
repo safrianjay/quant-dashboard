@@ -34,6 +34,15 @@ function getEnv(name) {
   return process.env[name];
 }
 
+function getProviderApiKey() {
+  return (
+    getEnv("GEMINI_API_KEY") ||
+    getEnv("GOOGLE_GENERATIVE_AI_API_KEY") ||
+    getEnv("GOOGLE_API_KEY") ||
+    ""
+  );
+}
+
 function getClientKey(req, context) {
   const auth = req.headers.get("authorization") || "";
   const userPart = auth.startsWith("Bearer ") ? auth.slice(7, 24) : "anonymous";
@@ -321,9 +330,12 @@ async function handlePost(req, context) {
     return json(400, { error: "Invalid trading chat payload", details: validation.errors });
   }
 
-  const apiKey = getEnv("GEMINI_API_KEY");
+  const apiKey = getProviderApiKey();
   if (!apiKey) {
-    return json(500, { error: "Trading chat provider is not configured" });
+    return json(503, {
+      error:
+        "AI Entry Point is not configured yet. Add GEMINI_API_KEY in Netlify environment variables, then redeploy."
+    });
   }
 
   const conversationId = body.conversationId || `conv_${crypto.randomUUID()}`;

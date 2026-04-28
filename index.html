@@ -1932,7 +1932,7 @@ window.handleAIChatSend = async function(forcedPrompt){
     const errorMessage = {
       id: `err_${Date.now()}`,
       role: 'assistant',
-      content: 'The analysis engine is temporarily unavailable. Please try again shortly.',
+      content: err.message || 'The analysis engine is temporarily unavailable. Please try again shortly.',
       createdAt: new Date().toISOString()
     };
     console.error('[ai-entry] chat failed:', err.message);

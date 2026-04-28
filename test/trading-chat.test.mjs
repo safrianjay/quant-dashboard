@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   buildConversationContext,
   checkRateLimit,
+  default as tradingChat,
   validatePayload
 } from "../netlify/functions/trading-chat.mjs";
 
@@ -79,4 +80,30 @@ test("checkRateLimit returns 429-ready state after the configured burst", () => 
   result = checkRateLimit(key, 1000);
   assert.equal(result.allowed, false);
   assert.equal(result.retryAfterSeconds, 60);
+});
+
+test("tradingChat returns a clear 503 when no provider key is configured", async () => {
+  const previous = process.env.GEMINI_API_KEY;
+  delete process.env.GEMINI_API_KEY;
+  delete process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  delete process.env.GOOGLE_API_KEY;
+
+  const req = new Request("https://quantichy.test/api/trading-chat/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      clientMessageId: "msg_client_abc",
+      prompt: "Is this a good entry?",
+      snapshot,
+      history: []
+    })
+  });
+
+  const response = await tradingChat(req, { ip: "127.0.0.1", requestId: "test" });
+  const body = await response.json();
+
+  assert.equal(response.status, 503);
+  assert.match(body.error, /GEMINI_API_KEY/);
+
+  if (previous) process.env.GEMINI_API_KEY = previous;
 });
