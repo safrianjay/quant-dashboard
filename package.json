@@ -1,6 +1,9 @@
 {
   "name": "quantichy-dashboard",
   "version": "1.0.0",
+  "scripts": {
+    "test": "node --test"
+  },
   "dependencies": {
     "nodemailer": "^6.9.9"
   }
