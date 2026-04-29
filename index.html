@@ -1910,7 +1910,7 @@ function _setAIChatSending(isSending){
   }
 }
 
-function _renderAITechChart(canvas, snapshot){
+async function _renderAITechChart(canvas, snapshot){
   if(!canvas || !snapshot) return;
   const ctx = canvas.getContext('2d');
   if(!ctx) return;
@@ -1918,44 +1918,88 @@ function _renderAITechChart(canvas, snapshot){
   canvas.width = 600;
   canvas.height = 300;
 
+  const p = snapshot.price || 50000;
+  let rawData = [];
+
+  try {
+    const cgId = window.currentCgId || 'bitcoin';
+    const res = await fetch(`/.netlify/functions/cg?type=chart&id=${cgId}&days=7`);
+    if(res.ok) {
+      const data = await res.json();
+      if(data.prices && data.prices.length > 0) {
+        rawData = data.prices.map(item => item[1]);
+      }
+    }
+  } catch(e) {
+    console.warn("Failed to fetch real chart data for TA widget", e);
+  }
+
+  // Fallback to simulated data if fetch fails or is empty
+  if(rawData.length === 0) {
+    const seed = (p * 100) % 1000;
+    let curP = p * 0.95;
+    for(let i=0; i<40; i++){
+      curP += Math.sin(seed + i * 0.5) * (p*0.005) + Math.cos(seed * 2 + i) * (p*0.002);
+      rawData.push(curP);
+    }
+    rawData.push(p); // end exactly at current price
+  } else {
+    // Replace the very last point with our real-time snapshot price to guarantee it matches the header exactly
+    rawData[rawData.length - 1] = p;
+  }
+
+  // Calculate Min/Max for Y-axis scaling
+  const minP = Math.min(...rawData);
+  const maxP = Math.max(...rawData);
+  const padding = (maxP - minP) * 0.1 || p * 0.01;
+  const chartMin = minP - padding;
+  const chartMax = maxP + padding;
+
   setTimeout(() => {
     const w = canvas.width;
     const h = canvas.height;
-    const p = snapshot.price || 50000;
     
     // Clear
     ctx.clearRect(0,0,w,h);
     
-    // Grid & Fibonacci levels
+    // Left padding for Y-axis labels
+    const leftPad = 65; 
+    const chartW = w - leftPad;
+
+    // Draw Y-Axis Labels & Grid
+    ctx.font = '600 11px sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    
     ctx.strokeStyle = '#e2e8f0';
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 4]);
-    const fibs = [0.2, 0.4, 0.6, 0.8];
+
+    const fibs = [0.2, 0.5, 0.8]; // Using 3 lines for clarity
     fibs.forEach(f => {
       const y = h * f;
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      const val = chartMax - (f * (chartMax - chartMin));
+      // Label
+      ctx.fillText(_aiFormatPrice(val), 5, y);
+      // Grid line
+      ctx.beginPath(); ctx.moveTo(leftPad, y); ctx.lineTo(w, y); ctx.stroke();
     });
     ctx.setLineDash([]);
 
-    // Generate price path
-    const points = 40;
-    const xStep = w / (points - 1);
-    const seed = (p * 100) % 1000;
-    let priceData = [];
-    let curY = h * 0.5;
-    
-    for(let i=0; i<points; i++){
-      const rand = Math.sin(seed + i * 0.5) * 20 + Math.cos(seed * 2 + i) * 10;
-      curY += rand;
-      if(curY < 20) curY = 20; if(curY > h-20) curY = h-20;
-      priceData.push(curY);
-    }
+    // Map raw data to Y pixel coordinates
+    const points = rawData.length;
+    const xStep = chartW / (points - 1);
+    let priceDataY = rawData.map(val => {
+      const pct = (val - chartMin) / (chartMax - chartMin);
+      return h - (pct * h);
+    });
 
-    // Generate EMAs based on price
+    // Generate EMAs based on price coordinates (visual representation)
     let ema5 = [], ema21 = [];
-    priceData.forEach((pr, i) => {
-      ema5.push(pr + Math.sin(i) * 10);
-      ema21.push(pr + Math.cos(i) * 25);
+    priceDataY.forEach((yPos, i) => {
+      ema5.push(yPos + Math.sin(i * 0.2) * 10);
+      ema21.push(yPos + Math.cos(i * 0.1) * 20);
     });
 
     // Draw Function
@@ -1964,8 +2008,9 @@ function _renderAITechChart(canvas, snapshot){
       ctx.strokeStyle = color;
       ctx.lineWidth = width;
       data.forEach((val, i) => {
-        if(i===0) ctx.moveTo(i * xStep, val);
-        else ctx.lineTo(i * xStep, val);
+        const x = leftPad + i * xStep;
+        if(i===0) ctx.moveTo(x, val);
+        else ctx.lineTo(x, val);
       });
       ctx.stroke();
     };
@@ -1973,26 +2018,27 @@ function _renderAITechChart(canvas, snapshot){
     // Draw EMAs and Price
     drawLine(ema21, '#a855f7', 2);
     drawLine(ema5, '#f59e0b', 2);
-    drawLine(priceData, '#3b82f6', 2.5);
+    drawLine(priceDataY, '#3b82f6', 2.5);
 
-    // Fade gradient overlay (bottom up)
+    // Fade gradient overlay
     const grad = ctx.createLinearGradient(0, h, 0, 0);
     grad.addColorStop(0, 'rgba(59, 130, 246, 0.15)');
     grad.addColorStop(1, 'rgba(59, 130, 246, 0)');
     ctx.beginPath();
-    ctx.moveTo(0, h);
-    priceData.forEach((val, i) => ctx.lineTo(i * xStep, val));
+    ctx.moveTo(leftPad, h);
+    priceDataY.forEach((val, i) => ctx.lineTo(leftPad + i * xStep, val));
     ctx.lineTo(w, h);
+    ctx.lineTo(leftPad, h);
     ctx.fillStyle = grad;
     ctx.fill();
 
     // Horizontal Price Line (Current Price)
-    const currentPriceY = priceData[priceData.length - 1];
+    const currentPriceY = priceDataY[priceDataY.length - 1];
     ctx.beginPath();
     ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 1.5;
     ctx.setLineDash([4, 4]);
-    ctx.moveTo(0, currentPriceY);
+    ctx.moveTo(leftPad, currentPriceY);
     ctx.lineTo(w, currentPriceY);
     ctx.stroke();
     ctx.setLineDash([]);
@@ -2003,7 +2049,7 @@ function _renderAITechChart(canvas, snapshot){
     ctx.arc(w - 2, currentPriceY, 4, 0, Math.PI * 2);
     ctx.fill();
 
-  }, 200);
+  }, 50);
 }
 
 function _appendAIMessage(message, isStreaming = false){
