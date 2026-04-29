@@ -2208,6 +2208,7 @@ function refreshAIQuickButtons(){
 }
 
 window.openAIEntryDrawer = function(){
+  if(DEMO_MODE){ showUpgradePopup(); return; }
   /* Only show the full-screen upsell modal on the Public Demo (Guest Mode) */
   if(!currentUser){
     openProUpsell();
@@ -2251,6 +2252,7 @@ window.sendAIQuickPrompt = function(prompt){
 };
 
 window.handleAIChatSend = async function(forcedPrompt){
+  if(DEMO_MODE){ showUpgradePopup(); return; }
   if(_aiChatSending) return;
   const input = document.getElementById('ai-chat-input');
   const prompt = (forcedPrompt || input?.value || '').trim();
