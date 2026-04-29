@@ -215,7 +215,7 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
 5. **THE SIGNAL**: 
    - 🟢 **BUY / LONG** or 🔴 **SELL / SHORT** at $[Entry]
    - **Stop Loss**: $[SL]
-   - **Take Profit**: $[TP1], $[TP2]
+   - **Take Profit**: $[TP1], $[TP2], $[TP3]
 6. **BOTTOM LINE**: A final 1-2 sentence summary of the trade thesis.
 
 ### RULES:
@@ -340,7 +340,8 @@ Current relative volume is stable. On-chain activity suggests minor accumulation
 
 ### THE SIGNAL
 ${signal} around $${formattedPrice}. 
-**Target**: $${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
+**Stop Loss**: $${(price * (direction === "bullish" ? 0.992 : 1.008)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
+**Take Profit**: $${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.02 : 0.98)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.03 : 0.97)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
 
 ### BOTTOM LINE
 This setup focuses on local range play. This analysis uses the live snapshot and is for informational purposes only. Manage your risk.`;
