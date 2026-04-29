@@ -182,137 +182,34 @@ export function buildConversationContext(history, currentSnapshot) {
 }
 
 function buildSystemInstruction(snapshot) {
-  const formattedPrice = Number(snapshot.price).toLocaleString("en-US", {
-    minimumFractionDigits: snapshot.price >= 1 ? 2 : 8,
-    maximumFractionDigits: snapshot.price >= 1 ? 2 : 8,
-  });
+  return `You are "NEUROBRO", a professional technical analyst and trading copilot for Quantichy.
+Your goal is to provide aggressive, data-driven, and highly structured scalp analysis.
 
-  const changeStr =
-    snapshot.change24hPct != null
-      ? `${Number(snapshot.change24hPct) >= 0 ? "+" : ""}${Number(
-          snapshot.change24hPct
-        ).toFixed(2)}% 24h`
-      : "24h change unavailable";
+### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
+1. **INTRO**: A 2-sentence punchy summary of the current tape based on the snapshot.
+2. **THE SETUP — [THEME]**: Use a bold header. Explain the current price action, divergence, or pattern in detail. Use bolding for indicators (e.g., **RSI**, **EMA 21**).
+3. **KEY LEVELS FOR NEXT 60 MINS**:
+   | Level | Price | Why It Matters |
+   | :--- | :--- | :--- |
+   | [Resistance/Support] | $[Price] | [Brief reasoning] |
+   | ... | ... | ... |
+4. **VOLUME TELLS THE REAL STORY**: A dedicated section on volume, sentiment, or index data (Fear & Greed).
+5. **THE SIGNAL**: 
+   - 🟢 **BUY / LONG** or 🔴 **SELL / SHORT** at $[Entry]
+   - **Stop Loss**: $[SL]
+   - **Take Profit**: $[TP1], $[TP2]
+6. **BOTTOM LINE**: A final 1-2 sentence summary of the trade thesis.
 
-  const volumeStr =
-    snapshot.volume24h != null
-      ? `Volume : $${Number(snapshot.volume24h).toLocaleString("en-US", {
-          maximumFractionDigits: 0,
-        })}`
-      : "";
-
-  return `
-You are Copilot, a professional crypto trading analyst embedded in the Quantichy trading dashboard.
-You think like a senior derivatives trader with deep knowledge of technical analysis, market structure,
-on-chain data interpretation, and risk management principles.
-
-══ LIVE MARKET CONTEXT (injected at call time — treat as real-time) ══
-Asset  : ${snapshot.symbol}${snapshot.instrumentType ? ` [${snapshot.instrumentType}]` : ""}
-Price  : ${formattedPrice} ${snapshot.quoteCurrency}
-Change : ${changeStr}
-${volumeStr ? `${volumeStr}\n` : ""}Captured: ${snapshot.timestamp} (UTC)
-Source : Quantichy Market Feed (CoinGecko / Kraken aggregated)
-══════════════════════════════════════════════════════════════════════
-
-══ BEHAVIORAL RULES ══
-
-1. DYNAMIC & CONVERSATIONAL
-   - Answer the user's SPECIFIC question directly. Do not recite a generic analysis
-     template — reason through what the user actually asked.
-   - Use the live price context above as ground truth for this turn.
-   - If the conversation has prior messages, maintain continuity. Reference earlier
-     points when relevant (e.g., "As we discussed, the $XX,XXX level...").
-
-2. TRADING EXPERTISE
-   You may freely discuss and reason about:
-   - Technical analysis (MACD, RSI, Bollinger Bands, EMA/SMA crosses, divergences,
-     candlestick patterns, volume profiles, order blocks, liquidity sweeps, etc.)
-   - Market structure (higher highs/lows, break of structure, change of character)
-   - Trade planning (entries, stop losses, take profits, R:R ratios, position sizing)
-   - Risk management (invalidation levels, max drawdown, account percentage risk,
-     scaling in/out, trailing stops)
-   - Macro & sentiment context (funding rates, open interest, fear & greed, BTC dominance)
-   - Crypto-specific concepts (halving cycles, on-chain metrics, exchange flows,
-     derivatives basis, spot/perp premium)
-
-3. HARD GUARDRAILS — STRICT TOPIC BOUNDARY
-   You ONLY discuss cryptocurrency markets, trading, investing, and closely related
-   financial concepts (e.g., macro economics as it affects crypto).
-   If a user asks anything outside this scope — coding help, recipes, general trivia,
-   medical advice, politics, creative writing, etc. — respond ONLY with:
-   "I'm your crypto trading copilot. I can only help with trading, markets, and
-   crypto-related financial questions. What would you like to analyze?"
-   Do NOT attempt to answer the off-topic question, even partially.
-
-4. NO FINANCIAL GUARANTEES
-   - Never say "this will go up", "guaranteed profit", "can't lose", or any equivalent.
-   - Always acknowledge uncertainty, market risk, and the possibility of being wrong.
-   - End analytical responses with a brief disclaimer variant such as:
-     "This is not financial advice — always manage your own risk."
-   - Do NOT be preachy or repeat the disclaimer more than once per response.
-
-5. OUTPUT FORMAT (optimized for chat UI)
-   - Keep responses concise: 2-4 short paragraphs maximum for most answers.
-   - Use bullet points (-) when listing levels, conditions, or checklist items.
-     Never use more than 6 bullets in a row without a paragraph break.
-   - Use plain numbers with $ for prices (e.g., "$83,450"). Never use markdown
-     tables or code blocks — they do not render in this chat interface.
-   - Bold and italic formatting are NOT available. Use ALL-CAPS sparingly for key levels.
-   - If the question is simple and factual, answer in 1-2 sentences. Don't pad.
-
-6. UNCERTAINTY & DATA HONESTY
-   - The snapshot price may be up to 2 minutes old (cached feed). Acknowledge this
-     when giving precise level-based advice: "Based on the $XX,XXX snapshot..."
-   - If you lack enough context to answer confidently, ask a targeted follow-up
-     question instead of guessing.
-`.trim();
+### RULES:
+- Use Markdown for all formatting. Use bolding liberally for prices and key terms.
+- Tone: Professional, slightly aggressive, "no-noise" technical analysis.
+- Always include the table and the Signal section.
+- If the snapshot data is insufficient for a clear signal, provide a "WATCH" signal with clear triggers.
+- NEVER give financial advice. Always include a short risk disclaimer at the very end.
+- Current Asset: ${snapshot.symbol}
+- Current Price: $${snapshot.price}`;
 }
 
-function classifyPrompt(prompt) {
-  if (/(explain|what is|what are|how does|teach|define|describe)/i.test(prompt)) return "explain";
-  if (/(full plan|full analysis|break down|walk me through|give me a plan)/i.test(prompt)) return "plan";
-  return "quick";
-}
-
-const GENERATION_CONFIGS = {
-  quick:   { temperature: 0.2 },
-  explain: { temperature: 0.4 },
-  plan:    { temperature: 0.4 },
-};
-
-function buildGeminiPayload({ prompt, history, snapshot }) {
-  const systemText = buildSystemInstruction(snapshot);
-  
-  // Exclude current prompt from history to ensure strict alternation
-  const pastHistory = (history.length > 0 && history[history.length - 1].content === prompt)
-    ? history.slice(0, -1)
-    : history;
-
-  const context = buildConversationContext(pastHistory, snapshot);
-  const contents = [];
-
-  // Inject older-conversation summary
-  if (context.summary) {
-    contents.push({
-      role: "user",
-      parts: [{ text: `[Older conversation summary]\n${context.summary}` }]
-    });
-    contents.push({
-      role: "model",
-      parts: [{ text: "Understood. I have context from our earlier conversation." }]
-    });
-  }
-
-  // Add recent history
-  for (const msg of context.recentMessages) {
-    const role = msg.role === "assistant" ? "model" : "user";
-    let text = String(msg.content || "");
-
-    if (msg.role === "user" && msg.snapshot) {
-      const snapPrice = Number(msg.snapshot.price).toLocaleString("en-US", {
-        minimumFractionDigits: msg.snapshot.price >= 1 ? 2 : 8,
-        maximumFractionDigits: msg.snapshot.price >= 1 ? 2 : 8,
-      });
       text = `[Snapshot at time of question: ${msg.snapshot.symbol} @ $${snapPrice}]\n\n${text}`;
     }
 
@@ -350,29 +247,26 @@ export function buildFallbackTradingResponse({ prompt, snapshot }) {
     minimumFractionDigits: price >= 1 ? 2 : 8,
     maximumFractionDigits: price >= 1 ? 2 : 8
   });
-  const lowerPrompt = String(prompt || "").toLowerCase();
-  const invalidationPct = Math.max(0.4, Math.min(2.5, Math.abs(change || 0.8)));
-  const longInvalidation = price * (1 - invalidationPct / 100);
-  const shortInvalidation = price * (1 + invalidationPct / 100);
+  
+  const signal = direction === "bullish" ? "🟢 **BUY / LONG**" : direction === "bearish" ? "🔴 **SELL / SHORT**" : "🟡 **WATCH**";
 
-  if (lowerPrompt.includes("invalidat")) {
-    return [
-      `At the captured ${snapshot.symbol} price of $${formattedPrice}, a long idea weakens if price loses roughly $${longInvalidation.toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} without reclaiming quickly. A short idea weakens if price accepts above roughly $${shortInvalidation.toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}.`,
-      `Treat those as planning bands, not hard signals. Wait for candle close, volume confirmation, and define position size before entering.`
-    ].join("\n\n");
-  }
+  return `At the captured **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is ${direction}${Number.isFinite(change) ? ` with a 24h move of **${change.toFixed(2)}%**` : ""}.
 
-  if (lowerPrompt.includes("risk")) {
-    return [
-      `At $${formattedPrice}, keep risk fixed before choosing direction: define invalidation first, size the trade so a stop costs only a small preset account percentage, and avoid adding if price moves against the plan.`,
-      `Because the current 24h change reads ${Number.isFinite(change) ? change.toFixed(2) : "0.00"}%, use smaller size if spreads or volatility expand. You are responsible for the final trading decision.`
-    ].join("\n\n");
-  }
+### THE SETUP — DATA ANALYSIS
+Price is currently interacting with local liquidity. The volatility indicates that traders are looking for a clear breakout or rejection at this level.
 
-  return [
-    `At the captured ${snapshot.symbol} price of $${formattedPrice}, the short-term tape is ${direction}${Number.isFinite(change) ? ` with a 24h move of ${change.toFixed(2)}%` : ""}. For an entry, avoid chasing the middle of the move; prefer either a pullback that holds support for a long or a failed reclaim/rejection for a short.`,
-    `A practical plan is to mark the nearest invalidation before entry, then only take the trade if reward is meaningfully larger than risk. This fallback analysis uses the live snapshot but is not financial advice.`
-  ].join("\n\n");
+### KEY LEVELS FOR NEXT 60 MINS
+| Level | Price | Why It Matters |
+| :--- | :--- | :--- |
+| Resistance | $${(price * 1.005).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Local range high |
+| Support | $${(price * 0.995).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Support cluster |
+
+### THE SIGNAL
+${signal} around $${formattedPrice}. 
+**Target**: $${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
+
+### BOTTOM LINE
+This setup focuses on local range play. This analysis uses the live snapshot and is for informational purposes only. Manage your risk.`;
 }
 
 function isTransientStatus(status) {
