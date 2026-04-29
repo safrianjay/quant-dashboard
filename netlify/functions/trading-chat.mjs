@@ -10,7 +10,7 @@ const RATE_LIMIT_MAX = 12;
 const REQUEST_TIMEOUT_MS = 25_000;
 const MAX_OUTPUT_TOKENS = 1024;
 
-const FALLBACK_MODEL = "gemini-2.5-flash";
+const FALLBACK_MODEL = "gemini-2.0-flash";
 
 function state() {
   if (!globalThis.__tradingChatState) {
@@ -275,9 +275,9 @@ function classifyPrompt(prompt) {
 }
 
 const GENERATION_CONFIGS = {
-  quick:   { maxOutputTokens: 450,  temperature: 0.35 },
-  explain: { maxOutputTokens: 700,  temperature: 0.50 },
-  plan:    { maxOutputTokens: 1024, temperature: 0.45 },
+  quick:   { temperature: 0.2 },
+  explain: { temperature: 0.4 },
+  plan:    { temperature: 0.4 },
 };
 
 function buildGeminiPayload({ prompt, history, snapshot }) {
