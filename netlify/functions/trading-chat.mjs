@@ -310,10 +310,39 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
 export function buildFallbackTradingResponse({ prompt, snapshot }) {
   const p = String(prompt || "").toLowerCase();
   
-  // Detect off-topic questions in fallback
   const offTopicKeywords = ["capital", "city", "recipe", "who is", "weather", "translate", "politics", "spain", "france", "germany", "usa", "president"];
   if (offTopicKeywords.some(word => p.includes(word))) {
     return "I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?";
+  }
+
+  const price = Number(snapshot.price);
+  const change = Number(snapshot.change24hPct || 0);
+  const direction = change > 0.25 ? "bullish" : change < -0.25 ? "bearish" : "neutral";
+  const formattedPrice = price.toLocaleString("en-US", {
+    minimumFractionDigits: price >= 1 ? 2 : 8,
+    maximumFractionDigits: price >= 1 ? 2 : 8
+  });
+
+  // Handle "Risk Check" specifically in fallback
+  if (p.includes("risk") || p.includes("checklist")) {
+    return `### RISK MANAGEMENT FOR **${snapshot.symbol.toUpperCase()}**
+With the current price at **$${formattedPrice}**, here is your risk checklist:
+1. **Size for Survival:** At current **${(change).toFixed(2)}%** volatility, ensure your position size allows for a stop-loss at **$${(price * (direction === 'bullish' ? 0.98 : 1.02)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** without risking more than 1-2% of your total equity.
+2. **Volatility Guard:** Use the ATR expansion as a guide. Don't use tight stops during this phase.
+3. **Liquidity Sweeps:** Watch the **$${(price * (direction === 'bullish' ? 0.995 : 1.005)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** level; if we sweep this, reduce your leverage.
+
+*for study purpose only manage your risk.*`;
+  }
+
+  // Handle "Invalidation" specifically in fallback
+  if (p.includes("invalid")) {
+    return `### INVALIDATION POINTS FOR **${snapshot.symbol.toUpperCase()}**
+The current **${direction}** thesis for **$${formattedPrice}** becomes invalid if:
+- **Bearish Breach:** Price closes a 15m candle below **$${(price * (direction === 'bullish' ? 0.99 : 1.01)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}**.
+- **Structure Shift:** We see a failure to reclaim **$${(price * (direction === 'bullish' ? 1.005 : 0.995)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** within the next 4 hours.
+- **Volume Climax:** A massive sell-side spike occurs at the current support.
+
+*for study purpose only manage your risk.*`;
   }
 
   // Detect if user is asking about a different coin than the current snapshot
@@ -513,7 +542,8 @@ async function handlePost(req, context) {
 
   // --- OFF TOPIC / GIBBERISH GUARDRAIL ---
   // Detects random letter strings (no vowels and no spaces) or junk input
-  const isGibberish = lowerPrompt.length > 4 && !lowerPrompt.includes(" ") && !/[aeiouy1-9]/.test(lowerPrompt);
+  const textNoSpace = lowerPrompt.replace(/\s/g, '');
+  const isGibberish = textNoSpace.length > 4 && !/[aeiouy1-9]/.test(textNoSpace);
   const isJunkSymbols = lowerPrompt.length > 0 && lowerPrompt.length < 4 && !/[a-z0-9]/.test(lowerPrompt);
   
   if (isGibberish || isJunkSymbols) {
