@@ -10,7 +10,7 @@ const RATE_LIMIT_MAX = 12;
 const REQUEST_TIMEOUT_MS = 25_000;
 const MAX_OUTPUT_TOKENS = 1024;
 
-const FALLBACK_MODEL = "gemini-2.5-flash";
+const FALLBACK_MODEL = "gemini-1.5-flash";
 
 function state() {
   if (!globalThis.__tradingChatState) {
