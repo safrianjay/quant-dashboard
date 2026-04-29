@@ -521,3 +521,4 @@ export default async function tradingChat(req, context) {
 export const config = {
   path: ["/api/trading-chat/messages", "/api/trading-chat/conversations/:id"]
 };
+ 
