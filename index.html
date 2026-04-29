@@ -676,8 +676,8 @@ p,span,div,input,button{
 /* Confidence Badge Tidy Up */
 .confidence-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;border-radius:8px;font-size:10px;font-weight:800;margin:4px 0 16px 0;text-transform:uppercase;letter-spacing:0.08em;box-shadow:0 2px 6px rgba(0,0,0,0.03)}
 .confidence-badge::before{content:'🎯';font-size:12px}
-.ai-chat-typing{display:none;align-self:flex-start;width:fit-content;border:1px solid var(--info-border);background:var(--info-bg);border-radius:var(--radius-pill);padding:6px 12px;font-size:10px;font-weight:700;color:var(--info-deep);font-family:var(--font-body);box-shadow:var(--shadow-xs);margin:8px 16px;animation:ai-pulse 1.5s infinite ease-in-out}
-@keyframes ai-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.98); } }
+.ai-chat-typing{display:none;padding:8px 16px;font-size:11px;font-weight:700;color:var(--brand-primary);font-family:var(--font-body);animation:ai-pulse 1.5s infinite ease-in-out}
+@keyframes ai-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 .ai-chat-typing.show{display:block}
 .ai-chat-footer{border-top:1px solid var(--border-subtle);background:var(--surface-card);padding:14px 16px 16px}
 .ai-quick-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;scrollbar-width:thin}
@@ -1114,8 +1114,8 @@ p,span,div,input,button{
       <span class="ai-chat-msg-label">Quantichy AI</span>
       <div class="ai-chat-bubble">I can help assess entries using the exact live price captured when you send. Ask about entries, invalidation, risk, or volatility.</div>
     </div>
+    <div class="ai-chat-typing" id="ai-chat-typing">Quantichy AI is thinking...</div>
   </div>
-  <div class="ai-chat-typing" id="ai-chat-typing">Quantichy is thinking...</div>
   <footer class="ai-chat-footer">
     <div class="ai-quick-row">
       <button class="ai-quick-btn" onclick="sendAIQuickPrompt('Analyze current entry points based on the live price.')">Analyze Entry</button>
