@@ -281,8 +281,9 @@ const GENERATION_CONFIGS = {
 };
 
 function buildGeminiPayload({ prompt, history, snapshot }) {
-  // If the last message in history is the current prompt, exclude it from context building
-  // to ensure strict user/model alternation in the Gemini contents array.
+  const systemText = buildSystemInstruction(snapshot);
+  
+  // Exclude current prompt from history to ensure strict alternation
   const pastHistory = (history.length > 0 && history[history.length - 1].content === prompt)
     ? history.slice(0, -1)
     : history;
@@ -290,11 +291,11 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
   const context = buildConversationContext(pastHistory, snapshot);
   const contents = [];
 
-  // Inject older-conversation summary as a synthetic priming turn
+  // Inject older-conversation summary
   if (context.summary) {
     contents.push({
       role: "user",
-      parts: [{ text: `[Conversation summary — older messages]\n${context.summary}` }]
+      parts: [{ text: `[Older conversation summary]\n${context.summary}` }]
     });
     contents.push({
       role: "model",
@@ -302,24 +303,23 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
     });
   }
 
-  // Add recent turns as native user/model alternating pairs
+  // Add recent history
   for (const msg of context.recentMessages) {
     const role = msg.role === "assistant" ? "model" : "user";
     let text = String(msg.content || "");
 
-    // Annotate each historical user turn with the price they were seeing
     if (msg.role === "user" && msg.snapshot) {
       const snapPrice = Number(msg.snapshot.price).toLocaleString("en-US", {
         minimumFractionDigits: msg.snapshot.price >= 1 ? 2 : 8,
         maximumFractionDigits: msg.snapshot.price >= 1 ? 2 : 8,
       });
-      text = `[Snapshot at time of question: ${msg.snapshot.symbol} @ $${snapPrice} — ${msg.snapshot.timestamp}]\n\n${text}`;
+      text = `[Snapshot at time of question: ${msg.snapshot.symbol} @ $${snapPrice}]\n\n${text}`;
     }
 
     contents.push({ role, parts: [{ text }] });
   }
 
-  // Current user turn — always annotate with the fresh live snapshot
+  // Current user turn
   const snapPrice = Number(snapshot.price).toLocaleString("en-US", {
     minimumFractionDigits: snapshot.price >= 1 ? 2 : 8,
     maximumFractionDigits: snapshot.price >= 1 ? 2 : 8,
@@ -327,18 +327,18 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
   contents.push({
     role: "user",
     parts: [{
-      text: `[CURRENT LIVE SNAPSHOT — ${snapshot.symbol} @ $${snapPrice} — captured ${snapshot.timestamp}]\n\n${prompt}`
+      text: `[CURRENT LIVE SNAPSHOT — ${snapshot.symbol} @ $${snapPrice} — ${snapshot.timestamp}]\n\n${prompt}`
     }]
   });
 
-  const genConfig = GENERATION_CONFIGS[classifyPrompt(prompt)];
+  // PREPEND SYSTEM INSTRUCTION TO THE VERY FIRST TURN FOR BEST COMPATIBILITY
+  if (contents.length > 0 && contents[0].parts && contents[0].parts[0]) {
+    contents[0].parts[0].text = `[SYSTEM INSTRUCTIONS]\n${systemText}\n\n${contents[0].parts[0].text}`;
+  }
 
   return {
-    systemInstruction: {
-      parts: [{ text: buildSystemInstruction(snapshot) }]
-    },
     contents,
-    generationConfig: genConfig
+    generationConfig: GENERATION_CONFIGS[classifyPrompt(prompt)]
   };
 }
 
@@ -596,9 +596,7 @@ async function handlePost(req, context) {
       conversationId,
       message: assistantMessage,
       usage: { inputTokens: null, outputTokens: null },
-      provider: "fallback",
-      debugError: error.message,
-      debugStatus: error.status || "unknown"
+      provider: "fallback"
     });
   }
 }
