@@ -345,13 +345,13 @@ The market is currently positioning around key liquidity zones. If you're lookin
 | Support | $${(price * 0.995).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Support cluster |
 
 ### THE SETUP — DATA ANALYSIS
-Price is currently interacting with local liquidity. The volatility indicates that traders are looking for a clear breakout or rejection at this level.
+Price action currently shows a potential **MSS (Market Structure Shift)** as liquidity is being swept at local extremes. Watch for a **Fair Value Gap (FVG)** confirmation on the lower timeframes before committing to the full position.
 
 ### VOLUME TELLS THE REAL STORY
 Current relative volume is stable. On-chain activity suggests minor accumulation at these levels, with the order book showing a slight sell-side bias near the local resistance.
 
 ### BOTTOM LINE
-This setup focuses on local range play. This analysis uses the live snapshot and is for informational purposes only. Manage your risk.`;
+This setup focuses on local range play. *Informational only. Manage risk.*`;
 }
 
 function isTransientStatus(status) {
