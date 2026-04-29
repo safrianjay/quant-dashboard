@@ -233,7 +233,7 @@ A dedicated section on volume, sentiment, or index data (Fear & Greed).
 [VISUAL_SIGNAL]
 
 ### BOTTOM LINE
-Give actual, highly-actionable advice utilizing the current live price data. Do not use generic summaries. Instead, provide a highly specific plan modeled exactly after this example: "Don't chase the entry at $76K — wait for a sweep of $74,500-$75,000, which aligns with the Fib 50 and the 21-day EMA at $71,433 is rising to meet it. That's the spot for a long with a stop below $74K. If BTC can't hold $75K, we're likely retesting $70K." Incorporate the actual current price into this thesis.
+Give actual, highly-actionable advice utilizing the current live price data. Do not use generic summaries. Instead, provide a highly specific plan modeled exactly after this example: "Don't chase the entry at **$76K** — wait for a sweep of **$74,500-$75,000**, which aligns with the Fib 50 and the 21-day EMA at **$71,433** is rising to meet it. That's the spot for a long with a stop below **$74K**. If BTC can't hold **$75K**, we're likely retesting **$70K**." Incorporate the actual current price into this thesis. Ensure all specific price levels are bolded.
 
 ### RULES:
 - Use Markdown for all formatting. Use bolding liberally for prices and key terms.
@@ -370,7 +370,7 @@ Current relative volume is stable. On-chain activity suggests minor accumulation
 [VISUAL_SIGNAL]
 
 ### BOTTOM LINE
-Don't chase the entry at $${formattedPrice} — wait for a sweep of $${(price * (direction === "bullish" ? 0.995 : 1.005)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, which aligns with the Fib 50 and the 21-day EMA at $${(price * (direction === "bullish" ? 0.99 : 1.01)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} is rising to meet it. That's the spot for a ${direction === "bullish" ? "long" : "short"} with a stop below $${(price * (direction === "bullish" ? 0.98 : 1.02)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}. If ${snapshot.symbol.replace("USDT","")} can't hold these levels, we're likely retesting $${(price * (direction === "bullish" ? 0.96 : 1.04)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}. *for study purpose only manage your risk.*`;
+Don't chase the entry at **$${formattedPrice}** — wait for a sweep of **$${(price * (direction === "bullish" ? 0.995 : 1.005)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**, which aligns with the Fib 50 and the 21-day EMA at **$${(price * (direction === "bullish" ? 0.99 : 1.01)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** is rising to meet it. That's the spot for a ${direction === "bullish" ? "long" : "short"} with a stop below **$${(price * (direction === "bullish" ? 0.98 : 1.02)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**. If ${snapshot.symbol.replace("USDT","")} can't hold these levels, we're likely retesting **$${(price * (direction === "bullish" ? 0.96 : 1.04)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**. *for study purpose only manage your risk.*`;
 }
 
 function isTransientStatus(status) {
@@ -483,6 +483,29 @@ async function handlePost(req, context) {
   const conversationId = body.conversationId || `conv_${crypto.randomUUID()}`;
   const model = getEnv("GEMINI_MODEL") || FALLBACK_MODEL;
   const startedAt = Date.now();
+
+  if (body.prompt.trim().toLowerCase() === "hala madrid!") {
+    const assistantMessage = {
+      id: `msg_${crypto.randomUUID()}`,
+      role: "assistant",
+      content: "Vamos! Hala Madrid Y Nada Mas",
+      createdAt: new Date().toISOString()
+    };
+    const userMessage = {
+      id: body.clientMessageId,
+      role: "user",
+      content: body.prompt.trim(),
+      createdAt: new Date().toISOString(),
+      snapshot: body.snapshot
+    };
+    upsertConversation(conversationId, userMessage, assistantMessage);
+    return json(200, {
+      conversationId,
+      message: assistantMessage,
+      usage: { inputTokens: 0, outputTokens: 0 },
+      provider: "easter-egg"
+    });
+  }
 
   if (!apiKey) {
     const assistantMessage = {
