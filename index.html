@@ -680,10 +680,26 @@ p,span,div,input,button{
 @keyframes ai-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 .ai-chat-typing.show{display:block}
 
-/* ── TECHNICAL CHART COMPONENT ── */
-.ai-tech-chart-container{margin-top:16px;border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--neutral-200);box-shadow:var(--shadow-sm);position:relative}
-.ai-tech-chart-head{padding:8px 12px;background:var(--neutral-50);border-bottom:1px solid var(--neutral-100);display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:700;color:var(--neutral-500);text-transform:uppercase;letter-spacing:0.05em}
-.ai-tech-canvas{display:block;width:100%;height:auto;aspect-ratio:3/4;background:#fff}
+/* ── QUANTICHY TECHNICAL ANALYST COMPONENT ── */
+.ai-ta-container { margin-top: 16px; border-radius: 14px; overflow: hidden; background: #111114; border: 1px solid #27272a; color: #fff; font-family: var(--font-body); }
+.ai-ta-head { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27272a; }
+.ai-ta-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #e4e4e7; }
+.ai-ta-upgrade { background: #facc15; color: #422006; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+.ai-ta-hero { padding: 16px 16px 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+.ai-ta-asset { font-size: 18px; font-weight: 700; color: #fff; }
+.ai-ta-price { font-size: 18px; font-weight: 700; color: #fff; font-family: var(--font-mono); }
+.ai-ta-canvas-wrap { width: 100%; aspect-ratio: 16/9; position: relative; padding: 0 16px; box-sizing: border-box; }
+.ai-ta-canvas { display: block; width: 100%; height: 100%; }
+.ai-ta-legend { padding: 12px 16px 16px; display: flex; flex-wrap: wrap; gap: 16px; font-size: 11px; font-weight: 600; color: #a1a1aa; border-bottom: 1px solid #27272a; margin-bottom: 16px; }
+.ai-ta-legend-item { display: flex; align-items: center; gap: 6px; }
+.ai-ta-legend-color { width: 10px; height: 2px; border-radius: 1px; }
+.ai-ta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px; }
+.ai-ta-card { background: #18181b; border: 1px solid #27272a; border-radius: 10px; padding: 12px; }
+.ai-ta-card-title { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; color: #e4e4e7; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em; }
+.ai-ta-card-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+.ai-ta-card-row:last-child { margin-bottom: 0; }
+.ai-ta-card-label { color: #a1a1aa; }
+.ai-ta-card-val { color: #fff; font-family: var(--font-mono); }
 
 .ai-chat-footer{border-top:1px solid var(--border-subtle);background:var(--surface-card);padding:14px 16px 16px}
 .ai-quick-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;scrollbar-width:thin}
@@ -1900,78 +1916,77 @@ function _renderAITechChart(canvas, snapshot){
   const ctx = canvas.getContext('2d');
   if(!ctx) return;
   
-  // Force internal resolution
   canvas.width = 600;
-  canvas.height = 800;
+  canvas.height = 300;
 
-  // Use a slightly longer timeout to ensure layout is 100% stable
   setTimeout(() => {
     const w = canvas.width;
     const h = canvas.height;
     const p = snapshot.price || 50000;
     
-    // Clear and Fill
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0,0,w,h);
+    // Clear
+    ctx.clearRect(0,0,w,h);
     
-    // Technical Grid
-    ctx.strokeStyle = '#f1f5f9';
+    // Grid & Fibonacci levels
+    ctx.strokeStyle = '#27272a';
     ctx.lineWidth = 1;
-    for(let i=0; i<h; i+=40){ ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
-    for(let i=0; i<w; i+=40){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
+    ctx.setLineDash([4, 4]);
+    const fibs = [0.2, 0.4, 0.6, 0.8];
+    fibs.forEach(f => {
+      const y = h * f;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    });
+    ctx.setLineDash([]);
 
-    // Candles
-    const candleW = 14;
-    const gap = 12;
+    // Generate price path
+    const points = 40;
+    const xStep = w / (points - 1);
     const seed = (p * 100) % 1000;
-    let curY = h * 0.55;
+    let priceData = [];
+    let curY = h * 0.5;
     
-    for(let i=0; i<20; i++){
-      const x = 50 + i * (candleW + gap);
-      const rand = Math.sin(seed + i) * 45;
-      const open = curY;
-      const close = curY + rand;
-      const high = Math.min(open, close) - Math.abs(Math.cos(seed + i) * 25);
-      const low = Math.max(open, close) + Math.abs(Math.sin(seed + i * 2) * 25);
-      
-      ctx.strokeStyle = open > close ? '#10b981' : '#ef4444';
-      ctx.fillStyle = open > close ? '#10b981' : '#ef4444';
-      ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(x + candleW/2, high); ctx.lineTo(x + candleW/2, low); ctx.stroke();
-      ctx.fillRect(x, Math.min(open, close), candleW, Math.max(3, Math.abs(open - close)));
-      curY = close;
+    for(let i=0; i<points; i++){
+      const rand = Math.sin(seed + i * 0.5) * 20 + Math.cos(seed * 2 + i) * 10;
+      curY += rand;
+      if(curY < 20) curY = 20; if(curY > h-20) curY = h-20;
+      priceData.push(curY);
     }
 
-    // FVG Shade
-    ctx.fillStyle = 'rgba(59, 130, 246, 0.15)';
-    ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
-    ctx.setLineDash([8, 4]);
-    const fvgY = h * 0.4;
-    ctx.fillRect(100, fvgY, 400, 110);
-    ctx.strokeRect(100, fvgY, 400, 110);
-    ctx.setLineDash([]);
-    ctx.fillStyle = '#1d4ed8';
-    ctx.font = 'bold 18px sans-serif';
-    ctx.fillText('1H FVG (LIQUIDITY GAP)', 120, fvgY + 60);
+    // Generate EMAs based on price
+    let ema5 = [], ema21 = [];
+    priceData.forEach((pr, i) => {
+      ema5.push(pr + Math.sin(i) * 10);
+      ema21.push(pr + Math.cos(i) * 25);
+    });
 
-    // Levels
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.moveTo(40, h * 0.15); ctx.lineTo(560, h * 0.15); ctx.stroke();
-    ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('BSL / RELATIVE EQH', 380, h * 0.15 - 15);
+    // Draw Function
+    const drawLine = (data, color, width) => {
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      data.forEach((val, i) => {
+        if(i===0) ctx.moveTo(i * xStep, val);
+        else ctx.lineTo(i * xStep, val);
+      });
+      ctx.stroke();
+    };
 
-    // Price
-    ctx.strokeStyle = '#000';
-    ctx.setLineDash([5, 5]);
-    ctx.beginPath(); ctx.moveTo(0, curY); ctx.lineTo(w, curY); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(w - 140, curY - 18, 140, 36);
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 18px sans-serif';
-    ctx.fillText(_aiFormatPrice(p), w - 130, curY + 7);
+    // Draw EMAs and Price
+    drawLine(ema21, '#a855f7', 2);
+    drawLine(ema5, '#f59e0b', 2);
+    drawLine(priceData, '#3b82f6', 2.5);
+
+    // Fade gradient overlay (bottom up)
+    const grad = ctx.createLinearGradient(0, h, 0, 0);
+    grad.addColorStop(0, 'rgba(59, 130, 246, 0.15)');
+    grad.addColorStop(1, 'rgba(59, 130, 246, 0)');
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+    priceData.forEach((val, i) => ctx.lineTo(i * xStep, val));
+    ctx.lineTo(w, h);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
   }, 200);
 }
 
@@ -2020,13 +2035,15 @@ function _appendAIMessage(message, isStreaming = false){
         
         if(signalTag.test(html)){
           html = html.replace(signalTag, `
-            <div class="ai-tech-chart-container">
-              <div class="ai-tech-chart-head">
-                <span>Quantichy Visual Edge</span>
-                <span>${message.snapshot?.symbol || 'BTC/USDT'}</span>
+            <div class="ai-ta-container">
+              <div class="ai-ta-head">
+                <div class="ai-ta-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                  Technical Analysis
+                </div>
               </div>
-              <div style="height: 400px; display: flex; align-items: center; justify-content: center; background: #fafafa; color: var(--neutral-400); font-weight: 600; font-size: 14px;">
-                Drafting Technical Visual...
+              <div style="height: 400px; display: flex; align-items: center; justify-content: center; color: #a1a1aa; font-weight: 600; font-size: 14px;">
+                Drafting Technical Analyst...
               </div>
             </div>
           `);
@@ -2047,18 +2064,58 @@ function _appendAIMessage(message, isStreaming = false){
     let html = marked.parse(message.content);
     const signalTag = /\[VISUAL_SIGNAL\]/g;
     if(signalTag.test(html)){
+      const p = message.snapshot?.price || 50000;
       html = html.replace(signalTag, `
-        <div class="ai-tech-chart-container">
-          <div class="ai-tech-chart-head">
-            <span>Quantichy Visual Edge</span>
-            <span>${message.snapshot?.symbol || 'BTC/USDT'}</span>
+        <div class="ai-ta-container">
+          <div class="ai-ta-head">
+            <div class="ai-ta-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+              Technical Analysis
+            </div>
+            <div class="ai-ta-upgrade">⚡ Upgrade</div>
           </div>
-          <canvas class="ai-tech-canvas"></canvas>
+          <div class="ai-ta-hero">
+            <div class="ai-ta-asset">${message.snapshot?.symbol || 'Bitcoin'}</div>
+            <div class="ai-ta-price">${_aiFormatPrice(p)}</div>
+          </div>
+          <div class="ai-ta-canvas-wrap">
+            <canvas class="ai-ta-canvas"></canvas>
+          </div>
+          <div class="ai-ta-legend">
+            <div class="ai-ta-legend-item">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> LEGEND
+            </div>
+            <div class="ai-ta-legend-item"><div class="ai-ta-legend-color" style="background:#f59e0b"></div>EMA 5</div>
+            <div class="ai-ta-legend-item"><div class="ai-ta-legend-color" style="background:#a855f7"></div>EMA 21</div>
+            <div class="ai-ta-legend-item"><div class="ai-ta-legend-color" style="background:#3b82f6"></div>Price</div>
+          </div>
+          <div class="ai-ta-grid">
+            <div class="ai-ta-card">
+              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> SUPPORT</div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 61.8%</span><span class="ai-ta-card-val">${(p * 0.98).toFixed(2)}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB lower</span><span class="ai-ta-card-val">${(p * 0.97).toFixed(2)}</span></div>
+            </div>
+            <div class="ai-ta-card">
+              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> RESISTANCE</div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 23.6%</span><span class="ai-ta-card-val">${(p * 1.02).toFixed(2)}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB upper</span><span class="ai-ta-card-val">${(p * 1.03).toFixed(2)}</span></div>
+            </div>
+            <div class="ai-ta-card">
+              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> MOMENTUM</div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %k</span><span class="ai-ta-card-val">45.0</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %d</span><span class="ai-ta-card-val">60.7</span></div>
+            </div>
+            <div class="ai-ta-card">
+              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> VOLATILITY</div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">ATR</span><span class="ai-ta-card-val">${(p * 0.01).toFixed(2)}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB %b</span><span class="ai-ta-card-val">0.5</span></div>
+            </div>
+          </div>
         </div>
       `);
     }
     bubble.innerHTML = html;
-    const cvs = bubble.querySelectorAll('.ai-tech-canvas');
+    const cvs = bubble.querySelectorAll('.ai-ta-canvas');
     cvs.forEach(c => _renderAITechChart(c, message.snapshot));
     list.scrollTop = list.scrollHeight;
   }
