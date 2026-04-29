@@ -200,7 +200,7 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
 
 ### HARD GUARDRAILS — STRICT TOPIC BOUNDARY:
 - You ONLY discuss cryptocurrency markets, trading, investing, and macro economics affecting crypto.
-- If a user asks an off-topic question (e.g., geography, politics, general trivia, personal advice), respond ONLY with: 
+- If a user asks an off-topic question (e.g., geography, politics, general trivia, personal advice, or non-crypto topics), respond ONLY with: 
   "I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?"
 
 ### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
@@ -485,6 +485,9 @@ async function handlePost(req, context) {
   const startedAt = Date.now();
 
   const lowerPrompt = body.prompt.trim().toLowerCase();
+  const genericRefusal = "I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?";
+
+  // --- HALA MADRID CHECK ---
   if (lowerPrompt === "hala madrid!" || lowerPrompt === "hala madrid") {
     const assistantMessage = {
       id: `msg_${crypto.randomUUID()}`,
@@ -505,6 +508,34 @@ async function handlePost(req, context) {
       message: assistantMessage,
       usage: { inputTokens: 0, outputTokens: 0 },
       provider: "easter-egg"
+    });
+  }
+
+  // --- OFF TOPIC / GIBBERISH GUARDRAIL ---
+  // Detects random letter strings (no vowels and no spaces) or junk input
+  const isGibberish = lowerPrompt.length > 4 && !lowerPrompt.includes(" ") && !/[aeiouy1-9]/.test(lowerPrompt);
+  const isJunkSymbols = lowerPrompt.length > 0 && lowerPrompt.length < 4 && !/[a-z0-9]/.test(lowerPrompt);
+  
+  if (isGibberish || isJunkSymbols) {
+    const assistantMessage = {
+      id: `msg_${crypto.randomUUID()}`,
+      role: "assistant",
+      content: genericRefusal,
+      createdAt: new Date().toISOString()
+    };
+    const userMessage = {
+      id: body.clientMessageId,
+      role: "user",
+      content: body.prompt.trim(),
+      createdAt: new Date().toISOString(),
+      snapshot: body.snapshot
+    };
+    upsertConversation(conversationId, userMessage, assistantMessage);
+    return json(200, {
+      conversationId,
+      message: assistantMessage,
+      usage: { inputTokens: 0, outputTokens: 0 },
+      provider: "guardrail"
     });
   }
 
