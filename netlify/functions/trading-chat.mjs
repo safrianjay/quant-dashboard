@@ -337,8 +337,7 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
   }
 
   return {
-    contents,
-    generationConfig: GENERATION_CONFIGS[classifyPrompt(prompt)]
+    contents
   };
 }
 
