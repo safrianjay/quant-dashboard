@@ -281,7 +281,13 @@ const GENERATION_CONFIGS = {
 };
 
 function buildGeminiPayload({ prompt, history, snapshot }) {
-  const context = buildConversationContext(history, snapshot);
+  // If the last message in history is the current prompt, exclude it from context building
+  // to ensure strict user/model alternation in the Gemini contents array.
+  const pastHistory = (history.length > 0 && history[history.length - 1].content === prompt)
+    ? history.slice(0, -1)
+    : history;
+
+  const context = buildConversationContext(pastHistory, snapshot);
   const contents = [];
 
   // Inject older-conversation summary as a synthetic priming turn
