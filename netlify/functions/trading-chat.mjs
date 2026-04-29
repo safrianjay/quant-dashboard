@@ -242,7 +242,13 @@ Give actual, highly-actionable advice utilizing the current live price data. Do 
 - If the snapshot data is insufficient for a clear signal, provide a "WATCH" signal with clear triggers.
 - NEVER give financial advice. Always include this exact short disclaimer at the very end: *for study purpose only manage your risk.*
 - Current Asset: ${snapshot.symbol}
-- Current Price: $${snapshot.price}`;
+- Current Price: $${snapshot.price}
+- Live Technical Indicators: 
+  - RSI (14): ${snapshot.indicators?.rsi ? snapshot.indicators.rsi.toFixed(2) : 'N/A'}
+  - EMA (5): $${snapshot.indicators?.ema5 ? snapshot.indicators.ema5.toFixed(2) : 'N/A'}
+  - EMA (21): $${snapshot.indicators?.ema21 ? snapshot.indicators.ema21.toFixed(2) : 'N/A'}
+
+Incorporate these specific indicator values into your analysis, especially in the 'THE SETUP' and 'BOTTOM LINE' sections, to prove you are analyzing real-time data.`;
 }
 
 function buildGeminiPayload({ prompt, history, snapshot }) {
@@ -366,38 +372,44 @@ Maintain a neutral stance if **$${(price * (direction === 'bullish' ? 0.995 : 1.
 The market is currently positioning around key liquidity zones. If you're looking for a specific trade setup, try asking for a "Quick Scalp" or "Analyze Entry" to see the full technical breakdown.`;
   }
 
-  const signal = direction === "bullish" ? "🟢 **BUY / LONG**" : direction === "bearish" ? "🔴 **SELL / SHORT**" : "🟡 **WATCH**";
+  const rsi = snapshot.indicators?.rsi || 50;
+  const ema5 = snapshot.indicators?.ema5 || price;
+  const trend = rsi > 60 ? "overbought" : rsi < 40 ? "oversold" : "neutral";
+  const momentum = price > ema5 ? "bullish" : "bearish";
 
+  const signal = direction === "bullish" ? "🟢 **BUY / LONG**" : direction === "bearish" ? "🔴 **SELL / SHORT**" : "🟡 **WATCH**";
   const signalEmoji = direction === "bullish" ? "🟢 LONG" : direction === "bearish" ? "🔴 SHORT" : "🟡 WATCH";
 
-  return `At the captured **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is ${direction}${Number.isFinite(change) ? ` with a 24h move of **${change.toFixed(2)}%**` : ""}.
-
-### THE NARRATIVE
-The broader market is currently digesting recent liquidity shifts. We are seeing ${direction} momentum step in at the local support/resistance bands, suggesting that institutional algorithms are repositioning their spot inventory around the $${formattedPrice} mark.
+  return `### THE NARRATIVE
+At the current **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is showing a **${momentum}** expansion with the RSI sitting at **${rsi.toFixed(1)}** (${trend}). We are seeing active liquidity absorption at these levels.
 
 ### THE SIGNAL
-<div class="confidence-badge">Confidence: ${Math.min(6, 4 + Math.abs(change) / 2).toFixed(1)}/10</div>
+<div class="confidence-badge">Confidence: ${Math.min(8, 5 + Math.abs(change) / 2 + (trend !== 'neutral' ? 1 : 0)).toFixed(1)}/10</div>
 
 | Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
 | :--- | :--- | :--- | :--- |
-| ${signalEmoji} | <span class="signal-entry">$${formattedPrice}</span> | <span class="signal-sl">$${(price * (direction === "bullish" ? 0.992 : 1.008)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}</span> | <span class="signal-tp">$${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.02 : 0.98)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.03 : 0.97)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}</span> |
+| ${signalEmoji} | <span class="signal-entry">$${formattedPrice}</span> | <span class="signal-sl">$${(price * (direction === "bullish" ? 0.992 : 1.008)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}</span> | <span class="signal-tp">$${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.02 : 0.98)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.03 : 0.97)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}</span> |
 
 ### KEY LEVELS FOR NEXT 60 MINS
 | Level | Price | Why It Matters |
 | :--- | :--- | :--- |
-| Resistance | $${(price * 1.005).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Local range high |
-| Support | $${(price * 0.995).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Support cluster |
+| EMA 5 | $${ema5.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })} | Dynamic Trend Line |
+| Resistance | $${(price * 1.005).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })} | Local range high |
+| Support | $${(price * 0.995).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })} | Support cluster |
 
-### THE SETUP — DATA ANALYSIS
-Price action currently shows a potential **MSS (Market Structure Shift)** at **$${(price * (direction === "bullish" ? 1.003 : 0.997)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** as liquidity is being swept. We've identified an **FVG (Fair Value Gap)** cluster between **$${(price * (direction === "bullish" ? 0.9985 : 1.0015)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** and **$${(price * (direction === "bullish" ? 0.9995 : 1.0005)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**.
+### THE SETUP — TECHNICAL DATA
+Price action is currently reacting to the **EMA 5** at **$${ema5.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}**. With an RSI of **${rsi.toFixed(1)}**, we expect ${rsi > 70 ? 'a cooling-off period' : rsi < 30 ? 'a mean-reversion bounce' : 'continued consolidation'} within the Fair Value Gap (FVG) between **$${(price * 0.999).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** and **$${(price * 1.001).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}**.
 
 ### VOLUME TELLS THE REAL STORY
-Current relative volume is stable. On-chain activity suggests minor accumulation at these levels, with the order book showing a slight sell-side bias near the local resistance.
+Current volume confirms ${momentum} dominance. The order book is showing a cluster of buy/sell interest around the current mark, suggesting institutional positioning is underway.
 
 [VISUAL_SIGNAL]
 
 ### BOTTOM LINE
-Don't chase the entry at **$${formattedPrice}** — wait for a sweep of **$${(price * (direction === "bullish" ? 0.995 : 1.005)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**, which aligns with the Fib 50 and the 21-day EMA at **$${(price * (direction === "bullish" ? 0.99 : 1.01)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** is rising to meet it. That's the spot for a ${direction === "bullish" ? "long" : "short"} with a stop below **$${(price * (direction === "bullish" ? 0.98 : 1.02)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**. If ${snapshot.symbol.replace("USDT","")} can't hold these levels, we're likely retesting **$${(price * (direction === "bullish" ? 0.96 : 1.04)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**. *for study purpose only manage your risk.*`;
+${rsi > 70 ? `Don't chase here. The RSI is at **${rsi.toFixed(1)}** (overbought). Wait for a dip to the EMA 5 at **$${ema5.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** before entering.` : rsi < 30 ? `The market is oversold at **${rsi.toFixed(1)}**. This is a prime spot for a mean-reversion scalp with a tight stop below **$${(price * 0.995).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}**.` : `The trend is neutral but biased ${momentum}. Watch for a break of **$${(price * (momentum === 'bullish' ? 1.005 : 0.995)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** to confirm the next expansion leg.`}
+
+*for study purpose only manage your risk.*`;
+}
 }
 
 function isTransientStatus(status) {

@@ -1843,6 +1843,35 @@ let _aiConversationId = null;
 let _aiChatHistory = [];
 let _aiChatSending = false;
 
+function _calcEMA(data, period) {
+  if (!data || data.length < period) return null;
+  const k = 2 / (period + 1);
+  let ema = data.slice(0, period).reduce((a, b) => a + b, 0) / period;
+  for (let i = period; i < data.length; i++) {
+    ema = (data[i] * k) + (ema * (1 - k));
+  }
+  return ema;
+}
+
+function _calcRSI(data, period = 14) {
+  if (!data || data.length <= period) return null;
+  let gains = 0, losses = 0;
+  for (let i = 1; i <= period; i++) {
+    const diff = data[i] - data[i-1];
+    if (diff > 0) gains += diff; else losses -= diff;
+  }
+  let avgGain = gains / period, avgLoss = losses / period;
+  for (let i = period + 1; i < data.length; i++) {
+    const diff = data[i] - data[i-1];
+    const gain = diff > 0 ? diff : 0;
+    const loss = diff < 0 ? -diff : 0;
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
+  }
+  if (avgLoss === 0) return 100;
+  return 100 - (100 / (1 + avgGain / avgLoss));
+}
+
 function _aiFormatPrice(price){
   const p = Number(price);
   if(!Number.isFinite(p) || p <= 0) return '—';
@@ -1856,16 +1885,37 @@ function _aiFormatPrice(price){
   return '$' + Math.round(p).toLocaleString();
 }
 
-function _getAIEntrySnapshot(){
-  const cached = _marketPrices[currentSymbol] || {};
+async function _getAIEntrySnapshot(){
+  const sym = currentSymbol;
+  const base = currentBase;
+  const mkt = MARKET_LIST.find(m => m.sym === sym);
+  const cgId = mkt ? mkt.cgId : window.currentCgId || 'bitcoin';
+  
+  const cached = _marketPrices[sym] || {};
   const price = Number.isFinite(cached.price) && cached.price > 0 ? cached.price : PRICE;
   const chg = Number.isFinite(parseFloat(cached.chg)) ? parseFloat(cached.chg) : parseFloat(CHG);
+  
+  // Calculate Live Indicators for the AI
+  let indicators = { rsi: null, ema5: null, ema21: null };
+  try {
+    const chart = await _getChartData(cgId, 50);
+    if (chart?.prices?.length > 21) {
+      const closes = chart.prices.map(p => p[1]);
+      indicators.ema5  = _calcEMA(closes, 5);
+      indicators.ema21 = _calcEMA(closes, 21);
+      indicators.rsi   = _calcRSI(closes, 14);
+    }
+  } catch(e) {
+    console.warn("AI Snapshot Indicator Fetch Failed:", e.message);
+  }
+
   return Object.freeze({
-    symbol: `${currentBase}/USDT`,
-    cgId: window.currentCgId || 'bitcoin',
+    symbol: `${base}/USDT`,
+    cgId,
     venue: 'Quantichy Market Feed',
     instrumentType: 'perpetual',
     price,
+    indicators,
     quoteCurrency: 'USDT',
     pricePrecision: price < 1 ? 6 : 2,
     change24hPct: Number.isFinite(chg) ? chg : undefined,
@@ -2191,8 +2241,8 @@ async function _getAIAuthToken(){
   return null;
 }
 
-function refreshAIQuickButtons(){
-  const snap = _getAIEntrySnapshot();
+async function refreshAIQuickButtons(){
+  const snap = await _getAIEntrySnapshot();
   const p = snap.price ? _aiFormatPrice(snap.price) : '...';
   const sym = snap.symbol || 'this asset';
   const btns = [
@@ -2261,7 +2311,7 @@ window.handleAIChatSend = async function(forcedPrompt){
   if(!prompt) return;
   if(input && !forcedPrompt) input.value = '';
 
-  const snapshot = _getAIEntrySnapshot();
+  const snapshot = await _getAIEntrySnapshot();
   const clientMessageId = (window.crypto?.randomUUID?.() || `msg_${Date.now()}_${Math.random().toString(16).slice(2)}`);
   const userMessage = {
     id: clientMessageId,
