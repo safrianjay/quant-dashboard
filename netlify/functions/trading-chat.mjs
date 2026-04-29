@@ -206,9 +206,9 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
 ### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
 1. **INTRO**: A 2-sentence punchy summary of the current tape based on the snapshot.
 2. **THE SIGNAL**: 
-   - 🟢 **BUY / LONG** or 🔴 **SELL / SHORT** at $[Entry]
-   - **Stop Loss**: $[SL]
-   - **Take Profit**: $[TP1], $[TP2], $[TP3]
+   | Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
+   | :--- | :--- | :--- | :--- |
+   | [🟢 LONG / 🔴 SHORT] | $[Price] | $[Price] | $[TP1], $[TP2], $[TP3] |
 3. **KEY LEVELS FOR NEXT 60 MINS**:
    | Level | Price | Why It Matters |
    | :--- | :--- | :--- |
@@ -324,12 +324,14 @@ The market is currently positioning around key liquidity zones. If you're lookin
 
   const signal = direction === "bullish" ? "🟢 **BUY / LONG**" : direction === "bearish" ? "🔴 **SELL / SHORT**" : "🟡 **WATCH**";
 
+  const signalEmoji = direction === "bullish" ? "🟢 LONG" : direction === "bearish" ? "🔴 SHORT" : "🟡 WATCH";
+
   return `At the captured **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is ${direction}${Number.isFinite(change) ? ` with a 24h move of **${change.toFixed(2)}%**` : ""}.
 
 ### THE SIGNAL
-${signal} around $${formattedPrice}. 
-**Stop Loss**: $${(price * (direction === "bullish" ? 0.992 : 1.008)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
-**Take Profit**: $${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.02 : 0.98)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.03 : 0.97)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
+| Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
+| :--- | :--- | :--- | :--- |
+| ${signalEmoji} | $${formattedPrice} | $${(price * (direction === "bullish" ? 0.992 : 1.008)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | $${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.02 : 0.98)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.03 : 0.97)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} |
 
 ### KEY LEVELS FOR NEXT 60 MINS
 | Level | Price | Why It Matters |
