@@ -1897,85 +1897,82 @@ function _setAIChatSending(isSending){
 
 function _renderAITechChart(canvas, snapshot){
   if(!canvas || !snapshot) return;
-  
-  // Ensure we have a valid context and proper resolution
   const ctx = canvas.getContext('2d');
   if(!ctx) return;
   
-  // High-DPI support and internal resolution lock
+  // Force internal resolution
   canvas.width = 600;
   canvas.height = 800;
-  
-  requestAnimationFrame(() => {
+
+  // Use a slightly longer timeout to ensure layout is 100% stable
+  setTimeout(() => {
     const w = canvas.width;
     const h = canvas.height;
     const p = snapshot.price || 50000;
     
-    // 1. Clear & Background
+    // Clear and Fill
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0,0,w,h);
     
-    // 2. Pro Grid
+    // Technical Grid
     ctx.strokeStyle = '#f1f5f9';
     ctx.lineWidth = 1;
     for(let i=0; i<h; i+=40){ ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
     for(let i=0; i<w; i+=40){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
 
-    // 3. Technical Candles (Deterministic based on price)
+    // Candles
     const candleW = 14;
-    const gap = 10;
+    const gap = 12;
     const seed = (p * 100) % 1000;
     let curY = h * 0.55;
     
-    for(let i=0; i<22; i++){
-      const x = 40 + i * (candleW + gap);
-      const rand = Math.sin(seed + i) * 40;
+    for(let i=0; i<20; i++){
+      const x = 50 + i * (candleW + gap);
+      const rand = Math.sin(seed + i) * 45;
       const open = curY;
       const close = curY + rand;
-      const high = Math.min(open, close) - Math.abs(Math.cos(seed + i) * 20);
-      const low = Math.max(open, close) + Math.abs(Math.sin(seed + i * 2) * 20);
+      const high = Math.min(open, close) - Math.abs(Math.cos(seed + i) * 25);
+      const low = Math.max(open, close) + Math.abs(Math.sin(seed + i * 2) * 25);
       
       ctx.strokeStyle = open > close ? '#10b981' : '#ef4444';
       ctx.fillStyle = open > close ? '#10b981' : '#ef4444';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 3;
       ctx.beginPath(); ctx.moveTo(x + candleW/2, high); ctx.lineTo(x + candleW/2, low); ctx.stroke();
-      ctx.fillRect(x, Math.min(open, close), candleW, Math.max(2, Math.abs(open - close)));
+      ctx.fillRect(x, Math.min(open, close), candleW, Math.max(3, Math.abs(open - close)));
       curY = close;
     }
 
-    // 4. FVG Zone (Liquidity)
-    ctx.fillStyle = 'rgba(59, 130, 246, 0.12)';
-    ctx.strokeStyle = 'rgba(59, 130, 246, 0.4)';
-    ctx.setLineDash([6, 4]);
-    const fvgY = h * 0.42;
-    ctx.fillRect(120, fvgY, 380, 100);
-    ctx.strokeRect(120, fvgY, 380, 100);
+    // FVG Shade
+    ctx.fillStyle = 'rgba(59, 130, 246, 0.15)';
+    ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
+    ctx.setLineDash([8, 4]);
+    const fvgY = h * 0.4;
+    ctx.fillRect(100, fvgY, 400, 110);
+    ctx.strokeRect(100, fvgY, 400, 110);
     ctx.setLineDash([]);
-    ctx.fillStyle = '#2563eb';
-    ctx.font = 'bold 16px sans-serif';
-    ctx.fillText('1H FVG (LIQUIDITY GAP)', 135, fvgY + 55);
+    ctx.fillStyle = '#1d4ed8';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText('1H FVG (LIQUIDITY GAP)', 120, fvgY + 60);
 
-    // 5. BSL / Relative EQH
+    // Levels
     ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.moveTo(40, h * 0.15); ctx.lineTo(560, h * 0.15); ctx.stroke();
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 13px sans-serif';
-    ctx.fillText('BSL / RELATIVE EQH', 390, h * 0.15 - 12);
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText('BSL / RELATIVE EQH', 380, h * 0.15 - 15);
 
-    // 6. Live Price Action
+    // Price
     ctx.strokeStyle = '#000';
-    ctx.setLineDash([4, 3]);
+    ctx.setLineDash([5, 5]);
     ctx.beginPath(); ctx.moveTo(0, curY); ctx.lineTo(w, curY); ctx.stroke();
     ctx.setLineDash([]);
-    
-    // Price Badge (High Visibility)
     ctx.fillStyle = '#000';
-    ctx.fillRect(w - 120, curY - 16, 120, 32);
+    ctx.fillRect(w - 140, curY - 18, 140, 36);
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 16px sans-serif';
-    ctx.fillText(_aiFormatPrice(p), w - 110, curY + 6);
-  });
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText(_aiFormatPrice(p), w - 130, curY + 7);
+  }, 200);
 }
 
 function _appendAIMessage(message, isStreaming = false){
