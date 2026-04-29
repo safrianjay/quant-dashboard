@@ -1853,6 +1853,10 @@ function updateAIChatLiveBadge(){
   const pill = document.getElementById('ai-live-pill');
   const sub = document.getElementById('ai-chat-sub');
   if(!pill) return;
+  
+  // Don't overwrite the header if we're currently thinking
+  if(_aiChatSending && sub && sub.innerHTML.includes('thinking')) return;
+
   const snapshot = _getAIEntrySnapshot();
   const isDown = Number(snapshot.change24hPct || 0) < 0;
   pill.classList.toggle('is-down', isDown);
