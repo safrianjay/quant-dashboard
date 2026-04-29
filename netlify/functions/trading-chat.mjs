@@ -319,7 +319,7 @@ export function buildFallbackTradingResponse({ prompt, snapshot }) {
   const change = Number(snapshot.change24hPct || 0);
   const direction = change > 0.25 ? "bullish" : change < -0.25 ? "bearish" : "neutral";
   const formattedPrice = price.toLocaleString("en-US", {
-    minimumFractionDigits: price >= 1 ? 2 : 8,
+    minimumFractionDigits: price >= 1 ? 0 : 8,
     maximumFractionDigits: price >= 1 ? 2 : 8
   });
 
@@ -329,9 +329,9 @@ export function buildFallbackTradingResponse({ prompt, snapshot }) {
 At the current **${snapshot.symbol}** price of **$${formattedPrice}**, the volatility is sitting at **${Math.abs(change).toFixed(2)}%**. Effective risk management is now the primary objective to preserve capital for the next expansion.
 
 ### RISK MANAGEMENT CHECKLIST
-1. **Size for Survival:** Ensure your position size allows for a stop-loss at **$${(price * (direction === 'bullish' ? 0.98 : 1.02)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** without risking more than 1-2% of total equity.
-2. **Volatility Guard:** Use the ATR expansion as a guide. Don't use tight stops during this phase as liquidity sweeps are frequent.
-3. **Liquidity Sweeps:** Watch the **$${(price * (direction === 'bullish' ? 0.995 : 1.005)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** level; if we sweep this, reduce your leverage immediately.
+**1.** **Size for Survival:** Ensure your position size allows for a stop-loss at **$${(price * (direction === 'bullish' ? 0.98 : 1.02)).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** without risking more than 1-2% of total equity.
+**2.** **Volatility Guard:** Use the ATR expansion as a guide. Don't use tight stops during this phase as liquidity sweeps are frequent.
+**3.** **Liquidity Sweeps:** Watch the **$${(price * (direction === 'bullish' ? 0.995 : 1.005)).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** level; if we sweep this, reduce your leverage immediately.
 
 ### BOTTOM LINE
 Don't overleverage at **$${formattedPrice}**. Focus on capital preservation until the higher-timeframe structure confirms the next trend. *for study purpose only manage your risk.*`;
