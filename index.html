@@ -681,25 +681,24 @@ p,span,div,input,button{
 .ai-chat-typing.show{display:block}
 
 /* ── QUANTICHY TECHNICAL ANALYST COMPONENT ── */
-.ai-ta-container { margin-top: 16px; border-radius: 14px; overflow: hidden; background: #111114; border: 1px solid #27272a; color: #fff; font-family: var(--font-body); }
-.ai-ta-head { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27272a; }
-.ai-ta-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #e4e4e7; }
-.ai-ta-upgrade { background: #facc15; color: #422006; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+.ai-ta-container { margin-top: 16px; border-radius: 14px; overflow: hidden; background: #fff; border: 1px solid var(--neutral-200); color: var(--neutral-900); font-family: var(--font-body); box-shadow: var(--shadow-sm); }
+.ai-ta-head { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--neutral-100); background: var(--neutral-50); }
+.ai-ta-title { font-size: 11px; font-weight: 800; color: var(--neutral-600); text-transform: uppercase; letter-spacing: 0.05em; }
 .ai-ta-hero { padding: 16px 16px 8px; display: flex; justify-content: space-between; align-items: flex-end; }
-.ai-ta-asset { font-size: 18px; font-weight: 700; color: #fff; }
-.ai-ta-price { font-size: 18px; font-weight: 700; color: #fff; font-family: var(--font-mono); }
+.ai-ta-asset { font-size: 16px; font-weight: 800; color: var(--neutral-900); }
+.ai-ta-price { font-size: 16px; font-weight: 800; color: var(--neutral-900); font-family: var(--font-mono); }
 .ai-ta-canvas-wrap { width: 100%; aspect-ratio: 16/9; position: relative; padding: 0 16px; box-sizing: border-box; }
 .ai-ta-canvas { display: block; width: 100%; height: 100%; }
-.ai-ta-legend { padding: 12px 16px 16px; display: flex; flex-wrap: wrap; gap: 16px; font-size: 11px; font-weight: 600; color: #a1a1aa; border-bottom: 1px solid #27272a; margin-bottom: 16px; }
+.ai-ta-legend { padding: 12px 16px 16px; display: flex; flex-wrap: wrap; gap: 16px; font-size: 11px; font-weight: 700; color: var(--neutral-500); border-bottom: 1px solid var(--neutral-100); margin-bottom: 16px; }
 .ai-ta-legend-item { display: flex; align-items: center; gap: 6px; }
-.ai-ta-legend-color { width: 10px; height: 2px; border-radius: 1px; }
+.ai-ta-legend-color { width: 10px; height: 3px; border-radius: 2px; }
 .ai-ta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px; }
-.ai-ta-card { background: #18181b; border: 1px solid #27272a; border-radius: 10px; padding: 12px; }
-.ai-ta-card-title { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; color: #e4e4e7; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em; }
-.ai-ta-card-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+.ai-ta-card { background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: 10px; padding: 12px; }
+.ai-ta-card-title { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; color: var(--neutral-700); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em; }
+.ai-ta-card-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: 600; }
 .ai-ta-card-row:last-child { margin-bottom: 0; }
-.ai-ta-card-label { color: #a1a1aa; }
-.ai-ta-card-val { color: #fff; font-family: var(--font-mono); }
+.ai-ta-card-label { color: var(--neutral-500); }
+.ai-ta-card-val { color: var(--neutral-900); font-family: var(--font-mono); font-weight: 700; }
 
 .ai-chat-footer{border-top:1px solid var(--border-subtle);background:var(--surface-card);padding:14px 16px 16px}
 .ai-quick-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;scrollbar-width:thin}
@@ -1928,7 +1927,7 @@ function _renderAITechChart(canvas, snapshot){
     ctx.clearRect(0,0,w,h);
     
     // Grid & Fibonacci levels
-    ctx.strokeStyle = '#27272a';
+    ctx.strokeStyle = '#e2e8f0';
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 4]);
     const fibs = [0.2, 0.4, 0.6, 0.8];
@@ -1987,6 +1986,23 @@ function _renderAITechChart(canvas, snapshot){
     ctx.fillStyle = grad;
     ctx.fill();
 
+    // Horizontal Price Line (Current Price)
+    const currentPriceY = priceData[priceData.length - 1];
+    ctx.beginPath();
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.moveTo(0, currentPriceY);
+    ctx.lineTo(w, currentPriceY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Price Line Dot
+    ctx.beginPath();
+    ctx.fillStyle = '#0f172a';
+    ctx.arc(w - 2, currentPriceY, 4, 0, Math.PI * 2);
+    ctx.fill();
+
   }, 200);
 }
 
@@ -2038,11 +2054,10 @@ function _appendAIMessage(message, isStreaming = false){
             <div class="ai-ta-container">
               <div class="ai-ta-head">
                 <div class="ai-ta-title">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                  Technical Analysis
+                  Quantichy Technical Analyst
                 </div>
               </div>
-              <div style="height: 400px; display: flex; align-items: center; justify-content: center; color: #a1a1aa; font-weight: 600; font-size: 14px;">
+              <div style="height: 400px; display: flex; align-items: center; justify-content: center; color: var(--neutral-400); font-weight: 600; font-size: 14px;">
                 Drafting Technical Analyst...
               </div>
             </div>
@@ -2069,8 +2084,7 @@ function _appendAIMessage(message, isStreaming = false){
         <div class="ai-ta-container">
           <div class="ai-ta-head">
             <div class="ai-ta-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-              Technical Analysis
+              Quantichy Technical Analyst
             </div>
           </div>
           <div class="ai-ta-hero">
@@ -2082,7 +2096,7 @@ function _appendAIMessage(message, isStreaming = false){
           </div>
           <div class="ai-ta-legend">
             <div class="ai-ta-legend-item">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> LEGEND
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--neutral-400)" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> LEGEND
             </div>
             <div class="ai-ta-legend-item"><div class="ai-ta-legend-color" style="background:#f59e0b"></div>EMA 5</div>
             <div class="ai-ta-legend-item"><div class="ai-ta-legend-color" style="background:#a855f7"></div>EMA 21</div>
@@ -2090,24 +2104,24 @@ function _appendAIMessage(message, isStreaming = false){
           </div>
           <div class="ai-ta-grid">
             <div class="ai-ta-card">
-              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> SUPPORT</div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 61.8%</span><span class="ai-ta-card-val">${(p * 0.9604).toFixed(2)}</span></div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB lower</span><span class="ai-ta-card-val">${(p * 0.9506).toFixed(2)}</span></div>
+              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> SUPPORT</div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 61.8%</span><span class="ai-ta-card-val">${(p * 0.9604).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB lower</span><span class="ai-ta-card-val">${(p * 0.9506).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>
             </div>
             <div class="ai-ta-card">
-              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> RESISTANCE</div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 23.6%</span><span class="ai-ta-card-val">${(p * 0.9997).toFixed(2)}</span></div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB upper</span><span class="ai-ta-card-val">${(p * 1.0095).toFixed(2)}</span></div>
+              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> RESISTANCE</div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 23.6%</span><span class="ai-ta-card-val">${(p * 0.9997).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB upper</span><span class="ai-ta-card-val">${(p * 1.0095).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>
             </div>
             <div class="ai-ta-card">
-              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> MOMENTUM</div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %k</span><span class="ai-ta-card-val">${Math.min(95, Math.max(5, (p * 0.007) % 100)).toFixed(1)}</span></div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %d</span><span class="ai-ta-card-val">${Math.min(95, Math.max(5, ((p * 0.007) % 100) * 1.15)).toFixed(1)}</span></div>
+              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> MOMENTUM</div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %k</span><span class="ai-ta-card-val">${Math.min(95, Math.max(5, (p * 0.007) % 100)).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %d</span><span class="ai-ta-card-val">${Math.min(95, Math.max(5, ((p * 0.007) % 100) * 1.15)).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})}</span></div>
             </div>
             <div class="ai-ta-card">
-              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> VOLATILITY</div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">ATR</span><span class="ai-ta-card-val">${(p * 0.0098).toFixed(2)}</span></div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB %b</span><span class="ai-ta-card-val">${Math.abs(Math.sin(p)).toFixed(2)}</span></div>
+              <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> VOLATILITY</div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">ATR</span><span class="ai-ta-card-val">${(p * 0.0098).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB %b</span><span class="ai-ta-card-val">${Math.abs(Math.sin(p)).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>
             </div>
           </div>
         </div>
