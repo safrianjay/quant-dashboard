@@ -2072,7 +2072,6 @@ function _appendAIMessage(message, isStreaming = false){
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
               Technical Analysis
             </div>
-            <div class="ai-ta-upgrade">⚡ Upgrade</div>
           </div>
           <div class="ai-ta-hero">
             <div class="ai-ta-asset">${message.snapshot?.symbol || 'Bitcoin'}</div>
@@ -2092,23 +2091,23 @@ function _appendAIMessage(message, isStreaming = false){
           <div class="ai-ta-grid">
             <div class="ai-ta-card">
               <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> SUPPORT</div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 61.8%</span><span class="ai-ta-card-val">${(p * 0.98).toFixed(2)}</span></div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB lower</span><span class="ai-ta-card-val">${(p * 0.97).toFixed(2)}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 61.8%</span><span class="ai-ta-card-val">${(p * 0.9604).toFixed(2)}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB lower</span><span class="ai-ta-card-val">${(p * 0.9506).toFixed(2)}</span></div>
             </div>
             <div class="ai-ta-card">
               <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> RESISTANCE</div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 23.6%</span><span class="ai-ta-card-val">${(p * 1.02).toFixed(2)}</span></div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB upper</span><span class="ai-ta-card-val">${(p * 1.03).toFixed(2)}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 23.6%</span><span class="ai-ta-card-val">${(p * 0.9997).toFixed(2)}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB upper</span><span class="ai-ta-card-val">${(p * 1.0095).toFixed(2)}</span></div>
             </div>
             <div class="ai-ta-card">
               <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> MOMENTUM</div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %k</span><span class="ai-ta-card-val">45.0</span></div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %d</span><span class="ai-ta-card-val">60.7</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %k</span><span class="ai-ta-card-val">${Math.min(95, Math.max(5, (p * 0.007) % 100)).toFixed(1)}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">Stoch %d</span><span class="ai-ta-card-val">${Math.min(95, Math.max(5, ((p * 0.007) % 100) * 1.15)).toFixed(1)}</span></div>
             </div>
             <div class="ai-ta-card">
               <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> VOLATILITY</div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">ATR</span><span class="ai-ta-card-val">${(p * 0.01).toFixed(2)}</span></div>
-              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB %b</span><span class="ai-ta-card-val">0.5</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">ATR</span><span class="ai-ta-card-val">${(p * 0.0098).toFixed(2)}</span></div>
+              <div class="ai-ta-card-row"><span class="ai-ta-card-label">BB %b</span><span class="ai-ta-card-val">${Math.abs(Math.sin(p)).toFixed(2)}</span></div>
             </div>
           </div>
         </div>
