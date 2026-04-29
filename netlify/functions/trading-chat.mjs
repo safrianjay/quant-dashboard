@@ -228,7 +228,7 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
 - Tone: Professional, slightly aggressive, "no-noise" technical analysis.
 - Always include the table and the Signal section.
 - If the snapshot data is insufficient for a clear signal, provide a "WATCH" signal with clear triggers.
-- NEVER give financial advice. Always include this exact short disclaimer at the very end: *Informational only. Manage risk.*
+- NEVER give financial advice. Always include this exact short disclaimer at the very end: *for study purpose only manage your risk.*
 - Current Asset: ${snapshot.symbol}
 - Current Price: $${snapshot.price}`;
 }
@@ -358,7 +358,7 @@ Current relative volume is stable. On-chain activity suggests minor accumulation
 [VISUAL_SIGNAL]
 
 ### BOTTOM LINE
-Don't chase the entry at $${formattedPrice} — wait for a sweep of $${(price * (direction === "bullish" ? 0.995 : 1.005)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, which aligns with the Fib 50 and the 21-day EMA at $${(price * (direction === "bullish" ? 0.99 : 1.01)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} is rising to meet it. That's the spot for a ${direction === "bullish" ? "long" : "short"} with a stop below $${(price * (direction === "bullish" ? 0.98 : 1.02)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}. If ${snapshot.symbol.replace("USDT","")} can't hold these levels, we're likely retesting $${(price * (direction === "bullish" ? 0.96 : 1.04)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}. *Informational only. Manage risk.*`;
+Don't chase the entry at $${formattedPrice} — wait for a sweep of $${(price * (direction === "bullish" ? 0.995 : 1.005)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, which aligns with the Fib 50 and the 21-day EMA at $${(price * (direction === "bullish" ? 0.99 : 1.01)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} is rising to meet it. That's the spot for a ${direction === "bullish" ? "long" : "short"} with a stop below $${(price * (direction === "bullish" ? 0.98 : 1.02)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}. If ${snapshot.symbol.replace("USDT","")} can't hold these levels, we're likely retesting $${(price * (direction === "bullish" ? 0.96 : 1.04)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}. *for study purpose only manage your risk.*`;
 }
 
 function isTransientStatus(status) {
