@@ -10,7 +10,7 @@ const RATE_LIMIT_MAX = 12;
 const REQUEST_TIMEOUT_MS = 25_000;
 const MAX_OUTPUT_TOKENS = 1024;
 
-const FALLBACK_MODEL = "gemini-1.5-flash";
+const FALLBACK_MODEL = "gemini-2.5-flash";
 
 function state() {
   if (!globalThis.__tradingChatState) {
@@ -474,13 +474,6 @@ async function handlePost(req, context) {
   }
 
   const body = await readJson(req);
-  if (body && body.prompt === "DEBUG_LIST_MODELS") {
-    const apiKey = getProviderApiKey();
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-    const data = await res.json();
-    return json(200, { debugModels: data });
-  }
-
   const validation = validatePayload(body);
   if (!validation.ok) {
     return json(400, { error: "Invalid trading chat payload", details: validation.errors });
@@ -601,11 +594,7 @@ async function handlePost(req, context) {
       conversationId,
       message: assistantMessage,
       usage: { inputTokens: null, outputTokens: null },
-      provider: "fallback",
-      keyLength: apiKey.length,
-      debugError: error.message,
-      debugBody: error.providerBody,
-      debugModel: model
+      provider: "fallback"
     });
   }
 }
