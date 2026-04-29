@@ -517,7 +517,8 @@ async function handlePost(req, context) {
       conversationId,
       message: assistantMessage,
       usage: { inputTokens: null, outputTokens: null },
-      provider: "fallback"
+      provider: "fallback",
+      keyLength: apiKey.length
     });
   }
 
@@ -596,7 +597,8 @@ async function handlePost(req, context) {
       conversationId,
       message: assistantMessage,
       usage: { inputTokens: null, outputTokens: null },
-      provider: "fallback"
+      provider: "fallback",
+      keyLength: apiKey.length
     });
   }
 }
