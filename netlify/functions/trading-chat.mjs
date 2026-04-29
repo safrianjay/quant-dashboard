@@ -210,6 +210,39 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
 - Current Price: $${snapshot.price}`;
 }
 
+function buildGeminiPayload({ prompt, history, snapshot }) {
+  const systemText = buildSystemInstruction(snapshot);
+  
+  // Exclude current prompt from history to ensure strict alternation
+  const pastHistory = (history.length > 0 && history[history.length - 1].content === prompt)
+    ? history.slice(0, -1)
+    : history;
+
+  const context = buildConversationContext(pastHistory, snapshot);
+  const contents = [];
+
+  // Inject older-conversation summary
+  if (context.summary) {
+    contents.push({
+      role: "user",
+      parts: [{ text: `[Older conversation summary]\n${context.summary}` }]
+    });
+    contents.push({
+      role: "model",
+      parts: [{ text: "Understood. I have context from our earlier conversation." }]
+    });
+  }
+
+  // Add recent history
+  for (const msg of context.recentMessages) {
+    const role = msg.role === "assistant" ? "model" : "user";
+    let text = String(msg.content || "");
+
+    if (msg.role === "user" && msg.snapshot) {
+      const snapPrice = Number(msg.snapshot.price).toLocaleString("en-US", {
+        minimumFractionDigits: msg.snapshot.price >= 1 ? 2 : 8,
+        maximumFractionDigits: msg.snapshot.price >= 1 ? 2 : 8,
+      });
       text = `[Snapshot at time of question: ${msg.snapshot.symbol} @ $${snapPrice}]\n\n${text}`;
     }
 
