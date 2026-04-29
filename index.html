@@ -679,6 +679,12 @@ p,span,div,input,button{
 .ai-chat-typing{display:none;padding:8px 16px;font-size:11px;font-weight:700;color:var(--brand-primary);font-family:var(--font-body);animation:ai-pulse 1.5s infinite ease-in-out}
 @keyframes ai-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 .ai-chat-typing.show{display:block}
+
+/* ── TECHNICAL CHART COMPONENT ── */
+.ai-tech-chart-container{margin-top:16px;border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--neutral-200);box-shadow:var(--shadow-sm);position:relative}
+.ai-tech-chart-head{padding:8px 12px;background:var(--neutral-50);border-bottom:1px solid var(--neutral-100);display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:700;color:var(--neutral-500);text-transform:uppercase;letter-spacing:0.05em}
+.ai-tech-canvas{display:block;width:100%;height:auto;aspect-ratio:3/4;background:#fff}
+
 .ai-chat-footer{border-top:1px solid var(--border-subtle);background:var(--surface-card);padding:14px 16px 16px}
 .ai-quick-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;scrollbar-width:thin}
 .ai-quick-btn{white-space:nowrap;border:1px solid var(--info-border);background:var(--info-bg);color:var(--info-deep);border-radius:var(--radius-pill);padding:6px 10px;font-size:11px;font-weight:var(--fw-semibold);font-family:var(--font-body);cursor:pointer}
@@ -1889,6 +1895,80 @@ function _setAIChatSending(isSending){
   }
 }
 
+function _renderAITechChart(canvas, snapshot){
+  if(!canvas || !snapshot) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = 600;
+  const h = canvas.height = 800;
+  const p = snapshot.price || 50000;
+  
+  // Background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,w,h);
+  
+  // Grid
+  ctx.strokeStyle = '#f1f5f9';
+  ctx.lineWidth = 1;
+  for(let i=0; i<h; i+=40){ ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
+  for(let i=0; i<w; i+=40){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
+
+  // Draw simulated candles (reproducible from snapshot price)
+  const candleW = 12;
+  const gap = 8;
+  const seed = (p * 100) % 1000;
+  let curY = h * 0.5;
+  
+  for(let i=0; i<25; i++){
+    const x = 50 + i * (candleW + gap);
+    // Deterministic random for consistent view
+    const rand = Math.sin(seed + i) * 30;
+    const open = curY;
+    const close = curY + rand;
+    const high = Math.min(open, close) - Math.abs(Math.cos(seed + i) * 15);
+    const low = Math.max(open, close) + Math.abs(Math.sin(seed + i * 2) * 15);
+    
+    ctx.strokeStyle = open > close ? '#10b981' : '#ef4444';
+    ctx.fillStyle = open > close ? '#10b981' : '#ef4444';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x + candleW/2, high); ctx.lineTo(x + candleW/2, low); ctx.stroke();
+    ctx.fillRect(x, Math.min(open, close), candleW, Math.max(1, Math.abs(open - close)));
+    curY = close;
+  }
+
+  // Draw FVG (Fair Value Gap)
+  ctx.fillStyle = 'rgba(59, 130, 246, 0.08)';
+  ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
+  ctx.setLineDash([4, 4]);
+  const fvgY = h * 0.45;
+  ctx.fillRect(150, fvgY, 350, 80);
+  ctx.strokeRect(150, fvgY, 350, 80);
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#3b82f6';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.fillText('1H FVG (Liquidity Gap)', 165, fvgY + 45);
+
+  // Draw BSL (Buy Side Liquidity)
+  ctx.strokeStyle = '#0f172a';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(50, h * 0.2); ctx.lineTo(550, h * 0.2); ctx.stroke();
+  ctx.fillStyle = '#0f172a';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.fillText('BSL / RELATIVE EQH', 420, h * 0.2 - 10);
+
+  // Draw Price Line
+  ctx.strokeStyle = '#000';
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(0, curY); ctx.lineTo(w, curY); ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // Price Badge
+  ctx.fillStyle = '#000';
+  ctx.fillRect(w - 110, curY - 14, 110, 28);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.fillText(_aiFormatPrice(p), w - 100, curY + 5);
+}
+
 function _appendAIMessage(message, isStreaming = false){
   const list = document.getElementById('ai-chat-messages');
   const typing = document.getElementById('ai-chat-typing');
@@ -1924,28 +2004,58 @@ function _appendAIMessage(message, isStreaming = false){
   if (role === 'assistant' && isStreaming) {
     let index = 0;
     const content = message.content;
-    const speed = 10; // ms per char
+    const speed = 10;
     
     function type() {
       if (index < content.length) {
-        // Find next chunk to make it feel natural but faster for long tables
-        const nextChunkSize = content.charAt(index) === '|' ? 20 : 5;
-        index += nextChunkSize;
-        bubble.innerHTML = marked.parse(content.slice(0, index));
+        index += content.charAt(index) === '|' ? 20 : 5;
+        let html = marked.parse(content.slice(0, index));
+        if(html.includes('[VISUAL_SIGNAL]')){
+          html = html.replace('[VISUAL_SIGNAL]', `
+            <div class="ai-tech-chart-container">
+              <div class="ai-tech-chart-head">
+                <span>Quantichy Visual Edge</span>
+                <span>${message.snapshot?.symbol || 'BTC/USDT'}</span>
+              </div>
+              <canvas class="ai-tech-canvas"></canvas>
+            </div>
+          `);
+        }
+        bubble.innerHTML = html;
+        const cvs = bubble.querySelectorAll('.ai-tech-canvas');
+        cvs.forEach(c => {
+          if(!c.dataset.rendered) {
+            _renderAITechChart(c, message.snapshot);
+            c.dataset.rendered = 'true';
+          }
+        });
         list.scrollTop = list.scrollHeight;
         setTimeout(type, speed);
       } else {
-        bubble.innerHTML = marked.parse(content);
-        list.scrollTop = list.scrollHeight;
+        finalizeBubble();
       }
     }
     type();
   } else {
-    if (role === 'assistant') {
-      bubble.innerHTML = marked.parse(message.content);
-    } else {
-      bubble.textContent = message.content;
+    finalizeBubble();
+  }
+
+  function finalizeBubble(){
+    let html = marked.parse(message.content);
+    if(html.includes('[VISUAL_SIGNAL]')){
+      html = html.replace('[VISUAL_SIGNAL]', `
+        <div class="ai-tech-chart-container">
+          <div class="ai-tech-chart-head">
+            <span>Quantichy Visual Edge</span>
+            <span>${message.snapshot?.symbol || 'BTC/USDT'}</span>
+          </div>
+          <canvas class="ai-tech-canvas"></canvas>
+        </div>
+      `);
     }
+    bubble.innerHTML = html;
+    const cvs = bubble.querySelectorAll('.ai-tech-canvas');
+    cvs.forEach(c => _renderAITechChart(c, message.snapshot));
     list.scrollTop = list.scrollHeight;
   }
 }

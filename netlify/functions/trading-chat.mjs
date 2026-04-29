@@ -219,6 +219,7 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
    | ... | ... | ... |
 4. **THE SETUP — [THEME]**: Use a bold header. Explain the current price action, focusing on specific **MSS (Market Structure Shift)** and **FVG (Fair Value Gap)** price levels (e.g., "MSS identified at $[Price]"). Discuss liquidity sweeps, divergence, or volume profiles in detail. Use bolding for all indicators and key price zones.
 5. **VOLUME TELLS THE REAL STORY**: A dedicated section on volume, sentiment, or index data (Fear & Greed).
+[VISUAL_SIGNAL]
 6. **BOTTOM LINE**: A final 1-2 sentence summary of the trade thesis.
 
 ### RULES:
@@ -349,6 +350,8 @@ Price action currently shows a potential **MSS (Market Structure Shift)** at **$
 
 ### VOLUME TELLS THE REAL STORY
 Current relative volume is stable. On-chain activity suggests minor accumulation at these levels, with the order book showing a slight sell-side bias near the local resistance.
+
+[VISUAL_SIGNAL]
 
 ### BOTTOM LINE
 This setup focuses on local range play. *Informational only. Manage risk.*`;
