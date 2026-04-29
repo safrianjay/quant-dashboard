@@ -1811,7 +1811,10 @@ function updateAIChatLiveBadge(){
   const isDown = Number(snapshot.change24hPct || 0) < 0;
   pill.classList.toggle('is-down', isDown);
   pill.textContent = `Live: ${_aiFormatPrice(snapshot.price)}`;
-  if(sub) sub.textContent = `${snapshot.symbol} · ${snapshot.timestamp.slice(11,19)} UTC snapshot feed`;
+  if(sub) {
+    const localTime = new Date(snapshot.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    sub.textContent = `${snapshot.symbol} · ${localTime} snapshot feed`;
+  }
 }
 
 function _setAIChatSending(isSending){
@@ -1853,7 +1856,8 @@ function _appendAIMessage(message){
   if(message.snapshot){
     const snap = document.createElement('div');
     snap.className = 'ai-chat-snapshot';
-    snap.textContent = `Snapshot: ${_aiFormatPrice(message.snapshot.price)} · ${message.snapshot.timestamp.slice(11,19)} UTC`;
+    const localTime = new Date(message.snapshot.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    snap.textContent = `Snapshot: ${_aiFormatPrice(message.snapshot.price)} · ${localTime}`;
     row.appendChild(snap);
   }
 
