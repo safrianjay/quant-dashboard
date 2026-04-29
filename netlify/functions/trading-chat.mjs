@@ -12,6 +12,12 @@ const MAX_OUTPUT_TOKENS = 1024;
 
 const FALLBACK_MODEL = "gemini-2.0-flash";
 
+const GENERATION_CONFIGS = {
+  quick:   { temperature: 0.2 },
+  explain: { temperature: 0.4 },
+  plan:    { temperature: 0.4 },
+};
+
 function state() {
   if (!globalThis.__tradingChatState) {
     globalThis.__tradingChatState = {
@@ -179,6 +185,13 @@ export function buildConversationContext(history, currentSnapshot) {
     recentMessages,
     currentSnapshot
   };
+}
+
+function classifyPrompt(prompt) {
+  const p = String(prompt || "").toLowerCase();
+  if (p.includes("plan") || p.includes("strategy") || p.includes("setup")) return "plan";
+  if (p.includes("explain") || p.includes("why") || p.includes("what is")) return "explain";
+  return "quick";
 }
 
 function buildSystemInstruction(snapshot) {
