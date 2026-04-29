@@ -1868,15 +1868,23 @@ function _setAIChatSending(isSending){
   const btn = document.getElementById('ai-chat-send');
   const typing = document.getElementById('ai-chat-typing');
   const input = document.getElementById('ai-chat-input');
+  const sub = document.getElementById('ai-chat-sub');
+  
   if(btn){
     btn.disabled = isSending;
-    btn.textContent = isSending ? 'Sending' : 'Send';
+    btn.textContent = isSending ? 'Thinking' : 'Send';
   }
   if(input) input.disabled = isSending;
   if(typing) typing.classList.toggle('show', isSending);
+  
+  if(isSending && sub) {
+    sub.innerHTML = '<span style="color:var(--brand-primary);font-weight:700">Quantichy is thinking...</span>';
+  } else if(!isSending) {
+    updateAIChatLiveBadge();
+  }
 }
 
-function _appendAIMessage(message){
+function _appendAIMessage(message, isStreaming = false){
   const list = document.getElementById('ai-chat-messages');
   if(!list) return;
   const row = document.createElement('div');
@@ -1889,13 +1897,7 @@ function _appendAIMessage(message){
 
   const bubble = document.createElement('div');
   bubble.className = 'ai-chat-bubble markdown-body';
-  // Render Markdown for assistant, plain text for user
-  if (role === 'assistant') {
-    bubble.innerHTML = marked.parse(message.content);
-  } else {
-    bubble.textContent = message.content;
-  }
-
+  
   row.appendChild(label);
   row.appendChild(bubble);
 
@@ -1909,6 +1911,34 @@ function _appendAIMessage(message){
 
   list.appendChild(row);
   list.scrollTop = list.scrollHeight;
+
+  if (role === 'assistant' && isStreaming) {
+    let index = 0;
+    const content = message.content;
+    const speed = 10; // ms per char
+    
+    function type() {
+      if (index < content.length) {
+        // Find next chunk to make it feel natural but faster for long tables
+        const nextChunkSize = content.charAt(index) === '|' ? 20 : 5;
+        index += nextChunkSize;
+        bubble.innerHTML = marked.parse(content.slice(0, index));
+        list.scrollTop = list.scrollHeight;
+        setTimeout(type, speed);
+      } else {
+        bubble.innerHTML = marked.parse(content);
+        list.scrollTop = list.scrollHeight;
+      }
+    }
+    type();
+  } else {
+    if (role === 'assistant') {
+      bubble.innerHTML = marked.parse(message.content);
+    } else {
+      bubble.textContent = message.content;
+    }
+    list.scrollTop = list.scrollHeight;
+  }
 }
 
 async function _getAIAuthToken(){
@@ -2025,7 +2055,7 @@ window.handleAIChatSend = async function(forcedPrompt){
       createdAt: new Date().toISOString()
     };
     _aiChatHistory.push(assistantMessage);
-    _appendAIMessage(assistantMessage);
+    _appendAIMessage(assistantMessage, true);
   } catch(err) {
     const errorMessage = {
       id: `err_${Date.now()}`,
