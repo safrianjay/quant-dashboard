@@ -205,17 +205,17 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
 
 ### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
 1. **INTRO**: A 2-sentence punchy summary of the current tape based on the snapshot.
-2. **THE SETUP — [THEME]**: Use a bold header. Explain the current price action, divergence, or pattern in detail. Use bolding for indicators (e.g., **RSI**, **EMA 21**).
+2. **THE SIGNAL**: 
+   - 🟢 **BUY / LONG** or 🔴 **SELL / SHORT** at $[Entry]
+   - **Stop Loss**: $[SL]
+   - **Take Profit**: $[TP1], $[TP2], $[TP3]
 3. **KEY LEVELS FOR NEXT 60 MINS**:
    | Level | Price | Why It Matters |
    | :--- | :--- | :--- |
    | [Resistance/Support] | $[Price] | [Brief reasoning] |
    | ... | ... | ... |
-4. **VOLUME TELLS THE REAL STORY**: A dedicated section on volume, sentiment, or index data (Fear & Greed).
-5. **THE SIGNAL**: 
-   - 🟢 **BUY / LONG** or 🔴 **SELL / SHORT** at $[Entry]
-   - **Stop Loss**: $[SL]
-   - **Take Profit**: $[TP1], $[TP2], $[TP3]
+4. **THE SETUP — [THEME]**: Use a bold header. Explain the current price action, divergence, or pattern in detail. Use bolding for indicators (e.g., **RSI**, **EMA 21**).
+5. **VOLUME TELLS THE REAL STORY**: A dedicated section on volume, sentiment, or index data (Fear & Greed).
 6. **BOTTOM LINE**: A final 1-2 sentence summary of the trade thesis.
 
 ### RULES:
@@ -326,8 +326,10 @@ The market is currently positioning around key liquidity zones. If you're lookin
 
   return `At the captured **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is ${direction}${Number.isFinite(change) ? ` with a 24h move of **${change.toFixed(2)}%**` : ""}.
 
-### THE SETUP — DATA ANALYSIS
-Price is currently interacting with local liquidity. The volatility indicates that traders are looking for a clear breakout or rejection at this level.
+### THE SIGNAL
+${signal} around $${formattedPrice}. 
+**Stop Loss**: $${(price * (direction === "bullish" ? 0.992 : 1.008)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
+**Take Profit**: $${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.02 : 0.98)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.03 : 0.97)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
 
 ### KEY LEVELS FOR NEXT 60 MINS
 | Level | Price | Why It Matters |
@@ -335,13 +337,11 @@ Price is currently interacting with local liquidity. The volatility indicates th
 | Resistance | $${(price * 1.005).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Local range high |
 | Support | $${(price * 0.995).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Support cluster |
 
+### THE SETUP — DATA ANALYSIS
+Price is currently interacting with local liquidity. The volatility indicates that traders are looking for a clear breakout or rejection at this level.
+
 ### VOLUME TELLS THE REAL STORY
 Current relative volume is stable. On-chain activity suggests minor accumulation at these levels, with the order book showing a slight sell-side bias near the local resistance.
-
-### THE SIGNAL
-${signal} around $${formattedPrice}. 
-**Stop Loss**: $${(price * (direction === "bullish" ? 0.992 : 1.008)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
-**Take Profit**: $${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.02 : 0.98)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.03 : 0.97)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}
 
 ### BOTTOM LINE
 This setup focuses on local range play. This analysis uses the live snapshot and is for informational purposes only. Manage your risk.`;
