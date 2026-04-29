@@ -474,6 +474,13 @@ async function handlePost(req, context) {
   }
 
   const body = await readJson(req);
+  if (body && body.prompt === "DEBUG_LIST_MODELS") {
+    const apiKey = getProviderApiKey();
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const data = await res.json();
+    return json(200, { debugModels: data });
+  }
+
   const validation = validatePayload(body);
   if (!validation.ok) {
     return json(400, { error: "Invalid trading chat payload", details: validation.errors });
