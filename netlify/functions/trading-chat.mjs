@@ -484,7 +484,8 @@ async function handlePost(req, context) {
   const model = getEnv("GEMINI_MODEL") || FALLBACK_MODEL;
   const startedAt = Date.now();
 
-  if (body.prompt.trim().toLowerCase() === "hala madrid!") {
+  const lowerPrompt = body.prompt.trim().toLowerCase();
+  if (lowerPrompt === "hala madrid!" || lowerPrompt === "hala madrid") {
     const assistantMessage = {
       id: `msg_${crypto.randomUUID()}`,
       role: "assistant",
