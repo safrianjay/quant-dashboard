@@ -217,7 +217,7 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
    | :--- | :--- | :--- |
    | [Resistance/Support] | $[Price] | [Brief reasoning] |
    | ... | ... | ... |
-4. **THE SETUP — [THEME]**: Use a bold header. Explain the current price action, focusing on **MSS (Market Structure Shift)** or **FVG (Fair Value Gap)** confirmations. Discuss liquidity sweeps, divergence, or volume profiles in detail. Use bolding for all indicators and key zones.
+4. **THE SETUP — [THEME]**: Use a bold header. Explain the current price action, focusing on specific **MSS (Market Structure Shift)** and **FVG (Fair Value Gap)** price levels (e.g., "MSS identified at $[Price]"). Discuss liquidity sweeps, divergence, or volume profiles in detail. Use bolding for all indicators and key price zones.
 5. **VOLUME TELLS THE REAL STORY**: A dedicated section on volume, sentiment, or index data (Fear & Greed).
 6. **BOTTOM LINE**: A final 1-2 sentence summary of the trade thesis.
 
@@ -345,7 +345,7 @@ The market is currently positioning around key liquidity zones. If you're lookin
 | Support | $${(price * 0.995).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Support cluster |
 
 ### THE SETUP — DATA ANALYSIS
-Price action currently shows a potential **MSS (Market Structure Shift)** as liquidity is being swept at local extremes. Watch for a **Fair Value Gap (FVG)** confirmation on the lower timeframes before committing to the full position.
+Price action currently shows a potential **MSS (Market Structure Shift)** at **$${(price * (direction === "bullish" ? 1.003 : 0.997)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** as liquidity is being swept. We've identified an **FVG (Fair Value Gap)** cluster between **$${(price * (direction === "bullish" ? 0.9985 : 1.0015)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** and **$${(price * (direction === "bullish" ? 0.9995 : 1.0005)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**.
 
 ### VOLUME TELLS THE REAL STORY
 Current relative volume is stable. On-chain activity suggests minor accumulation at these levels, with the order book showing a slight sell-side bias near the local resistance.
