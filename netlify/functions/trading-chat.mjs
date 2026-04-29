@@ -325,24 +325,30 @@ export function buildFallbackTradingResponse({ prompt, snapshot }) {
 
   // Handle "Risk Check" specifically in fallback
   if (p.includes("risk") || p.includes("checklist")) {
-    return `### RISK MANAGEMENT FOR **${snapshot.symbol.toUpperCase()}**
-With the current price at **$${formattedPrice}**, here is your risk checklist:
-1. **Size for Survival:** At current **${(change).toFixed(2)}%** volatility, ensure your position size allows for a stop-loss at **$${(price * (direction === 'bullish' ? 0.98 : 1.02)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** without risking more than 1-2% of your total equity.
-2. **Volatility Guard:** Use the ATR expansion as a guide. Don't use tight stops during this phase.
-3. **Liquidity Sweeps:** Watch the **$${(price * (direction === 'bullish' ? 0.995 : 1.005)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** level; if we sweep this, reduce your leverage.
+    return `### THE NARRATIVE
+At the current **${snapshot.symbol}** price of **$${formattedPrice}**, the volatility is sitting at **${Math.abs(change).toFixed(2)}%**. Effective risk management is now the primary objective to preserve capital for the next expansion.
 
-*for study purpose only manage your risk.*`;
+### RISK MANAGEMENT CHECKLIST
+1. **Size for Survival:** Ensure your position size allows for a stop-loss at **$${(price * (direction === 'bullish' ? 0.98 : 1.02)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** without risking more than 1-2% of total equity.
+2. **Volatility Guard:** Use the ATR expansion as a guide. Don't use tight stops during this phase as liquidity sweeps are frequent.
+3. **Liquidity Sweeps:** Watch the **$${(price * (direction === 'bullish' ? 0.995 : 1.005)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** level; if we sweep this, reduce your leverage immediately.
+
+### BOTTOM LINE
+Don't overleverage at **$${formattedPrice}**. Focus on capital preservation until the higher-timeframe structure confirms the next trend. *for study purpose only manage your risk.*`;
   }
 
   // Handle "Invalidation" specifically in fallback
   if (p.includes("invalid")) {
-    return `### INVALIDATION POINTS FOR **${snapshot.symbol.toUpperCase()}**
-The current **${direction}** thesis for **$${formattedPrice}** becomes invalid if:
-- **Bearish Breach:** Price closes a 15m candle below **$${(price * (direction === 'bullish' ? 0.99 : 1.01)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}**.
-- **Structure Shift:** We see a failure to reclaim **$${(price * (direction === 'bullish' ? 1.005 : 0.995)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** within the next 4 hours.
-- **Volume Climax:** A massive sell-side spike occurs at the current support.
+    return `### THE NARRATIVE
+The current market structure for **${snapshot.symbol}** at **$${formattedPrice}** is sensitive. We are tracking specific price thresholds where the current directional thesis is completely negated.
 
-*for study purpose only manage your risk.*`;
+### INVALIDATION POINTS
+- **Directional Breach:** Price closes a 15m candle below **$${(price * (direction === 'bullish' ? 0.99 : 1.01)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}**.
+- **Structure Shift:** Failure to reclaim **$${(price * (direction === 'bullish' ? 1.005 : 0.995)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** within the next 4-hour window.
+- **Volume Climax:** A massive sell-side spike at current support levels would signal a total trend breakdown.
+
+### BOTTOM LINE
+Maintain a neutral stance if **$${(price * (direction === 'bullish' ? 0.995 : 1.005)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** is lost on high volume. Re-evaluate the bias only after a clean sweep. *for study purpose only manage your risk.*`;
   }
 
   // Detect if user is asking about a different coin than the current snapshot
