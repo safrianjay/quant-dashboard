@@ -813,6 +813,17 @@ p,span,div,input,button{
 @media(max-width:480px){.user-email{display:none}}
 
 
+/* ── PRO UPSELL MODAL ── */
+.upsell-modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);z-index:10001;opacity:0;transition:opacity 0.2s ease}
+.upsell-modal-overlay.open{display:flex;opacity:1}
+.upsell-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);z-index:10002;width:min(400px, 90vw);background:white;border-radius:24px;box-shadow:0 32px 80px rgba(15,23,42,0.25);padding:32px;text-align:center;display:none;flex-direction:column;align-items:center;opacity:0;transition:all 0.3s cubic-bezier(0.22, 1, 0.36, 1)}
+.upsell-modal.open{display:flex;opacity:1;transform:translate(-50%,-50%) scale(1)}
+.upsell-icon{width:64px;height:64px;background:#eef2ff;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px;color:#4f46e5}
+.upsell-title{font-family:var(--font-heading);font-size:24px;font-weight:900;color:#0f172a;margin-bottom:12px;letter-spacing:-0.02em}
+.upsell-text{font-size:14px;line-height:1.6;color:#64748b;margin-bottom:28px}
+.upsell-btn-primary{width:100%;padding:14px;background:var(--brand-primary);color:white;border-radius:12px;font-weight:700;font-family:var(--font-heading);text-decoration:none;margin-bottom:12px;display:block}
+.upsell-btn-secondary{font-size:13px;color:#94a3b8;font-weight:600;background:none;border:none;cursor:pointer}
+
 </style>
 </head>
 <body style="background:var(--neutral-900)">
@@ -1510,6 +1521,18 @@ p,span,div,input,button{
       </div>
     </div>
 
+    <!-- ── PRO UPSELL MODAL ── -->
+    <div id="pro-upsell-overlay" class="upsell-modal-overlay" onclick="closeProUpsell()"></div>
+    <div id="pro-upsell-modal" class="upsell-modal">
+      <div class="upsell-icon">🤖</div>
+      <div class="upsell-title">Unlock Quantichy AI</div>
+      <div class="upsell-text">
+        Advanced technical analysis, triple targets, and confidence scoring are exclusive to <strong>Pro Members</strong>. Ready to upgrade your edge?
+      </div>
+      <a href="/pricing" class="upsell-btn-primary">View Pricing Plans</a>
+      <button class="upsell-btn-secondary" onclick="closeProUpsell()">Maybe Later</button>
+    </div>
+
     <!-- ══ POSITIONS PERFORMANCE CHART ══ -->
     <div class="qds-card qds-card--flush qds-perf-chart-card" id="perf-chart-card">
       <div class="qds-card__head" style="padding-bottom:8px">
@@ -1897,6 +1920,12 @@ function refreshAIQuickButtons(){
 }
 
 window.openAIEntryDrawer = function(){
+  /* Paywall for Demo/Free users */
+  if(window._currentPlan !== 'pro' && window._currentPlan !== 'quant'){
+    openProUpsell();
+    return;
+  }
+
   document.getElementById('ai-chat-overlay')?.classList.add('open');
   const drawer = document.getElementById('ai-chat-drawer');
   drawer?.classList.add('open');
@@ -1911,6 +1940,15 @@ window.closeAIEntryDrawer = function(){
   const drawer = document.getElementById('ai-chat-drawer');
   drawer?.classList.remove('open');
   drawer?.setAttribute('aria-hidden', 'true');
+};
+
+window.openProUpsell = function(){
+  document.getElementById('pro-upsell-overlay')?.classList.add('open');
+  document.getElementById('pro-upsell-modal')?.classList.add('open');
+};
+window.closeProUpsell = function(){
+  document.getElementById('pro-upsell-overlay')?.classList.remove('open');
+  document.getElementById('pro-upsell-modal')?.classList.remove('open');
 };
 
 window.toggleAIEntryDrawer = function(){
@@ -2064,6 +2102,7 @@ function initFirestoreForUser(uid){
     _planUnsubscribe = _db.collection('users').doc(uid).onSnapshot(doc => {
       const data   = (doc && doc.exists) ? doc.data() : {};
       const plan   = data.plan || 'free';
+      window._currentPlan = plan;
       const badge  = document.getElementById('sb-plan-badge');
       if(!badge) return;
       if(plan === 'pro' || plan === 'quant'){
