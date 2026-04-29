@@ -1933,8 +1933,8 @@ function refreshAIQuickButtons(){
 }
 
 window.openAIEntryDrawer = function(){
-  /* Paywall for Demo/Free users */
-  if(window._currentPlan !== 'pro' && window._currentPlan !== 'quant'){
+  /* Only show the full-screen upsell modal on the Public Demo (Guest Mode) */
+  if(!currentUser){
     openProUpsell();
     return;
   }
