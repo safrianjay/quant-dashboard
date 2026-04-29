@@ -565,8 +565,32 @@ async function handlePost(req, context) {
       message: error.message
     });
 
-    return json(502, {
-      error: "The analysis engine is temporarily unavailable. Please try again shortly."
+    // Graceful degradation — return a useful fallback response instead of 502
+    // so the user always gets an answer even when Gemini is unavailable/misconfigured.
+    const fallbackContent = buildFallbackTradingResponse({
+      prompt: body.prompt.trim(),
+      snapshot: body.snapshot
+    });
+    const assistantMessage = {
+      id: `msg_${crypto.randomUUID()}`,
+      role: "assistant",
+      content: fallbackContent,
+      createdAt: new Date().toISOString()
+    };
+    const userMessage = {
+      id: body.clientMessageId,
+      role: "user",
+      content: body.prompt.trim(),
+      createdAt: new Date().toISOString(),
+      snapshot: body.snapshot
+    };
+    upsertConversation(conversationId, userMessage, assistantMessage);
+
+    return json(200, {
+      conversationId,
+      message: assistantMessage,
+      usage: { inputTokens: null, outputTokens: null },
+      provider: "fallback"
     });
   }
 }
