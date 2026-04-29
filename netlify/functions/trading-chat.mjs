@@ -337,7 +337,8 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
   }
 
   return {
-    contents
+    contents,
+    generationConfig: GENERATION_CONFIGS[classifyPrompt(prompt)]
   };
 }
 
@@ -560,7 +561,8 @@ async function handlePost(req, context) {
     return json(200, {
       conversationId,
       message: assistantMessage,
-      usage: providerResult.usage
+      usage: providerResult.usage,
+      provider: "gemini"
     });
   } catch (error) {
     console.error("[trading-chat] provider_error", {
@@ -595,9 +597,7 @@ async function handlePost(req, context) {
       conversationId,
       message: assistantMessage,
       usage: { inputTokens: null, outputTokens: null },
-      provider: "fallback",
-      debugError: error.message,
-      debugBody: error.providerBody
+      provider: "fallback"
     });
   }
 }
