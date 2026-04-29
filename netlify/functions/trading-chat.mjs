@@ -381,7 +381,7 @@ function isTransientStatus(status) {
 
 async function fetchGemini({ apiKey, model, payload }) {
   const encodedModel = encodeURIComponent(model);
-  const url = `https://generativelanguage.googleapis.com/v1/models/${encodedModel}:generateContent`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodedModel}:generateContent?key=${apiKey}`;
   let delay = 500;
   let lastError;
 
@@ -393,8 +393,7 @@ async function fetchGemini({ apiKey, model, payload }) {
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(payload),
         signal: controller.signal
