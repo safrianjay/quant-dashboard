@@ -600,7 +600,8 @@ async function handlePost(req, context) {
       provider: "fallback",
       keyLength: apiKey.length,
       debugError: error.message,
-      debugBody: error.providerBody
+      debugBody: error.providerBody,
+      debugModel: model
     });
   }
 }
