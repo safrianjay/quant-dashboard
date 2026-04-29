@@ -1891,6 +1891,7 @@ function _setAIChatSending(isSending){
 
 function _appendAIMessage(message, isStreaming = false){
   const list = document.getElementById('ai-chat-messages');
+  const typing = document.getElementById('ai-chat-typing');
   if(!list) return;
   const row = document.createElement('div');
   const role = message.role === 'user' ? 'user' : 'assistant';
@@ -1914,7 +1915,10 @@ function _appendAIMessage(message, isStreaming = false){
     row.appendChild(snap);
   }
 
-  list.appendChild(row);
+  // Always insert BEFORE the typing indicator to keep it at the bottom
+  if(typing) list.insertBefore(row, typing);
+  else list.appendChild(row);
+  
   list.scrollTop = list.scrollHeight;
 
   if (role === 'assistant' && isStreaming) {
