@@ -226,7 +226,7 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
 - Tone: Professional, slightly aggressive, "no-noise" technical analysis.
 - Always include the table and the Signal section.
 - If the snapshot data is insufficient for a clear signal, provide a "WATCH" signal with clear triggers.
-- NEVER give financial advice. Always include a short risk disclaimer at the very end.
+- NEVER give financial advice. Always include this exact short disclaimer at the very end: *Informational only. Manage risk.*
 - Current Asset: ${snapshot.symbol}
 - Current Price: $${snapshot.price}`;
 }
