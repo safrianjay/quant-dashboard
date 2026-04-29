@@ -333,6 +333,9 @@ The market is currently positioning around key liquidity zones. If you're lookin
 
   return `At the captured **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is ${direction}${Number.isFinite(change) ? ` with a 24h move of **${change.toFixed(2)}%**` : ""}.
 
+### THE NARRATIVE
+The broader market is currently digesting recent liquidity shifts. We are seeing ${direction} momentum step in at the local support/resistance bands, suggesting that institutional algorithms are repositioning their spot inventory around the $${formattedPrice} mark.
+
 ### THE SIGNAL
 <div class="confidence-badge">Confidence: ${Math.min(6, 4 + Math.abs(change) / 2).toFixed(1)}/10</div>
 
@@ -355,7 +358,7 @@ Current relative volume is stable. On-chain activity suggests minor accumulation
 [VISUAL_SIGNAL]
 
 ### BOTTOM LINE
-This setup focuses on local range play. *Informational only. Manage risk.*`;
+Don't chase the entry at $${formattedPrice} — wait for a sweep of $${(price * (direction === "bullish" ? 0.995 : 1.005)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, which aligns with the Fib 50 and the 21-day EMA at $${(price * (direction === "bullish" ? 0.99 : 1.01)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} is rising to meet it. That's the spot for a ${direction === "bullish" ? "long" : "short"} with a stop below $${(price * (direction === "bullish" ? 0.98 : 1.02)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}. If ${snapshot.symbol.replace("USDT","")} can't hold these levels, we're likely retesting $${(price * (direction === "bullish" ? 0.96 : 1.04)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}. *Informational only. Manage risk.*`;
 }
 
 function isTransientStatus(status) {
