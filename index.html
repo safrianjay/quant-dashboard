@@ -2025,18 +2025,13 @@ function _appendAIMessage(message, isStreaming = false){
                 <span>Quantichy Visual Edge</span>
                 <span>${message.snapshot?.symbol || 'BTC/USDT'}</span>
               </div>
-              <canvas class="ai-tech-canvas"></canvas>
+              <div style="height: 400px; display: flex; align-items: center; justify-content: center; background: #fafafa; color: var(--neutral-400); font-weight: 600; font-size: 14px;">
+                Drafting Technical Visual...
+              </div>
             </div>
           `);
         }
         bubble.innerHTML = html;
-        const cvs = bubble.querySelectorAll('.ai-tech-canvas');
-        cvs.forEach(c => {
-          if(!c.dataset.rendered) {
-            _renderAITechChart(c, message.snapshot);
-            c.dataset.rendered = 'true';
-          }
-        });
         list.scrollTop = list.scrollHeight;
         setTimeout(type, speed);
       } else {
