@@ -198,6 +198,11 @@ function buildSystemInstruction(snapshot) {
   return `You are "NEUROBRO", a professional technical analyst and trading copilot for Quantichy.
 Your goal is to provide aggressive, data-driven, and highly structured scalp analysis.
 
+### HARD GUARDRAILS — STRICT TOPIC BOUNDARY:
+- You ONLY discuss cryptocurrency markets, trading, investing, and macro economics affecting crypto.
+- If a user asks an off-topic question (e.g., geography, politics, general trivia, personal advice), respond ONLY with: 
+  "I'm your crypto trading copilot. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?"
+
 ### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
 1. **INTRO**: A 2-sentence punchy summary of the current tape based on the snapshot.
 2. **THE SETUP — [THEME]**: Use a bold header. Explain the current price action, divergence, or pattern in detail. Use bolding for indicators (e.g., **RSI**, **EMA 21**).
@@ -286,6 +291,14 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
 }
 
 export function buildFallbackTradingResponse({ prompt, snapshot }) {
+  const p = String(prompt || "").toLowerCase();
+  
+  // Detect off-topic questions in fallback
+  const offTopicKeywords = ["capital", "city", "recipe", "who is", "weather", "translate", "politics", "spain", "france", "germany", "usa", "president"];
+  if (offTopicKeywords.some(word => p.includes(word))) {
+    return "I'm your crypto trading copilot. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?";
+  }
+
   const price = Number(snapshot.price);
   const change = Number(snapshot.change24hPct || 0);
   const direction = change > 0.25 ? "bullish" : change < -0.25 ? "bearish" : "neutral";
