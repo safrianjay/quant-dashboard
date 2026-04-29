@@ -2208,7 +2208,7 @@ function refreshAIQuickButtons(){
 }
 
 window.openAIEntryDrawer = function(){
-  if(DEMO_MODE){ showUpgradePopup(); return; }
+  if(DEMO_MODE){ showUpgradePopup('ai'); return; }
   /* Only show the full-screen upsell modal on the Public Demo (Guest Mode) */
   if(!currentUser){
     openProUpsell();
@@ -2252,7 +2252,7 @@ window.sendAIQuickPrompt = function(prompt){
 };
 
 window.handleAIChatSend = async function(forcedPrompt){
-  if(DEMO_MODE){ showUpgradePopup(); return; }
+  if(DEMO_MODE){ showUpgradePopup('ai'); return; }
   if(_aiChatSending) return;
   const input = document.getElementById('ai-chat-input');
   const prompt = (forcedPrompt || input?.value || '').trim();
@@ -2944,38 +2944,62 @@ window.switchCoinTab = function(tab){
 };
 
 /* ══ UPGRADE POPUP (demo gate) ══ */
-function showUpgradePopup(){
+function showUpgradePopup(mode){
   if(document.getElementById('upgrade-popup-overlay')) return;
   const overlay = document.createElement('div');
   overlay.id = 'upgrade-popup-overlay';
   overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.5);z-index:99999;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease;backdrop-filter:blur(4px)';
+
+  const isAI = mode === 'ai';
+  const title = isAI ? 'Unlock Quantichy AI' : _t('upgrade_title');
+  const subtitle = isAI ? 'Get institutional-grade technical analysis and real-time trade setups powered by advanced AI.' : _t('upgrade_subtitle');
+
   overlay.innerHTML = `
     <div style="background:white;border-radius:20px;padding:40px 36px;max-width:400px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.15);animation:scaleIn .25s ease;position:relative">
       <button onclick="closeUpgradePopup()" class="qds-hover-wash" style="position:absolute;top:var(--space-7);right:var(--space-7);width:28px;height:28px;border-radius:var(--radius-full);border:none;background:var(--surface-sunken);cursor:pointer;display:flex;align-items:center;justify-content:center">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div style="width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#0F172A,#1E293B);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        ${isAI ? '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>' : '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>'}
       </div>
-      <h3 style="font-family:var(--font-heading);font-size:20px;font-weight:800;color:#0F172A;margin:0 0 8px;letter-spacing:-.02em">${_t('upgrade_title')}</h3>
-      <p style="font-family:var(--font-body);font-size:13px;color:#64748B;line-height:1.6;margin:0 0 24px">${_t('upgrade_subtitle')}</p>
+      <h3 style="font-family:var(--font-heading);font-size:20px;font-weight:800;color:#0F172A;margin:0 0 8px;letter-spacing:-.02em">${title}</h3>
+      <p style="font-family:var(--font-body);font-size:13px;color:#64748B;line-height:1.6;margin:0 0 24px">${subtitle}</p>
       <div style="display:flex;flex-direction:column;gap:8px;text-align:left;margin-bottom:24px">
-        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Detailed market cycle indicators
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          RSI, Mayer Multiple & Pi Cycle Top
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Advanced TradingView charts
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Community sentiment & price stats
-        </div>
+        ${isAI ? `
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Precision scalp setups for 50+ coins
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Dynamic risk & invalidation zones
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Real-time institutional narratives
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            24/7 technical analyst at your service
+          </div>
+        ` : `
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Detailed market cycle indicators
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            RSI, Mayer Multiple & Pi Cycle Top
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Advanced TradingView charts
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#334155;font-family:var(--font-body)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Community sentiment & price stats
+          </div>
+        `}
       </div>
       <a href="/pricing" class="qds-hover-lift" style="display:block;background:linear-gradient(135deg,var(--brand-primary),var(--neutral-800));color:var(--text-inverse);padding:var(--space-7) var(--space-12);border-radius:var(--radius-2xl);font-size:var(--fs-lg);font-weight:var(--fw-bold);text-decoration:none;font-family:var(--font-heading);box-shadow:0 4px 14px rgba(15,23,42,.2)">
         ${_t('upgrade_btn')}
