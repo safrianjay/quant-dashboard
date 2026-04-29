@@ -10,7 +10,7 @@ const RATE_LIMIT_MAX = 12;
 const REQUEST_TIMEOUT_MS = 25_000;
 const MAX_OUTPUT_TOKENS = 1024;
 
-const FALLBACK_MODEL = "gemini-pro";
+const FALLBACK_MODEL = "gemini-1.5-flash";
 
 function state() {
   if (!globalThis.__tradingChatState) {
@@ -36,10 +36,10 @@ function getEnv(name) {
 
 function getProviderApiKey() {
   return (
-    getEnv("GEMINI_API_KEY") ||
-    getEnv("GOOGLE_GENERATIVE_AI_API_KEY") ||
-    getEnv("GOOGLE_API_KEY") ||
-    ""
+    (getEnv("GEMINI_API_KEY") ||
+     getEnv("GOOGLE_GENERATIVE_AI_API_KEY") ||
+     getEnv("GOOGLE_API_KEY") ||
+     "").trim()
   );
 }
 
