@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Market Dashboard & AI Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent body scroll, handle scrolling within panels */
+        }
+        
+        /* Custom Scrollbar for Chat */
+        .chat-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-scroll::-webkit-scrollbar-track {
+            background: #1e293b; 
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background: #475569; 
+            border-radius: 4px;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb:hover {
+            background: #64748b; 
+        }
+
+        /* Chart Container Rules */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+        }
+
+        .pulse-green {
+            animation: pulseG 1.5s infinite;
+        }
+        .pulse-red {
+            animation: pulseR 1.5s infinite;
+        }
+
+        @keyframes pulseG {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+        @keyframes pulseR {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col md:flex-row">
+
+    <!-- Chosen Palette: Dark Terminal Theme. Slate (800/900) for backgrounds to reduce eye strain, Emerald Green/Rose Red for live market data states, and Indigo for AI accents. -->
+    
+    <!-- Application Structure Plan: The SPA uses a persistent split-screen layout. The left pane (70% width) is dedicated to the live data visualization (Chart.js), simulating the primary focus of a trader. The right pane (30% width) houses the "Open Chat" widget. This structure ensures the user never loses sight of the live price action while interacting with the AI. The chat header maintains a live price badge so the current context is always visible within the AI's domain. -->
+    
+    <!-- Visualization & Content Choices:
+         1. Live Price Chart: Goal -> Change/Monitor. Method -> Line Chart (Chart.js). Justification -> Essential for trading dashboards to show real-time price action over time. Responsive configuration ensures it fills the dynamic layout.
+         2. Live Price Badges: Goal -> Inform. Method -> HTML/CSS pulsing elements. Justification -> Instantly communicates market direction (up/down) without needing to read the chart.
+         3. Persistent Chat Panel: Goal -> Interactive Analysis. Method -> DOM manipulation. Justification -> Allows context-aware queries (taking a snapshot of the live price) while keeping the user in the main trading flow. 
+    -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <main class="flex-1 flex flex-col h-[50vh] md:h-screen border-b md:border-b-0 md:border-r border-slate-700 relative">
+        <header class="p-4 md:p-6 flex justify-between items-center bg-slate-900/80 backdrop-blur z-10 border-b border-slate-800">
+            <div>
+                <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <span class="text-xl">&#128200;</span> BTC/USDT Perpetual
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">Live Market Data Simulation</p>
+            </div>
+            <div class="text-right">
+                <div id="main-price" class="text-3xl font-mono font-bold text-emerald-400 transition-colors duration-300">
+                    $64,500.00
+                </div>
+                <div id="price-change" class="text-sm font-mono text-emerald-400 flex items-center justify-end gap-1 mt-1">
+                    <span>&#9650;</span> +0.02%
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 p-4 md:p-6">
+            <div class="chart-container bg-slate-800/50 rounded-xl border border-slate-700 p-4">
+                <canvas id="liveChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="p-4 grid grid-cols-3 gap-4 border-t border-slate-800 bg-slate-900">
+            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">24h Vol</div>
+                <div class="text-lg font-mono text-white">42.5K BTC</div>
+            </div>
+            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Open Interest</div>
+                <div class="text-lg font-mono text-white">$1.2B</div>
+            </div>
+            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Funding Rate</div>
+                <div class="text-lg font-mono text-amber-400">0.0100%</div>
+            </div>
+        </div>
+    </main>
+
+    <aside class="w-full md:w-96 flex flex-col h-[50vh] md:h-screen bg-slate-800 shadow-2xl relative z-20">
+        <header class="p-4 bg-slate-800 border-b border-slate-700 flex justify-between items-center shadow-sm">
+            <div class="flex items-center gap-2">
+                <span class="text-indigo-400 text-xl">&#129302;</span>
+                <h2 class="font-bold text-slate-100">AI Trading Copilot</h2>
+            </div>
+            <div id="chat-live-badge" class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-mono rounded border border-emerald-500/30 pulse-green">
+                Live: $64,500.00
+            </div>
+        </header>
+
+        <div id="chat-messages" class="flex-1 overflow-y-auto chat-scroll p-4 space-y-4 bg-slate-800/50">
+            <div class="flex flex-col items-start max-w-[85%]">
+                <span class="text-xs text-slate-400 mb-1 ml-1">Copilot</span>
+                <div class="bg-slate-700 text-slate-100 px-4 py-3 rounded-2xl rounded-tl-none text-sm border border-slate-600 shadow-sm leading-relaxed">
+                    Hello. I am connected to the live BTC/USDT feed. Whenever you ask a question, I will analyze the exact price at that millisecond. How can I assist your trading today?
+                </div>
+            </div>
+        </div>
+
+        <div id="typing-indicator" class="hidden px-4 pb-2">
+            <div class="flex items-center gap-1 text-slate-400 text-xs bg-slate-800 w-fit px-3 py-1.5 rounded-full border border-slate-700">
+                <span class="animate-bounce">&#8226;</span>
+                <span class="animate-bounce" style="animation-delay: 0.15s">&#8226;</span>
+                <span class="animate-bounce" style="animation-delay: 0.3s">&#8226;</span>
+                <span class="ml-1">Analyzing live data...</span>
+            </div>
+        </div>
+
+        <div class="p-4 bg-slate-800 border-t border-slate-700">
+            <!-- ✨ Quick Actions Powered by Gemini -->
+            <div class="flex gap-2 overflow-x-auto pb-3 chat-scroll">
+                <button onclick="sendQuickPrompt('✨ Analyze current entry points based on the live price.')" class="whitespace-nowrap px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 rounded-full text-xs text-indigo-300 hover:text-indigo-200 transition-colors">✨ Analyze Entry</button>
+                <button onclick="sendQuickPrompt('✨ What is Funding Rate and why does it matter right now?')" class="whitespace-nowrap px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 rounded-full text-xs text-indigo-300 hover:text-indigo-200 transition-colors">✨ Explain Funding Rate</button>
+                <button onclick="sendQuickPrompt('✨ Give me a short risk-management checklist for this volatility.')" class="whitespace-nowrap px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 rounded-full text-xs text-indigo-300 hover:text-indigo-200 transition-colors">✨ Risk Check</button>
+            </div>
+            <div class="flex gap-2">
+                <input type="text" id="chat-input" placeholder="e.g. Is this a good entry?" class="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+                <button id="send-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-lg shadow-indigo-900/20 text-sm flex items-center justify-center min-w-[80px]">
+                    Send
+                </button>
+            </div>
+            <p class="text-center text-[10px] text-slate-500 mt-2">AI answers are based on the live price snapshot at the time of sending.</p>
+        </div>
+    </aside>
+
+    <script>
+        let currentPrice = 64500.00;
+        let priceHistory = [];
+        let timeLabels = [];
+        const maxDataPoints = 60; 
+        
+        for(let i = maxDataPoints; i > 0; i--) {
+            let t = new Date();
+            t.setSeconds(t.getSeconds() - i);
+            timeLabels.push(t.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}));
+            let simulatedOldPrice = currentPrice + (Math.random() * 100 - 50);
+            priceHistory.push(simulatedOldPrice);
+        }
+
+        const ctx = document.getElementById('liveChart').getContext('2d');
+        const liveChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: timeLabels,
+                datasets: [{
+                    label: 'BTC/USDT',
+                    data: priceHistory,
+                    borderColor: '#34d399', 
+                    backgroundColor: 'rgba(52, 211, 153, 0.1)', 
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 0 
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#cbd5e1',
+                        bodyColor: '#f8fafc',
+                        borderColor: '#334155',
+                        borderWidth: 1,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return '$' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { color: '#64748b', maxTicksLimit: 6, font: { family: 'monospace' } }
+                    },
+                    y: {
+                        position: 'right',
+                        grid: { color: '#334155', drawBorder: false },
+                        ticks: { 
+                            color: '#cbd5e1',
+                            font: { family: 'monospace' },
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const mainPriceEl = document.getElementById('main-price');
+        const priceChangeEl = document.getElementById('price-change');
+        const chatBadgeEl = document.getElementById('chat-live-badge');
+
+        setInterval(() => {
+            const volatility = 15; 
+            const change = (Math.random() * volatility * 2) - volatility;
+            const newPrice = currentPrice + change;
+            const isUp = newPrice >= currentPrice;
+            
+            currentPrice = newPrice;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            
+            liveChart.data.labels.push(timeString);
+            liveChart.data.datasets[0].data.push(currentPrice);
+            
+            if (liveChart.data.labels.length > maxDataPoints) {
+                liveChart.data.labels.shift();
+                liveChart.data.datasets[0].data.shift();
+            }
+            
+            if (isUp) {
+                liveChart.data.datasets[0].borderColor = '#34d399'; 
+                liveChart.data.datasets[0].backgroundColor = 'rgba(52, 211, 153, 0.1)';
+                
+                mainPriceEl.className = 'text-3xl font-mono font-bold text-emerald-400 transition-colors duration-300';
+                priceChangeEl.className = 'text-sm font-mono text-emerald-400 flex items-center justify-end gap-1 mt-1';
+                priceChangeEl.innerHTML = `<span>&#9650;</span> +${(Math.random() * 0.05).toFixed(3)}%`;
+                
+                chatBadgeEl.className = 'px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-mono rounded border border-emerald-500/30 pulse-green transition-colors';
+            } else {
+                liveChart.data.datasets[0].borderColor = '#f87171'; 
+                liveChart.data.datasets[0].backgroundColor = 'rgba(248, 113, 113, 0.1)';
+                
+                mainPriceEl.className = 'text-3xl font-mono font-bold text-rose-400 transition-colors duration-300';
+                priceChangeEl.className = 'text-sm font-mono text-rose-400 flex items-center justify-end gap-1 mt-1';
+                priceChangeEl.innerHTML = `<span>&#9660;</span> -${(Math.random() * 0.05).toFixed(3)}%`;
+                
+                chatBadgeEl.className = 'px-2 py-1 bg-rose-500/20 text-rose-400 text-xs font-mono rounded border border-rose-500/30 pulse-red transition-colors';
+            }
+            
+            liveChart.update();
+            
+            const formattedPrice = currentPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            mainPriceEl.innerText = '$' + formattedPrice;
+            chatBadgeEl.innerText = 'Live: $' + formattedPrice;
+
+        }, 1000); 
+
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        const apiKey = ""; // Gemini API Key is provided by the execution environment
+
+        function appendMessage(text, sender) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex flex-col ${sender === 'user' ? 'items-end' : 'items-start'} max-w-[85%] ${sender === 'user' ? 'ml-auto' : ''}`;
+            
+            const label = document.createElement('span');
+            label.className = `text-xs text-slate-400 mb-1 ${sender === 'user' ? 'mr-1' : 'ml-1'}`;
+            label.innerText = sender === 'user' ? 'You' : 'Copilot';
+            
+            const bubble = document.createElement('div');
+            if (sender === 'user') {
+                bubble.className = 'bg-indigo-600 text-white px-4 py-3 rounded-2xl rounded-tr-none text-sm shadow-sm leading-relaxed whitespace-pre-wrap';
+            } else {
+                bubble.className = 'bg-slate-700 text-slate-100 px-4 py-3 rounded-2xl rounded-tl-none text-sm border border-slate-600 shadow-sm leading-relaxed whitespace-pre-wrap';
+            }
+            
+            // Format bold text for Gemini output
+            const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+            bubble.innerHTML = formattedText; 
+            
+            wrapper.appendChild(label);
+            wrapper.appendChild(bubble);
+            chatMessages.appendChild(wrapper);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function fetchGeminiResponse(userText, priceSnapshot) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const formattedPrice = priceSnapshot.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            const systemInstruction = `You are an expert cryptocurrency trading assistant integrated into a live trading dashboard. 
+            The user is currently viewing BTC/USDT Perpetual. 
+            CRITICAL CONTEXT: The exact live price of BTC at the millisecond the user asked this question is $${formattedPrice}. 
+            Address the user's query utilizing this specific price point. Keep your response concise, professional, and directly actionable. Limit to 1-3 short paragraphs.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userText }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            let delay = 1000;
+            const retries = 5;
+
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "I apologize, but I couldn't generate an analysis at this time.";
+                } catch (error) {
+                    if (i === retries - 1) {
+                        console.error("Gemini API Error:", error);
+                        return `I'm currently experiencing connectivity issues with the analysis engine (Error: ${error.message}). Please try again shortly.`;
+                    }
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        async function handleSend(forcedText = null) {
+            const text = forcedText || chatInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, 'user');
+            if(!forcedText) chatInput.value = '';
+            
+            const priceSnapshot = currentPrice;
+
+            typingIndicator.classList.remove('hidden');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            sendBtn.disabled = true;
+            chatInput.disabled = true;
+
+            const aiResponseText = await fetchGeminiResponse(text, priceSnapshot);
+            
+            typingIndicator.classList.add('hidden');
+            appendMessage(aiResponseText, 'ai');
+            
+            sendBtn.disabled = false;
+            chatInput.disabled = false;
+            if(!forcedText) chatInput.focus();
+        }
+
+        function sendQuickPrompt(promptText) {
+            handleSend(promptText);
+        }
+
+        sendBtn.addEventListener('click', () => handleSend());
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+
+    </script>
+</body>
+</html>
