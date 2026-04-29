@@ -335,6 +335,9 @@ Price is currently interacting with local liquidity. The volatility indicates th
 | Resistance | $${(price * 1.005).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Local range high |
 | Support | $${(price * 0.995).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Support cluster |
 
+### VOLUME TELLS THE REAL STORY
+Current relative volume is stable. On-chain activity suggests minor accumulation at these levels, with the order book showing a slight sell-side bias near the local resistance.
+
 ### THE SIGNAL
 ${signal} around $${formattedPrice}. 
 **Target**: $${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}

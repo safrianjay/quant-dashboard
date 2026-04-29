@@ -31,6 +31,7 @@
      instead of hard-coded values. See /design-system/README.md. -->
 <link rel="stylesheet" href="/design-system/tokens.css">
 <link rel="stylesheet" href="/design-system/components.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
@@ -652,8 +653,14 @@ p,span,div,input,button{
 .ai-chat-msg.user{align-self:flex-end;align-items:flex-end}
 .ai-chat-msg.assistant{align-self:flex-start;align-items:flex-start}
 .ai-chat-msg-label{font-size:10px;color:var(--text-muted);font-family:var(--font-body);font-weight:var(--fw-semibold);padding:0 4px}
-.ai-chat-bubble{padding:11px 13px;border-radius:14px;font-size:13px;line-height:1.55;font-family:var(--font-body);white-space:pre-wrap;box-shadow:var(--shadow-xs)}
-.ai-chat-msg.user .ai-chat-bubble{background:var(--brand-primary);color:var(--text-inverse);border-top-right-radius:5px}
+.ai-chat-bubble{padding:11px 13px;border-radius:14px;font-size:13px;line-height:1.55;font-family:var(--font-body);box-shadow:var(--shadow-xs)}
+.ai-chat-bubble.markdown-body table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+.ai-chat-bubble.markdown-body th,.ai-chat-bubble.markdown-body td{border:1px solid var(--border-subtle);padding:6px 8px;text-align:left}
+.ai-chat-bubble.markdown-body th{background:rgba(255,255,255,0.05);font-weight:600}
+.ai-chat-bubble.markdown-body p{margin:0 0 8px 0}
+.ai-chat-bubble.markdown-body p:last-child{margin-bottom:0}
+.ai-chat-bubble.markdown-body h3{font-size:14px;margin:12px 0 6px 0;color:var(--brand-primary)}
+.ai-chat-msg.user .ai-chat-bubble{background:var(--brand-primary);color:var(--text-inverse);border-top-right-radius:5px;white-space:pre-wrap}
 .ai-chat-msg.assistant .ai-chat-bubble{background:var(--surface-card);color:var(--text-primary);border:1px solid var(--border-default);border-top-left-radius:5px}
 .ai-chat-snapshot{font-size:10px;color:var(--text-muted);font-family:var(--font-mono);padding:0 4px}
 .ai-chat-typing{display:none;align-self:flex-start;width:fit-content;border:1px solid var(--border-default);background:var(--surface-card);border-radius:var(--radius-pill);padding:7px 10px;font-size:11px;color:var(--text-secondary);font-family:var(--font-body);box-shadow:var(--shadow-xs)}
@@ -1830,8 +1837,13 @@ function _appendAIMessage(message){
   label.textContent = role === 'user' ? 'You' : 'Quantichy AI';
 
   const bubble = document.createElement('div');
-  bubble.className = 'ai-chat-bubble';
-  bubble.textContent = message.content;
+  bubble.className = 'ai-chat-bubble markdown-body';
+  // Render Markdown for assistant, plain text for user
+  if (role === 'assistant') {
+    bubble.innerHTML = marked.parse(message.content);
+  } else {
+    bubble.textContent = message.content;
+  }
 
   row.appendChild(label);
   row.appendChild(bubble);
