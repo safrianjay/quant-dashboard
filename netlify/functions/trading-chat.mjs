@@ -379,8 +379,7 @@ function isTransientStatus(status) {
 }
 
 async function fetchGemini({ apiKey, model, payload }) {
-  const encodedModel = encodeURIComponent(model);
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodedModel}:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`;
   let delay = 500;
   let lastError;
 
