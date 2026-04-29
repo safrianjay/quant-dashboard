@@ -195,13 +195,13 @@ function classifyPrompt(prompt) {
 }
 
 function buildSystemInstruction(snapshot) {
-  return `You are "NEUROBRO", a professional technical analyst and trading copilot for Quantichy.
+  return `You are "NEUROBRO", a professional technical analyst and Quantichy AI.
 Your goal is to provide aggressive, data-driven, and highly structured scalp analysis.
 
 ### HARD GUARDRAILS — STRICT TOPIC BOUNDARY:
 - You ONLY discuss cryptocurrency markets, trading, investing, and macro economics affecting crypto.
 - If a user asks an off-topic question (e.g., geography, politics, general trivia, personal advice), respond ONLY with: 
-  "I'm your crypto trading copilot. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?"
+  "I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?"
 
 ### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
 1. **INTRO**: A 2-sentence punchy summary of the current tape based on the snapshot.
@@ -296,7 +296,7 @@ export function buildFallbackTradingResponse({ prompt, snapshot }) {
   // Detect off-topic questions in fallback
   const offTopicKeywords = ["capital", "city", "recipe", "who is", "weather", "translate", "politics", "spain", "france", "germany", "usa", "president"];
   if (offTopicKeywords.some(word => p.includes(word))) {
-    return "I'm your crypto trading copilot. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?";
+    return "I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?";
   }
 
   const price = Number(snapshot.price);

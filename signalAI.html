@@ -112,7 +112,7 @@
         <header class="p-4 bg-slate-800 border-b border-slate-700 flex justify-between items-center shadow-sm">
             <div class="flex items-center gap-2">
                 <span class="text-indigo-400 text-xl">&#129302;</span>
-                <h2 class="font-bold text-slate-100">AI Trading Copilot</h2>
+                <h2 class="font-bold text-slate-100">Quantichy AI</h2>
             </div>
             <div id="chat-live-badge" class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-mono rounded border border-emerald-500/30 pulse-green">
                 Live: $64,500.00
@@ -121,7 +121,7 @@
 
         <div id="chat-messages" class="flex-1 overflow-y-auto chat-scroll p-4 space-y-4 bg-slate-800/50">
             <div class="flex flex-col items-start max-w-[85%]">
-                <span class="text-xs text-slate-400 mb-1 ml-1">Copilot</span>
+                <span class="text-xs text-slate-400 mb-1 ml-1">Quantichy AI</span>
                 <div class="bg-slate-700 text-slate-100 px-4 py-3 rounded-2xl rounded-tl-none text-sm border border-slate-600 shadow-sm leading-relaxed">
                     Hello. I am connected to the live BTC/USDT feed. Whenever you ask a question, I will analyze the exact price at that millisecond. How can I assist your trading today?
                 </div>
@@ -295,7 +295,7 @@
             
             const label = document.createElement('span');
             label.className = `text-xs text-slate-400 mb-1 ${sender === 'user' ? 'mr-1' : 'ml-1'}`;
-            label.innerText = sender === 'user' ? 'You' : 'Copilot';
+            label.innerText = sender === 'user' ? 'You' : 'Quantichy AI';
             
             const bubble = document.createElement('div');
             if (sender === 'user') {
