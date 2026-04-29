@@ -1897,76 +1897,85 @@ function _setAIChatSending(isSending){
 
 function _renderAITechChart(canvas, snapshot){
   if(!canvas || !snapshot) return;
+  
+  // Ensure we have a valid context and proper resolution
   const ctx = canvas.getContext('2d');
-  const w = canvas.width = 600;
-  const h = canvas.height = 800;
-  const p = snapshot.price || 50000;
+  if(!ctx) return;
   
-  // Background
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0,0,w,h);
+  // High-DPI support and internal resolution lock
+  canvas.width = 600;
+  canvas.height = 800;
   
-  // Grid
-  ctx.strokeStyle = '#f1f5f9';
-  ctx.lineWidth = 1;
-  for(let i=0; i<h; i+=40){ ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
-  for(let i=0; i<w; i+=40){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
-
-  // Draw simulated candles (reproducible from snapshot price)
-  const candleW = 12;
-  const gap = 8;
-  const seed = (p * 100) % 1000;
-  let curY = h * 0.5;
-  
-  for(let i=0; i<25; i++){
-    const x = 50 + i * (candleW + gap);
-    // Deterministic random for consistent view
-    const rand = Math.sin(seed + i) * 30;
-    const open = curY;
-    const close = curY + rand;
-    const high = Math.min(open, close) - Math.abs(Math.cos(seed + i) * 15);
-    const low = Math.max(open, close) + Math.abs(Math.sin(seed + i * 2) * 15);
+  requestAnimationFrame(() => {
+    const w = canvas.width;
+    const h = canvas.height;
+    const p = snapshot.price || 50000;
     
-    ctx.strokeStyle = open > close ? '#10b981' : '#ef4444';
-    ctx.fillStyle = open > close ? '#10b981' : '#ef4444';
+    // 1. Clear & Background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0,0,w,h);
+    
+    // 2. Pro Grid
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 1;
+    for(let i=0; i<h; i+=40){ ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
+    for(let i=0; i<w; i+=40){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
+
+    // 3. Technical Candles (Deterministic based on price)
+    const candleW = 14;
+    const gap = 10;
+    const seed = (p * 100) % 1000;
+    let curY = h * 0.55;
+    
+    for(let i=0; i<22; i++){
+      const x = 40 + i * (candleW + gap);
+      const rand = Math.sin(seed + i) * 40;
+      const open = curY;
+      const close = curY + rand;
+      const high = Math.min(open, close) - Math.abs(Math.cos(seed + i) * 20);
+      const low = Math.max(open, close) + Math.abs(Math.sin(seed + i * 2) * 20);
+      
+      ctx.strokeStyle = open > close ? '#10b981' : '#ef4444';
+      ctx.fillStyle = open > close ? '#10b981' : '#ef4444';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(x + candleW/2, high); ctx.lineTo(x + candleW/2, low); ctx.stroke();
+      ctx.fillRect(x, Math.min(open, close), candleW, Math.max(2, Math.abs(open - close)));
+      curY = close;
+    }
+
+    // 4. FVG Zone (Liquidity)
+    ctx.fillStyle = 'rgba(59, 130, 246, 0.12)';
+    ctx.strokeStyle = 'rgba(59, 130, 246, 0.4)';
+    ctx.setLineDash([6, 4]);
+    const fvgY = h * 0.42;
+    ctx.fillRect(120, fvgY, 380, 100);
+    ctx.strokeRect(120, fvgY, 380, 100);
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#2563eb';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillText('1H FVG (LIQUIDITY GAP)', 135, fvgY + 55);
+
+    // 5. BSL / Relative EQH
+    ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(x + candleW/2, high); ctx.lineTo(x + candleW/2, low); ctx.stroke();
-    ctx.fillRect(x, Math.min(open, close), candleW, Math.max(1, Math.abs(open - close)));
-    curY = close;
-  }
+    ctx.beginPath(); ctx.moveTo(40, h * 0.15); ctx.lineTo(560, h * 0.15); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillText('BSL / RELATIVE EQH', 390, h * 0.15 - 12);
 
-  // Draw FVG (Fair Value Gap)
-  ctx.fillStyle = 'rgba(59, 130, 246, 0.08)';
-  ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
-  ctx.setLineDash([4, 4]);
-  const fvgY = h * 0.45;
-  ctx.fillRect(150, fvgY, 350, 80);
-  ctx.strokeRect(150, fvgY, 350, 80);
-  ctx.setLineDash([]);
-  ctx.fillStyle = '#3b82f6';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.fillText('1H FVG (Liquidity Gap)', 165, fvgY + 45);
-
-  // Draw BSL (Buy Side Liquidity)
-  ctx.strokeStyle = '#0f172a';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(50, h * 0.2); ctx.lineTo(550, h * 0.2); ctx.stroke();
-  ctx.fillStyle = '#0f172a';
-  ctx.font = 'bold 12px sans-serif';
-  ctx.fillText('BSL / RELATIVE EQH', 420, h * 0.2 - 10);
-
-  // Draw Price Line
-  ctx.strokeStyle = '#000';
-  ctx.setLineDash([3, 3]);
-  ctx.beginPath(); ctx.moveTo(0, curY); ctx.lineTo(w, curY); ctx.stroke();
-  ctx.setLineDash([]);
-  
-  // Price Badge
-  ctx.fillStyle = '#000';
-  ctx.fillRect(w - 110, curY - 14, 110, 28);
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.fillText(_aiFormatPrice(p), w - 100, curY + 5);
+    // 6. Live Price Action
+    ctx.strokeStyle = '#000';
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(0, curY); ctx.lineTo(w, curY); ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Price Badge (High Visibility)
+    ctx.fillStyle = '#000';
+    ctx.fillRect(w - 120, curY - 16, 120, 32);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillText(_aiFormatPrice(p), w - 110, curY + 6);
+  });
 }
 
 function _appendAIMessage(message, isStreaming = false){
