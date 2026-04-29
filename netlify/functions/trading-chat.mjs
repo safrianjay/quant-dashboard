@@ -299,6 +299,14 @@ export function buildFallbackTradingResponse({ prompt, snapshot }) {
     return "I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?";
   }
 
+  // Detect if user is asking about a different coin than the current snapshot
+  const symbols = ["btc", "eth", "sol", "bnb", "xrp", "ada", "doge", "pepe", "shib", "matic", "dot", "link"];
+  const mentionedCoin = symbols.find(s => p.includes(s) && !snapshot.symbol.toLowerCase().includes(s));
+  
+  if (mentionedCoin) {
+    return `I am currently analyzing the live **${snapshot.symbol}** tape. To get a precision scalp analysis for **${mentionedCoin.toUpperCase()}**, please switch to its dedicated dashboard so I can pull the correct live order book and volatility data for you.`;
+  }
+
   const price = Number(snapshot.price);
   const change = Number(snapshot.change24hPct || 0);
   const direction = change > 0.25 ? "bullish" : change < -0.25 ? "bearish" : "neutral";
@@ -307,6 +315,13 @@ export function buildFallbackTradingResponse({ prompt, snapshot }) {
     maximumFractionDigits: price >= 1 ? 2 : 8
   });
   
+  // If it's a general question and not a "scalp" request, give a more natural answer
+  if (!p.includes("scalp") && !p.includes("signal") && !p.includes("entry") && p.length > 20) {
+    return `At the current **${snapshot.symbol}** price of **$${formattedPrice}**, we are seeing a ${direction} bias on the 24h tape. 
+
+The market is currently positioning around key liquidity zones. If you're looking for a specific trade setup, try asking for a "Quick Scalp" or "Analyze Entry" to see the full technical breakdown.`;
+  }
+
   const signal = direction === "bullish" ? "🟢 **BUY / LONG**" : direction === "bearish" ? "🔴 **SELL / SHORT**" : "🟡 **WATCH**";
 
   return `At the captured **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is ${direction}${Number.isFinite(change) ? ` with a 24h move of **${change.toFixed(2)}%**` : ""}.
