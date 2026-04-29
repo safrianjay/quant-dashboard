@@ -217,7 +217,7 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
    | :--- | :--- | :--- |
    | [Resistance/Support] | $[Price] | [Brief reasoning] |
    | ... | ... | ... |
-4. **THE SETUP — [THEME]**: Use a bold header. Explain the current price action, divergence, or pattern in detail. Use bolding for indicators (e.g., **RSI**, **EMA 21**).
+4. **THE SETUP — [THEME]**: Use a bold header. Explain the current price action, focusing on **MSS (Market Structure Shift)** or **FVG (Fair Value Gap)** confirmations. Discuss liquidity sweeps, divergence, or volume profiles in detail. Use bolding for all indicators and key zones.
 5. **VOLUME TELLS THE REAL STORY**: A dedicated section on volume, sentiment, or index data (Fear & Greed).
 6. **BOTTOM LINE**: A final 1-2 sentence summary of the trade thesis.
 
