@@ -1862,6 +1862,7 @@ function _getAIEntrySnapshot(){
   const chg = Number.isFinite(parseFloat(cached.chg)) ? parseFloat(cached.chg) : parseFloat(CHG);
   return Object.freeze({
     symbol: `${currentBase}/USDT`,
+    cgId: window.currentCgId || 'bitcoin',
     venue: 'Quantichy Market Feed',
     instrumentType: 'perpetual',
     price,
@@ -1924,8 +1925,8 @@ async function _renderAITechChart(canvas, snapshot){
   let rawData = [];
 
   try {
-    const cgId = window.currentCgId || 'bitcoin';
-    const res = await fetch(`/.netlify/functions/cg?type=chart&id=${cgId}&days=7`);
+    const cgId = snapshot.cgId || 'bitcoin';
+    const res = await fetch(`/.netlify/functions/cg?type=chart&id=${cgId}&days=1`); // Use 1 day for more "movement"
     if(res.ok) {
       const data = await res.json();
       if(data.prices && data.prices.length > 0) {
@@ -1953,7 +1954,8 @@ async function _renderAITechChart(canvas, snapshot){
   // Calculate Min/Max for Y-axis scaling
   const minP = Math.min(...rawData);
   const maxP = Math.max(...rawData);
-  const padding = (maxP - minP) * 0.1 || p * 0.01;
+  const range = maxP - minP;
+  const padding = range > 0 ? range * 0.15 : p * 0.02;
   const chartMin = minP - padding;
   const chartMax = maxP + padding;
 
