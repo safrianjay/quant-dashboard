@@ -665,7 +665,11 @@ p,span,div,input,button{
 .ai-chat-msg.user .ai-chat-bubble{background:var(--brand-primary);color:var(--text-inverse);border-top-right-radius:4px;border:none;white-space:pre-wrap}
 .ai-chat-msg.assistant .ai-chat-bubble{border-top-left-radius:4px}
 .ai-chat-snapshot{font-size:10px;color:#64748b;font-family:var(--font-mono);padding:6px 12px;margin-top:2px;font-weight:500}
-/* Signal Table Semantic Coloring */
+/* Signal Table Semantic Coloring (Column-based for robustness) */
+.ai-chat-bubble.markdown-body h3 + .confidence-badge + table tr td:nth-child(2){font-weight:800;color:#0f172a}
+.ai-chat-bubble.markdown-body h3 + .confidence-badge + table tr td:nth-child(3){font-weight:700;color:#ef4444}
+.ai-chat-bubble.markdown-body h3 + .confidence-badge + table tr td:nth-child(4){font-weight:700;color:#10b981}
+/* Fallback for when confidence badge might be missing in some views */
 .signal-entry{font-weight:800;color:#0f172a}
 .signal-sl{font-weight:700;color:#ef4444}
 .signal-tp{font-weight:700;color:#10b981}
