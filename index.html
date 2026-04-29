@@ -1854,12 +1854,31 @@ async function _getAIAuthToken(){
   return null;
 }
 
+function refreshAIQuickButtons(){
+  const snap = _getAIEntrySnapshot();
+  const p = snap.price ? _aiFormatPrice(snap.price) : '...';
+  const sym = snap.symbol || 'this asset';
+  const btns = [
+    { label: 'Analyze Entry',  prompt: `Analyze a potential entry for ${sym} at the current price of ${p}. What does the market structure say?` },
+    { label: 'Stop Loss',      prompt: `Where should I place my stop loss if I enter ${sym} at ${p}?` },
+    { label: 'Risk Check',     prompt: `Give me a concise risk management checklist for trading ${sym} at ${p} right now.` },
+    { label: 'Invalidation',   prompt: `What price level would invalidate a long or short trade on ${sym} at ${p}?` },
+    { label: 'MACD Signal',    prompt: `What would a MACD divergence signal look like on ${sym} around the ${p} level?` },
+  ];
+  const row = document.getElementById('ai-quick-row');
+  if(!row) return;
+  row.innerHTML = btns.map(b =>
+    `<button class="ai-quick-btn" onclick="sendAIQuickPrompt(${JSON.stringify(b.prompt)})">${b.label}</button>`
+  ).join('');
+}
+
 window.openAIEntryDrawer = function(){
   document.getElementById('ai-chat-overlay')?.classList.add('open');
   const drawer = document.getElementById('ai-chat-drawer');
   drawer?.classList.add('open');
   drawer?.setAttribute('aria-hidden', 'false');
   updateAIChatLiveBadge();
+  refreshAIQuickButtons();
   setTimeout(() => document.getElementById('ai-chat-input')?.focus(), 220);
 };
 
