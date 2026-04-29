@@ -598,7 +598,9 @@ async function handlePost(req, context) {
       message: assistantMessage,
       usage: { inputTokens: null, outputTokens: null },
       provider: "fallback",
-      keyLength: apiKey.length
+      keyLength: apiKey.length,
+      debugError: error.message,
+      debugBody: error.providerBody
     });
   }
 }
