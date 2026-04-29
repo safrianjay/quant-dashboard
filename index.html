@@ -2010,8 +2010,10 @@ function _appendAIMessage(message, isStreaming = false){
       if (index < content.length) {
         index += content.charAt(index) === '|' ? 20 : 5;
         let html = marked.parse(content.slice(0, index));
-        if(html.includes('[VISUAL_SIGNAL]')){
-          html = html.replace('[VISUAL_SIGNAL]', `
+        const signalTag = /\[VISUAL_SIGNAL\]/g;
+        
+        if(signalTag.test(html)){
+          html = html.replace(signalTag, `
             <div class="ai-tech-chart-container">
               <div class="ai-tech-chart-head">
                 <span>Quantichy Visual Edge</span>
@@ -2042,8 +2044,9 @@ function _appendAIMessage(message, isStreaming = false){
 
   function finalizeBubble(){
     let html = marked.parse(message.content);
-    if(html.includes('[VISUAL_SIGNAL]')){
-      html = html.replace('[VISUAL_SIGNAL]', `
+    const signalTag = /\[VISUAL_SIGNAL\]/g;
+    if(signalTag.test(html)){
+      html = html.replace(signalTag, `
         <div class="ai-tech-chart-container">
           <div class="ai-tech-chart-head">
             <span>Quantichy Visual Edge</span>
