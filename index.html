@@ -1812,7 +1812,7 @@ function updateAIChatLiveBadge(){
   pill.classList.toggle('is-down', isDown);
   pill.textContent = `Live: ${_aiFormatPrice(snapshot.price)}`;
   if(sub) {
-    const localTime = new Date(snapshot.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    const localTime = new Date(snapshot.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     sub.textContent = `${snapshot.symbol} · ${localTime} snapshot feed`;
   }
 }
@@ -1856,7 +1856,7 @@ function _appendAIMessage(message){
   if(message.snapshot){
     const snap = document.createElement('div');
     snap.className = 'ai-chat-snapshot';
-    const localTime = new Date(message.snapshot.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    const localTime = new Date(message.snapshot.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     snap.textContent = `Snapshot: ${_aiFormatPrice(message.snapshot.price)} · ${localTime}`;
     row.appendChild(snap);
   }
@@ -3299,7 +3299,7 @@ async function _cdLoadCycleData(cgId, sym, requestToken){
 
     grid.innerHTML = html;
     _writeClientCache(_cycleCacheKey(cgId), { html, updatedAt: Date.now() });
-    if(status) status.textContent = 'Updated ' + new Date().toLocaleTimeString();
+    if(status) status.textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
   } catch(err) {
     console.error('Cycle data error:', err);
