@@ -2177,6 +2177,8 @@ window.handleAIChatSend = async function(forcedPrompt){
       content: 'I could not generate an analysis from the current context.',
       createdAt: new Date().toISOString()
     };
+    // Ensure the snapshot is available for technical chart rendering
+    assistantMessage.snapshot = snapshot;
     _aiChatHistory.push(assistantMessage);
     _appendAIMessage(assistantMessage, true);
   } catch(err) {
