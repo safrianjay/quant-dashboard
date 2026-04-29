@@ -206,7 +206,7 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
 ### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
 1. **INTRO**: A 2-sentence punchy summary of the current tape based on the snapshot.
 2. **THE SIGNAL**: 
-   - **Confidence Level**: [X/10 or %] (Based on technical confluence)
+   <div class="confidence-badge">Confidence Score: [X.X/10]</div>
    | Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
    | :--- | :--- | :--- | :--- |
    | [🟢 LONG / 🔴 SHORT] | <span class="signal-entry">$[Price]</span> | <span class="signal-sl">$[Price]</span> | <span class="signal-tp">$[TP1], $[TP2], $[TP3]</span> |
@@ -330,7 +330,7 @@ The market is currently positioning around key liquidity zones. If you're lookin
   return `At the captured **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is ${direction}${Number.isFinite(change) ? ` with a 24h move of **${change.toFixed(2)}%**` : ""}.
 
 ### THE SIGNAL
-- **Confidence Level**: ${Math.min(6, 4 + Math.abs(change) / 2).toFixed(1)}/10 (Estimated from trend strength)
+<div class="confidence-badge">Confidence Score: ${Math.min(6, 4 + Math.abs(change) / 2).toFixed(1)}/10</div>
 | Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
 | :--- | :--- | :--- | :--- |
 | ${signalEmoji} | <span class="signal-entry">$${formattedPrice}</span> | <span class="signal-sl">$${(price * (direction === "bullish" ? 0.992 : 1.008)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}</span> | <span class="signal-tp">$${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.02 : 0.98)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.03 : 0.97)).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}</span> |
