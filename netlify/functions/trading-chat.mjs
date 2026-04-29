@@ -597,9 +597,7 @@ async function handlePost(req, context) {
       conversationId,
       message: assistantMessage,
       usage: { inputTokens: null, outputTokens: null },
-      provider: "fallback",
-      debugError: error.message,
-      debugBody: error.providerBody
+      provider: "fallback"
     });
   }
 }
