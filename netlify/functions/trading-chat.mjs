@@ -303,11 +303,9 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
   });
 
   // PREPEND SYSTEM INSTRUCTION TO THE VERY FIRST TURN FOR BEST COMPATIBILITY
-  if (contents.length > 0 && contents[0].parts && contents[0].parts[0]) {
-    contents[0].parts[0].text = `[SYSTEM INSTRUCTIONS]\n${systemText}\n\n${contents[0].parts[0].text}`;
-  }
-
   return {
+    // Use explicit systemInstruction field so the provider reliably applies hard guardrails
+    systemInstruction: { parts: [{ text: systemText }] },
     contents,
     generationConfig: GENERATION_CONFIGS[classifyPrompt(prompt)]
   };
@@ -354,7 +352,7 @@ The current market structure for **${snapshot.symbol}** at **$${formattedPrice}*
 - **Volume Climax:** A massive sell-side spike at current support levels would signal a total trend breakdown.
 
 ### BOTTOM LINE
-Maintain a neutral stance if **$${(price * (direction === 'bullish' ? 0.995 : 1.005)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** is lost on high volume. Re-evaluate the bias only after a clean sweep. *for study purpose only manage your risk.*`;
+Maintain a neutral stance if **$${(price * (direction === 'bullish' ? 0.995 : 1.005)).toLocaleString('en-US', { maximumFractionDigits: price >= 1 ? 2 : 8 })}** is lost on high volume. If this level breaks decisively, the **long idea weakens** and you should reduce exposure; if the level holds and rejects, the **short idea weakens** and a long re-entry can be considered. Re-evaluate the bias only after a clean sweep. *for study purpose only manage your risk.*`;
   }
 
   // Detect if user is asking about a different coin than the current snapshot
@@ -409,7 +407,6 @@ Current volume confirms ${momentum} dominance. The order book is showing a clust
 ${rsi > 70 ? `Don't chase here. The RSI is at **${rsi.toFixed(1)}** (overbought). Wait for a dip to the EMA 5 at **$${ema5.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** before entering.` : rsi < 30 ? `The market is oversold at **${rsi.toFixed(1)}**. This is a prime spot for a mean-reversion scalp with a tight stop below **$${(price * 0.995).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}**.` : `The trend is neutral but biased ${momentum}. Watch for a break of **$${(price * (momentum === 'bullish' ? 1.005 : 0.995)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** to confirm the next expansion leg.`}
 
 *for study purpose only manage your risk.*`;
-}
 }
 
 function isTransientStatus(status) {
@@ -626,10 +623,28 @@ async function handlePost(req, context) {
       model,
       payload: providerPayload
     });
+
+    // Post-process provider output to avoid weak/generic/template responses.
+    let providerText = String(providerResult.text || "").trim();
+    const genericPatterns = [
+      /I could not generate/i,
+      /could not generate an analysis/i,
+      /I could not/i,
+      /I cannot provide/i,
+      /I'm your Quantichy AI\. I can only help/i
+    ];
+    const looksGeneric =
+      providerText.length < 60 || genericPatterns.some((re) => re.test(providerText));
+
+    if (looksGeneric) {
+      // Replace with a deterministic fallback that respects the snapshot and guardrails
+      providerText = buildFallbackTradingResponse({ prompt: body.prompt.trim(), snapshot: body.snapshot });
+    }
+
     const assistantMessage = {
       id: `msg_${crypto.randomUUID()}`,
       role: "assistant",
-      content: providerResult.text,
+      content: providerText,
       createdAt: new Date().toISOString()
     };
     const userMessage = {
