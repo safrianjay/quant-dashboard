@@ -2211,7 +2211,7 @@ function _appendAIMessage(message, isStreaming = false){
             <div class="ai-ta-legend-item"><div class="ai-ta-legend-color" style="background:#a855f7"></div>EMA 21</div>
             <div class="ai-ta-legend-item"><div class="ai-ta-legend-color" style="background:#3b82f6"></div>Price</div>
           </div>
-          <div class="ai-ta-grid">
+          <div class="ai-ta-grid" style="display:grid;grid-template-columns:1fr;gap:8px;padding:0 16px 16px">
             <div class="ai-ta-card">
               <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> SUPPORT</div>
               <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 61.8%</span><span class="ai-ta-card-val">${(p * 0.9604).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>
