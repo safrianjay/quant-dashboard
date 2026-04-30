@@ -11,9 +11,6 @@ export async function sendTradingChatMessage({
   const headers = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  // Updated system instruction with strict guardrails
-  const systemInstruction = `You are an elite crypto trading assistant. You must ONLY answer questions related to cryptocurrency, trading strategies, technical analysis, and finance. If the user asks an open-ended question about anything else (e.g., coding, general knowledge, recipes, personal advice), you MUST politely refuse and state you only assist with crypto trading. Always use the provided Live Market Price context in your reasoning.`;
-
   const response = await fetch(endpoint, {
     method: "POST",
     headers,
@@ -21,7 +18,7 @@ export async function sendTradingChatMessage({
     body: JSON.stringify({
       conversationId,
       clientMessageId,
-      prompt: `${systemInstruction}\n${prompt}`, // Prepend system instruction to user prompt
+      prompt,
       snapshot,
       history
     })
