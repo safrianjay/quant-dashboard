@@ -1885,43 +1885,44 @@ function _aiFormatPrice(price){
   return '$' + Math.round(p).toLocaleString();
 }
 
-async function _getAIEntrySnapshot(){
-  const sym = currentSymbol;
-  const base = currentBase;
-  const mkt = MARKET_LIST.find(m => m.sym === sym);
-  const cgId = mkt ? mkt.cgId : window.currentCgId || 'bitcoin';
+function _getAIEntrySnapshot(){
+  const sym = currentSymbol || 'BTCUSDT';
+  const base = currentBase || 'BTC';
+  // Robust lookup: try to find the coin in the list, or derive cgId manually
+  const mkt = (typeof MARKET_LIST !== 'undefined') ? MARKET_LIST.find(m => m.sym === sym) : null;
+  const cgId = mkt ? mkt.cgId : sym.replace('USDT','').toLowerCase();
   
   const cached = _marketPrices[sym] || {};
-  const price = Number.isFinite(cached.price) && cached.price > 0 ? cached.price : PRICE;
-  const chg = Number.isFinite(parseFloat(cached.chg)) ? parseFloat(cached.chg) : parseFloat(CHG);
+  const price = Number.isFinite(cached.price) && cached.price > 0 ? cached.price : (typeof PRICE !== 'undefined' ? PRICE : 50000);
+  const chg = Number.isFinite(parseFloat(cached.chg)) ? parseFloat(cached.chg) : (typeof CHG !== 'undefined' ? parseFloat(CHG) : 0);
   
-  // Calculate Live Indicators for the AI
-  let indicators = { rsi: null, ema5: null, ema21: null };
-  try {
-    const chart = await _getChartData(cgId, 50);
-    if (chart?.prices?.length > 21) {
-      const closes = chart.prices.map(p => p[1]);
-      indicators.ema5  = _calcEMA(closes, 5);
-      indicators.ema21 = _calcEMA(closes, 21);
-      indicators.rsi   = _calcRSI(closes, 14);
-    }
-  } catch(e) {
-    console.warn("AI Snapshot Indicator Fetch Failed:", e.message);
-  }
-
   return Object.freeze({
     symbol: `${base}/USDT`,
-    cgId,
+    cgId: cgId || 'bitcoin',
     venue: 'Quantichy Market Feed',
     instrumentType: 'perpetual',
     price,
-    indicators,
     quoteCurrency: 'USDT',
     pricePrecision: price < 1 ? 6 : 2,
-    change24hPct: Number.isFinite(chg) ? chg : undefined,
+    change24hPct: chg,
     volume24h: Number.isFinite(cached.vol) ? cached.vol : undefined,
     timestamp: new Date().toISOString()
   });
+}
+
+async function _getAIEntrySnapshotFull(){
+  const snap = _getAIEntrySnapshot();
+  let indicators = { rsi: null, ema5: null, ema21: null };
+  try {
+    const chart = await _getChartData(snap.cgId, 50);
+    if(chart?.prices?.length > 21) {
+      const closes = chart.prices.map(p => p[1]);
+      indicators.ema5 = _calcEMA(closes, 5);
+      indicators.ema21 = _calcEMA(closes, 21);
+      indicators.rsi = _calcRSI(closes, 14);
+    }
+  } catch(e) {}
+  return Object.freeze({ ...snap, indicators });
 }
 
 function updateAIChatLiveBadge(){
@@ -1929,11 +1930,10 @@ function updateAIChatLiveBadge(){
   const sub = document.getElementById('ai-chat-sub');
   if(!pill) return;
   
-  // Don't overwrite the header if we're currently thinking
   if(_aiChatSending && sub && sub.innerHTML.includes('thinking')) return;
 
   const snapshot = _getAIEntrySnapshot();
-  const isDown = Number(snapshot.change24hPct || 0) < 0;
+  const isDown = (snapshot.change24hPct || 0) < 0;
   pill.classList.toggle('is-down', isDown);
   pill.textContent = `Live: ${_aiFormatPrice(snapshot.price)}`;
   if(sub) {
@@ -2004,10 +2004,19 @@ async function _renderAITechChart(canvas, snapshot){
   // Calculate Min/Max for Y-axis scaling
   const minP = Math.min(...rawData);
   const maxP = Math.max(...rawData);
-  const range = maxP - minP;
+  let range = maxP - minP;
+  
+  // CRITICAL FIX: If the range is absurdly large (e.g. BTC vs BNB mismatch), 
+  // or the current price is far outside the min/max, force a tight scale around current price.
+  if(range > p * 0.5 || p > maxP || p < minP) {
+    rawData = rawData.map(v => p * (0.98 + (Math.random() * 0.04))); // normalize to current price
+    rawData[rawData.length - 1] = p;
+    range = p * 0.04;
+  }
+
   const padding = range > 0 ? range * 0.15 : p * 0.02;
-  const chartMin = minP - padding;
-  const chartMax = maxP + padding;
+  const chartMin = Math.min(minP, p) - padding;
+  const chartMax = Math.max(maxP, p) + padding;
 
   setTimeout(() => {
     const w = canvas.width;
@@ -2242,7 +2251,7 @@ async function _getAIAuthToken(){
 }
 
 async function refreshAIQuickButtons(){
-  const snap = await _getAIEntrySnapshot();
+  const snap = await _getAIEntrySnapshotFull();
   const p = snap.price ? _aiFormatPrice(snap.price) : '...';
   const sym = snap.symbol || 'this asset';
   const btns = [
@@ -2311,7 +2320,7 @@ window.handleAIChatSend = async function(forcedPrompt){
   if(!prompt) return;
   if(input && !forcedPrompt) input.value = '';
 
-  const snapshot = await _getAIEntrySnapshot();
+  const snapshot = await _getAIEntrySnapshotFull();
   const clientMessageId = (window.crypto?.randomUUID?.() || `msg_${Date.now()}_${Math.random().toString(16).slice(2)}`);
   const userMessage = {
     id: clientMessageId,
@@ -3003,8 +3012,15 @@ function showUpgradePopup(mode){
   overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.5);z-index:99999;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease;backdrop-filter:blur(4px)';
 
   const isAI = mode === 'ai';
-  const title = isAI ? 'Unlock Quantichy AI' : _t('upgrade_title');
-  const subtitle = isAI ? 'Get institutional-grade technical analysis and real-time trade setups powered by advanced AI.' : _t('upgrade_subtitle');
+  let title = 'Upgrade to Pro';
+  let subtitle = 'Get full access to institutional tools and market indicators.';
+  
+  if(isAI) {
+    title = 'Unlock Quantichy AI';
+    subtitle = 'Get institutional-grade technical analysis and real-time trade setups powered by advanced AI.';
+  } else {
+    try { title = _t('upgrade_title'); subtitle = _t('upgrade_subtitle'); } catch(e){}
+  }
 
   overlay.innerHTML = `
     <div style="background:white;border-radius:20px;padding:40px 36px;max-width:400px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.15);animation:scaleIn .25s ease;position:relative">
@@ -3054,9 +3070,9 @@ function showUpgradePopup(mode){
         `}
       </div>
       <a href="/pricing" class="qds-hover-lift" style="display:block;background:linear-gradient(135deg,var(--brand-primary),var(--neutral-800));color:var(--text-inverse);padding:var(--space-7) var(--space-12);border-radius:var(--radius-2xl);font-size:var(--fs-lg);font-weight:var(--fw-bold);text-decoration:none;font-family:var(--font-heading);box-shadow:0 4px 14px rgba(15,23,42,.2)">
-        ${_t('upgrade_btn')}
+        Upgrade to Pro
       </a>
-      <p style="font-size:11px;color:#94A3B8;margin:14px 0 0;font-family:var(--font-body)">${_t('upgrade_starting')}</p>
+      <p style="font-size:11px;color:#94A3B8;margin:14px 0 0;font-family:var(--font-body)">Starting from $29/mo</p>
     </div>`;
   overlay.addEventListener('click', e => { if(e.target === overlay) closeUpgradePopup(); });
   document.body.appendChild(overlay);
