@@ -4,6 +4,8 @@
 [build.processing.html]
   pretty_urls = true
 
+# Force rebuild: triggered to deploy latest CSS and backend changes
+
 # Security headers for Firebase Auth Popups
 [[headers]]
   for = "/*"
