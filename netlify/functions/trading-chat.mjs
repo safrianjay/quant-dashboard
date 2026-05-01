@@ -415,16 +415,55 @@ Maintain a neutral stance if **$${(price * (direction === 'bullish' ? 0.995 : 1.
 Or tap **Analyze Entry**, **Invalidation**, or **Risk Check** below for a one-tap answer.`;
   }
 
+  const fmt = (v) => v.toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 });
+  const rsiVal = Number(snapshot.indicators?.rsi);
+  const ema5Val = Number(snapshot.indicators?.ema5);
+  const ema21Val = Number(snapshot.indicators?.ema21);
+  const rsiText = Number.isFinite(rsiVal) ? rsiVal.toFixed(1) : "—";
+  const ema5Txt = Number.isFinite(ema5Val) ? fmt(ema5Val) : "—";
+  const ema21Txt = Number.isFinite(ema21Val) ? fmt(ema21Val) : "—";
+
+  // Intent: support / resistance / key levels
+  if (/\b(support|resistance|s\/r|key level|levels?)\b/i.test(p)) {
+    const s1 = price * 0.995, s2 = price * 0.98, s3 = price * 0.96;
+    const r1 = price * 1.005, r2 = price * 1.02, r3 = price * 1.04;
+    return `### SUPPORT & RESISTANCE — ${snapshot.symbol} @ $${formattedPrice}
+
+**Resistance (above):**
+- **$${fmt(r1)}** — first reaction zone (intraday range high)
+- **$${fmt(r2)}** — Fib 23.6% / range top — clean break opens expansion
+- **$${fmt(r3)}** — major liquidity pool / swing high
+
+**Support (below):**
+- **$${fmt(s1)}** — short-term floor / EMA 5 zone (~$${ema5Txt})
+- **$${fmt(s2)}** — Fib 61.8% / range bottom
+- **$${fmt(s3)}** — major demand zone / swing low
+
+**The read:** Hold above **$${fmt(s1)}** and dips are buyable. Loss of **$${fmt(s2)}** flips bias bearish. Reclaim of **$${fmt(r2)}** unlocks the next leg up. *for study purpose only manage your risk.*`;
+  }
+
+  // Intent: long or short / directional bias
+  if (/\b(long or short|long\/short|direction|bias|which way|up or down)\b/i.test(p)) {
+    const bias = ema5Val && ema21Val ? (ema5Val > ema21Val ? "long" : "short") : direction === "bullish" ? "long" : direction === "bearish" ? "short" : "neutral";
+    const sl = bias === "long" ? price * 0.99 : price * 1.01;
+    const tp = bias === "long" ? price * 1.02 : price * 0.98;
+    return `### DIRECTIONAL BIAS — ${snapshot.symbol} @ $${formattedPrice}
+
+**Bias: ${bias === "long" ? "🟢 LONG" : bias === "short" ? "🔴 SHORT" : "🟡 NEUTRAL"}**
+
+**Why:** EMA5 ($${ema5Txt}) ${ema5Val > ema21Val ? ">" : "<"} EMA21 ($${ema21Txt}), RSI **${rsiText}**, 24h ${change >= 0 ? "+" : ""}${change.toFixed(2)}%.
+
+${bias === "neutral"
+  ? `Price is balanced — wait for a decisive break of **$${fmt(price * 1.005)}** (long trigger) or **$${fmt(price * 0.995)}** (short trigger).`
+  : `**Entry:** $${formattedPrice}  ·  **Stop:** $${fmt(sl)}  ·  **Target:** $${fmt(tp)}`}
+
+*for study purpose only manage your risk.*`;
+  }
+
   // Open-ended crypto/trading question — give a structured analyst-style answer
   // grounded in the live snapshot rather than a one-liner stub.
   const isOpenEnded = !p.includes("scalp") && !p.includes("signal") && !p.includes("entry") && p.length > 12;
   if (isOpenEnded) {
-    const rsiVal = Number(snapshot.indicators?.rsi);
-    const ema5Val = Number(snapshot.indicators?.ema5);
-    const ema21Val = Number(snapshot.indicators?.ema21);
-    const rsiText = Number.isFinite(rsiVal) ? rsiVal.toFixed(1) : "—";
-    const ema5Txt = Number.isFinite(ema5Val) ? ema5Val.toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 }) : "—";
-    const ema21Txt = Number.isFinite(ema21Val) ? ema21Val.toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 }) : "—";
     const trendBias = Number.isFinite(ema5Val) && Number.isFinite(ema21Val)
       ? (ema5Val > ema21Val ? "bullish trend stack (EMA5 > EMA21)" : "bearish trend stack (EMA5 < EMA21)")
       : `${direction} 24h bias`;
