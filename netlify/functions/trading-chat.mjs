@@ -398,6 +398,23 @@ Maintain a neutral stance if **$${(price * (direction === 'bullish' ? 0.995 : 1.
     return `I am currently analyzing the live **${snapshot.symbol}** tape. To get a precision scalp analysis for **${mentionedCoin.toUpperCase()}**, please switch to its dedicated dashboard so I can pull the correct live order book and volatility data for you.`;
   }
 
+  // Detect prompts that are too vague to answer well from a static fallback
+  // ("hmm", "where is the coin", "thoughts?"). For these, ask the user to be
+  // specific instead of dumping the structured template — that's exactly what
+  // the user complained about as "irrelevant template answer".
+  const hasQuestionShape = /\b(why|how|what|when|should|can|is|are|will|does|do|tell|explain|compare|outlook|good|bad|bull|bear|long|short|buy|sell|enter|target|stop|risk)\b/i.test(p);
+  const looksLikeRealQuestion = p.length >= 8 && (hasQuestionShape || /\?/.test(p) || cryptoHint.test(p));
+  if (!looksLikeRealQuestion) {
+    return `I want to give you a useful read on **${snapshot.symbol}** at **$${formattedPrice}**, but your question was a bit vague. Try one of:
+
+- **"What's the outlook for ${snapshot.symbol}?"** — full technical read
+- **"Should I long or short here?"** — directional bias with entry / stop
+- **"Where's the support / resistance?"** — key levels
+- **"Compare BTC vs ETH"** — relative analysis
+
+Or tap **Analyze Entry**, **Invalidation**, or **Risk Check** below for a one-tap answer.`;
+  }
+
   // Open-ended crypto/trading question — give a structured analyst-style answer
   // grounded in the live snapshot rather than a one-liner stub.
   const isOpenEnded = !p.includes("scalp") && !p.includes("signal") && !p.includes("entry") && p.length > 12;
@@ -612,15 +629,18 @@ async function handlePost(req, context) {
     });
   }
 
-  // --- OFF TOPIC / GIBBERISH GUARDRAIL ---
-  // Block only clear gibberish/junk. Let the model handle ambiguous prompts so
-  // legitimate open-ended trading/crypto questions ("eth?", "outlook", "thoughts")
-  // are not pre-emptively refused.
+  // --- OFF TOPIC / GIBBERISH / TOO-SHORT GUARDRAIL ---
   const textNoSpace = lowerPrompt.replace(/\s/g, '');
-  const isGibberish = textNoSpace.length > 6 && !/[aeiouy0-9]/.test(textNoSpace);
-  const isJunkSymbols = lowerPrompt.length > 0 && lowerPrompt.length < 4 && !/[a-z0-9]/.test(lowerPrompt);
+  const knownTickers = /^(btc|eth|sol|bnb|xrp|ada|doge|pepe|shib|matic|dot|link|avax|trx|ltc|atom|near|apt|arb|op|sui|inj|tia|sei)$/i;
 
-  // Only refuse very specific off-topic exact phrases (not just any prompt containing the word).
+  // Single-char or 2-char inputs that aren't known tickers — clearly not a question.
+  const isTooShort = lowerPrompt.length > 0 && lowerPrompt.length < 3 && !knownTickers.test(lowerPrompt);
+  // Random consonant clusters with no vowels/digits (e.g. "qwrtgz")
+  const isGibberish = textNoSpace.length > 4 && !/[aeiouy0-9]/.test(textNoSpace);
+  // Pure punctuation/symbol noise (e.g. "...", "??", "!!")
+  const isJunkSymbols = lowerPrompt.length > 0 && lowerPrompt.length < 6 && !/[a-z0-9]/.test(lowerPrompt);
+
+  // Refuse exact-match off-topic single words.
   const offTopicExact = new Set([
     "weather", "recipe", "cook", "cooking", "movie", "actor", "song", "music",
     "book", "author", "capital", "city", "country", "president", "politics",
@@ -628,7 +648,7 @@ async function handlePost(req, context) {
   ]);
   const isOffTopicWord = offTopicExact.has(lowerPrompt);
 
-  if (isGibberish || isJunkSymbols || isOffTopicWord) {
+  if (isTooShort || isGibberish || isJunkSymbols || isOffTopicWord) {
     const assistantMessage = {
       id: `msg_${crypto.randomUUID()}`,
       role: "assistant",
