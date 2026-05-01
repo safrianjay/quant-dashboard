@@ -695,7 +695,9 @@ p,span,div,input,button{
 .ai-ta-legend { padding: 12px 16px 16px; display: flex; flex-wrap: wrap; gap: 16px; font-size: 11px; font-weight: 700; color: var(--neutral-500); border-bottom: 1px solid var(--neutral-100); margin-bottom: 16px; }
 .ai-ta-legend-item { display: flex; align-items: center; gap: 6px; }
 .ai-ta-legend-color { width: 10px; height: 3px; border-radius: 2px; }
-.ai-ta-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important; padding: 0 16px 16px !important; }
+.ai-ta-container .ai-ta-grid,
+.ai-ta-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; padding: 0 16px 16px !important; box-sizing: border-box !important; width: 100% !important; }
+.ai-ta-grid > .ai-ta-card { min-width: 0 !important; }
 .ai-ta-card { background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: 10px; padding: 12px; }
 .ai-ta-card-title { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; color: var(--neutral-700); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em; }
 .ai-ta-card-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: 600; }
@@ -2214,7 +2216,7 @@ function _appendAIMessage(message, isStreaming = false){
             <div class="ai-ta-legend-item"><div class="ai-ta-legend-color" style="background:#a855f7"></div>EMA 21</div>
             <div class="ai-ta-legend-item"><div class="ai-ta-legend-color" style="background:#3b82f6"></div>Price</div>
           </div>
-          <div class="ai-ta-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 16px">
+          <div class="ai-ta-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 16px 16px;width:100%;box-sizing:border-box">
             <div class="ai-ta-card">
               <div class="ai-ta-card-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> SUPPORT</div>
               <div class="ai-ta-card-row"><span class="ai-ta-card-label">Fib 61.8%</span><span class="ai-ta-card-val">${(p * 0.9604).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>
@@ -2303,9 +2305,14 @@ function applyAIGridOverride(){
     const grids = document.querySelectorAll('.ai-ta-grid');
     grids.forEach(g => {
       g.style.setProperty('display', 'grid', 'important');
-      g.style.setProperty('grid-template-columns', '1fr 1fr', 'important');
+      g.style.setProperty('grid-template-columns', 'repeat(2, minmax(0, 1fr))', 'important');
       g.style.setProperty('gap', '10px', 'important');
       g.style.setProperty('padding', '0 16px 16px', 'important');
+      g.style.setProperty('box-sizing', 'border-box', 'important');
+      g.style.setProperty('width', '100%', 'important');
+      g.querySelectorAll('.ai-ta-card').forEach(c => {
+        c.style.setProperty('min-width', '0', 'important');
+      });
     });
   }catch(e){/* ignore */}
 }

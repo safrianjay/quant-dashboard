@@ -232,8 +232,16 @@ For purely educational answers (e.g., "what is RSI?"), the tag is OPTIONAL — b
 - "Compare X vs Y" → Side-by-side: structure, momentum, market cap, narrative
 ALWAYS use REAL data from the snapshot. NEVER give generic template answers.
 
-### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
-Do not use numbered lists. Use H3 (###) headers for all sections.
+### RESPONSE STYLE — TWO MODES:
+
+**MODE A — TRADE SIGNAL** (use when the user asks for entry, scalp, signal, setup, "should I buy/sell", "long or short"):
+Use the full structured template below with all sections.
+
+**MODE B — CONVERSATIONAL ANSWER** (use for everything else: outlook questions, fundamentals, comparisons, education, "tell me about X", "why is price moving", "thoughts on Y", general trading questions):
+Write a natural, direct, analyst-style answer. Use markdown freely (### headers, **bold**, tables, bullet lists if helpful) but DO NOT force the rigid Signal table template. Length should match the question — a fundamentals question gets 2-4 paragraphs, a quick "what do you think" gets 1-2 paragraphs. Always ground the answer in the live ${snapshot.symbol} @ $${snapshot.price} snapshot when relevant. Append [VISUAL_SIGNAL] at the end if the answer touches the current tape's structure/levels; skip it for purely educational answers.
+
+### MODE A TEMPLATE (only when giving a trade signal):
+Do not use numbered lists. Use H3 (###) headers.
 
 ### INTRO
 A 2-sentence punchy summary of the current tape based on the snapshot.
@@ -262,19 +270,18 @@ A dedicated section on volume, sentiment, or index data.
 [VISUAL_SIGNAL]
 
 ### BOTTOM LINE
-Give highly-actionable advice using REAL snapshot price data. Be specific, not generic.
+Give highly-actionable advice using REAL snapshot price data.
 
-### RULES:
-- Always use actual prices from the snapshot: ${snapshot.symbol} @ $${snapshot.price}
-- Include the Signal table and all sections
-- ALWAYS add [VISUAL_SIGNAL] before BOTTOM LINE
-- Tone: Professional, aggressive, "no-noise" technical analysis
-- Disclaimer at end: *for study purpose only manage your risk.*
+### GLOBAL RULES:
+- Always use actual prices from the snapshot when discussing the live tape: ${snapshot.symbol} @ $${snapshot.price}
+- Tone: Professional analyst, direct, no fluff
+- Disclaimer at end of any trade-signal answer: *for study purpose only manage your risk.*
 - Current Asset: ${snapshot.symbol}
 - Current Price: $${snapshot.price}
 - RSI (14): ${snapshot.indicators?.rsi ? snapshot.indicators.rsi.toFixed(2) : 'N/A'}
 - EMA (5): $${snapshot.indicators?.ema5 ? snapshot.indicators.ema5.toFixed(2) : 'N/A'}
-- EMA (21): $${snapshot.indicators?.ema21 ? snapshot.indicators.ema21.toFixed(2) : 'N/A'}`;
+- EMA (21): $${snapshot.indicators?.ema21 ? snapshot.indicators.ema21.toFixed(2) : 'N/A'}
+- DO NOT default to the trade-signal template for every question. Match the format to what the user actually asked.`;
 }
 
 function buildGeminiPayload({ prompt, history, snapshot }) {
@@ -692,28 +699,25 @@ async function handlePost(req, context) {
       payload: providerPayload
     });
 
-    // Post-process provider output to avoid weak/generic/template responses.
+    // Post-process provider output. Only substitute when the model truly failed
+    // (empty / placeholder error). Trust real refusals and real answers as-is so
+    // the user sees the model's actual response, not a structured template.
     let providerText = String(providerResult.text || "").trim();
-    const genericPatterns = [
-      /I could not generate/i,
-      /could not generate an analysis/i,
-      /I could not/i,
-      /I cannot provide/i,
-      /I'm your Quantichy AI\. I can only help/i
-    ];
-    const looksGeneric =
-      providerText.length < 60 || genericPatterns.some((re) => re.test(providerText));
+    const trulyBroken =
+      providerText.length < 30 ||
+      /^I could not generate/i.test(providerText) ||
+      /could not generate an analysis from the current context/i.test(providerText);
 
-    if (looksGeneric) {
-      // Replace with a deterministic fallback that respects the snapshot and guardrails
+    if (trulyBroken) {
       providerText = buildFallbackTradingResponse({ prompt: body.prompt.trim(), snapshot: body.snapshot });
     }
 
-    // ENFORCE [VISUAL_SIGNAL] in valid trading/analysis responses
+    // Only inject [VISUAL_SIGNAL] when the response is clearly a full trade-signal
+    // template (has THE SIGNAL or BOTTOM LINE sections). Conversational answers
+    // about outlook/fundamentals/education should not be forced to show the cards.
     if (providerText && !providerText.includes('[VISUAL_SIGNAL]') && !providerText.includes("I'm your Quantichy AI")) {
-      // Only add if it's a real trading analysis (has indicators, prices, or analysis sections)
-      if (/###|THE NARRATIVE|THE SIGNAL|BOTTOM LINE|Entry|Stop Loss|RSI|EMA/i.test(providerText)) {
-        // Add [VISUAL_SIGNAL] before the last section
+      const isFullSignalTemplate = /### THE SIGNAL|### BOTTOM LINE/i.test(providerText);
+      if (isFullSignalTemplate) {
         providerText = providerText.replace(/(\n### BOTTOM LINE)/i, '\n[VISUAL_SIGNAL]\n\n### BOTTOM LINE');
       }
     }
