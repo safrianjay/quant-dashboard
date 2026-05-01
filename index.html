@@ -2294,14 +2294,14 @@ window.closeAIEntryDrawer = function(){
   drawer?.setAttribute('aria-hidden', 'true');
 };
 
-// Runtime CSS override: force single-column grid for .ai-ta-grid if stylesheet rules are overridden
+// Runtime CSS override: apply 2-column grid for .ai-ta-grid
 function applyAIGridOverride(){
   try{
     const grids = document.querySelectorAll('.ai-ta-grid');
     grids.forEach(g => {
       g.style.setProperty('display', 'grid', 'important');
-      g.style.setProperty('grid-template-columns', '1fr', 'important');
-      g.style.setProperty('gap', '8px', 'important');
+      g.style.setProperty('grid-template-columns', '1fr 1fr', 'important');
+      g.style.setProperty('gap', '10px', 'important');
       g.style.setProperty('padding', '0 16px 16px', 'important');
     });
   }catch(e){/* ignore */}
