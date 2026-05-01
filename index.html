@@ -4113,7 +4113,15 @@ async function loadMacroCalendar(force=false){
       const res = await fetch('/.netlify/functions/macro-calendar');
       if(!res.ok) throw new Error('HTTP ' + res.status);
       const json = await res.json();
-      if(!json?.events?.length) throw new Error('Empty event list');
+      /* Server signals graceful degradation when its upstream (Trading Economics)
+         is unreachable. Switch to static silently — not a real error. */
+      if(json?.source === 'unavailable' || !json?.events?.length){
+        if(!_macroEventsCache){
+          renderMacroCalendar(MACRO_FALLBACK);
+          _renderMacroStatus(Date.now(), 'static');
+        }
+        return;
+      }
       _macroEventsCache = json;
       try { localStorage.setItem('q_macro_calendar_v1', JSON.stringify(json)); } catch(_){}
       renderMacroCalendar(json.events);

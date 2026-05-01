@@ -128,12 +128,20 @@ exports.handler = async () => {
     return { statusCode: 200, headers: HEADERS, body };
   } catch (err) {
     console.warn('[macro-calendar]', err.message);
-    /* Stale cache wins over an outage; only 503 if we have nothing at all */
+    /* Stale cache wins over an outage. */
     if (_cache) return { statusCode: 200, headers: HEADERS, body: _cache.body };
+    /* No cache + upstream down: respond 200 with a sentinel so the frontend
+       can silently switch to its static fallback without a red 503 in the
+       console / network panel. The server-side warn above keeps the signal. */
     return {
-      statusCode: 503,
+      statusCode: 200,
       headers: HEADERS,
-      body: JSON.stringify({ error: err.message, fallback: 'static' })
+      body: JSON.stringify({
+        events: [],
+        source: 'unavailable',
+        upstreamError: err.message,
+        updatedAt: Date.now()
+      })
     };
   }
 };
