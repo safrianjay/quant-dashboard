@@ -54,4 +54,4 @@
   to = "https://quant-dashboard-1405b.firebaseapp.com/__/firebase/:splat"
   status = 200
   force = true
-/* rebuild trigger 1777574693 */
+# rebuild trigger 1777574693
