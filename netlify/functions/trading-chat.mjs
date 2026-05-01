@@ -553,17 +553,20 @@ async function handlePost(req, context) {
   }
 
   // --- OFF TOPIC / GIBBERISH GUARDRAIL ---
-  // Detects random letter strings (no vowels and no spaces) or junk input
+  // Detects random letter strings (no vowels), very short input (1-2 chars), or junk input
   const textNoSpace = lowerPrompt.replace(/\s/g, '');
+  const isSingleChar = lowerPrompt.length === 1;
+  const isTwoChar = lowerPrompt.length === 2;
   const isGibberish = textNoSpace.length > 4 && !/[aeiouy1-9]/.test(textNoSpace);
   const isJunkSymbols = lowerPrompt.length > 0 && lowerPrompt.length < 4 && !/[a-z0-9]/.test(lowerPrompt);
+  const isTooShort = lowerPrompt.length < 3 && !/^(btc|eth|sol|bnb|xrp|ada|doge|pepe|shib|matic|dot|link)$/i.test(lowerPrompt);
   
   // Check if it's an off-topic single word
   const offTopicSingleWords = ["weather", "recipe", "cook", "movie", "actor", "song", "music", "book", "author", "capital", "city", "country", "president", "politics", "sports", "football", "basketball", "soccer"];
   const isSingleWord = lowerPrompt.split(/\s+/).length === 1;
   const isOffTopicWord = isSingleWord && offTopicSingleWords.some(word => lowerPrompt.includes(word));
   
-  if (isGibberish || isJunkSymbols || isOffTopicWord) {
+  if (isGibberish || isJunkSymbols || isOffTopicWord || isTooShort) {
     const assistantMessage = {
       id: `msg_${crypto.randomUUID()}`,
       role: "assistant",
@@ -649,6 +652,15 @@ async function handlePost(req, context) {
     if (looksGeneric) {
       // Replace with a deterministic fallback that respects the snapshot and guardrails
       providerText = buildFallbackTradingResponse({ prompt: body.prompt.trim(), snapshot: body.snapshot });
+    }
+
+    // ENFORCE [VISUAL_SIGNAL] in valid trading/analysis responses
+    if (providerText && !providerText.includes('[VISUAL_SIGNAL]') && !providerText.includes("I'm your Quantichy AI")) {
+      // Only add if it's a real trading analysis (has indicators, prices, or analysis sections)
+      if (/###|THE NARRATIVE|THE SIGNAL|BOTTOM LINE|Entry|Stop Loss|RSI|EMA/i.test(providerText)) {
+        // Add [VISUAL_SIGNAL] before the last section
+        providerText = providerText.replace(/(\n### BOTTOM LINE)/i, '\n[VISUAL_SIGNAL]\n\n### BOTTOM LINE');
+      }
     }
 
     const assistantMessage = {
