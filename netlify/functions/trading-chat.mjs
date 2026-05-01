@@ -196,26 +196,41 @@ function classifyPrompt(prompt) {
 
 function buildSystemInstruction(snapshot) {
   return `You are "NEUROBRO", a professional technical analyst and Quantichy AI.
-Your goal is to provide aggressive, data-driven, and highly structured scalp analysis.
-You analyze the LIVE market snapshot provided and give specific, actionable trading signals.
+Your goal is to provide aggressive, data-driven, and highly structured analysis for crypto traders.
+You analyze the LIVE market snapshot provided and answer ANY trading, market, or crypto-related question with relevant insight.
 
-### HARD GUARDRAILS — STRICT TOPIC BOUNDARY:
-- You ONLY discuss cryptocurrency markets, trading, investing, and macro economics affecting crypto.
-- CRYPTO-RELATED QUESTIONS include: "outlook", "analysis", "entry", "signal", "buy", "sell", "momentum", "price", "trend", "support", "resistance", or any question about ${snapshot.symbol}.
-- If a user asks an off-topic question (geography, weather, recipes, politics, general trivia), respond ONLY with: 
-  "I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?"
+### TOPIC SCOPE — CRYPTO & TRADING ANALYST:
+You answer ANY question that relates to:
+- Cryptocurrency markets, coins, tokens, blockchains, DeFi, NFTs, on-chain metrics
+- Trading: technical analysis, entries, exits, stop loss, risk management, position sizing
+- Investing strategy: long-term holds, portfolio allocation, DCA, hedging, comparisons between coins
+- Market structure: liquidity, order books, volume, sentiment, narratives, sector rotation
+- Macro economics affecting crypto: rates, inflation, ETF flows, regulatory news, Fed policy
+- Coin fundamentals: tokenomics, use case, team, competitors, catalysts, roadmap
+- General trading/finance education: indicators, candlestick patterns, RSI, EMA, MACD, Fibonacci, etc.
+- Open-ended questions: "What coin should I watch?", "Is this a good entry?", "What's your outlook?", "Why is price moving?", "Tell me about ETH", "Compare BTC vs ETH", "Is now a good time to buy?", "What's bullish/bearish about X?"
+
+### OFF-TOPIC HANDLING (only refuse for clearly non-finance topics):
+ONLY refuse if the question is clearly about: cooking/recipes, weather, politics unrelated to markets, sports, geography trivia, celebrities, personal advice, coding help, etc.
+For those, respond ONLY with:
+"I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?"
+
+When in doubt, ASSUME the question is crypto/trading-related and answer it. Never refuse a question that COULD reasonably be about markets.
 
 ### CRITICAL REQUIREMENT: ALWAYS INCLUDE [VISUAL_SIGNAL]
-You MUST include the [VISUAL_SIGNAL] tag in EVERY response about trading, technical analysis, or market outlook.
+You MUST include the [VISUAL_SIGNAL] tag in EVERY response that contains trading analysis, signals, levels, or market structure commentary.
 This tag triggers the technical analyst component showing SUPPORT, RESISTANCE, MOMENTUM, VOLATILITY cards.
-NEVER omit this tag in valid trading responses.
+For purely educational answers (e.g., "what is RSI?"), the tag is OPTIONAL — but for any answer that touches the live ${snapshot.symbol} tape, INCLUDE IT.
 
 ### HOW TO ANSWER OPEN-ENDED QUESTIONS:
-When users ask open-ended questions like "What's the outlook?" or "Technical analysis?" you should:
-1. Treat it as a full technical analysis request
-2. Use the current live snapshot data (${snapshot.symbol} @ $${snapshot.price})
-3. Provide complete analysis with THE NARRATIVE, THE SIGNAL, KEY LEVELS, THE SETUP, and [VISUAL_SIGNAL]
-4. Do NOT give generic template answers — use REAL price data from the snapshot
+- "What's the outlook for BTC?" → Full structured TA with snapshot data
+- "Is now a good entry?" → Signal table with confidence + setup explanation
+- "Tell me about Ethereum" → Brief fundamentals + current technical state + bias
+- "What coin should I look at?" → Discuss the live ${snapshot.symbol} or recommend the user pivot to a specific dashboard
+- "Why is the market dumping?" → Macro narrative + on-chain/structural reasoning
+- "Should I take profit?" → Use the snapshot price + RSI/EMA + recent volatility to give a decisive answer
+- "Compare X vs Y" → Side-by-side: structure, momentum, market cap, narrative
+ALWAYS use REAL data from the snapshot. NEVER give generic template answers.
 
 ### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
 Do not use numbered lists. Use H3 (###) headers for all sections.
@@ -324,9 +339,11 @@ function buildGeminiPayload({ prompt, history, snapshot }) {
 
 export function buildFallbackTradingResponse({ prompt, snapshot }) {
   const p = String(prompt || "").toLowerCase();
-  
-  const offTopicKeywords = ["capital", "city", "recipe", "who is", "weather", "translate", "politics", "spain", "france", "germany", "usa", "president"];
-  if (offTopicKeywords.some(word => p.includes(word))) {
+
+  // Refuse only when the prompt is clearly off-topic AND has no crypto/trading hint.
+  const cryptoHint = /(btc|bitcoin|eth|ethereum|sol|solana|crypto|coin|token|trade|trading|trader|chart|price|buy|sell|long|short|bull|bear|market|invest|portfolio|risk|signal|entry|exit|stop|target|fib|ema|rsi|macd|support|resistance|volume|momentum|liquidity|defi|nft|blockchain|altcoin|dump|pump|outlook|breakout|wick|candle|hodl)/i;
+  const offTopicKeywords = ["recipe", "cook ", "weather", "translate", "joke", "poem", "soccer", "football team", "basketball", "movie ", "actor ", "song lyrics"];
+  if (offTopicKeywords.some(word => p.includes(word)) && !cryptoHint.test(p)) {
     return "I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?";
   }
 
@@ -374,11 +391,41 @@ Maintain a neutral stance if **$${(price * (direction === 'bullish' ? 0.995 : 1.
     return `I am currently analyzing the live **${snapshot.symbol}** tape. To get a precision scalp analysis for **${mentionedCoin.toUpperCase()}**, please switch to its dedicated dashboard so I can pull the correct live order book and volatility data for you.`;
   }
 
-  // If it's a general question and not a "scalp" request, give a more natural answer
-  if (!p.includes("scalp") && !p.includes("signal") && !p.includes("entry") && p.length > 20) {
-    return `At the current **${snapshot.symbol}** price of **$${formattedPrice}**, we are seeing a ${direction} bias on the 24h tape. 
+  // Open-ended crypto/trading question — give a structured analyst-style answer
+  // grounded in the live snapshot rather than a one-liner stub.
+  const isOpenEnded = !p.includes("scalp") && !p.includes("signal") && !p.includes("entry") && p.length > 12;
+  if (isOpenEnded) {
+    const rsiVal = Number(snapshot.indicators?.rsi);
+    const ema5Val = Number(snapshot.indicators?.ema5);
+    const ema21Val = Number(snapshot.indicators?.ema21);
+    const rsiText = Number.isFinite(rsiVal) ? rsiVal.toFixed(1) : "—";
+    const ema5Txt = Number.isFinite(ema5Val) ? ema5Val.toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 }) : "—";
+    const ema21Txt = Number.isFinite(ema21Val) ? ema21Val.toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 }) : "—";
+    const trendBias = Number.isFinite(ema5Val) && Number.isFinite(ema21Val)
+      ? (ema5Val > ema21Val ? "bullish trend stack (EMA5 > EMA21)" : "bearish trend stack (EMA5 < EMA21)")
+      : `${direction} 24h bias`;
+    return `### THE NARRATIVE
+At **$${formattedPrice}**, **${snapshot.symbol}** is printing a ${trendBias}. The 24h move sits at **${change >= 0 ? "+" : ""}${change.toFixed(2)}%** with RSI at **${rsiText}** — ${rsiVal > 70 ? "stretched overbought, watch for mean-reversion" : rsiVal < 30 ? "deeply oversold, primed for a relief bounce" : "neutral momentum, waiting for direction"}.
 
-The market is currently positioning around key liquidity zones. If you're looking for a specific trade setup, try asking for a "Quick Scalp" or "Analyze Entry" to see the full technical breakdown.`;
+### KEY LEVELS
+| Level | Price | Why It Matters |
+| :--- | :--- | :--- |
+| EMA 5 | $${ema5Txt} | Short-term trend pivot |
+| EMA 21 | $${ema21Txt} | Mid-term trend bias |
+| Range high | $${(price * 1.01).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Liquidity above |
+| Range low | $${(price * 0.99).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })} | Liquidity below |
+
+### THE READ
+${direction === "bullish"
+  ? `Buyers are in control on the 24h tape. As long as price holds above **$${(price * 0.995).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**, dips are buyable into the EMA 5. A clean break of **$${(price * 1.01).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** opens the next expansion leg.`
+  : direction === "bearish"
+  ? `Sellers are pressing the tape. Below **$${(price * 1.005).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}**, rips are sell-the-bounce. Loss of **$${(price * 0.99).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** unlocks the next leg down.`
+  : `The tape is balanced. Wait for a decisive break of either **$${(price * 1.005).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** or **$${(price * 0.995).toLocaleString("en-US", { maximumFractionDigits: price >= 1 ? 2 : 8 })}** before committing size.`}
+
+[VISUAL_SIGNAL]
+
+### BOTTOM LINE
+Bias is ${direction}. Watch RSI **${rsiText}** and the EMA 5/21 stack for confirmation before sizing up. *for study purpose only manage your risk.*`;
   }
 
   const rsi = snapshot.indicators?.rsi || 50;
@@ -559,20 +606,22 @@ async function handlePost(req, context) {
   }
 
   // --- OFF TOPIC / GIBBERISH GUARDRAIL ---
-  // Detects random letter strings (no vowels), very short input (1-2 chars), or junk input
+  // Block only clear gibberish/junk. Let the model handle ambiguous prompts so
+  // legitimate open-ended trading/crypto questions ("eth?", "outlook", "thoughts")
+  // are not pre-emptively refused.
   const textNoSpace = lowerPrompt.replace(/\s/g, '');
-  const isSingleChar = lowerPrompt.length === 1;
-  const isTwoChar = lowerPrompt.length === 2;
-  const isGibberish = textNoSpace.length > 4 && !/[aeiouy1-9]/.test(textNoSpace);
+  const isGibberish = textNoSpace.length > 6 && !/[aeiouy0-9]/.test(textNoSpace);
   const isJunkSymbols = lowerPrompt.length > 0 && lowerPrompt.length < 4 && !/[a-z0-9]/.test(lowerPrompt);
-  const isTooShort = lowerPrompt.length < 3 && !/^(btc|eth|sol|bnb|xrp|ada|doge|pepe|shib|matic|dot|link)$/i.test(lowerPrompt);
-  
-  // Check if it's an off-topic single word
-  const offTopicSingleWords = ["weather", "recipe", "cook", "movie", "actor", "song", "music", "book", "author", "capital", "city", "country", "president", "politics", "sports", "football", "basketball", "soccer"];
-  const isSingleWord = lowerPrompt.split(/\s+/).length === 1;
-  const isOffTopicWord = isSingleWord && offTopicSingleWords.some(word => lowerPrompt.includes(word));
-  
-  if (isGibberish || isJunkSymbols || isOffTopicWord || isTooShort) {
+
+  // Only refuse very specific off-topic exact phrases (not just any prompt containing the word).
+  const offTopicExact = new Set([
+    "weather", "recipe", "cook", "cooking", "movie", "actor", "song", "music",
+    "book", "author", "capital", "city", "country", "president", "politics",
+    "football", "basketball", "soccer", "joke", "poem"
+  ]);
+  const isOffTopicWord = offTopicExact.has(lowerPrompt);
+
+  if (isGibberish || isJunkSymbols || isOffTopicWord) {
     const assistantMessage = {
       id: `msg_${crypto.randomUUID()}`,
       role: "assistant",

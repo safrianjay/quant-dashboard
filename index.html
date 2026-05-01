@@ -1915,7 +1915,9 @@ async function _getAIEntrySnapshotFull(){
   const snap = _getAIEntrySnapshot();
   let indicators = { rsi: null, ema5: null, ema21: null };
   try {
-    const chart = await _getChartData(snap.cgId, 50);
+    // Use the same days param as _renderAITechChart so both calls hit one cached entry.
+    // 30 daily candles is plenty for EMA21 + RSI14.
+    const chart = await _getChartData(snap.cgId, 30);
     if(chart?.prices?.length > 21) {
       const closes = chart.prices.map(p => p[1]);
       indicators.ema5 = _calcEMA(closes, 5);
@@ -1977,15 +1979,15 @@ async function _renderAITechChart(canvas, snapshot){
 
   try {
     const cgId = snapshot.cgId || 'bitcoin';
-    const res = await fetch(`/.netlify/functions/cg?type=chart&id=${cgId}&days=1`); // Use 1 day for more "movement"
-    if(res.ok) {
-      const data = await res.json();
-      if(data.prices && data.prices.length > 0) {
-        rawData = data.prices.map(item => item[1]);
-      }
+    // Reuse the same cache key as _getAIEntrySnapshotFull (days=30) so the
+    // indicators call and this widget share a single CoinGecko request.
+    const data = await _getChartData(cgId, 30);
+    if(data?.prices?.length > 0) {
+      // Show the most recent ~40 daily closes — same look as before, no extra fetch.
+      rawData = data.prices.slice(-40).map(item => item[1]);
     }
   } catch(e) {
-    console.warn("Failed to fetch real chart data for TA widget", e);
+    console.warn("TA widget: chart data unavailable, using simulated curve", e?.message || e);
   }
 
   // Fallback to simulated data if fetch fails or is empty

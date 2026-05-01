@@ -3,7 +3,12 @@ const https = require('https');
 /* In-memory cache — persists across warm Lambda invocations.
    Prevents multiple browser tabs / rapid retries from hitting CoinGecko. */
 const _cache = {};
-const CACHE_TTL = { market: 300000, chart: 3600000, coin: 900000, 'okx-tickers': 60000 };
+/* TTLs in ms.
+   chart: 6h — data is daily-interval, so frequent re-fetches just burn the free CoinGecko quota.
+   market: 5m — price/24h move; live tickers come from OKX elsewhere.
+   coin: 15m — slow-moving meta.
+   okx-tickers: 1m — fast-moving live feed. */
+const CACHE_TTL = { market: 300000, chart: 21600000, coin: 900000, 'okx-tickers': 60000 };
 
 const HEADERS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
 
