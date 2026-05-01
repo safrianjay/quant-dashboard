@@ -817,7 +817,8 @@ async function handlePost(req, context) {
       requestId: context.requestId,
       status: error.status || "unknown",
       latencyMs: Date.now() - startedAt,
-      message: error.message
+      message: error.message,
+      providerBody: error.providerBody
     });
 
     // Graceful degradation — return a useful fallback response instead of 502
@@ -845,7 +846,9 @@ async function handlePost(req, context) {
       conversationId,
       message: assistantMessage,
       usage: { inputTokens: null, outputTokens: null },
-      provider: "fallback"
+      provider: "fallback-error",
+      debugStatus: error.status || "unknown",
+      debugMessage: error.message
     });
   }
 }

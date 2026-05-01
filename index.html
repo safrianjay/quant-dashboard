@@ -2379,6 +2379,10 @@ window.handleAIChatSend = async function(forcedPrompt){
     const body = await res.json().catch(() => ({}));
     if(!res.ok) throw new Error(body.error || 'Analysis engine unavailable');
 
+    // Diagnostic: log which path the function took so we can tell whether
+    // Gemini is actually being called or we're falling back.
+    console.log('[ai-entry] provider:', body.provider, body.debugStatus ? `· status=${body.debugStatus}` : '', body.debugMessage ? `· ${body.debugMessage}` : '');
+
     _aiConversationId = body.conversationId || _aiConversationId;
     const assistantMessage = body.message || {
       id: `msg_${Date.now()}`,
