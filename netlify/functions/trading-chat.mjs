@@ -531,7 +531,9 @@ ${rsi > 70 ? `Don't chase here. The RSI is at **${rsi.toFixed(1)}** (overbought)
 }
 
 function isTransientStatus(status) {
-  return status === 408 || status === 409 || status === 425 || status === 429 || status >= 500;
+  // 429 is intentionally NOT included — retrying on rate-limit just burns more
+  // quota. Fail fast and surface the quota error to the user.
+  return status === 408 || status === 409 || status === 425 || status >= 500;
 }
 
 async function fetchGemini({ apiKey, model, payload }) {
@@ -821,12 +823,30 @@ async function handlePost(req, context) {
       providerBody: error.providerBody
     });
 
-    // Graceful degradation — return a useful fallback response instead of 502
-    // so the user always gets an answer even when Gemini is unavailable/misconfigured.
-    const fallbackContent = buildFallbackTradingResponse({
-      prompt: body.prompt.trim(),
-      snapshot: body.snapshot
-    });
+    // 429 = Gemini rate limit / quota exhausted. Tell the user honestly
+    // instead of returning a structured fallback that looks like a real answer.
+    let fallbackContent;
+    if (error.status === 429) {
+      fallbackContent = `### ⏱️ Rate Limited
+
+The AI engine has hit Google Gemini's free-tier quota (15 requests / minute, 1,500 / day on \`gemini-2.0-flash\`).
+
+**What you can do:**
+- **Wait ~60 seconds** and try again
+- **Upgrade to a paid Gemini tier** at [aistudio.google.com](https://aistudio.google.com/apikey) for higher limits
+- For a quick read while you wait, tap **Analyze Entry**, **Invalidation**, or **Risk Check** — those use a local engine that doesn't burn API quota.`;
+    } else if (error.status === 403) {
+      fallbackContent = `### 🔑 API Key Issue
+
+Gemini rejected the API key (HTTP 403). The key may be invalid, restricted, or for a project without the Generative Language API enabled.
+
+Re-create a fresh key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and update \`GEMINI_API_KEY\` in Netlify → Site settings → Environment variables.`;
+    } else {
+      fallbackContent = buildFallbackTradingResponse({
+        prompt: body.prompt.trim(),
+        snapshot: body.snapshot
+      });
+    }
     const assistantMessage = {
       id: `msg_${crypto.randomUUID()}`,
       role: "assistant",
