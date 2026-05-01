@@ -10,7 +10,10 @@ const RATE_LIMIT_MAX = 12;
 const REQUEST_TIMEOUT_MS = 25_000;
 const MAX_OUTPUT_TOKENS = 1024;
 
-const FALLBACK_MODEL = "gemini-2.0-flash";
+// Default model. `flash-lite` has 2× the per-minute free-tier quota of `flash`
+// (30 RPM vs 15 RPM) which matters for a multi-user dashboard. Override per
+// deploy with the GEMINI_MODEL env var if you want full `flash` quality.
+const FALLBACK_MODEL = "gemini-2.0-flash-lite";
 
 const GENERATION_CONFIGS = {
   quick:   { temperature: 0.2 },
