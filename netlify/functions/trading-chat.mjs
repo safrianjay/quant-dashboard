@@ -203,6 +203,11 @@ Your goal is to provide aggressive, data-driven, and highly structured scalp ana
 - If a user asks an off-topic question (e.g., geography, politics, general trivia, personal advice, or non-crypto topics), respond ONLY with: 
   "I'm your Quantichy AI. I can only help with trading, markets, and crypto-related financial questions. What would you like to analyze?"
 
+### CRITICAL REQUIREMENT: ALWAYS INCLUDE [VISUAL_SIGNAL]
+You MUST include the [VISUAL_SIGNAL] tag in EVERY response about trading, technical analysis, or market outlook.
+This tag triggers the technical analyst component (support/resistance/momentum/volatility cards).
+WITHOUT this tag, the user cannot see critical technical data. Always include it.
+
 ### RESPONSE STRUCTURE (STRICT ADHERENCE REQUIRED):
 Do not use numbered lists. Use standard markdown H3 (###) for all section headers.
 
@@ -553,7 +558,12 @@ async function handlePost(req, context) {
   const isGibberish = textNoSpace.length > 4 && !/[aeiouy1-9]/.test(textNoSpace);
   const isJunkSymbols = lowerPrompt.length > 0 && lowerPrompt.length < 4 && !/[a-z0-9]/.test(lowerPrompt);
   
-  if (isGibberish || isJunkSymbols) {
+  // Check if it's an off-topic single word
+  const offTopicSingleWords = ["weather", "recipe", "cook", "movie", "actor", "song", "music", "book", "author", "capital", "city", "country", "president", "politics", "sports", "football", "basketball", "soccer"];
+  const isSingleWord = lowerPrompt.split(/\s+/).length === 1;
+  const isOffTopicWord = isSingleWord && offTopicSingleWords.some(word => lowerPrompt.includes(word));
+  
+  if (isGibberish || isJunkSymbols || isOffTopicWord) {
     const assistantMessage = {
       id: `msg_${crypto.randomUUID()}`,
       role: "assistant",
