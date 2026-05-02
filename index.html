@@ -470,16 +470,15 @@ p,span,div,input,button{
    Replaces the slide-in sidebar drawer on small viewports with a
    fixed bottom bar (Overview / Live Trade / Session / Others /
    Account). Visual model: translucent frosted glass with blurred
-   backdrop, soft top hairline, and an active tab marked by a small
-   accent pill above its icon plus a soft tinted circle behind it. */
+   backdrop, soft top hairline. Active state is purely typographic
+   + a small dot indicator below the icon — no colored backgrounds. */
 .qds-bottom-nav{
   display:none;position:fixed;left:0;right:0;bottom:0;z-index:1000;
-  background:rgba(255,255,255,.92);
-  backdrop-filter:blur(24px) saturate(180%);
-  -webkit-backdrop-filter:blur(24px) saturate(180%);
-  border-top:1px solid rgba(15,23,42,.08);
-  padding:6px 8px calc(10px + env(safe-area-inset-bottom,0px));
-  box-shadow:0 -10px 32px rgba(15,23,42,.08), 0 -1px 0 rgba(255,255,255,.6) inset;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  border-top:1px solid rgba(15,23,42,.06);
+  padding:6px 6px calc(8px + env(safe-area-inset-bottom,0px));
 }
 .qds-bottom-nav-inner{
   display:flex;justify-content:space-between;align-items:stretch;
@@ -488,25 +487,25 @@ p,span,div,input,button{
 .qds-bottom-nav-item{
   position:relative;flex:1 1 0;min-width:0;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  gap:3px;padding:9px 2px 5px;
+  gap:4px;padding:9px 2px 9px;
   border:none;background:transparent;cursor:pointer;
-  color:#94A3B8;
+  color:#94A3B8;                       /* slate-400 — idle */
   font-size:10px;font-weight:600;
   font-family:var(--font-body);
-  border-radius:14px;line-height:1.1;letter-spacing:0;
-  transition:color .2s ease;
+  border-radius:12px;line-height:1.1;letter-spacing:0;
+  transition:color .18s ease, transform .18s ease;
   -webkit-tap-highlight-color:transparent;
 }
-/* Icon container — a perfectly round pill that smoothly tints + lifts when active */
+/* Icon container — neutral, no colored background. Just a transparent
+   wrap that briefly tints on tap for tactile feedback. */
 .qds-bottom-nav-item .qds-bn-iconwrap{
   display:flex;align-items:center;justify-content:center;
-  width:44px;height:30px;border-radius:999px;
-  transition:background .22s cubic-bezier(.22,1,.36,1),
-             transform .22s cubic-bezier(.22,1,.36,1);
+  width:40px;height:26px;border-radius:8px;
+  transition:background .15s ease, transform .15s ease;
 }
 .qds-bottom-nav-item svg{
   width:22px;height:22px;flex-shrink:0;color:currentColor;
-  stroke-width:1.85;
+  stroke-width:1.8;
   transition:stroke-width .18s ease;
 }
 .qds-bottom-nav-item span{
@@ -515,33 +514,29 @@ p,span,div,input,button{
   letter-spacing:.005em;
   transition:font-weight .18s ease, color .18s ease;
 }
-/* Idle hover/press feedback (tap on touch is brief — keep it subtle) */
+/* Tap feedback — soft press tint, briefly */
 .qds-bottom-nav-item:active .qds-bn-iconwrap{
-  background:rgba(15,23,42,.06);
-  transform:scale(.94);
+  background:rgba(15,23,42,.05);
+  transform:scale(.92);
 }
 /* ── Active state ──
-   Brand-deep blue throughout; soft tinted pill behind the icon; tiny
-   3px accent above; subtle lift. */
-.qds-bottom-nav-item.active{color:var(--info-deep,#1D4ED8)}
-.qds-bottom-nav-item.active .qds-bn-iconwrap{
-  background:linear-gradient(180deg, rgba(29,78,216,.13) 0%, rgba(29,78,216,.08) 100%);
-  transform:translateY(-2px);
-  box-shadow:0 4px 12px rgba(29,78,216,.18);
-}
+   Purely neutral. Active text + icon go near-black (slate-900). A small
+   3px dot below the icon marks the current tab. No tinted pill, no glow,
+   no gradient — clean and quietly confident. */
+.qds-bottom-nav-item.active{color:var(--neutral-900,#0F172A)}
 .qds-bottom-nav-item.active svg{stroke-width:2.15}
 .qds-bottom-nav-item.active span{font-weight:700}
-/* Tiny 3px pill above the active tab — the "you are here" mark. */
-.qds-bottom-nav-item.active::before{
-  content:'';position:absolute;top:0;left:50%;
-  width:22px;height:3px;border-radius:0 0 3px 3px;
-  background:var(--info-deep,#1D4ED8);
+/* The dot indicator — replaces the top accent pill from before. */
+.qds-bottom-nav-item.active::after{
+  content:'';position:absolute;bottom:3px;left:50%;
+  width:4px;height:4px;border-radius:50%;
+  background:var(--neutral-900,#0F172A);
   transform:translateX(-50%);
-  animation:bnAccentIn .28s cubic-bezier(.22,1,.36,1) both;
+  animation:bnDotIn .25s cubic-bezier(.22,1,.36,1) both;
 }
-@keyframes bnAccentIn{
-  from{ width:0; opacity:0 }
-  to  { width:22px; opacity:1 }
+@keyframes bnDotIn{
+  from{ transform:translateX(-50%) scale(0); opacity:0 }
+  to  { transform:translateX(-50%) scale(1); opacity:1 }
 }
 
 /* ── RESPONSIVE ── */
