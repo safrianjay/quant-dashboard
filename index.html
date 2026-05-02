@@ -6987,10 +6987,13 @@ const QuantAnalyst = (() => {
       else if (aboveMA7 && !aboveMA25) { signal="Between MA7 & MA25"; bias="NEUTRAL"; biasStrength="WEAK"; }
       else { signal="Indeterminate — wait"; bias="NEUTRAL"; biasStrength="WEAK"; }
     }
-    const doubleWall = Math.abs(ma25 - ma99) < 100;
+    /* Double-wall = MA25 and MA99 within 0.15% of each other. Percentage-based
+       so it scales correctly across BTC ($78K), ETH ($3K), DOGE ($0.10), etc. */
+    const doubleWall = Math.abs(ma25 - ma99) / price < 0.0015;
     return {
       state, signal, bias, biasStrength, doubleWall, compressed,
       aboveMA7, aboveMA25, aboveMA99,
+      ma7, ma25, ma99,                                   /* expose actual values so the UI doesn't have to reconstruct from gap% */
       gapP7: +gapP7.toFixed(3), gapP25: +gapP25.toFixed(3), gapP99: +gapP99.toFixed(3),
       spreadPct: +spreadPct.toFixed(3), spreadAbs: +spread.toFixed(2),
       stackOrder: aboveMA7 && aboveMA25 && aboveMA99 ? "Price › MA7 › MA25 › MA99"
@@ -7075,14 +7078,21 @@ const QuantAnalyst = (() => {
       return {rating:9.0, label:"Maximum Conviction", noTrade:false};
     };
     const longRating=toRating(longScore), shortRating=toRating(shortScore);
-    const dominantBias=longScore>shortScore?"BULLISH":shortScore>longScore?"BEARISH":"NEUTRAL";
     const dominantRating=toRating(Math.max(longScore,shortScore));
+    /* Bias must AGREE with the trade gate. If the dominant side scored too low
+       to take the trade (rating < 3 → noTrade), don't label the bias BULLISH/
+       BEARISH — that's how the timeline ended up logging "SHORT signal · Conf
+       2.4/10" while the system itself flagged it as no-trade. Promote to a
+       direction only when there's enough evidence to actually act. */
+    const rawBias = longScore>shortScore?"BULLISH":shortScore>longScore?"BEARISH":"NEUTRAL";
+    const dominantBias = dominantRating.noTrade ? "NEUTRAL" : rawBias;
     return {
       longScore, shortScore,
       longConf:+longRating.rating.toFixed(1), shortConf:+shortRating.rating.toFixed(1),
       longFactors, shortFactors,
       noTradeLong:longRating.noTrade, noTradeShort:shortRating.noTrade,
-      dominantBias, confidence:+dominantRating.rating.toFixed(1), confidenceLabel:dominantRating.label,
+      dominantBias, rawBias,
+      confidence:+dominantRating.rating.toFixed(1), confidenceLabel:dominantRating.label,
     };
   }
 
@@ -7131,15 +7141,23 @@ const QuantAnalyst = (() => {
   }
 
   function generateLogEntry(analysis, author="Jay") {
-    const {bias,confidence,maStack,volume,price,timeframe}=analysis;
-    const direction=bias==="BULLISH"?"LONG":bias==="BEARISH"?"SHORT":"NEUTRAL";
+    const {bias,rawBias,confidence,maStack,volume,price,timeframe}=analysis;
     const volNote=volume.isGhost?`Ghost vol (${volume.ratio10.toFixed(2)}× MA10) — wait`
       :volume.isInstitutional?`${volume.ratio10.toFixed(1)}× MA10 vol — confirmed`
       :`Normal vol (${volume.ratio10.toFixed(1)}× MA10)`;
     const time=new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false});
+    /* If confidence is in the no-trade zone, the row must say WATCH — not
+       "SHORT signal" or "LONG signal". Surface the underlying lean (rawBias)
+       parenthetically so the user still sees which way the MA stack tilts. */
+    let label, type;
+    if (bias === "BULLISH")      { label = "LONG signal";  type = "bull"; }
+    else if (bias === "BEARISH") { label = "SHORT signal"; type = "bear"; }
+    else if (rawBias === "BULLISH") { label = "WATCH (bullish lean — low conviction)"; type = "warn"; }
+    else if (rawBias === "BEARISH") { label = "WATCH (bearish lean — low conviction)"; type = "warn"; }
+    else                         { label = "WATCH";         type = "warn"; }
     return {
-      time, type:bias==="BULLISH"?"bull":bias==="BEARISH"?"bear":"warn",
-      msg:`${direction} signal — ${maStack.signal}. $${Math.round(price).toLocaleString()} · ${volNote}. Conf ${confidence}/10.`,
+      time, type,
+      msg:`${label} — ${maStack.signal}. $${Math.round(price).toLocaleString()} · ${volNote}. Conf ${confidence}/10.`,
       author, timeframe,
     };
   }
@@ -7196,10 +7214,12 @@ const QuantAnalyst = (() => {
     /* ── 5. MA STACK ── */
     const maEl=document.getElementById("ma-stack");
     if(maEl){
+      /* Use the real MA values exposed by classifyMAStack (cleaner + correct;
+         the previous gap%-back-derivation had a sign bug when price was below the MA). */
       const maData=[
-        {label:"MA7",  price:maStack.aboveMA7 ?price/(1+maStack.gapP7/100) :price*(1+Math.abs(maStack.gapP7)/100),  gapPct:maStack.gapP7,  color:"#F59E0B"},
-        {label:"MA25", price:maStack.aboveMA25?price/(1+maStack.gapP25/100):price*(1+Math.abs(maStack.gapP25)/100), gapPct:maStack.gapP25, color:"#D85A30"},
-        {label:"MA99", price:maStack.aboveMA99?price/(1+maStack.gapP99/100):price*(1+Math.abs(maStack.gapP99)/100), gapPct:maStack.gapP99, color:"#A32D2D"},
+        {label:"MA7",  price:maStack.ma7,  gapPct:maStack.gapP7,  color:"#F59E0B"},
+        {label:"MA25", price:maStack.ma25, gapPct:maStack.gapP25, color:"#D85A30"},
+        {label:"MA99", price:maStack.ma99, gapPct:maStack.gapP99, color:"#A32D2D"},
       ];
       maEl.innerHTML=maData.map(m=>{
         const pos=m.gapPct>=0, pctStr=(pos?"+":"")+m.gapPct.toFixed(2)+"%", barW=Math.min(Math.abs(m.gapPct)/5*100,100);
