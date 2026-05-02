@@ -413,41 +413,57 @@ p,span,div,input,button{
    smaller widths. Day cells use a tonal scale from neutral-100 (no
    trades) through success-bg → success → success-deep for net wins,
    mirrored on the danger side for losses. */
-.history-heatmap-wrap{display:flex;flex-direction:column;gap:18px}
-.history-month-strip{display:flex;flex-direction:column;gap:18px}
-.history-month{display:flex;flex-direction:column;gap:8px;min-width:0}
+.history-heatmap-wrap{display:flex;flex-direction:column;gap:14px}
+.history-month-strip{display:flex;flex-direction:column;gap:14px}
+.history-month{display:flex;flex-direction:column;gap:10px;min-width:0}
 .history-month-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:2px}
 .history-month-name{font-size:13px;font-weight:800;color:var(--neutral-900);font-family:var(--font-heading);letter-spacing:-.01em}
 .history-month-rate{font-size:11px;font-weight:700;color:var(--neutral-500);font-family:var(--font-mono);letter-spacing:-.01em}
+/* Month picker — replaces the range pillbar. Prev/next arrows step
+   one calendar month at a time, with the centered label naming the
+   focused month. Arrows go disabled at the data boundary. */
+.history-month-picker{display:flex;align-items:center;gap:6px;background:var(--surface-sunken);border-radius:var(--radius-lg);padding:3px;min-height:30px}
+.history-month-nav{width:24px;height:24px;border-radius:6px;border:none;background:transparent;color:var(--neutral-700);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s ease,color .12s ease;flex-shrink:0}
+.history-month-nav:hover:not(:disabled){background:var(--surface-card);color:var(--neutral-900);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.history-month-nav:disabled{color:var(--neutral-300);cursor:not-allowed;opacity:.6}
+.history-month-label{min-width:108px;text-align:center;font-family:var(--font-heading);font-size:12px;font-weight:800;color:var(--neutral-900);letter-spacing:-.01em;padding:0 6px;line-height:1.2}
 /* Weekday axis above each calendar — keeps the grid readable when
    cells carry inline data instead of relying on hover tooltips. */
-.history-week-axis{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;font-size:9px;font-weight:700;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-heading);text-align:center;padding:0 2px 4px}
-.history-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:54px;gap:5px}
-.history-day{border-radius:7px;background:var(--neutral-100);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 6px;overflow:hidden;text-align:center;font-family:var(--font-mono);transition:transform .12s ease,box-shadow .12s ease}
-.history-day-num{position:absolute;top:4px;left:6px;font-size:9px;font-weight:600;color:var(--neutral-400);font-family:var(--font-body);letter-spacing:0;line-height:1}
-.history-day-pnl{font-size:13px;font-weight:800;letter-spacing:-.02em;line-height:1.1;font-family:var(--font-mono)}
-.history-day-meta{font-size:9px;font-weight:600;letter-spacing:.02em;line-height:1.2;opacity:.85;font-family:var(--font-body)}
+.history-week-axis{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;font-size:9px;font-weight:700;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-heading);text-align:center;padding:0 2px 2px}
+/* Single-month grid: square-ish cells (~1.05 ratio) sized to the
+   container width. The three-line content (date in corner, $ amount
+   centered, % beneath it, W/L count at bottom) scales with the cell
+   width via clamp() so it stays legible from mobile through wide
+   desktop without tripping over a fixed grid-auto-rows value. */
+.history-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.history-day{aspect-ratio:1 / 1;border-radius:9px;background:var(--neutral-100);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 4px 5px;overflow:hidden;text-align:center;font-family:var(--font-mono);transition:transform .12s ease,box-shadow .12s ease;min-width:0}
+.history-day-num{position:absolute;top:5px;left:6px;font-size:9px;font-weight:700;color:var(--neutral-400);font-family:var(--font-body);letter-spacing:0;line-height:1}
+.history-day-pnl{font-size:clamp(11px, 1.45vw, 14px);font-weight:800;letter-spacing:-.03em;line-height:1.1;font-family:var(--font-mono);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.history-day-pct{font-size:clamp(9px, 1.05vw, 11px);font-weight:700;letter-spacing:-.02em;line-height:1.15;font-family:var(--font-mono);opacity:.92;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.history-day-meta{font-size:clamp(8px, .9vw, 10px);font-weight:600;letter-spacing:.02em;line-height:1.1;opacity:.78;font-family:var(--font-body);margin-top:1px}
 .history-day[data-result="empty"]{background:var(--neutral-50);border:1px dashed var(--neutral-200)}
 .history-day[data-result="empty"] .history-day-num{color:var(--neutral-300)}
 .history-day[data-result="win-1"]{background:#DCFCE7;color:var(--success-strong)}
 .history-day[data-result="win-2"]{background:#BBF7D0;color:var(--success-deep)}
 .history-day[data-result="win-3"]{background:#86EFAC;color:#065F46}
 .history-day[data-result="win-4"]{background:#22C55E;color:white}
-.history-day[data-result="win-4"] .history-day-num{color:rgba(255,255,255,.78)}
+.history-day[data-result="win-4"] .history-day-num{color:rgba(255,255,255,.82)}
 .history-day[data-result="win-4"] .history-day-meta{color:rgba(255,255,255,.92)}
 .history-day[data-result="loss-1"]{background:#FEE2E2;color:var(--danger-strong)}
 .history-day[data-result="loss-2"]{background:#FECACA;color:var(--danger-deep)}
 .history-day[data-result="loss-3"]{background:#FCA5A5;color:#7F1D1D}
 .history-day[data-result="loss-4"]{background:#EF4444;color:white}
-.history-day[data-result="loss-4"] .history-day-num{color:rgba(255,255,255,.78)}
+.history-day[data-result="loss-4"] .history-day-num{color:rgba(255,255,255,.82)}
 .history-day[data-result="loss-4"] .history-day-meta{color:rgba(255,255,255,.92)}
 .history-day[data-result^="win"] .history-day-num,
 .history-day[data-result^="loss"] .history-day-num{color:rgba(15,23,42,.45)}
 .history-day:not([data-result="empty"]):hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(15,23,42,.12);z-index:2}
 .history-day-pad{visibility:hidden}
-.history-heatmap-legend{display:flex;align-items:center;gap:10px;font-size:10px;color:var(--neutral-500);font-family:var(--font-body);padding-top:4px;border-top:1px solid var(--neutral-100)}
+.history-heatmap-legend{display:flex;align-items:center;gap:10px;font-size:10px;color:var(--neutral-500);font-family:var(--font-body);padding-top:8px;border-top:1px solid var(--neutral-100);flex-wrap:wrap}
 .history-legend-scale{display:flex;align-items:center;gap:3px}
 .history-legend-cell{width:14px;height:14px;border-radius:3px}
+/* Active-month highlight in the right rail */
+.history-month-row.is-active{background:var(--surface-sunken);margin:-6px -10px;padding:6px 10px;border-radius:var(--radius-lg)}
 /* Monthly bars panel: per-month win count vs loss count + win rate */
 .history-month-rows{display:flex;flex-direction:column;gap:14px}
 .history-month-row{display:flex;flex-direction:column;gap:6px}
@@ -479,15 +495,27 @@ p,span,div,input,button{
 @media (max-width: 768px){
   .history-kpi-grid{grid-template-columns:repeat(2,1fr)}
   .history-kpi-value{font-size:22px}
-  .history-section-pad{padding:14px 14px 16px}
-  .history-month-grid{grid-auto-rows:46px;gap:4px}
-  .history-day{padding:3px 4px;border-radius:6px}
-  .history-day-pnl{font-size:11px}
+  .history-section-pad{padding:14px 12px 16px}
+  .history-month-grid{gap:4px}
+  /* Cells become slightly taller than wide so all four lines (date,
+     $, %, W/L) breathe on narrow screens. */
+  .history-day{aspect-ratio:auto;min-height:62px;padding:5px 3px 4px;border-radius:7px}
+  .history-day-pnl{font-size:11px;letter-spacing:-.03em}
+  .history-day-pct{font-size:9px}
   .history-day-meta{font-size:8px}
   .history-day-num{top:3px;left:4px;font-size:8px}
-  .history-week-axis{font-size:8px}
+  .history-week-axis{font-size:8px;gap:4px}
+  .history-month-label{min-width:96px;font-size:11px}
+  .history-month-picker{padding:2px}
+  .history-month-nav{width:22px;height:22px}
   .history-entry-row{grid-template-columns:32px minmax(100px,1fr) auto auto;padding:10px 14px;gap:10px}
   .history-entry-row .history-entry-cell.is-collapsible{display:none}
+}
+@media (max-width: 420px){
+  .history-day{min-height:58px}
+  .history-day-pnl{font-size:10px}
+  .history-day-pct{font-size:8px}
+  .history-day-meta{font-size:7.5px}
 }
 
 /* Generic loading wrap for Live Trade widgets (KPIs, conf chart, levels,
@@ -1637,12 +1665,16 @@ p,span,div,input,button{
           <div class="qds-card__head">
             <div>
               <div class="qds-card__title" style="font-size:15px;font-weight:900;color:var(--neutral-900);display:flex;align-items:center;gap:6px"><span data-i18n="card_history_heatmap">Win/Loss Heatmap</span></div>
-              <div class="qds-text-caption" data-i18n="sub_history_heatmap">Daily entry results — color intensity reflects net P&amp;L</div>
+              <div class="qds-text-caption" data-i18n="sub_history_heatmap">Daily P&amp;L in $ and % — color intensity reflects net result</div>
             </div>
-            <div class="overview-pillbar" id="history-range-tabs">
-              <button class="overview-pill" data-range="1m" onclick="setHistoryRange('1m')">1M</button>
-              <button class="overview-pill active" data-range="3m" onclick="setHistoryRange('3m')">3M</button>
-              <button class="overview-pill" data-range="6m" onclick="setHistoryRange('6m')">6M</button>
+            <div class="history-month-picker" role="group" aria-label="Select month">
+              <button class="history-month-nav" id="history-prev-btn" onclick="stepHistoryMonth(-1)" aria-label="Previous month" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <div class="history-month-label" id="history-month-label">May 2026</div>
+              <button class="history-month-nav" id="history-next-btn" onclick="stepHistoryMonth(1)" aria-label="Next month" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
             </div>
           </div>
           <div class="history-section-pad" style="padding-top:6px">
@@ -2937,7 +2969,7 @@ const _i18n = {
   topbar_overview_sub:{en:'Breadth, dominance and capital rotation',id:'Keluasan, dominasi, dan rotasi modal'},
   topbar_history_sub:{en:'Win rate, monthly performance, and entry outcomes',id:'Win rate, performa bulanan, dan hasil entri'},
   card_history_heatmap:{en:'Win/Loss Heatmap',id:'Heatmap Win/Loss'},
-  sub_history_heatmap:{en:'Daily entry results — color intensity reflects net P&L',id:'Hasil entri harian — intensitas warna mencerminkan P&L bersih'},
+  sub_history_heatmap:{en:'Daily P&L in $ and % — color intensity reflects net result',id:'P&L harian dalam $ dan % — intensitas warna mencerminkan hasil bersih'},
   card_history_monthly:{en:'Monthly Performance',id:'Performa Bulanan'},
   sub_history_monthly:{en:'Win rate and trade volume by month',id:'Win rate dan volume trade per bulan'},
   card_history_entries:{en:'Recent Entries',id:'Entri Terbaru'},
@@ -4573,12 +4605,13 @@ function renderSessionLog(){
 
 /* ══ SESSION HISTORY ══
    Heatmap-led summary of every closed entry: KPIs at the top answer
-   "how am I doing", the calendar heatmap shows where wins/losses
-   cluster across the last N months, the monthly bars give a per-month
-   win-rate read, and the recent entries list shows the latest closed
-   positions. Data is generated deterministically from a seeded RNG so
-   the demo looks alive but identical across reloads. */
-let _historyRange = '3m';
+   "how am I doing", the calendar heatmap focuses on a single month
+   (with prev/next arrows like a date picker), the monthly bars give
+   a per-month win-rate read, and the recent entries list shows the
+   latest closed positions. Data is generated deterministically from
+   a seeded RNG so the demo looks alive but identical across reloads. */
+const HISTORY_POSITION_USD = 5000; /* notional position size per entry, used to derive the $ P&L shown in heatmap cells */
+let _historyMonth = (function(){ const d = new Date(); d.setDate(1); d.setHours(0,0,0,0); return d; })();
 
 function _hashSeed(s){let h=2166136261>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 function _seededRng(seed){let s=seed>>>0;return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
@@ -4620,6 +4653,7 @@ function _buildHistoryEntries(){
         side: symMeta.side,
         grad: symMeta.grad,
         pnlPct,
+        pnlUsd: +(pnlPct/100 * HISTORY_POSITION_USD).toFixed(2),
         rr: +rr.toFixed(2),
         win,
       });
@@ -4634,18 +4668,43 @@ function _historyEntries(){
   return _HISTORY_ENTRIES;
 }
 
-function _historyRangeMonths(){ return _historyRange === '1m' ? 1 : _historyRange === '6m' ? 6 : 3; }
-
 function _historyDateKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+/* Compact USD formatter for heatmap cells: small daily totals show
+   whole dollars (+$125), bigger daily totals show thousands with one
+   decimal (+$1.2k) so the figure never overflows a tight cell. */
+function _fmtUsd(v){
+  const sign = v >= 0 ? '+' : '−';
+  const abs = Math.abs(v);
+  if(abs >= 10000) return sign + '$' + (abs/1000).toFixed(0) + 'k';
+  if(abs >= 1000)  return sign + '$' + (abs/1000).toFixed(1) + 'k';
+  return sign + '$' + abs.toFixed(0);
+}
+function _fmtUsdLong(v){
+  const sign = v >= 0 ? '+' : '−';
+  return sign + '$' + Math.abs(v).toLocaleString('en-US', { maximumFractionDigits:0 });
+}
+
+/* Boundary helpers for the month picker — clamp navigation between
+   the oldest entry month and the current month so arrows can disable
+   themselves at the edges. */
+function _historyDataBounds(){
+  const all = _historyEntries();
+  if(!all.length){ const t=new Date(); t.setDate(1); return { min:t, max:t }; }
+  const minD = new Date(all[0].date.getFullYear(), all[0].date.getMonth(), 1);
+  const maxD = new Date(); maxD.setDate(1); maxD.setHours(0,0,0,0);
+  return { min:minD, max:maxD };
+}
 
 function _historyAggregateByDay(entries){
   const map = new Map();
   for(const e of entries){
     const k = _historyDateKey(e.date);
     let agg = map.get(k);
-    if(!agg){ agg = { date:new Date(e.date), wins:0, losses:0, net:0, count:0 }; map.set(k, agg); }
+    if(!agg){ agg = { date:new Date(e.date), wins:0, losses:0, net:0, netUsd:0, count:0 }; map.set(k, agg); }
     agg.count++;
     agg.net += e.pnlPct;
+    agg.netUsd += e.pnlUsd;
     if(e.win) agg.wins++; else agg.losses++;
   }
   return map;
@@ -4671,22 +4730,30 @@ function _fmtPct(v, withSign){
 }
 
 function renderSessionHistory(){
-  const months = _historyRangeMonths();
   const all = _historyEntries();
-  const today = new Date();
-  const cutoff = new Date(today); cutoff.setMonth(today.getMonth() - (months-1)); cutoff.setDate(1);
-  const inRange = all.filter(e => e.date >= cutoff);
+  const { min, max } = _historyDataBounds();
+  /* Clamp the active month into the data range — defends against state
+     left over from a stale session. */
+  if(_historyMonth < min) _historyMonth = new Date(min);
+  if(_historyMonth > max) _historyMonth = new Date(max);
 
-  /* ── KPIs ── */
-  const wins = inRange.filter(e => e.win).length;
-  const losses = inRange.length - wins;
-  const winRate = inRange.length ? (wins/inRange.length)*100 : 0;
-  const netPnL = inRange.reduce((s,e) => s + e.pnlPct, 0);
-  const winsRR = inRange.filter(e => e.win).map(e => e.rr);
+  const monthStart = new Date(_historyMonth.getFullYear(), _historyMonth.getMonth(), 1);
+  const monthEnd = new Date(_historyMonth.getFullYear(), _historyMonth.getMonth()+1, 0);
+  monthEnd.setHours(23,59,59,999);
+  const monthEntries = all.filter(e => e.date >= monthStart && e.date <= monthEnd);
+
+  /* ── KPIs (selected month, deltas vs previous month) ── */
+  const wins = monthEntries.filter(e => e.win).length;
+  const losses = monthEntries.length - wins;
+  const winRate = monthEntries.length ? (wins/monthEntries.length)*100 : 0;
+  const netPnL = monthEntries.reduce((s,e) => s + e.pnlPct, 0);
+  const netUsd = monthEntries.reduce((s,e) => s + e.pnlUsd, 0);
+  const winsRR = monthEntries.filter(e => e.win).map(e => e.rr);
   const avgRR = winsRR.length ? winsRR.reduce((s,v)=>s+v,0)/winsRR.length : 0;
-  /* Compare against the previous equal-length window */
-  const prevCutoff = new Date(cutoff); prevCutoff.setMonth(prevCutoff.getMonth() - months);
-  const prev = all.filter(e => e.date >= prevCutoff && e.date < cutoff);
+
+  const prevStart = new Date(monthStart); prevStart.setMonth(prevStart.getMonth() - 1);
+  const prevEnd = new Date(monthStart); prevEnd.setMilliseconds(-1);
+  const prev = all.filter(e => e.date >= prevStart && e.date <= prevEnd);
   const prevWinRate = prev.length ? (prev.filter(e=>e.win).length/prev.length)*100 : 0;
   const prevNet = prev.reduce((s,e)=>s+e.pnlPct,0);
   const wrDelta = winRate - prevWinRate;
@@ -4694,8 +4761,8 @@ function renderSessionHistory(){
 
   const kpiHTML = [
     {label:'Win Rate',     value:winRate.toFixed(1)+'%',     delta:wrDelta,  unit:'pp'},
-    {label:'Total Entries',value:String(inRange.length),     delta:inRange.length-prev.length, unit:''},
-    {label:'Net P&L',      value:_fmtPct(netPnL),            delta:netDelta, unit:'%'},
+    {label:'Total Entries',value:String(monthEntries.length),delta:monthEntries.length-prev.length, unit:''},
+    {label:'Net P&L',      value:_fmtPct(netPnL),            delta:netDelta, unit:'%', sub:_fmtUsdLong(Math.round(netUsd))},
     {label:'Avg R:R · Wins',value:avgRR.toFixed(2),          delta:null,     unit:''},
   ].map(k => {
     let deltaHTML = '';
@@ -4707,7 +4774,8 @@ function renderSessionHistory(){
       const arrow = up
         ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="3" stroke-linecap="round"><polyline points="6 14 12 8 18 14"/></svg>`
         : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="3" stroke-linecap="round"><polyline points="6 10 12 16 18 10"/></svg>`;
-      deltaHTML = `<div class="history-kpi-delta" style="color:${col}">${arrow}<span>${val} vs prev</span></div>`;
+      const subBit = k.sub ? ` · ${k.sub}` : '';
+      deltaHTML = `<div class="history-kpi-delta" style="color:${col}">${arrow}<span>${val} vs prev${subBit}</span></div>`;
     } else {
       deltaHTML = `<div class="history-kpi-delta" style="color:var(--neutral-400)"><span>across ${wins} wins</span></div>`;
     }
@@ -4720,104 +4788,108 @@ function renderSessionHistory(){
   const kpiEl = document.getElementById('history-kpi-grid');
   if(kpiEl) kpiEl.innerHTML = kpiHTML;
 
-  /* ── Heatmap (one calendar block per month in range) ── */
-  const dayMap = _historyAggregateByDay(inRange);
-  const monthBlocks = [];
-  const cur = new Date(cutoff);
-  while(cur <= today){
-    const monthStart = new Date(cur.getFullYear(), cur.getMonth(), 1);
-    const monthEnd = new Date(cur.getFullYear(), cur.getMonth()+1, 0);
-    monthBlocks.push({start:monthStart, end:monthEnd});
-    cur.setMonth(cur.getMonth()+1);
-  }
+  /* ── Heatmap (single calendar block for the selected month) ── */
+  const dayMap = _historyAggregateByDay(monthEntries);
+  const monthFmtLong = (d) => d.toLocaleString('en-US', { month:'long', year:'numeric' });
+  const monthFmtShort = (d) => d.toLocaleString('en-US', { month:'short' }) + " '" + String(d.getFullYear()).slice(-2);
 
-  const monthFmt = (d) => d.toLocaleString('en-US', { month:'short' }) + " '" + String(d.getFullYear()).slice(-2);
-  const dateLabel = (d) => d.toLocaleString('en-US', { month:'short', day:'numeric' });
+  /* Update the picker label + arrow disabled state */
+  const labelEl = document.getElementById('history-month-label');
+  if(labelEl) labelEl.textContent = monthFmtLong(_historyMonth);
+  const prevBtn = document.getElementById('history-prev-btn');
+  const nextBtn = document.getElementById('history-next-btn');
+  if(prevBtn) prevBtn.disabled = _historyMonth.getTime() <= min.getTime();
+  if(nextBtn) nextBtn.disabled = _historyMonth.getTime() >= max.getTime();
 
   const weekdayAxis = `<div class="history-week-axis">
     <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
   </div>`;
 
-  const heatmapHTML = monthBlocks.map(({start,end}) => {
-    /* Build a 7×N grid: rows are weekdays Mon..Sun, columns are weeks.
-       Grid is laid out column-major, so we emit cells week by week. */
-    const cells = [];
-    /* Find the Monday on or before the 1st */
-    const first = new Date(start);
-    const firstDow = (first.getDay() + 6) % 7; /* Mon=0..Sun=6 */
-    const gridStart = new Date(first); gridStart.setDate(first.getDate() - firstDow);
-    /* Find the Sunday on or after the last day */
-    const last = new Date(end);
-    const lastDow = (last.getDay() + 6) % 7;
-    const gridEnd = new Date(last); gridEnd.setDate(last.getDate() + (6 - lastDow));
+  /* Build the 7-col Mon–Sun grid for this month, padded on either
+     side so the 1st lands under the right weekday. */
+  const cells = [];
+  const first = new Date(monthStart);
+  const firstDow = (first.getDay() + 6) % 7; /* Mon=0..Sun=6 */
+  const gridStart = new Date(first); gridStart.setDate(first.getDate() - firstDow);
+  const last = new Date(monthStart.getFullYear(), monthStart.getMonth()+1, 0);
+  const lastDow = (last.getDay() + 6) % 7;
+  const gridEnd = new Date(last); gridEnd.setDate(last.getDate() + (6 - lastDow));
 
-    /* Calculate month win rate for header */
-    let mWins=0, mTotal=0, mNet=0;
-    for(const [, agg] of dayMap){
-      if(agg.date >= start && agg.date <= end){
-        mWins += agg.wins;
-        mTotal += agg.wins+agg.losses;
-        mNet += agg.net;
-      }
-    }
-    const mRate = mTotal ? (mWins/mTotal)*100 : 0;
-    const mRateLabel = mTotal
-      ? `${mRate.toFixed(0)}% win rate · ${mTotal} entries · ${_fmtPct(mNet)} net`
-      : 'No entries';
+  let mWins=0, mTotal=0, mNet=0;
+  for(const [, agg] of dayMap){
+    mWins += agg.wins;
+    mTotal += agg.wins+agg.losses;
+    mNet += agg.net;
+  }
+  const mRate = mTotal ? (mWins/mTotal)*100 : 0;
+  const mRateLabel = mTotal
+    ? `${mRate.toFixed(0)}% win rate · ${mTotal} entries · ${_fmtPct(mNet)} net`
+    : 'No entries this month';
 
-    for(let d = new Date(gridStart); d <= gridEnd; d.setDate(d.getDate()+1)){
-      const inMonth = d >= start && d <= end;
-      if(!inMonth){
-        /* Off-month padding cell — keeps the grid aligned but stays invisible */
-        cells.push(`<div class="history-day history-day-pad" data-result="empty"></div>`);
-        continue;
-      }
-      const k = _historyDateKey(d);
-      const dayNum = d.getDate();
-      const agg = dayMap.get(k);
-      if(!agg){
-        /* No-entry day still shows the date number so the calendar reads as a calendar */
-        cells.push(`<div class="history-day" data-result="empty"><span class="history-day-num">${dayNum}</span></div>`);
-        continue;
-      }
-      const bucket = _historyHeatmapBucket(agg.net);
-      const pnl = _fmtPct(agg.net);
-      const meta = `${agg.wins}W·${agg.losses}L`;
-      cells.push(`<div class="history-day" data-result="${bucket}">
-        <span class="history-day-num">${dayNum}</span>
-        <span class="history-day-pnl">${pnl}</span>
-        <span class="history-day-meta">${meta}</span>
-      </div>`);
+  for(let d = new Date(gridStart); d <= gridEnd; d.setDate(d.getDate()+1)){
+    const inMonth = d.getMonth() === monthStart.getMonth() && d.getFullYear() === monthStart.getFullYear();
+    if(!inMonth){
+      cells.push(`<div class="history-day history-day-pad" data-result="empty"></div>`);
+      continue;
     }
-    return `<div class="history-month">
-      <div class="history-month-head">
-        <span class="history-month-name">${monthFmt(start)}</span>
-        <span class="history-month-rate">${mRateLabel}</span>
-      </div>
-      ${weekdayAxis}
-      <div class="history-month-grid">${cells.join('')}</div>
-    </div>`;
-  }).join('');
+    const k = _historyDateKey(d);
+    const dayNum = d.getDate();
+    const agg = dayMap.get(k);
+    if(!agg){
+      cells.push(`<div class="history-day" data-result="empty"><span class="history-day-num">${dayNum}</span></div>`);
+      continue;
+    }
+    const bucket = _historyHeatmapBucket(agg.net);
+    const usd = _fmtUsd(Math.round(agg.netUsd));
+    const pct = _fmtPct(agg.net);
+    const meta = `${agg.wins}W·${agg.losses}L`;
+    cells.push(`<div class="history-day" data-result="${bucket}">
+      <span class="history-day-num">${dayNum}</span>
+      <span class="history-day-pnl">${usd}</span>
+      <span class="history-day-pct">${pct}</span>
+      <span class="history-day-meta">${meta}</span>
+    </div>`);
+  }
   const heatEl = document.getElementById('history-heatmap');
-  if(heatEl) heatEl.innerHTML = heatmapHTML;
+  if(heatEl) heatEl.innerHTML = `<div class="history-month">
+    <div class="history-month-head">
+      <span class="history-month-name">${monthFmtLong(monthStart)}</span>
+      <span class="history-month-rate">${mRateLabel}</span>
+    </div>
+    ${weekdayAxis}
+    <div class="history-month-grid">${cells.join('')}</div>
+  </div>`;
 
-  /* ── Monthly performance rows (right panel) ── */
-  const rowsHTML = monthBlocks.slice().reverse().map(({start,end}) => {
-    let mWins=0, mLosses=0, mNet=0;
-    for(const e of inRange){
-      if(e.date >= start && e.date <= end){
-        if(e.win) mWins++; else mLosses++;
-        mNet += e.pnlPct;
+  /* ── Monthly performance rows (right panel — last 6 months for
+     context, with the active month highlighted) ── */
+  const allMonths = [];
+  for(let i=5;i>=0;i--){
+    const d = new Date(monthStart); d.setMonth(d.getMonth() - i);
+    /* Don't go past the data range */
+    if(d < min) continue;
+    if(d > max) continue;
+    allMonths.push(d);
+  }
+  const rowsHTML = allMonths.slice().reverse().map(d => {
+    const mStart = new Date(d.getFullYear(), d.getMonth(), 1);
+    const mEnd = new Date(d.getFullYear(), d.getMonth()+1, 0); mEnd.setHours(23,59,59,999);
+    let mw=0, ml=0, mn=0;
+    for(const e of all){
+      if(e.date >= mStart && e.date <= mEnd){
+        if(e.win) mw++; else ml++;
+        mn += e.pnlPct;
       }
     }
-    const total = mWins+mLosses;
-    const rate = total ? (mWins/total)*100 : 0;
-    const winPct = total ? (mWins/total)*100 : 0;
-    const lossPct = total ? (mLosses/total)*100 : 0;
-    const netCol = mNet>=0 ? 'var(--success-strong)' : 'var(--danger-strong)';
-    return `<div class="history-month-row">
+    const total = mw+ml;
+    const rate = total ? (mw/total)*100 : 0;
+    const winPct = total ? (mw/total)*100 : 0;
+    const lossPct = total ? (ml/total)*100 : 0;
+    const netCol = mn>=0 ? 'var(--success-strong)' : 'var(--danger-strong)';
+    const isActive = mStart.getTime() === monthStart.getTime();
+    const clickAttr = `onclick="setHistoryMonth(${mStart.getFullYear()}, ${mStart.getMonth()})" style="cursor:pointer"`;
+    return `<div class="history-month-row${isActive ? ' is-active' : ''}" ${clickAttr}>
       <div class="history-month-row-head">
-        <span class="history-month-row-label">${monthFmt(start)}</span>
+        <span class="history-month-row-label">${monthFmtShort(mStart)}</span>
         <span class="history-month-row-rate">${total ? rate.toFixed(0)+'%' : '—'}</span>
       </div>
       <div class="history-month-row-bar">
@@ -4825,17 +4897,17 @@ function renderSessionHistory(){
         <span style="width:${lossPct}%;background:var(--danger)"></span>
       </div>
       <div class="history-month-row-meta">
-        <span><span class="dot" style="background:var(--success)"></span> <strong>${mWins}</strong> wins</span>
-        <span><span class="dot" style="background:var(--danger)"></span> <strong>${mLosses}</strong> losses</span>
-        <span style="margin-left:auto;color:${netCol};font-weight:700">${total ? _fmtPct(mNet) : ''}</span>
+        <span><span class="dot" style="background:var(--success)"></span> <strong>${mw}</strong> wins</span>
+        <span><span class="dot" style="background:var(--danger)"></span> <strong>${ml}</strong> losses</span>
+        <span style="margin-left:auto;color:${netCol};font-weight:700">${total ? _fmtPct(mn) : ''}</span>
       </div>
     </div>`;
   }).join('');
   const rowsEl = document.getElementById('history-monthly-rows');
   if(rowsEl) rowsEl.innerHTML = rowsHTML;
 
-  /* ── Recent entries list (most recent 10) ── */
-  const recent = inRange.slice().sort((a,b) => b.date - a.date).slice(0, 10);
+  /* ── Recent entries list (selected month, most recent 10) ── */
+  const recent = monthEntries.slice().sort((a,b) => b.date - a.date).slice(0, 10);
   const dateShort = (d) => d.toLocaleString('en-US', { month:'short', day:'numeric' });
   const entriesHTML = recent.map(e => {
     const sideIcon = e.side === 'long'
@@ -4851,20 +4923,35 @@ function renderSessionHistory(){
         <div class="history-entry-side">${e.side} · ${dateShort(e.date)}</div>
       </div>
       <div class="history-entry-cell is-collapsible">R:R ${e.rr.toFixed(2)}</div>
-      <div class="history-entry-cell is-collapsible">${dateShort(e.date)}</div>
+      <div class="history-entry-cell is-collapsible">${_fmtUsdLong(Math.round(e.pnlUsd))}</div>
       <div class="history-entry-pnl" style="color:${pnlCol}">${_fmtPct(e.pnlPct)}</div>
       <div class="history-entry-result ${resultClass}">${resultLabel}</div>
     </div>`;
   }).join('');
   const entriesEl = document.getElementById('history-entries-list');
-  if(entriesEl) entriesEl.innerHTML = entriesHTML || `<div style="padding:28px;text-align:center;color:var(--neutral-400);font-size:12px;font-family:var(--font-body)">No entries in this range yet.</div>`;
+  if(entriesEl) entriesEl.innerHTML = entriesHTML || `<div style="padding:28px;text-align:center;color:var(--neutral-400);font-size:12px;font-family:var(--font-body)">No entries this month.</div>`;
 }
 
-window.setHistoryRange = function(range){
-  _historyRange = range;
-  document.querySelectorAll('#history-range-tabs .overview-pill').forEach(p => {
-    p.classList.toggle('active', p.dataset.range === range);
-  });
+/* Step the calendar one month back / forward, clamped to the data
+   range. The picker label, arrow disabled state, KPIs, heatmap, and
+   recent-entries list all re-render off `_historyMonth`. */
+window.stepHistoryMonth = function(delta){
+  const { min, max } = _historyDataBounds();
+  const next = new Date(_historyMonth);
+  next.setMonth(next.getMonth() + delta);
+  if(next < min || next > max) return;
+  _historyMonth = next;
+  renderSessionHistory();
+};
+
+/* Jump directly to a specific month (used by the right-panel rows).
+   Uses the (year, monthIndex) signature so callers don't pass Date
+   objects through HTML onclick attributes. */
+window.setHistoryMonth = function(year, month){
+  const target = new Date(year, month, 1);
+  const { min, max } = _historyDataBounds();
+  if(target < min || target > max) return;
+  _historyMonth = target;
   renderSessionHistory();
 };
 
