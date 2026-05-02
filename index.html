@@ -144,12 +144,16 @@ p,span,div,input,button{
   display:none !important;
   margin:0 !important;padding:0 !important;
 }
-/* Sign-out button collapses to a centered icon-only square */
+/* Sign-out button collapses to a centered icon-only square — same width
+   as the avatar so the bottom stack reads as one tidy column. */
 .sidebar.collapsed .qds-hover-danger{
-  width:40px !important;
-  margin:8px auto 0 !important;
-  padding:9px !important;
+  width:36px !important;
+  height:36px !important;
+  margin:6px auto 10px !important;
+  padding:0 !important;
   border-radius:10px !important;
+  display:flex !important;
+  align-items:center;justify-content:center;
 }
 /* Hide the green status dot when collapsed (avatar alone communicates presence) */
 .sidebar.collapsed .user-status-dot{display:none}
@@ -168,22 +172,35 @@ p,span,div,input,button{
 /* The user-footer row collapses to just the avatar, centered */
 .sidebar.collapsed .user-footer-row{
   justify-content:center;
-  padding:10px 0;
+  padding:8px 0 !important;
   background:transparent !important;
   border:none !important;
   gap:0;
 }
 /* Hide the green presence dot inside the user row when collapsed too */
 .sidebar.collapsed .user-footer-row > div:last-child{display:none}
-/* Tighten the user-profile section padding when collapsed */
-.sidebar.collapsed .user-footer-row + button{margin-top:6px !important}
-/* The language wrapper used to provide margin-top:auto that pushed the
-   user-profile section to the bottom. Now that it's hidden, the user
-   section needs to take over that role. */
+/* Avatar — bump to 36px to match the sign-out button width below it
+   so the two elements align visually as a tidy column. */
+.sidebar.collapsed #sb-avatar{
+  width:36px !important;
+  height:36px !important;
+}
+.sidebar.collapsed #sb-avatar-initial{font-size:14px !important}
+/* The user-profile section's PARENT div had inline border-top + padding;
+   pin the whole bottom block to the floor and tighten its breathing room. */
 .sidebar.collapsed .user-footer-row{margin-top:auto !important}
-/* Also clean up the user-profile parent's padding so the avatar is
-   centered without extra horizontal slack. */
-.sidebar.collapsed .user-footer-row{padding:8px 0 !important}
+.sidebar.collapsed .user-footer-row + button{margin-top:4px !important}
+/* The user-profile parent (the div wrapping .user-footer-row + sign-out
+   button) needs reduced padding when collapsed so the elements sit tight. */
+.sidebar.collapsed .user-footer-row{
+  padding:6px 0 !important;
+}
+/* Soften the inline border-top on the parent — it gets in the way visually
+   when the section is just a small avatar + button. */
+.sidebar.collapsed div:has(> .user-footer-row){
+  padding:8px 0 12px !important;
+  border-top-color:var(--neutral-100) !important;
+}
 .main{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:white;border-bottom:1px solid var(--neutral-100);position:sticky;top:0;z-index:10;gap:8px}
 .content{padding:18px 24px 32px;flex:1}
