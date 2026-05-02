@@ -2235,6 +2235,10 @@ let currentSymbol = _savedCoin?.sym || 'BTCUSDT';
 let currentBase   = _savedCoin?.base || 'BTC';
 let currentCgId   = _savedCoin?.cgId || 'bitcoin';
 let positions=[], entryDir="long", perfView="pnl", perfChartInst=null, tpMode="$", slMode="$";
+/* Realized trade history — populated when closePosition() runs. Same
+   persistence pattern as `positions`: localStorage fallback + Firestore
+   per-user doc. Read by renderSessionHistory() to power the heatmap. */
+let closedTrades=[];
 let _coinTLDRHistory = (function(){
   try { return JSON.parse(localStorage.getItem('q_coin_tldr_history_v1') || '{}'); }
   catch(_) { return {}; }
@@ -2251,6 +2255,7 @@ const _fbConfig = {
 };
 window._currentPlan = 'free';
 let _db = null, _posRef = null, _posUnsubscribe = null, _firestoreUid = null, _planUnsubscribe = null;
+let _closedRef = null, _closedUnsubscribe = null;
 let currentUser = null;
 let _authTab = 'signin';
 let _aiConversationId = null;
@@ -2869,6 +2874,14 @@ const DEMO_POSITIONS = (function(){
 /* ── Persist positions locally as fallback (skip in demo) ── */
 (function(){ if(DEMO_MODE) return; try{ const r=localStorage.getItem('vf_positions'); if(r) positions=JSON.parse(r); }catch(_){} })();
 
+/* Closed-trade history: same fallback pattern. Loaded eagerly so the
+   Session History view has data on first render even before the
+   Firestore snapshot lands. */
+(function(){
+  if(DEMO_MODE) return;
+  try{ const r=localStorage.getItem('vf_closed_trades'); if(r) closedTrades=JSON.parse(r); }catch(_){}
+})();
+
 function savePositions(){
   if(DEMO_MODE) return; /* silently skip persist in demo */
   try{ localStorage.setItem('vf_positions', JSON.stringify(positions)); }catch(_){}
@@ -2879,20 +2892,35 @@ function savePositions(){
   }
 }
 
+/* Persist closed trades — mirrors savePositions() but writes to a
+   sibling Firestore doc so we don't bloat the live positions payload. */
+function saveClosedTrades(){
+  if(DEMO_MODE) return;
+  try{ localStorage.setItem('vf_closed_trades', JSON.stringify(closedTrades)); }catch(_){}
+  if(_closedRef){
+    _closedRef.set({ list: closedTrades }).catch(e => console.error('Firestore closed save:', e));
+  }
+}
+
 /* ── Firestore listener tied to user UID ── */
 function initFirestoreForUser(uid){
   try{
     _db = firebase.firestore();
     _posRef = _db.collection('users').doc(uid).collection('data').doc('positions');
+    _closedRef = _db.collection('users').doc(uid).collection('data').doc('closedTrades');
     if(_posUnsubscribe) _posUnsubscribe();
+    if(_closedUnsubscribe) _closedUnsubscribe();
     if(_planUnsubscribe) _planUnsubscribe();
 
     /* Only clear positions when switching to a different user account.
        On same-user page refresh, keep existing data until snapshot arrives. */
     if(_firestoreUid && _firestoreUid !== uid){
       positions = [];
+      closedTrades = [];
       try{ localStorage.removeItem('vf_positions'); }catch(_){}
+      try{ localStorage.removeItem('vf_closed_trades'); }catch(_){}
       renderPositions(); renderPerfChart();
+      if(typeof renderSessionHistory === 'function' && _primaryView === 'history') renderSessionHistory();
     }
     _firestoreUid = uid;
 
@@ -2901,6 +2929,14 @@ function initFirestoreForUser(uid){
       positions = (doc && doc.exists) ? (doc.data().list || []) : [];
       renderPositions(); renderPerfChart();
     }, err => console.error('Firestore listen:', err));
+
+    /* Listen for closed-trade changes — keeps the Session History
+       heatmap in sync across devices. Re-renders only when the user
+       is currently looking at the history view. */
+    _closedUnsubscribe = _closedRef.onSnapshot(doc => {
+      closedTrades = (doc && doc.exists) ? (doc.data().list || []) : [];
+      if(typeof renderSessionHistory === 'function' && _primaryView === 'history') renderSessionHistory();
+    }, err => console.error('Firestore closed listen:', err));
 
     /* Listen for plan changes — updates badge in real-time when admin approves */
     _planUnsubscribe = _db.collection('users').doc(uid).onSnapshot(doc => {
@@ -3115,6 +3151,7 @@ function initAuth(){
       } else {
         currentUser = null;
         _posRef = null;
+        _closedRef = null;
         _showAuthScreen();
         /* Default to Register tab when arriving from a redirect (e.g. pricing → pay) */
         if(_redirectAfterAuth) setTimeout(()=> authSwitchTab('register'), 50);
@@ -3216,10 +3253,14 @@ window.doSignOut = async function(){
   if(DEMO_MODE){ window.location.href='/app'; return; }
   try{
     if(_posUnsubscribe){ _posUnsubscribe(); _posUnsubscribe=null; }
+    if(_closedUnsubscribe){ _closedUnsubscribe(); _closedUnsubscribe=null; }
     if(_planUnsubscribe){ _planUnsubscribe(); _planUnsubscribe=null; }
     _posRef = null;
+    _closedRef = null;
     positions = [];
+    closedTrades = [];
     try{ localStorage.removeItem('vf_positions'); }catch(_){}
+    try{ localStorage.removeItem('vf_closed_trades'); }catch(_){}
     await firebase.auth().signOut();
     _showAuthScreen();
   } catch(e){ console.error('Sign out error:', e); }
@@ -4663,9 +4704,52 @@ function _buildHistoryEntries(){
 }
 
 let _HISTORY_ENTRIES = null;
+
+/* Map a closed-trade record (the shape closePosition() writes) into
+   the heatmap entry shape (`date`, `pnlPct`, `pnlUsd`, `win`, `rr`,
+   `sym`, `side`, `grad`). Resilient to legacy records that might be
+   missing some fields. */
+function _historyMapClosedTrade(t){
+  const mkt = (typeof MARKET_LIST !== 'undefined') ? MARKET_LIST.find(m => m.base === t.symbol) : null;
+  const grad = mkt?.grad || 'linear-gradient(135deg,#94A3B8,#CBD5E1)';
+  const date = new Date(t.closedAt || t.ts || Date.now());
+  return {
+    date,
+    sym: t.symbol || '?',
+    side: t.dir || 'long',
+    grad,
+    pnlPct: typeof t.pnlPct === 'number' ? t.pnlPct : 0,
+    pnlUsd: typeof t.pnlUsd === 'number' ? t.pnlUsd : 0,
+    rr: t.rr ? parseFloat(t.rr) || 0 : 0,
+    win: t.win === true || (typeof t.pnlUsd === 'number' && t.pnlUsd > 0),
+  };
+}
+
+/* Single source of truth for the heatmap's entries.
+   - DEMO_MODE: always seeded mock data (so the showcase tab feels alive
+     even on a fresh browser)
+   - Live mode: prefer the user's real closedTrades; fall back to seeded
+     mock data only when the user has zero realized trades, so the
+     heatmap doesn't sit empty until the first close. Once at least one
+     real trade lands, demo data is dropped entirely. */
 function _historyEntries(){
+  if(typeof DEMO_MODE !== 'undefined' && DEMO_MODE){
+    if(!_HISTORY_ENTRIES) _HISTORY_ENTRIES = _buildHistoryEntries();
+    return _HISTORY_ENTRIES;
+  }
+  if(closedTrades && closedTrades.length){
+    return closedTrades.map(_historyMapClosedTrade)
+      .sort((a,b) => a.date - b.date);
+  }
   if(!_HISTORY_ENTRIES) _HISTORY_ENTRIES = _buildHistoryEntries();
   return _HISTORY_ENTRIES;
+}
+
+/* Whether the heatmap is currently showing real closed trades vs the
+   seeded showcase data — used to surface a subtle "demo data" hint. */
+function _historyIsLive(){
+  if(typeof DEMO_MODE !== 'undefined' && DEMO_MODE) return false;
+  return !!(closedTrades && closedTrades.length);
 }
 
 function _historyDateKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -4731,11 +4815,22 @@ function _fmtPct(v, withSign){
 
 function renderSessionHistory(){
   const all = _historyEntries();
+  const isLive = _historyIsLive();
   const { min, max } = _historyDataBounds();
   /* Clamp the active month into the data range — defends against state
      left over from a stale session. */
   if(_historyMonth < min) _historyMonth = new Date(min);
   if(_historyMonth > max) _historyMonth = new Date(max);
+
+  /* Live-data badge in the heatmap subtitle so the user knows whether
+     they're looking at sample data or their own closed trades. */
+  const subEl = document.querySelector('#session-history-view [data-i18n="sub_history_heatmap"]');
+  if(subEl){
+    const baseText = isLive
+      ? 'Daily P&L in $ and % — your closed trades'
+      : 'Daily P&L in $ and % — sample data, close a trade to start tracking';
+    subEl.textContent = baseText;
+  }
 
   const monthStart = new Date(_historyMonth.getFullYear(), _historyMonth.getMonth(), 1);
   const monthEnd = new Date(_historyMonth.getFullYear(), _historyMonth.getMonth()+1, 0);
@@ -7545,7 +7640,65 @@ function renderPositions(){
   }).join("");
   updateSummaryStats();
 }
-window.closePosition=function(id){positions=positions.filter(p=>p.id!==id);savePositions();renderPositions();renderPerfChart();};
+/* Resolve the live exit price for a position. Prefer the cached
+   market price (the same source the Total P&L KPI uses) so close
+   accounting stays consistent with what's on screen; fall back to
+   currentPrice on the position object, then to entry as a last
+   resort so we never produce NaN P&L. */
+function _resolveExitPrice(pos){
+  const mSym = MARKET_LIST.find(m => m.base === pos.symbol)?.sym;
+  const cached = mSym ? _marketPrices[mSym] : null;
+  if(cached && cached.price) return parseFloat(cached.price);
+  if(pos.currentPrice) return pos.currentPrice;
+  return pos.entry;
+}
+
+/* Close a position: pull it out of `positions`, compute realized P&L
+   using the live market price as exit, and append a record to
+   `closedTrades` so the Session History heatmap reflects the result. */
+window.closePosition = function(id){
+  const pos = positions.find(p => p.id === id);
+  if(!pos){ return; }
+  const exit = _resolveExitPrice(pos);
+  const dirMul = pos.dir === 'long' ? 1 : -1;
+  const pnlUsd = (exit - pos.entry) * pos.qty * dirMul;
+  const pnlPct = pos.entry > 0 ? ((exit - pos.entry) / pos.entry) * 100 * dirMul : 0;
+  const closedAt = new Date();
+  /* Best-effort opened-at: positions store `date` (e.g. "Mar 4") + `time`
+     ("14:32") rather than an ISO string, so reconstruct. If parsing
+     fails we just record the close timestamp for both. */
+  let openedAt = closedAt.toISOString();
+  if(pos.date && pos.time){
+    const parsed = new Date(`${pos.date}, ${closedAt.getFullYear()} ${pos.time}`);
+    if(!isNaN(parsed.getTime())) openedAt = parsed.toISOString();
+  }
+  const trade = {
+    id: pos.id,
+    symbol: pos.symbol,
+    dir: pos.dir,
+    entry: pos.entry,
+    exit: +exit.toFixed(8),
+    qty: pos.qty,
+    exposure: pos.exposure || (pos.entry * pos.qty),
+    rr: pos.rr || null,
+    note: pos.note || '',
+    pnlUsd: +pnlUsd.toFixed(2),
+    pnlPct: +pnlPct.toFixed(4),
+    win: pnlUsd > 0,
+    openedAt,
+    closedAt: closedAt.toISOString(),
+    ts: closedAt.getTime(),
+  };
+  closedTrades.unshift(trade);
+  positions = positions.filter(p => p.id !== id);
+  savePositions();
+  saveClosedTrades();
+  renderPositions();
+  renderPerfChart();
+  /* Re-render history if it's the active view so the user sees the
+     trade land on the heatmap immediately. */
+  if(typeof renderSessionHistory === 'function' && _primaryView === 'history') renderSessionHistory();
+};
 /* Single source of truth for positions P&L — used by both the Total
    P&L KPI card (top of dashboard) and the Positions Performance card. */
 function getPositionsTotalPnl(){
