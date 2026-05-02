@@ -284,6 +284,8 @@ Give highly-actionable advice using REAL snapshot price data.
 - RSI (14): ${snapshot.indicators?.rsi ? snapshot.indicators.rsi.toFixed(2) : 'N/A'}
 - EMA (5): $${snapshot.indicators?.ema5 ? snapshot.indicators.ema5.toFixed(2) : 'N/A'}
 - EMA (21): $${snapshot.indicators?.ema21 ? snapshot.indicators.ema21.toFixed(2) : 'N/A'}
+- Quantichy QuantAnalyst bias (MUST AGREE WITH THIS): ${snapshot.quant?.bias || 'N/A'}${snapshot.quant?.confidence ? ` (confidence ${snapshot.quant.confidence}/10)` : ''}${snapshot.quant?.signal ? ` — ${snapshot.quant.signal}` : ''}
+- DO NOT contradict the QuantAnalyst bias above. If it says BEARISH, do not recommend a long; if it says BULLISH, do not recommend a short. The on-page Session Timeline is showing this bias to the user, so your answer must match.
 - DO NOT default to the trade-signal template for every question. Match the format to what the user actually asked.`;
 }
 
@@ -359,7 +361,15 @@ export function buildFallbackTradingResponse({ prompt, snapshot }) {
 
   const price = Number(snapshot.price);
   const change = Number(snapshot.change24hPct || 0);
-  const direction = change > 0.25 ? "bullish" : change < -0.25 ? "bearish" : "neutral";
+  /* Prefer QuantAnalyst's bias (computed from MA stack) over the 24h price-change
+     heuristic so the AI drawer agrees with the on-page Session Timeline / setups
+     ladder. Fall back to the 24h-change heuristic when QuantAnalyst hasn't run. */
+  const quantBias = String(snapshot.quant?.bias || "").toLowerCase();
+  const direction =
+    quantBias === "bullish" ? "bullish" :
+    quantBias === "bearish" ? "bearish" :
+    quantBias === "neutral" ? "neutral" :
+    change > 0.25 ? "bullish" : change < -0.25 ? "bearish" : "neutral";
   const formattedPrice = price.toLocaleString("en-US", {
     minimumFractionDigits: price >= 1 ? 0 : 8,
     maximumFractionDigits: price >= 1 ? 2 : 8

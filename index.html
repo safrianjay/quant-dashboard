@@ -1901,7 +1901,17 @@ function _getAIEntrySnapshot(){
   const cached = _marketPrices[sym] || {};
   const price = Number.isFinite(cached.price) && cached.price > 0 ? cached.price : (typeof PRICE !== 'undefined' ? PRICE : 50000);
   const chg = Number.isFinite(parseFloat(cached.chg)) ? parseFloat(cached.chg) : (typeof CHG !== 'undefined' ? parseFloat(CHG) : 0);
-  
+
+  /* Pull the latest QuantAnalyst signal for this asset so the AI drawer answers
+     in the same direction as the on-page Session Timeline / setups ladder. */
+  const qa = window._lastQuantAnalysis;
+  const quant = (qa && qa.asset === base && (Date.now() - qa.ts) < 10 * 60 * 1000) ? {
+    bias: qa.bias,
+    confidence: qa.confidence,
+    signal: qa.maStack?.signal,
+    state: qa.maStack?.state
+  } : null;
+
   return Object.freeze({
     symbol: `${base}/USDT`,
     cgId: cgId || 'bitcoin',
@@ -1912,6 +1922,7 @@ function _getAIEntrySnapshot(){
     pricePrecision: price < 1 ? 6 : 2,
     change24hPct: chg,
     volume24h: Number.isFinite(cached.vol) ? cached.vol : undefined,
+    quant,
     timestamp: new Date().toISOString()
   });
 }
@@ -7290,6 +7301,11 @@ const QuantAnalyst = (() => {
     /* ── 11. SESSION LOG ── */
     const logEl=document.getElementById("session-log");
     if(logEl&&logEntry){
+      /* Dedupe: skip if the most recent entry has the same message. Multiple
+         analysis runs in quick succession (coin switch + auto-refresh + manual)
+         used to stack identical rows on top of each other. */
+      const lastMsg = logEl.firstElementChild?.dataset?.logMsg;
+      if(lastMsg === logEntry.msg) return;
       const logColor=logEntry.type==="bull"?"#16A34A":logEntry.type==="bear"?"#DC2626":"#D97706";
       const logBg=logEntry.type==="bull"?"#F0FDF4":logEntry.type==="bear"?"#FEF2F2":"#FFFBEB";
       const LI={
@@ -7299,6 +7315,7 @@ const QuantAnalyst = (() => {
       };
       const newRow=document.createElement("div");
       newRow.className="row-item";
+      newRow.dataset.logMsg = logEntry.msg;
       Object.assign(newRow.style,{alignItems:"flex-start",gap:"10px",borderLeft:`3px solid ${logColor}`});
       newRow.innerHTML=`
         <div style="width:34px;height:34px;border-radius:9px;background:${logBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${logColor}">${LI[logEntry.type]}</div>
@@ -7307,6 +7324,8 @@ const QuantAnalyst = (() => {
           <div style="font-size:10px;color:#94A3B8;font-family:var(--font-mono);margin-top:3px">${logEntry.time} · ${logEntry.author} · ${logEntry.timeframe}</div>
         </div>`;
       logEl.insertBefore(newRow,logEl.firstChild);
+      /* Keep the timeline bounded — drop anything past 50 rows. */
+      while(logEl.children.length > 50) logEl.removeChild(logEl.lastChild);
     }
   }
 
@@ -7421,6 +7440,9 @@ async function runLiveAnalysis(){
     marketData.macroBias=macro.bias;
     const analysis=QuantAnalyst.run(marketData);
     QuantAnalyst.pushToCards(analysis);
+    /* Make the most-recent analyst output globally readable so other surfaces
+       (the AI drawer, snapshot builder) can stay aligned with QuantAnalyst's bias. */
+    window._lastQuantAnalysis = { asset: requestedBase, ...analysis, ts: Date.now() };
     updateCoinTLDR(requestedBase, analysis, marketData, macro);
 
     /* Update perf list */
