@@ -127,14 +127,23 @@ p,span,div,input,button{
 .sidebar.collapsed{width:64px}
 /* ── Icon-only collapsed state ──
    Hide every text fragment + secondary control. Only the brand mark, the
-   nav icons, and the user avatar should remain. */
+   nav icons, and the user avatar should remain. !important required to
+   beat inline display:flex on the user-info wrapper. */
 .sidebar.collapsed .nav-item-text,
 .sidebar.collapsed .nav-brand-text,
 .sidebar.collapsed .nav-section-label,
 .sidebar.collapsed .user-info-text,
 .sidebar.collapsed #levels-list,
 .sidebar.collapsed #lang-switcher,
-.sidebar.collapsed .qds-hover-danger span{display:none}
+.sidebar.collapsed .qds-hover-danger span{display:none !important}
+/* Hide the language switcher's PARENT wrapper too so its padding doesn't
+   leave an empty stripe (the wrapper has margin-top:auto pushing it down). */
+.sidebar.collapsed #lang-switcher{visibility:hidden}
+.sidebar.collapsed #lang-switcher,
+.sidebar.collapsed div:has(> #lang-switcher){
+  display:none !important;
+  margin:0 !important;padding:0 !important;
+}
 /* Sign-out button collapses to a centered icon-only square */
 .sidebar.collapsed .qds-hover-danger{
   width:40px !important;
@@ -168,6 +177,13 @@ p,span,div,input,button{
 .sidebar.collapsed .user-footer-row > div:last-child{display:none}
 /* Tighten the user-profile section padding when collapsed */
 .sidebar.collapsed .user-footer-row + button{margin-top:6px !important}
+/* The language wrapper used to provide margin-top:auto that pushed the
+   user-profile section to the bottom. Now that it's hidden, the user
+   section needs to take over that role. */
+.sidebar.collapsed .user-footer-row{margin-top:auto !important}
+/* Also clean up the user-profile parent's padding so the avatar is
+   centered without extra horizontal slack. */
+.sidebar.collapsed .user-footer-row{padding:8px 0 !important}
 .main{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:white;border-bottom:1px solid var(--neutral-100);position:sticky;top:0;z-index:10;gap:8px}
 .content{padding:18px 24px 32px;flex:1}
@@ -463,9 +479,11 @@ p,span,div,input,button{
 .nav-brand-name{
   letter-spacing:-.015em;
 }
-/* Expand tab — shown outside sidebar when it's closed */
+/* Expand tab — kept hidden on desktop. The toggle inside the brand row
+   handles re-opening, so the floating mid-screen tab is removed.
+   Mobile media query at the bottom force-hides it too. */
 .sidebar-expand-tab{
-  display:none;position:fixed;left:0;top:50%;transform:translateY(-50%);
+  display:none !important;position:fixed;left:0;top:50%;transform:translateY(-50%);
   width:22px;height:54px;
   background:white;
   border:1px solid var(--neutral-200);border-left:none;
