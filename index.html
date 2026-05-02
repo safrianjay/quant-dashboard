@@ -124,17 +124,50 @@ p,span,div,input,button{
 /* ── LAYOUT ── */
 .root{display:flex;height:100vh;width:100%;background:var(--neutral-50);color:var(--neutral-900);overflow:hidden}
 .sidebar{width:224px;background:white;border-right:1px solid var(--neutral-100);display:flex;flex-direction:column;flex-shrink:0;animation:slideIn .4s ease both;transition:width .3s cubic-bezier(.22,1,.36,1);overflow:hidden;min-width:0}
-.sidebar.collapsed{width:56px}
-/* Icon-only collapsed state */
+.sidebar.collapsed{width:64px}
+/* ── Icon-only collapsed state ──
+   Hide every text fragment + secondary control. Only the brand mark, the
+   nav icons, and the user avatar should remain. */
 .sidebar.collapsed .nav-item-text,
 .sidebar.collapsed .nav-brand-text,
 .sidebar.collapsed .nav-section-label,
-.sidebar.collapsed .user-info-text{display:none}
-.sidebar.collapsed .nav-item{justify-content:center;padding:9px 0;gap:0}
-.sidebar.collapsed .nav-item.active{border-radius:10px}
-.sidebar.collapsed .sidebar-brand{justify-content:center;padding:14px 0}
-.sidebar.collapsed .user-footer-row{justify-content:center;padding:10px 0;background:transparent}
+.sidebar.collapsed .user-info-text,
+.sidebar.collapsed #levels-list,
+.sidebar.collapsed #lang-switcher,
+.sidebar.collapsed .qds-hover-danger span{display:none}
+/* Sign-out button collapses to a centered icon-only square */
+.sidebar.collapsed .qds-hover-danger{
+  width:40px !important;
+  margin:8px auto 0 !important;
+  padding:9px !important;
+  border-radius:10px !important;
+}
+/* Hide the green status dot when collapsed (avatar alone communicates presence) */
 .sidebar.collapsed .user-status-dot{display:none}
+/* Each icon row centers in the narrow rail */
+.sidebar.collapsed .nav-item{
+  justify-content:center;
+  padding:10px 0;
+  margin:0 8px 4px;
+  gap:0;
+}
+.sidebar.collapsed .nav-item.active{border-radius:10px}
+.sidebar.collapsed .sidebar-brand{
+  justify-content:center;
+  padding:14px 0;
+}
+/* The user-footer row collapses to just the avatar, centered */
+.sidebar.collapsed .user-footer-row{
+  justify-content:center;
+  padding:10px 0;
+  background:transparent !important;
+  border:none !important;
+  gap:0;
+}
+/* Hide the green presence dot inside the user row when collapsed too */
+.sidebar.collapsed .user-footer-row > div:last-child{display:none}
+/* Tighten the user-profile section padding when collapsed */
+.sidebar.collapsed .user-footer-row + button{margin-top:6px !important}
 .main{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:white;border-bottom:1px solid var(--neutral-100);position:sticky;top:0;z-index:10;gap:8px}
 .content{padding:18px 24px 32px;flex:1}
@@ -167,9 +200,10 @@ p,span,div,input,button{
 .row-item:last-child{border-bottom:none}
 
 /* ── SIDEBAR NAV ──
-   Modern SaaS pattern: idle items are slate-500 with a 1px transparent left
-   indicator; hover tints the whole row a touch; active gets a soft brand-blue
-   pill, a 3px brand-blue accent on the left, and brand-deep text. */
+   Neutral, quietly-confident style. Idle items are slate-500. Hover tints
+   the row a touch. Active gets near-black text in bold + a 3px slate-900
+   accent bar on the left — no colored background, no tinted pill. The
+   weight + accent do the work. */
 .nav-item{
   position:relative;
   display:flex;align-items:center;gap:11px;
@@ -189,16 +223,16 @@ p,span,div,input,button{
   color:var(--neutral-800);
 }
 .nav-item.active{
-  background:rgba(29,78,216,.09);
-  color:var(--info-deep,#1D4ED8);
-  font-weight:650;
+  background:transparent;
+  color:var(--neutral-900);
+  font-weight:700;
 }
 /* 3px left accent on active items — the "you are here" mark */
 .nav-item.active::before{
   content:'';
   position:absolute;left:-1px;top:7px;bottom:7px;
   width:3px;border-radius:0 3px 3px 0;
-  background:var(--info-deep,#1D4ED8);
+  background:var(--neutral-900);
 }
 .nav-item svg{
   width:16px;height:16px;
@@ -206,11 +240,16 @@ p,span,div,input,button{
   flex-shrink:0;
   transition:stroke-width .15s ease;
 }
-.nav-item.active svg{stroke-width:2.1}
-/* Collapsed state: hide the left accent bar (it'd clip on a 56px rail);
-   substitute a soft full-pill tint so the active item stays visible. */
+.nav-item.active svg{stroke-width:2.15}
+/* Collapsed rail: the left accent would clip against a 56px column, so
+   substitute a subtle neutral pill tint to keep the active item visible. */
 .sidebar.collapsed .nav-item.active::before{display:none}
-.sidebar.collapsed .nav-item.active{background:rgba(29,78,216,.12)}
+/* Active pill in collapsed rail — neutral gray (NOT brand blue/purple). The
+   icon inside stays brand-primary (slate-900) for the actual brand emphasis. */
+.sidebar.collapsed .nav-item.active{
+  background:var(--neutral-100);
+  color:var(--brand-primary,#0F172A);
+}
 
 .nav-section-label{
   font-size:9.5px;font-weight:700;
@@ -406,8 +445,13 @@ p,span,div,input,button{
 }
 .sidebar-toggle-btn svg{transition:transform .3s cubic-bezier(.22,1,.36,1)}
 .sidebar.collapsed .sidebar-toggle-btn svg{transform:rotate(180deg)}
-/* When collapsed: hide logo so only the toggle btn shows centered */
-.sidebar.collapsed .nav-brand-logo{display:none}
+/* When collapsed: stack the brand mark on top, the toggle button below
+   it — centered. The logo stays visible so the rail still feels branded. */
+.sidebar.collapsed .sidebar-brand{
+  flex-direction:column;
+  gap:8px;
+}
+.sidebar.collapsed .sidebar-toggle-btn{margin-left:0 !important}
 /* Brand row refinement */
 .sidebar-brand{
   border-bottom:1px solid var(--neutral-100) !important;
