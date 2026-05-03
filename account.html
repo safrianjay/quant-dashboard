@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account | Quantichy</title>
+<meta name="theme-color" content="#0F172A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quantichy">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=3">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg?v=3">
+<link rel="manifest" href="/manifest.json?v=3">
+<link href="/design-system/tokens.css" rel="stylesheet">
+<link href="/design-system/components.css" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-body);
+  background:var(--surface-page);
+  color:var(--text-primary);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+.page-wrap{
+  max-width:680px;
+  margin:0 auto;
+  padding:24px 18px 64px;
+}
+
+/* Top bar with back link */
+.top-bar{
+  display:flex;
+  align-items:center;
+  gap:var(--space-6);
+  padding:8px 0 24px;
+}
+.back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:var(--space-3);
+  font-size:var(--fs-md);
+  font-weight:var(--fw-semibold);
+  color:var(--text-secondary);
+  text-decoration:none;
+  padding:8px 12px;
+  border-radius:var(--radius-lg);
+  transition:background var(--dur-fast) var(--ease-smooth), color var(--dur-fast) var(--ease-smooth);
+}
+.back-link:hover{ background:var(--surface-sunken); color:var(--text-primary); }
+
+/* Page heading */
+.page-head{ margin-bottom:24px; }
+.page-head h1{
+  font-family:var(--font-heading);
+  font-size:24px;
+  font-weight:var(--fw-extrabold);
+  letter-spacing:var(--tracking-tight);
+  color:var(--text-primary);
+  margin-bottom:6px;
+}
+.page-head p{
+  font-size:var(--fs-base);
+  color:var(--text-secondary);
+}
+
+/* Profile card */
+.profile-card{
+  background:var(--surface-card);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--radius-3xl);
+  padding:20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:18px;
+  box-shadow:var(--shadow-sm);
+}
+.profile-avatar{
+  width:56px;
+  height:56px;
+  border-radius:var(--radius-full);
+  background:linear-gradient(135deg,var(--success),var(--info));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  overflow:hidden;
+}
+.profile-avatar img{ width:100%; height:100%; object-fit:cover; }
+.profile-avatar span{
+  font-family:var(--font-heading);
+  font-weight:var(--fw-bold);
+  font-size:22px;
+  color:white;
+  line-height:1;
+}
+.profile-info{ flex:1; min-width:0; }
+.profile-name{
+  font-family:var(--font-heading);
+  font-size:var(--fs-2xl);
+  font-weight:var(--fw-bold);
+  color:var(--text-primary);
+  margin-bottom:3px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.profile-email{
+  font-size:var(--fs-md);
+  color:var(--text-secondary);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.plan-pill{
+  display:inline-flex;
+  align-items:center;
+  font-family:var(--font-heading);
+  font-size:9px;
+  font-weight:var(--fw-extrabold);
+  padding:3px 9px;
+  border-radius:var(--radius-pill);
+  background:var(--surface-sunken);
+  color:var(--text-secondary);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-wide);
+  margin-bottom:6px;
+}
+
+/* Section heading */
+.section-label{
+  font-family:var(--font-body);
+  font-size:var(--fs-2xs);
+  font-weight:var(--fw-extrabold);
+  color:var(--text-muted);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-widest);
+  padding:14px 4px 10px;
+}
+
+/* Settings card with rows */
+.settings-card{
+  background:var(--surface-card);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--radius-3xl);
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.settings-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+  border-bottom:1px solid var(--border-subtle);
+  text-decoration:none;
+  color:inherit;
+  cursor:pointer;
+  background:var(--surface-card);
+  transition:background var(--dur-fast) var(--ease-smooth);
+  width:100%;
+  border-left:none;
+  border-right:none;
+  border-top:none;
+  font-family:var(--font-body);
+  text-align:left;
+}
+.settings-row:last-child{ border-bottom:none; }
+.settings-row:hover{ background:var(--surface-hover); }
+.settings-row:disabled{ cursor:not-allowed; opacity:.55; }
+
+.row-icon{
+  width:36px;
+  height:36px;
+  border-radius:var(--radius-xl);
+  background:var(--surface-sunken);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  color:var(--text-secondary);
+}
+.row-body{ flex:1; min-width:0; }
+.row-title{
+  font-size:var(--fs-base);
+  font-weight:var(--fw-semibold);
+  color:var(--text-primary);
+  line-height:1.3;
+  margin-bottom:2px;
+}
+.row-sub{
+  font-size:var(--fs-sm);
+  color:var(--text-secondary);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.row-chev{ flex-shrink:0; color:var(--text-muted); }
+
+/* Web3 wallet widget */
+.wallet-widget{
+  background:var(--surface-card);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--radius-3xl);
+  padding:18px;
+  box-shadow:var(--shadow-sm);
+}
+.wallet-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+.wallet-title{
+  font-family:var(--font-heading);
+  font-size:var(--fs-lg);
+  font-weight:var(--fw-bold);
+  color:var(--text-primary);
+}
+.wallet-sub{
+  font-size:var(--fs-sm);
+  color:var(--text-secondary);
+  margin-top:2px;
+}
+.wallet-status{
+  font-family:var(--font-body);
+  font-size:var(--fs-2xs);
+  font-weight:var(--fw-extrabold);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-wide);
+  padding:4px 10px;
+  border-radius:var(--radius-pill);
+  background:var(--surface-sunken);
+  color:var(--text-secondary);
+}
+.wallet-status.connected{
+  background:var(--success-bg);
+  color:var(--success-deep);
+}
+
+.wallet-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+@media(max-width:480px){
+  .wallet-grid{ grid-template-columns:1fr; }
+}
+
+.wallet-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  background:var(--surface-card);
+  border:1px solid var(--border-default);
+  border-radius:var(--radius-xl);
+  cursor:pointer;
+  font-family:var(--font-body);
+  font-size:var(--fs-base);
+  font-weight:var(--fw-semibold);
+  color:var(--text-primary);
+  text-align:left;
+  transition:background var(--dur-fast) var(--ease-smooth),
+             border-color var(--dur-fast) var(--ease-smooth),
+             box-shadow var(--dur-fast) var(--ease-smooth);
+}
+.wallet-btn:hover{
+  border-color:var(--neutral-300);
+  background:var(--surface-hover);
+  box-shadow:var(--shadow-sm);
+}
+.wallet-btn:disabled{
+  cursor:not-allowed;
+  opacity:.6;
+}
+.wallet-icon{
+  width:24px;
+  height:24px;
+  border-radius:var(--radius-md);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  font-size:14px;
+  font-weight:var(--fw-bold);
+  color:white;
+}
+.wallet-icon.metamask{ background:linear-gradient(135deg,#F6851B,#E27625); }
+.wallet-icon.binance{ background:linear-gradient(135deg,#F0B90B,#F8D33A); color:#3B1F00; }
+.wallet-icon.walletconnect{ background:linear-gradient(135deg,#3B99FC,#2563EB); }
+.wallet-icon.coinbase{ background:linear-gradient(135deg,#0052FF,#1E63E5); }
+
+.wallet-connected{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  background:var(--surface-sunken);
+  border-radius:var(--radius-xl);
+  margin-bottom:12px;
+}
+.wallet-addr{
+  flex:1;
+  min-width:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  color:var(--text-primary);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:var(--fw-semibold);
+}
+.wallet-disconnect{
+  font-family:var(--font-body);
+  font-size:var(--fs-sm);
+  font-weight:var(--fw-semibold);
+  color:var(--danger-strong);
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:6px 10px;
+  border-radius:var(--radius-md);
+}
+.wallet-disconnect:hover{ background:var(--danger-bg); }
+
+/* Sign-out button — full width, danger on hover */
+.signout-btn{
+  width:100%;
+  margin-top:18px;
+  padding:12px 16px;
+  border-radius:var(--radius-xl);
+  border:1px solid var(--border-default);
+  background:var(--surface-card);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--space-3);
+  font-family:var(--font-body);
+  font-size:var(--fs-base);
+  font-weight:var(--fw-semibold);
+  color:var(--text-secondary);
+  transition:background var(--dur-fast) var(--ease-smooth),
+             border-color var(--dur-fast) var(--ease-smooth),
+             color var(--dur-fast) var(--ease-smooth);
+}
+.signout-btn:hover{
+  background:var(--danger-bg);
+  border-color:#FCA5A5;
+  color:var(--danger-strong);
+}
+
+/* Toast */
+.toast{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--neutral-900);
+  color:white;
+  padding:12px 18px;
+  border-radius:var(--radius-xl);
+  font-size:var(--fs-md);
+  font-weight:var(--fw-semibold);
+  box-shadow:var(--shadow-2xl);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity var(--dur-base) var(--ease-smooth),
+             transform var(--dur-base) var(--ease-smooth);
+  z-index:var(--z-toast);
+}
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="top-bar">
+    <a href="/app" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </a>
+  </div>
+
+  <div class="page-head">
+    <h1>Account</h1>
+    <p>Manage your profile and connected wallets.</p>
+  </div>
+
+  <!-- Profile card -->
+  <div class="profile-card">
+    <div class="profile-avatar" id="acc-avatar">
+      <span id="acc-avatar-initial">?</span>
+    </div>
+    <div class="profile-info">
+      <span class="plan-pill" id="acc-plan">FREE</span>
+      <div class="profile-name" id="acc-name">—</div>
+      <div class="profile-email" id="acc-email">Not signed in</div>
+    </div>
+  </div>
+
+  <!-- Web3 wallet widget -->
+  <div class="section-label">Web3 wallet</div>
+  <div class="wallet-widget">
+    <div class="wallet-head">
+      <div>
+        <div class="wallet-title">Connect a wallet</div>
+        <div class="wallet-sub" id="wallet-sub-text">Link MetaMask, Binance, or another Web3 wallet.</div>
+      </div>
+      <span class="wallet-status" id="wallet-status">Not connected</span>
+    </div>
+
+    <div id="wallet-connected-view" style="display:none">
+      <div class="wallet-connected">
+        <div class="wallet-icon" id="wallet-connected-icon" style="background:linear-gradient(135deg,var(--success),var(--info))">●</div>
+        <div class="wallet-addr" id="wallet-connected-addr">—</div>
+        <button class="wallet-disconnect" id="wallet-disconnect-btn" type="button">Disconnect</button>
+      </div>
+    </div>
+
+    <div id="wallet-options-view" class="wallet-grid">
+      <button class="wallet-btn" data-wallet="metamask" type="button">
+        <span class="wallet-icon metamask">M</span>
+        <span>MetaMask</span>
+      </button>
+      <button class="wallet-btn" data-wallet="binance" type="button">
+        <span class="wallet-icon binance">B</span>
+        <span>Binance Wallet</span>
+      </button>
+      <button class="wallet-btn" data-wallet="walletconnect" type="button">
+        <span class="wallet-icon walletconnect">W</span>
+        <span>WalletConnect</span>
+      </button>
+      <button class="wallet-btn" data-wallet="coinbase" type="button">
+        <span class="wallet-icon coinbase">C</span>
+        <span>Coinbase Wallet</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings rows -->
+  <div class="section-label">Settings</div>
+  <div class="settings-card">
+    <a class="settings-row" href="/pricing">
+      <div class="row-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="row-body">
+        <div class="row-title">Plan &amp; billing</div>
+        <div class="row-sub" id="row-plan-sub">View plans and upgrade</div>
+      </div>
+      <svg class="row-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+    <a class="settings-row" href="mailto:support@quantichy.com">
+      <div class="row-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="row-body">
+        <div class="row-title">Support</div>
+        <div class="row-sub">Get help via email</div>
+      </div>
+      <svg class="row-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+  </div>
+
+  <!-- Sign out -->
+  <button class="signout-btn" id="acc-signout-btn" type="button">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Sign Out
+  </button>
+
+</div>
+
+<div class="toast" id="acc-toast" role="status" aria-live="polite"></div>
+
+<!-- Firebase (matches index.html) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+<script>
+const _fbConfig = {
+  apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
+  authDomain: "quantichy.com",
+  projectId: "quant-dashboard-1405b",
+  storageBucket: "quant-dashboard-1405b.firebasestorage.app",
+  messagingSenderId: "1013979996177",
+  appId: "1:1013979996177:web:7274da6d71ef702e3011b0"
+};
+
+const WALLET_KEY = 'q_wallet_v1';
+
+function showToast(msg, ms){
+  const t = document.getElementById('acc-toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms || 2400);
+}
+
+function shorten(addr){
+  if(!addr || addr.length < 10) return addr || '';
+  return addr.slice(0,6) + '…' + addr.slice(-4);
+}
+
+function renderWallet(){
+  const raw = localStorage.getItem(WALLET_KEY);
+  const status = document.getElementById('wallet-status');
+  const connectedView = document.getElementById('wallet-connected-view');
+  const optionsView = document.getElementById('wallet-options-view');
+  const sub = document.getElementById('wallet-sub-text');
+
+  if(!raw){
+    status.textContent = 'Not connected';
+    status.classList.remove('connected');
+    connectedView.style.display = 'none';
+    optionsView.style.display = '';
+    sub.textContent = 'Link MetaMask, Binance, or another Web3 wallet.';
+    return;
+  }
+
+  let data;
+  try { data = JSON.parse(raw); } catch(_){ data = null; }
+  if(!data || !data.address){
+    localStorage.removeItem(WALLET_KEY);
+    return renderWallet();
+  }
+
+  status.textContent = 'Connected';
+  status.classList.add('connected');
+  connectedView.style.display = '';
+  optionsView.style.display = 'none';
+  sub.textContent = (data.provider || 'Wallet') + ' linked to your account.';
+  document.getElementById('wallet-connected-addr').textContent = shorten(data.address);
+}
+
+async function connectMetaMask(){
+  if(!window.ethereum){
+    showToast('MetaMask not detected. Install the extension first.');
+    return null;
+  }
+  try{
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    return accounts && accounts[0] ? accounts[0] : null;
+  } catch(e){
+    showToast(e && e.message ? e.message : 'Connection cancelled.');
+    return null;
+  }
+}
+
+async function handleWalletClick(provider){
+  if(provider === 'metamask'){
+    const addr = await connectMetaMask();
+    if(addr){
+      localStorage.setItem(WALLET_KEY, JSON.stringify({ provider:'MetaMask', address: addr }));
+      renderWallet();
+      showToast('Wallet connected');
+    }
+    return;
+  }
+  /* Other providers — store the user's intent and surface a friendly note.
+     Real integrations (WalletConnect / Binance / Coinbase SDK) would slot in
+     here without changing the UI. */
+  showToast(provider.charAt(0).toUpperCase() + provider.slice(1) + ' integration coming soon.');
+}
+
+function disconnectWallet(){
+  localStorage.removeItem(WALLET_KEY);
+  renderWallet();
+  showToast('Wallet disconnected');
+}
+
+function applyUser(user){
+  if(!user){
+    window.location.href = '/app';
+    return;
+  }
+  const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+  const initial = (displayName || '?').slice(0,1).toUpperCase();
+
+  document.getElementById('acc-name').textContent = displayName;
+  document.getElementById('acc-email').textContent = user.email || '';
+
+  const av = document.getElementById('acc-avatar');
+  if(user.photoURL){
+    av.innerHTML = '<img src="' + user.photoURL + '" alt="">';
+  } else {
+    document.getElementById('acc-avatar-initial').textContent = initial;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  /* Wallet buttons */
+  document.querySelectorAll('.wallet-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleWalletClick(btn.dataset.wallet));
+  });
+  document.getElementById('wallet-disconnect-btn').addEventListener('click', disconnectWallet);
+  renderWallet();
+
+  /* Auth state */
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(_fbConfig);
+    firebase.auth().onAuthStateChanged(applyUser);
+  } catch(e){
+    console.warn('Firebase init failed', e);
+  }
+
+  /* Sign out */
+  document.getElementById('acc-signout-btn').addEventListener('click', async () => {
+    try{
+      await firebase.auth().signOut();
+    } catch(_){}
+    window.location.href = '/app';
+  });
+});
+</script>
+
+</body>
+</html>

@@ -42,6 +42,12 @@
   to = "/pricing.html"
   status = 200
 
+# Account / settings page
+[[redirects]]
+  from = "/account"
+  to = "/account.html"
+  status = 200
+
 # Proxy Firebase Auth calls to the real Firebase project
 [[redirects]]
   from = "/__/auth/*"
