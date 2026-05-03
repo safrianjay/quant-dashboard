@@ -994,9 +994,61 @@ p,span,div,input,button{
 .signal-entry{font-weight:800;color:#0f172a}
 .signal-sl{font-weight:700;color:#ef4444}
 .signal-tp{font-weight:700;color:#10b981}
-/* Confidence Badge Tidy Up */
-.confidence-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;border-radius:8px;font-size:10px;font-weight:800;margin:4px 0 16px 0;text-transform:uppercase;letter-spacing:0.08em;box-shadow:0 2px 6px rgba(0,0,0,0.03)}
-.confidence-badge::before{content:'🎯';font-size:12px}
+/* ── Confidence meter ──
+   Full-width visual block: label · big score · 6px progress track that
+   fills based on data-score (color-graded red→amber→green). The model
+   emits <div class="confidence-badge" data-score="6.1"></div> and CSS
+   does the rest. */
+.confidence-badge{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;
+  padding:12px 14px;
+  margin:10px 0 18px 0;
+  background:#ffffff;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+  font-family:var(--font-body);
+  position:relative;
+  /* Reserve room at the bottom for the track */
+  padding-bottom:18px;
+  /* Strip out any text the model wrote inside — we render via pseudo-elements */
+  font-size:0;color:transparent;
+}
+.confidence-badge::before{
+  content:'CONFIDENCE';
+  font-size:10px;font-weight:800;
+  color:#64748b;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.confidence-badge::after{
+  content:attr(data-score) ' / 10';
+  font-family:var(--font-mono);
+  font-size:16px;font-weight:800;
+  color:#0f172a;
+  letter-spacing:-.02em;
+  white-space:nowrap;
+}
+/* Progress track (the empty bar) */
+.confidence-badge{
+  background:
+    linear-gradient(#e2e8f0,#e2e8f0) no-repeat,
+    #ffffff;
+  background-size:calc(100% - 28px) 5px, 100%;
+  background-position:14px calc(100% - 8px), 0 0;
+}
+/* Fill — drawn on top of the track via a second pseudo-element wrapper.
+   The fill width comes from --conf-pct (set inline by the renderer based
+   on data-score). Color comes from --conf-color (red/amber/green tier). */
+.confidence-badge > .conf-fill{
+  position:absolute;
+  left:14px;bottom:8px;height:5px;
+  width:var(--conf-pct, 0%);
+  background:var(--conf-color, #3b82f6);
+  border-radius:999px;
+  transition:width .5s cubic-bezier(.22,1,.36,1);
+}
 .ai-chat-typing{display:none;padding:8px 16px;font-size:11px;font-weight:700;color:var(--brand-primary);font-family:var(--font-body);animation:ai-pulse 1.5s infinite ease-in-out}
 @keyframes ai-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 .ai-chat-typing.show{display:block}
@@ -2671,6 +2723,27 @@ function _appendAIMessage(message, isStreaming = false){
     bubble.innerHTML = html;
     const cvs = bubble.querySelectorAll('.ai-ta-canvas');
     cvs.forEach(c => _renderAITechChart(c, message.snapshot));
+    /* Wire up the confidence meter — parse the score from text like
+       "Confidence: 6.1/10", drop a data-score attr + a fill child, and
+       set the bar color via --conf-pct + --conf-color. */
+    bubble.querySelectorAll('.confidence-badge').forEach(el => {
+      const m = (el.textContent || '').match(/([\d.]+)\s*\/\s*10/);
+      const score = m ? parseFloat(m[1]) : null;
+      if(score == null || !Number.isFinite(score)) return;
+      const pct = Math.max(0, Math.min(100, score * 10));
+      const color = score >= 7 ? '#10b981'   /* green */
+                  : score >= 4 ? '#f59e0b'   /* amber */
+                              : '#ef4444';   /* red */
+      el.setAttribute('data-score', score.toFixed(1));
+      el.style.setProperty('--conf-pct', pct + '%');
+      el.style.setProperty('--conf-color', color);
+      // Inject the fill child (the bar slider) if not already there
+      if(!el.querySelector('.conf-fill')){
+        const fill = document.createElement('div');
+        fill.className = 'conf-fill';
+        el.appendChild(fill);
+      }
+    });
     list.scrollTop = list.scrollHeight;
   }
 }

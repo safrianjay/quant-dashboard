@@ -255,7 +255,7 @@ A brief, engaging 'big picture' description outlining the overarching market nar
 ### THE SIGNAL
 <div class="confidence-badge">Confidence: [X.X/10]</div>
 
-ALWAYS render BOTH tables in this order — primary signal table first, then trigger table directly below it. Do not omit either, even when the action is WATCH.
+This single section MUST contain three tables in this exact order: primary signal table, trigger table, then the multi-timeframe table under a "**Multi-Timeframe**" subheader. Do not split into separate ### headers. Do not omit any table, even when the action is WATCH.
 
 | Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
 | :--- | :--- | :--- | :--- |
@@ -265,8 +265,8 @@ ALWAYS render BOTH tables in this order — primary signal table first, then tri
 | :--- | :--- | :--- | :--- |
 | [🟢 LONG / 🔴 SHORT / 🟡 WATCH] | <span class="signal-tp">break $[Price]</span> | <span class="signal-sl">break $[Price]</span> | [🟢 leans bullish / 🔴 leans bearish / balanced] |
 
-### MULTI-TIMEFRAME SIGNALS
-Provide bias for 15m / 1h / 4h with confidence and a one-line reason.
+**Multi-Timeframe**
+
 | TF | Bias | Conf | Why |
 | :--- | :--- | :--- | :--- |
 | **15m** | [🟢 LONG / 🔴 SHORT / 🟡 WATCH] | [X/10] | [RSI / EMA5 read] |
@@ -641,7 +641,8 @@ Bias is ${direction}. Watch RSI **${rsiText}** and the EMA 5/21 stack for confir
     change > 1 ? "bullish" : change < -1 ? "bearish" : null,
     Number.isFinite(_ema21) ? (price > _e21 ? "bullish" : "bearish") : null
   ];
-  const mtfTable = `### MULTI-TIMEFRAME SIGNALS
+  const mtfTable = `**Multi-Timeframe**
+
 | TF | Bias | Conf | Why |
 | :--- | :--- | :--- | :--- |
 ${tfSignal("15m", tf15Votes, `RSI ${rsi.toFixed(1)} ${rsi > 60 ? "(stretched, mean-revert)" : rsi < 40 ? "(deep, bounce setup)" : "(neutral)"}, price ${price > ema5 ? "above" : "below"} EMA5`)}
