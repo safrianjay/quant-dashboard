@@ -285,7 +285,15 @@ Give highly-actionable advice using REAL snapshot price data.
 - EMA (5): $${snapshot.indicators?.ema5 ? snapshot.indicators.ema5.toFixed(2) : 'N/A'}
 - EMA (21): $${snapshot.indicators?.ema21 ? snapshot.indicators.ema21.toFixed(2) : 'N/A'}
 - Quantichy QuantAnalyst bias (MUST AGREE WITH THIS): ${snapshot.quant?.bias || 'N/A'}${snapshot.quant?.confidence ? ` (confidence ${snapshot.quant.confidence}/10)` : ''}${snapshot.quant?.signal ? ` — ${snapshot.quant.signal}` : ''}
-- DO NOT contradict the QuantAnalyst bias above. If it says BEARISH, do not recommend a long; if it says BULLISH, do not recommend a short. The on-page Session Timeline is showing this bias to the user, so your answer must match.
+- DO NOT contradict the QuantAnalyst bias above. If it says BEARISH, do not recommend a long; if it says BULLISH, do not recommend a short.
+
+### NEUTRAL / WATCH HANDLING:
+When QuantAnalyst's bias is NEUTRAL (or not set), do NOT just answer "WATCH — no action". That's useless. Instead:
+1. Compute a soft directional LEAN from EMA5 vs EMA21 (above = bullish, below = bearish), 24h % change, and RSI (>55 bullish, <45 bearish).
+2. Label the action 🟡 WATCH but provide BOTH a long trigger (a break-out price above current) AND a short trigger (a break-down price below current) with the corresponding stop / first target.
+3. Bottom line should read: "Bias leans [bullish/bearish]. Long if break $X on volume. Short if loses $Y. Sit on hands until trigger fires."
+NEVER produce a SIGNAL row with empty entry/SL/TP fields. Always give the user something to act on, even if the action is "wait for trigger".
+
 - DO NOT default to the trade-signal template for every question. Match the format to what the user actually asked.`;
 }
 
@@ -361,15 +369,39 @@ export function buildFallbackTradingResponse({ prompt, snapshot }) {
 
   const price = Number(snapshot.price);
   const change = Number(snapshot.change24hPct || 0);
-  /* Prefer QuantAnalyst's bias (computed from MA stack) over the 24h price-change
-     heuristic so the AI drawer agrees with the on-page Session Timeline / setups
-     ladder. Fall back to the 24h-change heuristic when QuantAnalyst hasn't run. */
+  const _ema5 = Number(snapshot.indicators?.ema5);
+  const _ema21 = Number(snapshot.indicators?.ema21);
+  const _rsi = Number(snapshot.indicators?.rsi);
+
+  /* Direction logic — tiered.
+     1) QuantAnalyst BULLISH / BEARISH wins outright (it's the on-page bias).
+     2) When QuantAnalyst is NEUTRAL or absent, derive a lean from the
+        EMA5/21 stack + 24h change + RSI. Returning a flat "neutral" too
+        often makes the AI feel useless ("just say watch"); a lean lets the
+        bottom-line still be actionable while the SIGNAL row labels it
+        🟡 WATCH so the user knows it's not high-conviction. */
   const quantBias = String(snapshot.quant?.bias || "").toLowerCase();
-  const direction =
-    quantBias === "bullish" ? "bullish" :
-    quantBias === "bearish" ? "bearish" :
-    quantBias === "neutral" ? "neutral" :
-    change > 0.25 ? "bullish" : change < -0.25 ? "bearish" : "neutral";
+
+  let direction;            // strong directional call (drives signal emoji)
+  let lean;                 // soft directional lean (drives copy + targets)
+  if (quantBias === "bullish") { direction = "bullish"; lean = "bullish"; }
+  else if (quantBias === "bearish") { direction = "bearish"; lean = "bearish"; }
+  else {
+    // Compute lean from indicators
+    const emaLean = (Number.isFinite(_ema5) && Number.isFinite(_ema21))
+      ? (_ema5 > _ema21 ? "bullish" : "bearish") : null;
+    const chgLean = change > 0.25 ? "bullish" : change < -0.25 ? "bearish" : null;
+    const rsiLean = Number.isFinite(_rsi)
+      ? (_rsi > 55 ? "bullish" : _rsi < 45 ? "bearish" : null) : null;
+    // Vote: take the lean that has 2 or 3 agreeing signals
+    const votes = [emaLean, chgLean, rsiLean].filter(Boolean);
+    const bullVotes = votes.filter(v => v === "bullish").length;
+    const bearVotes = votes.filter(v => v === "bearish").length;
+    lean = bullVotes > bearVotes ? "bullish" : bearVotes > bullVotes ? "bearish" : "neutral";
+    // Direction stays "neutral" when QuantAnalyst said NEUTRAL — we respect
+    // its high-level read — but we use `lean` for the trigger/scenario copy.
+    direction = quantBias === "neutral" ? "neutral" : lean;
+  }
   const formattedPrice = price.toLocaleString("en-US", {
     minimumFractionDigits: price >= 1 ? 0 : 8,
     maximumFractionDigits: price >= 1 ? 2 : 8
@@ -509,8 +541,34 @@ Bias is ${direction}. Watch RSI **${rsiText}** and the EMA 5/21 stack for confir
   const trend = rsi > 60 ? "overbought" : rsi < 40 ? "oversold" : "neutral";
   const momentum = price > ema5 ? "bullish" : "bearish";
 
-  const signal = direction === "bullish" ? "🟢 **BUY / LONG**" : direction === "bearish" ? "🔴 **SELL / SHORT**" : "🟡 **WATCH**";
-  const signalEmoji = direction === "bullish" ? "🟢 LONG" : direction === "bearish" ? "🔴 SHORT" : "🟡 WATCH";
+  /* Use `direction` for the high-conviction signal label, `lean` for the
+     directional copy (so a NEUTRAL bias with bullish lean still gives the
+     user actionable trigger levels instead of a dead "WATCH"). */
+  const signalEmoji = direction === "bullish" ? "🟢 LONG"
+                    : direction === "bearish" ? "🔴 SHORT"
+                    : "🟡 WATCH";
+
+  /* Build the signal row. For WATCH, show the trigger-based scenario
+     (long break-out / short break-down) instead of a single committed entry. */
+  const slPctLong = 0.992, slPctShort = 1.008;
+  const tpPctLong = [1.01, 1.02, 1.03], tpPctShort = [0.99, 0.98, 0.97];
+  const fmtP = (v) => v.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 });
+
+  let signalRow;
+  if (direction === "neutral") {
+    // Watch with explicit triggers — much more useful than a flat row
+    const longTrigger  = price * 1.005;
+    const shortTrigger = price * 0.995;
+    signalRow = `| Action | Long Trigger | Short Trigger | Bias Lean |
+| :--- | :--- | :--- | :--- |
+| 🟡 WATCH | <span class="signal-tp">break $${fmtP(longTrigger)}</span> | <span class="signal-sl">break $${fmtP(shortTrigger)}</span> | ${lean === "bullish" ? "🟢 leans bullish" : lean === "bearish" ? "🔴 leans bearish" : "balanced"} |`;
+  } else {
+    const slMult = direction === "bullish" ? slPctLong : slPctShort;
+    const tpMults = direction === "bullish" ? tpPctLong : tpPctShort;
+    signalRow = `| Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
+| :--- | :--- | :--- | :--- |
+| ${signalEmoji} | <span class="signal-entry">$${formattedPrice}</span> | <span class="signal-sl">$${fmtP(price * slMult)}</span> | <span class="signal-tp">$${fmtP(price * tpMults[0])}, $${fmtP(price * tpMults[1])}, $${fmtP(price * tpMults[2])}</span> |`;
+  }
 
   return `### THE NARRATIVE
 At the current **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is showing a **${momentum}** expansion with the RSI sitting at **${rsi.toFixed(1)}** (${trend}). We are seeing active liquidity absorption at these levels.
@@ -518,9 +576,7 @@ At the current **${snapshot.symbol}** price of **$${formattedPrice}**, the short
 ### THE SIGNAL
 <div class="confidence-badge">Confidence: ${Math.min(8, 5 + Math.abs(change) / 2 + (trend !== 'neutral' ? 1 : 0)).toFixed(1)}/10</div>
 
-| Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
-| :--- | :--- | :--- | :--- |
-| ${signalEmoji} | <span class="signal-entry">$${formattedPrice}</span> | <span class="signal-sl">$${(price * (direction === "bullish" ? 0.992 : 1.008)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}</span> | <span class="signal-tp">$${(price * (direction === "bullish" ? 1.01 : 0.99)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.02 : 0.98)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}, $${(price * (direction === "bullish" ? 1.03 : 0.97)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}</span> |
+${signalRow}
 
 ### KEY LEVELS FOR NEXT 60 MINS
 | Level | Price | Why It Matters |
@@ -538,7 +594,15 @@ Current volume confirms ${momentum} dominance. The order book is showing a clust
 [VISUAL_SIGNAL]
 
 ### BOTTOM LINE
-${rsi > 70 ? `Don't chase here. The RSI is at **${rsi.toFixed(1)}** (overbought). Wait for a dip to the EMA 5 at **$${ema5.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** before entering.` : rsi < 30 ? `The market is oversold at **${rsi.toFixed(1)}**. This is a prime spot for a mean-reversion scalp with a tight stop below **$${(price * 0.995).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}**.` : `The trend is neutral but biased ${momentum}. Watch for a break of **$${(price * (momentum === 'bullish' ? 1.005 : 0.995)).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** to confirm the next expansion leg.`}
+${
+  direction === "neutral"
+    ? `The MA stack is mixed — high-conviction long or short isn't justified yet. Bias **leans ${lean}** based on EMA5/21 + 24h momentum + RSI. **Long if** price closes above **$${fmtP(price * 1.005)}** with volume; **short if** it loses **$${fmtP(price * 0.995)}** and rejects. Until then, sit on hands.`
+    : rsi > 70
+    ? `Don't chase here. RSI is at **${rsi.toFixed(1)}** (overbought). Wait for a dip to EMA 5 at **$${fmtP(ema5)}** before entering.`
+    : rsi < 30
+    ? `The market is oversold at **${rsi.toFixed(1)}**. Prime spot for a mean-reversion scalp with a tight stop below **$${fmtP(price * 0.995)}**.`
+    : `Bias is **${direction}**. Trigger: ${direction === "bullish" ? `break $${fmtP(price * 1.005)} on volume` : `lose $${fmtP(price * 0.995)} on volume`}. Stops respected — no chasing.`
+}
 
 *for study purpose only manage your risk.*`;
 }
