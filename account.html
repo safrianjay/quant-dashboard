@@ -15,6 +15,7 @@
 <link rel="manifest" href="/manifest.json?v=3">
 <link href="/design-system/tokens.css" rel="stylesheet">
 <link href="/design-system/components.css" rel="stylesheet">
+<link href="/design-system/shell.css" rel="stylesheet">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap');
 
@@ -23,50 +24,49 @@ body{
   font-family:var(--font-body);
   background:var(--surface-page);
   color:var(--text-primary);
-  min-height:100vh;
   -webkit-font-smoothing:antialiased;
 }
 
-.page-wrap{
-  max-width:680px;
-  margin:0 auto;
-  padding:24px 18px 64px;
-}
-
-/* Top bar with back link */
-.top-bar{
-  display:flex;
-  align-items:center;
+/* Slim topbar — mirrors /app's topbar minus the trade controls */
+.account-topbar{
+  display:flex;align-items:center;
   gap:var(--space-6);
-  padding:8px 0 24px;
+  padding:14px 24px;
+  background:white;
+  border-bottom:1px solid var(--border-subtle);
+  position:sticky;top:0;z-index:10;
 }
-.back-link{
-  display:inline-flex;
-  align-items:center;
-  gap:var(--space-3);
-  font-size:var(--fs-md);
-  font-weight:var(--fw-semibold);
-  color:var(--text-secondary);
-  text-decoration:none;
-  padding:8px 12px;
-  border-radius:var(--radius-lg);
-  transition:background var(--dur-fast) var(--ease-smooth), color var(--dur-fast) var(--ease-smooth);
-}
-.back-link:hover{ background:var(--surface-sunken); color:var(--text-primary); }
-
-/* Page heading */
-.page-head{ margin-bottom:24px; }
-.page-head h1{
+.account-topbar h1{
   font-family:var(--font-heading);
-  font-size:24px;
+  font-size:18px;
   font-weight:var(--fw-extrabold);
   letter-spacing:var(--tracking-tight);
   color:var(--text-primary);
-  margin-bottom:6px;
 }
-.page-head p{
-  font-size:var(--fs-base);
+.account-topbar .topbar-sub{
+  font-size:var(--fs-sm);
   color:var(--text-secondary);
+  margin-top:2px;
+}
+
+/* Mobile menu button */
+.mob-menu-btn{
+  display:none;
+  background:none;border:none;
+  padding:6px;border-radius:var(--radius-md);
+  cursor:pointer;color:var(--text-secondary);
+}
+.mob-menu-btn:hover{background:var(--surface-sunken)}
+@media(max-width:768px){
+  .mob-menu-btn{display:flex;align-items:center;justify-content:center}
+}
+
+/* Account content */
+.account-wrap{
+  max-width:680px;
+  margin:0 auto;
+  padding:24px 18px 64px;
+  width:100%;
 }
 
 /* Profile card */
@@ -118,6 +118,7 @@ body{
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+/* Plan pill — colors swap based on the user's actual plan tier */
 .plan-pill{
   display:inline-flex;
   align-items:center;
@@ -131,6 +132,13 @@ body{
   text-transform:uppercase;
   letter-spacing:var(--tracking-wide);
   margin-bottom:6px;
+}
+.plan-pill.is-free{ background:var(--surface-sunken); color:var(--text-secondary); }
+.plan-pill.is-pro,
+.plan-pill.is-quant{
+  background:linear-gradient(135deg,#B8860B,#FFD700);
+  color:#3B1F00;
+  box-shadow:0 1px 5px rgba(184,134,11,.4);
 }
 
 /* Section heading */
@@ -172,7 +180,6 @@ body{
 }
 .settings-row:last-child{ border-bottom:none; }
 .settings-row:hover{ background:var(--surface-hover); }
-.settings-row:disabled{ cursor:not-allowed; opacity:.55; }
 
 .row-icon{
   width:36px;
@@ -276,10 +283,6 @@ body{
   background:var(--surface-hover);
   box-shadow:var(--shadow-sm);
 }
-.wallet-btn:disabled{
-  cursor:not-allowed;
-  opacity:.6;
-}
 .wallet-icon{
   width:24px;
   height:24px;
@@ -330,33 +333,6 @@ body{
 }
 .wallet-disconnect:hover{ background:var(--danger-bg); }
 
-/* Sign-out button — full width, danger on hover */
-.signout-btn{
-  width:100%;
-  margin-top:18px;
-  padding:12px 16px;
-  border-radius:var(--radius-xl);
-  border:1px solid var(--border-default);
-  background:var(--surface-card);
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:var(--space-3);
-  font-family:var(--font-body);
-  font-size:var(--fs-base);
-  font-weight:var(--fw-semibold);
-  color:var(--text-secondary);
-  transition:background var(--dur-fast) var(--ease-smooth),
-             border-color var(--dur-fast) var(--ease-smooth),
-             color var(--dur-fast) var(--ease-smooth);
-}
-.signout-btn:hover{
-  background:var(--danger-bg);
-  border-color:#FCA5A5;
-  color:var(--danger-strong);
-}
-
 /* Toast */
 .toast{
   position:fixed;
@@ -384,109 +360,203 @@ body{
 </head>
 <body>
 
-<div class="page-wrap">
+<div class="root">
 
-  <div class="top-bar">
-    <a href="/app" class="back-link">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Back
-    </a>
-  </div>
+  <!-- Mobile overlay -->
+  <div class="mob-overlay" id="mob-overlay"></div>
 
-  <div class="page-head">
-    <h1>Account</h1>
-    <p>Manage your profile and connected wallets.</p>
-  </div>
+  <!-- Sidebar (mirrors /app shell) -->
+  <aside class="sidebar" id="sidebar">
 
-  <!-- Profile card -->
-  <div class="profile-card">
-    <div class="profile-avatar" id="acc-avatar">
-      <span id="acc-avatar-initial">?</span>
+    <div class="sidebar-brand">
+      <div class="nav-brand-logo">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: white">
+          <defs>
+            <linearGradient id="acc-logo-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.2"/></linearGradient>
+            <linearGradient id="acc-logo-g2" x1="1" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.2"/></linearGradient>
+          </defs>
+          <polygon points="75,20 85,20 85,30" fill="currentColor"/>
+          <polygon points="25,80 15,80 15,70" fill="currentColor"/>
+          <path d="M 60,30 L 45,30 C 35,30 25,40 25,50 L 50,75" stroke="url(#acc-logo-g2)" stroke-width="15"/>
+          <path d="M 40,70 L 55,70 C 65,70 75,60 75,50 L 50,25" stroke="url(#acc-logo-g1)" stroke-width="15"/>
+        </svg>
+      </div>
+      <div class="nav-brand-text">
+        <div class="nav-brand-name">Quantichy</div>
+        <div class="nav-brand-tag">Trade with clarity</div>
+      </div>
     </div>
-    <div class="profile-info">
-      <span class="plan-pill" id="acc-plan">FREE</span>
-      <div class="profile-name" id="acc-name">—</div>
-      <div class="profile-email" id="acc-email">Not signed in</div>
-    </div>
-  </div>
 
-  <!-- Web3 wallet widget -->
-  <div class="section-label">Web3 wallet</div>
-  <div class="wallet-widget">
-    <div class="wallet-head">
+    <div class="sidebar-inner">
+      <div class="nav-section-label">Analysis</div>
+      <a class="nav-item" href="/app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 4-6"/></svg>
+        <span class="nav-item-text">Market Overview</span>
+      </a>
+      <a class="nav-item" href="/app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="3" x2="7" y2="21"/><rect x="4.5" y="7" width="5" height="9" rx="1"/><line x1="17" y1="3" x2="17" y2="21"/><rect x="14.5" y="10" width="5" height="7" rx="1"/></svg>
+        <span class="nav-item-text">Live Trade</span>
+      </a>
+      <a class="nav-item" href="/app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
+        <span class="nav-item-text">Session History</span>
+      </a>
+
+      <div class="nav-section-label">Account</div>
+      <a class="nav-item active" href="/account" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+        <span class="nav-item-text">Account &amp; settings</span>
+      </a>
+      <a class="nav-item" href="/pricing">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span class="nav-item-text">Plan &amp; billing</span>
+      </a>
+      <a class="nav-item" href="/privacy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span class="nav-item-text">Privacy Policy</span>
+      </a>
+      <a class="nav-item" href="/terms">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        <span class="nav-item-text">Terms &amp; Conditions</span>
+      </a>
+
+      <!-- Language switcher -->
+      <div style="padding:var(--space-3) var(--space-4) var(--space-4);margin-top:auto">
+        <div class="lang-switcher">
+          <button class="lang-btn active" type="button">🇺🇸 EN</button>
+          <button class="lang-btn" type="button">🇮🇩 ID</button>
+        </div>
+      </div>
+
+      <!-- User footer (current page indicator) -->
+      <div style="padding:10px 8px 10px;border-top:1px solid var(--border-subtle)">
+        <a class="user-footer-row is-current" href="/account" aria-label="Account">
+          <div id="sb-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--success),var(--info));display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
+            <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
+          </div>
+          <div class="user-info-text" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+            <span id="sb-plan-badge" class="plan-pill is-free" style="display:none">Free</span>
+            <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:var(--neutral-900);line-height:1.3">—</div>
+            <div id="sb-user-email" style="font-family:var(--font-body);font-size:10px;color:var(--neutral-400);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Not signed in</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main column -->
+  <main class="main">
+
+    <header class="account-topbar">
+      <button class="mob-menu-btn" id="mob-menu-btn" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <div>
-        <div class="wallet-title">Connect a wallet</div>
-        <div class="wallet-sub" id="wallet-sub-text">Link MetaMask, Binance, or another Web3 wallet.</div>
+        <h1>Account</h1>
+        <div class="topbar-sub">Manage your profile and connected wallets.</div>
       </div>
-      <span class="wallet-status" id="wallet-status">Not connected</span>
+    </header>
+
+    <div class="content">
+      <div class="account-wrap">
+
+        <!-- Profile card -->
+        <div class="profile-card">
+          <div class="profile-avatar" id="acc-avatar">
+            <span id="acc-avatar-initial">?</span>
+          </div>
+          <div class="profile-info">
+            <span class="plan-pill is-free" id="acc-plan">Free</span>
+            <div class="profile-name" id="acc-name">—</div>
+            <div class="profile-email" id="acc-email">Not signed in</div>
+          </div>
+        </div>
+
+        <!-- Web3 wallet widget -->
+        <div class="section-label">Web3 wallet</div>
+        <div class="wallet-widget">
+          <div class="wallet-head">
+            <div>
+              <div class="wallet-title">Connect a wallet</div>
+              <div class="wallet-sub" id="wallet-sub-text">Link MetaMask, Binance, or another Web3 wallet.</div>
+            </div>
+            <span class="wallet-status" id="wallet-status">Not connected</span>
+          </div>
+
+          <div id="wallet-connected-view" style="display:none">
+            <div class="wallet-connected">
+              <div class="wallet-icon" style="background:linear-gradient(135deg,var(--success),var(--info))">●</div>
+              <div class="wallet-addr" id="wallet-connected-addr">—</div>
+              <button class="wallet-disconnect" id="wallet-disconnect-btn" type="button">Disconnect</button>
+            </div>
+          </div>
+
+          <div id="wallet-options-view" class="wallet-grid">
+            <button class="wallet-btn" data-wallet="metamask" type="button">
+              <span class="wallet-icon metamask">M</span>
+              <span>MetaMask</span>
+            </button>
+            <button class="wallet-btn" data-wallet="binance" type="button">
+              <span class="wallet-icon binance">B</span>
+              <span>Binance Wallet</span>
+            </button>
+            <button class="wallet-btn" data-wallet="walletconnect" type="button">
+              <span class="wallet-icon walletconnect">W</span>
+              <span>WalletConnect</span>
+            </button>
+            <button class="wallet-btn" data-wallet="coinbase" type="button">
+              <span class="wallet-icon coinbase">C</span>
+              <span>Coinbase Wallet</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Settings entry rows (Plan + legal) -->
+        <div class="section-label">Settings</div>
+        <div class="settings-card">
+          <a class="settings-row" href="/pricing">
+            <div class="row-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="row-body">
+              <div class="row-title">Plan &amp; billing</div>
+              <div class="row-sub" id="row-plan-sub">View plans and upgrade</div>
+            </div>
+            <svg class="row-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+          <a class="settings-row" href="/privacy">
+            <div class="row-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="row-body">
+              <div class="row-title">Privacy Policy</div>
+              <div class="row-sub">How we handle your data</div>
+            </div>
+            <svg class="row-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+          <a class="settings-row" href="/terms">
+            <div class="row-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+            </div>
+            <div class="row-body">
+              <div class="row-title">Terms &amp; Conditions</div>
+              <div class="row-sub">Service agreement</div>
+            </div>
+            <svg class="row-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+
+      </div>
     </div>
-
-    <div id="wallet-connected-view" style="display:none">
-      <div class="wallet-connected">
-        <div class="wallet-icon" id="wallet-connected-icon" style="background:linear-gradient(135deg,var(--success),var(--info))">●</div>
-        <div class="wallet-addr" id="wallet-connected-addr">—</div>
-        <button class="wallet-disconnect" id="wallet-disconnect-btn" type="button">Disconnect</button>
-      </div>
-    </div>
-
-    <div id="wallet-options-view" class="wallet-grid">
-      <button class="wallet-btn" data-wallet="metamask" type="button">
-        <span class="wallet-icon metamask">M</span>
-        <span>MetaMask</span>
-      </button>
-      <button class="wallet-btn" data-wallet="binance" type="button">
-        <span class="wallet-icon binance">B</span>
-        <span>Binance Wallet</span>
-      </button>
-      <button class="wallet-btn" data-wallet="walletconnect" type="button">
-        <span class="wallet-icon walletconnect">W</span>
-        <span>WalletConnect</span>
-      </button>
-      <button class="wallet-btn" data-wallet="coinbase" type="button">
-        <span class="wallet-icon coinbase">C</span>
-        <span>Coinbase Wallet</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Settings rows -->
-  <div class="section-label">Settings</div>
-  <div class="settings-card">
-    <a class="settings-row" href="/pricing">
-      <div class="row-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      </div>
-      <div class="row-body">
-        <div class="row-title">Plan &amp; billing</div>
-        <div class="row-sub" id="row-plan-sub">View plans and upgrade</div>
-      </div>
-      <svg class="row-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-    </a>
-    <a class="settings-row" href="mailto:support@quantichy.com">
-      <div class="row-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
-      <div class="row-body">
-        <div class="row-title">Support</div>
-        <div class="row-sub">Get help via email</div>
-      </div>
-      <svg class="row-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-    </a>
-  </div>
-
-  <!-- Sign out -->
-  <button class="signout-btn" id="acc-signout-btn" type="button">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    Sign Out
-  </button>
-
+  </main>
 </div>
 
 <div class="toast" id="acc-toast" role="status" aria-live="polite"></div>
 
-<!-- Firebase (matches index.html) -->
+<!-- Firebase (matches index.html so the same auth + plan doc is read) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
 const _fbConfig = {
@@ -499,6 +569,7 @@ const _fbConfig = {
 };
 
 const WALLET_KEY = 'q_wallet_v1';
+let _planUnsubscribe = null;
 
 function showToast(msg, ms){
   const t = document.getElementById('acc-toast');
@@ -513,6 +584,7 @@ function shorten(addr){
   return addr.slice(0,6) + '…' + addr.slice(-4);
 }
 
+/* ── Wallet ─────────────────────────────────────────────────────────── */
 function renderWallet(){
   const raw = localStorage.getItem(WALLET_KEY);
   const status = document.getElementById('wallet-status');
@@ -580,8 +652,51 @@ function disconnectWallet(){
   showToast('Wallet disconnected');
 }
 
+/* ── Plan label → Firestore ─────────────────────────────────────────── */
+function applyPlan(plan){
+  const tier = (plan || 'free').toLowerCase();
+  const label = tier === 'quant' ? 'Quant'
+              : tier === 'pro'   ? 'Pro'
+              : 'Free';
+  const accBadge = document.getElementById('acc-plan');
+  const sbBadge  = document.getElementById('sb-plan-badge');
+  const planSub  = document.getElementById('row-plan-sub');
+
+  if(accBadge){
+    accBadge.textContent = label;
+    accBadge.classList.remove('is-free','is-pro','is-quant');
+    accBadge.classList.add('is-' + tier);
+  }
+  if(sbBadge){
+    sbBadge.textContent = label;
+    sbBadge.classList.remove('is-free','is-pro','is-quant');
+    sbBadge.classList.add('is-' + tier);
+    sbBadge.style.display = (tier === 'pro' || tier === 'quant') ? 'inline-flex' : 'none';
+  }
+  if(planSub){
+    planSub.textContent = tier === 'free'
+      ? 'Free plan — view options to upgrade'
+      : 'You’re on the ' + label + ' plan';
+  }
+}
+
+function listenToPlan(uid){
+  try{
+    if(_planUnsubscribe) _planUnsubscribe();
+    const db = firebase.firestore();
+    _planUnsubscribe = db.collection('users').doc(uid).onSnapshot(doc => {
+      const data = (doc && doc.exists) ? doc.data() : {};
+      applyPlan(data.plan || 'free');
+    }, err => console.warn('Plan listen failed', err));
+  } catch(e){
+    console.warn('Firestore not available', e);
+  }
+}
+
+/* ── Auth ───────────────────────────────────────────────────────────── */
 function applyUser(user){
   if(!user){
+    /* Not signed in — bounce to /app which handles auth */
     window.location.href = '/app';
     return;
   }
@@ -597,31 +712,49 @@ function applyUser(user){
   } else {
     document.getElementById('acc-avatar-initial').textContent = initial;
   }
+
+  /* Sidebar mini chip */
+  const sbAv = document.getElementById('sb-avatar');
+  const sbInitial = document.getElementById('sb-avatar-initial');
+  const sbName = document.getElementById('sb-user-name');
+  const sbEmail = document.getElementById('sb-user-email');
+  if(user.photoURL && sbAv){
+    sbAv.innerHTML = '<img src="' + user.photoURL + '" style="width:100%;height:100%;object-fit:cover" alt="">';
+  } else if(sbInitial){
+    sbInitial.textContent = initial;
+  }
+  if(sbName)  sbName.textContent  = displayName;
+  if(sbEmail) sbEmail.textContent = user.email || '';
+
+  listenToPlan(user.uid);
+}
+
+/* ── Mobile sidebar toggle ──────────────────────────────────────────── */
+function setupSidebarToggle(){
+  const btn = document.getElementById('mob-menu-btn');
+  const sb  = document.getElementById('sidebar');
+  const ov  = document.getElementById('mob-overlay');
+  if(!btn || !sb || !ov) return;
+  const open  = () => { sb.classList.add('open'); ov.classList.add('show'); document.body.style.overflow='hidden'; };
+  const close = () => { sb.classList.remove('open'); ov.classList.remove('show'); document.body.style.overflow=''; };
+  btn.addEventListener('click', open);
+  ov.addEventListener('click', close);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  /* Wallet buttons */
   document.querySelectorAll('.wallet-btn').forEach(btn => {
     btn.addEventListener('click', () => handleWalletClick(btn.dataset.wallet));
   });
   document.getElementById('wallet-disconnect-btn').addEventListener('click', disconnectWallet);
   renderWallet();
+  setupSidebarToggle();
 
-  /* Auth state */
   try{
     if(!firebase.apps.length) firebase.initializeApp(_fbConfig);
     firebase.auth().onAuthStateChanged(applyUser);
   } catch(e){
     console.warn('Firebase init failed', e);
   }
-
-  /* Sign out */
-  document.getElementById('acc-signout-btn').addEventListener('click', async () => {
-    try{
-      await firebase.auth().signOut();
-    } catch(_){}
-    window.location.href = '/app';
-  });
 });
 </script>
 

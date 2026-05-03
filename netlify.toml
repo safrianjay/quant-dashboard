@@ -48,6 +48,18 @@
   to = "/account.html"
   status = 200
 
+# Privacy Policy
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+
+# Terms & Conditions
+[[redirects]]
+  from = "/terms"
+  to = "/terms.html"
+  status = 200
+
 # Proxy Firebase Auth calls to the real Firebase project
 [[redirects]]
   from = "/__/auth/*"

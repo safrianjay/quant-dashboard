@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms & Conditions | Quantichy</title>
+<meta name="theme-color" content="#0F172A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quantichy">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=3">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg?v=3">
+<link rel="manifest" href="/manifest.json?v=3">
+<link href="/design-system/tokens.css" rel="stylesheet">
+<link href="/design-system/components.css" rel="stylesheet">
+<link href="/design-system/shell.css" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-body);
+  background:var(--surface-page);
+  color:var(--text-primary);
+  -webkit-font-smoothing:antialiased;
+}
+
+.account-topbar{
+  display:flex;align-items:center;gap:var(--space-6);
+  padding:14px 24px;
+  background:white;
+  border-bottom:1px solid var(--border-subtle);
+  position:sticky;top:0;z-index:10;
+}
+.account-topbar h1{
+  font-family:var(--font-heading);
+  font-size:18px;
+  font-weight:var(--fw-extrabold);
+  letter-spacing:var(--tracking-tight);
+  color:var(--text-primary);
+}
+.account-topbar .topbar-sub{
+  font-size:var(--fs-sm);
+  color:var(--text-secondary);
+  margin-top:2px;
+}
+
+.mob-menu-btn{
+  display:none;background:none;border:none;
+  padding:6px;border-radius:var(--radius-md);
+  cursor:pointer;color:var(--text-secondary);
+}
+.mob-menu-btn:hover{background:var(--surface-sunken)}
+@media(max-width:768px){.mob-menu-btn{display:flex;align-items:center;justify-content:center}}
+
+.legal-wrap{
+  max-width:720px;margin:0 auto;
+  padding:24px 18px 64px;width:100%;
+}
+.legal-card{
+  background:var(--surface-card);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--radius-3xl);
+  padding:28px 28px 32px;
+  box-shadow:var(--shadow-sm);
+}
+@media(max-width:480px){.legal-card{padding:22px 20px}}
+
+.legal-card h2{
+  font-family:var(--font-heading);
+  font-size:15px;
+  font-weight:var(--fw-bold);
+  color:var(--text-primary);
+  margin:24px 0 8px;
+}
+.legal-card h2:first-of-type{margin-top:0}
+.legal-card p{
+  font-size:var(--fs-base);
+  color:var(--text-secondary);
+  line-height:var(--lh-relaxed);
+  margin-bottom:10px;
+}
+.legal-card ul{
+  padding-left:18px;
+  color:var(--text-secondary);
+  font-size:var(--fs-base);
+  line-height:var(--lh-relaxed);
+  margin-bottom:10px;
+}
+.legal-card ul li{margin-bottom:4px}
+.legal-meta{
+  font-size:var(--fs-sm);
+  color:var(--text-muted);
+  margin-bottom:18px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--border-subtle);
+}
+.legal-card a{color:var(--info-strong);text-decoration:none}
+.legal-card a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="root">
+
+  <div class="mob-overlay" id="mob-overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="nav-brand-logo">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: white">
+          <defs>
+            <linearGradient id="tm-logo-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.2"/></linearGradient>
+            <linearGradient id="tm-logo-g2" x1="1" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.2"/></linearGradient>
+          </defs>
+          <polygon points="75,20 85,20 85,30" fill="currentColor"/>
+          <polygon points="25,80 15,80 15,70" fill="currentColor"/>
+          <path d="M 60,30 L 45,30 C 35,30 25,40 25,50 L 50,75" stroke="url(#tm-logo-g2)" stroke-width="15"/>
+          <path d="M 40,70 L 55,70 C 65,70 75,60 75,50 L 50,25" stroke="url(#tm-logo-g1)" stroke-width="15"/>
+        </svg>
+      </div>
+      <div class="nav-brand-text">
+        <div class="nav-brand-name">Quantichy</div>
+        <div class="nav-brand-tag">Trade with clarity</div>
+      </div>
+    </div>
+
+    <div class="sidebar-inner">
+      <div class="nav-section-label">Analysis</div>
+      <a class="nav-item" href="/app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 4-6"/></svg>
+        <span class="nav-item-text">Market Overview</span>
+      </a>
+      <a class="nav-item" href="/app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="3" x2="7" y2="21"/><rect x="4.5" y="7" width="5" height="9" rx="1"/><line x1="17" y1="3" x2="17" y2="21"/><rect x="14.5" y="10" width="5" height="7" rx="1"/></svg>
+        <span class="nav-item-text">Live Trade</span>
+      </a>
+      <a class="nav-item" href="/app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
+        <span class="nav-item-text">Session History</span>
+      </a>
+
+      <div class="nav-section-label">Account</div>
+      <a class="nav-item" href="/account">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+        <span class="nav-item-text">Account &amp; settings</span>
+      </a>
+      <a class="nav-item" href="/pricing">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span class="nav-item-text">Plan &amp; billing</span>
+      </a>
+      <a class="nav-item" href="/privacy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span class="nav-item-text">Privacy Policy</span>
+      </a>
+      <a class="nav-item active" href="/terms" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        <span class="nav-item-text">Terms &amp; Conditions</span>
+      </a>
+
+      <div style="padding:var(--space-3) var(--space-4) var(--space-4);margin-top:auto">
+        <div class="lang-switcher">
+          <button class="lang-btn active" type="button">🇺🇸 EN</button>
+          <button class="lang-btn" type="button">🇮🇩 ID</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="account-topbar">
+      <button class="mob-menu-btn" id="mob-menu-btn" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div>
+        <h1>Terms &amp; Conditions</h1>
+        <div class="topbar-sub">The agreement that covers your use of Quantichy.</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="legal-wrap">
+        <div class="legal-card">
+          <div class="legal-meta">Last updated: 3 May 2026</div>
+
+          <p>By creating an account or using Quantichy, you agree to these Terms. If you don’t agree, please don’t use the service.</p>
+
+          <h2>1. The service</h2>
+          <p>Quantichy provides analytics, signal tooling, and journaling for crypto traders. Features and pricing tiers can change as the product evolves.</p>
+
+          <h2>2. Your account</h2>
+          <ul>
+            <li>You’re responsible for keeping your sign-in credentials secure.</li>
+            <li>You must be at least 18 years old to use Quantichy.</li>
+            <li>One person, one account. Don’t share your account or impersonate others.</li>
+          </ul>
+
+          <h2>3. Not financial advice</h2>
+          <p>Quantichy is an analytics tool, not a broker, advisor, or fiduciary. Information shown — including signals, scores, and AI suggestions — is for informational purposes only. You alone are responsible for your trading decisions and any resulting gains or losses.</p>
+
+          <h2>4. Plans and payments</h2>
+          <ul>
+            <li>Paid plans are billed in advance for the period you select.</li>
+            <li>You can cancel at any time; cancellation stops future renewals.</li>
+            <li>Payments via Web3 wallet are final once confirmed on-chain.</li>
+          </ul>
+
+          <h2>5. Acceptable use</h2>
+          <p>Don’t use Quantichy to break the law, abuse the service, scrape data at scale, reverse-engineer the product, or interfere with other users.</p>
+
+          <h2>6. Intellectual property</h2>
+          <p>The Quantichy name, design, and software are owned by Quantichy. Your content (positions, notes, journal entries) belongs to you — we only process it to operate the service.</p>
+
+          <h2>7. Termination</h2>
+          <p>We may suspend or terminate accounts that breach these Terms. You can close your account at any time by contacting us.</p>
+
+          <h2>8. Disclaimers and liability</h2>
+          <p>The service is provided “as is” without warranty of any kind. To the maximum extent permitted by law, Quantichy is not liable for indirect, incidental, or consequential damages, including lost profits or trading losses.</p>
+
+          <h2>9. Changes</h2>
+          <p>We may update these Terms occasionally. If changes are material, we’ll notify you in-app or by email before they take effect.</p>
+
+          <h2>10. Contact</h2>
+          <p>Questions about these Terms? Email <a href="mailto:support@quantichy.com">support@quantichy.com</a>.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const btn = document.getElementById('mob-menu-btn');
+  const sb  = document.getElementById('sidebar');
+  const ov  = document.getElementById('mob-overlay');
+  if(!btn || !sb || !ov) return;
+  const open  = () => { sb.classList.add('open'); ov.classList.add('show'); document.body.style.overflow='hidden'; };
+  const close = () => { sb.classList.remove('open'); ov.classList.remove('show'); document.body.style.overflow=''; };
+  btn.addEventListener('click', open);
+  ov.addEventListener('click', close);
+})();
+</script>
+
+</body>
+</html>
