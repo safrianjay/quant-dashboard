@@ -146,23 +146,13 @@ body{
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
         <span class="nav-item-text">Session History</span>
       </a>
-
-      <div class="nav-section-label">Account</div>
-      <a class="nav-item" href="/account">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
-        <span class="nav-item-text">Account &amp; settings</span>
+      <a class="nav-item" href="/app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg>
+        <span class="nav-item-text">Macro Events</span>
       </a>
-      <a class="nav-item" href="/pricing">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        <span class="nav-item-text">Plan &amp; billing</span>
-      </a>
-      <a class="nav-item active" href="/privacy" aria-current="page">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span class="nav-item-text">Privacy Policy</span>
-      </a>
-      <a class="nav-item" href="/terms">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
-        <span class="nav-item-text">Terms &amp; Conditions</span>
+      <a class="nav-item" href="/app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+        <span class="nav-item-text">Trade Setups</span>
       </a>
 
       <div style="padding:var(--space-3) var(--space-4) var(--space-4);margin-top:auto">
@@ -170,6 +160,25 @@ body{
           <button class="lang-btn active" type="button">🇺🇸 EN</button>
           <button class="lang-btn" type="button">🇮🇩 ID</button>
         </div>
+      </div>
+
+      <!-- User profile (entry point into /account — mirrors /app) -->
+      <div style="padding:10px 8px 10px;border-top:1px solid var(--border-subtle)">
+        <a class="user-footer-row" href="/account" aria-label="Account settings">
+          <div id="sb-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--success),var(--info));display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
+            <span id="sb-avatar-initial" style="font-family:var(--font-heading);font-weight:700;font-size:13px;color:white;line-height:1">?</span>
+          </div>
+          <div class="user-info-text" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+            <span id="sb-plan-badge" style="display:none;font-family:var(--font-heading);font-size:8px;font-weight:800;padding:3px 9px;border-radius:100px;background:linear-gradient(135deg,#B8860B,#FFD700);color:#3B1F00;text-transform:uppercase;letter-spacing:.09em;line-height:1.6;box-shadow:0 1px 5px rgba(184,134,11,.4);align-self:flex-start">Pro</span>
+            <div id="sb-user-name" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:var(--neutral-900);line-height:1.3">—</div>
+            <div id="sb-user-email" style="font-family:var(--font-body);font-size:10px;color:var(--neutral-400);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Not signed in</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--neutral-400)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <button id="sb-signout-btn" class="qds-hover-danger" type="button">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Sign Out</span>
+        </button>
       </div>
     </div>
   </aside>
@@ -231,16 +240,79 @@ body{
   </main>
 </div>
 
+<!-- Firebase — populates the sidebar user chip so the shell matches /app -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <script>
+const _fbConfig = {
+  apiKey: "AIzaSyAsbf6f71SDOnRWojv70IkApiRakupC5XQ",
+  authDomain: "quantichy.com",
+  projectId: "quant-dashboard-1405b",
+  storageBucket: "quant-dashboard-1405b.firebasestorage.app",
+  messagingSenderId: "1013979996177",
+  appId: "1:1013979996177:web:7274da6d71ef702e3011b0"
+};
+
+function _applyPlan(plan){
+  const tier = (plan || 'free').toLowerCase();
+  const badge = document.getElementById('sb-plan-badge');
+  if(!badge) return;
+  if(tier === 'pro' || tier === 'quant'){
+    badge.textContent = tier === 'quant' ? 'Quant' : 'Pro';
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function _applyUser(user){
+  if(!user) return;
+  const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+  const initial = (displayName || '?').slice(0,1).toUpperCase();
+  const sbInitial = document.getElementById('sb-avatar-initial');
+  const sbAv = document.getElementById('sb-avatar');
+  const sbName = document.getElementById('sb-user-name');
+  const sbEmail = document.getElementById('sb-user-email');
+  if(user.photoURL && sbAv){
+    sbAv.innerHTML = '<img src="' + user.photoURL + '" style="width:100%;height:100%;object-fit:cover" alt="">';
+  } else if(sbInitial){
+    sbInitial.textContent = initial;
+  }
+  if(sbName) sbName.textContent = displayName;
+  if(sbEmail) sbEmail.textContent = user.email || '';
+  try{
+    firebase.firestore().collection('users').doc(user.uid).onSnapshot(doc => {
+      const data = (doc && doc.exists) ? doc.data() : {};
+      _applyPlan(data.plan || 'free');
+    }, () => {});
+  } catch(_){}
+}
+
 (function(){
   const btn = document.getElementById('mob-menu-btn');
   const sb  = document.getElementById('sidebar');
   const ov  = document.getElementById('mob-overlay');
-  if(!btn || !sb || !ov) return;
-  const open  = () => { sb.classList.add('open'); ov.classList.add('show'); document.body.style.overflow='hidden'; };
-  const close = () => { sb.classList.remove('open'); ov.classList.remove('show'); document.body.style.overflow=''; };
-  btn.addEventListener('click', open);
-  ov.addEventListener('click', close);
+  if(btn && sb && ov){
+    const open  = () => { sb.classList.add('open'); ov.classList.add('show'); document.body.style.overflow='hidden'; };
+    const close = () => { sb.classList.remove('open'); ov.classList.remove('show'); document.body.style.overflow=''; };
+    btn.addEventListener('click', open);
+    ov.addEventListener('click', close);
+  }
+
+  const signoutBtn = document.getElementById('sb-signout-btn');
+  if(signoutBtn){
+    signoutBtn.addEventListener('click', async () => {
+      try{ await firebase.auth().signOut(); } catch(_){}
+      window.location.href = '/app';
+    });
+  }
+
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(_fbConfig);
+    firebase.auth().onAuthStateChanged(_applyUser);
+  } catch(e){ console.warn('Firebase init failed', e); }
 })();
 </script>
 
