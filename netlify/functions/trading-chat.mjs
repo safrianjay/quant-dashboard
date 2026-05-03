@@ -273,14 +273,16 @@ Provide bias for 15m / 1h / 4h with confidence and a one-line reason.
 | **1h** | ... | ... | [EMA5/EMA21 stack + RSI] |
 | **4h** | ... | ... | [overall trend + 24h change] |
 
-### KEY LEVELS FOR NEXT 60 MINS
+### THE SETUP — KEY LEVELS & TECHNICAL DATA
+Render the levels table FIRST, then a 1-2 sentence narrative directly below it explaining the current price action. Combine into one section — do not split into two headers.
+
 | Level | Price | Why It Matters |
 | :--- | :--- | :--- |
-| Support/Resistance | $[Price] | [Brief reasoning] |
+| EMA 5 | $[Price] | Dynamic trend line |
+| Resistance | $[Price] | Local range high |
+| Support | $[Price] | Support cluster |
 
-### THE SETUP — TECHNICAL ANALYSIS
-Explain the current price action using specific MSS (Market Structure Shift) and FVG (Fair Value Gap) levels.
-Use the actual snapshot price (${snapshot.symbol} @ $${snapshot.price}) in your analysis.
+Then a brief paragraph using specific MSS (Market Structure Shift) and FVG (Fair Value Gap) levels. Use the actual snapshot price (${snapshot.symbol} @ $${snapshot.price}) in your analysis.
 
 ### LIQUIDITY STACKING — ABOVE & BELOW
 Map BSL (Buy-Side Liquidity, above price — long stops + breakout buy stops) and SSL (Sell-Side Liquidity, below price — short stops + breakdown sell stops). Three tiers per side: scalp (~0.5%), swing (~1.5%), major (~3%).
@@ -676,14 +678,13 @@ ${signalRow}
 
 ${mtfTable}
 
-### KEY LEVELS FOR NEXT 60 MINS
+### THE SETUP — KEY LEVELS & TECHNICAL DATA
 | Level | Price | Why It Matters |
 | :--- | :--- | :--- |
 | EMA 5 | $${fmtP(ema5)} | Dynamic Trend Line |
 | Resistance | $${fmtP(price * 1.005)} | Local range high |
 | Support | $${fmtP(price * 0.995)} | Support cluster |
 
-### THE SETUP — TECHNICAL DATA
 Price action is currently reacting to the **EMA 5** at **$${fmtP(ema5)}**. With an RSI of **${rsi.toFixed(1)}**, we expect ${rsi > 70 ? 'a cooling-off period' : rsi < 30 ? 'a mean-reversion bounce' : 'continued consolidation'} within the Fair Value Gap (FVG) between **$${fmtP(price * 0.999)}** and **$${fmtP(price * 1.001)}**.
 
 ${liqTable}
