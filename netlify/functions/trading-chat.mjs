@@ -255,9 +255,15 @@ A brief, engaging 'big picture' description outlining the overarching market nar
 ### THE SIGNAL
 <div class="confidence-badge">Confidence: [X.X/10]</div>
 
+ALWAYS render BOTH tables in this order — primary signal table first, then trigger table directly below it. Do not omit either, even when the action is WATCH.
+
 | Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
 | :--- | :--- | :--- | :--- |
-| [🟢 LONG / 🔴 SHORT] | <span class="signal-entry">$[Price]</span> | <span class="signal-sl">$[Price]</span> | <span class="signal-tp">$[TP1], $[TP2], $[TP3]</span> |
+| [🟢 LONG / 🔴 SHORT / 🟡 WATCH] | <span class="signal-entry">$[Price]</span> | <span class="signal-sl">$[Price]</span> | <span class="signal-tp">$[TP1], $[TP2], $[TP3]</span> |
+
+| Action | Long Trigger | Short Trigger | Bias Lean |
+| :--- | :--- | :--- | :--- |
+| [🟢 LONG / 🔴 SHORT / 🟡 WATCH] | <span class="signal-tp">break $[Price]</span> | <span class="signal-sl">break $[Price]</span> | [🟢 leans bullish / 🔴 leans bearish / balanced] |
 
 ### MULTI-TIMEFRAME SIGNALS
 Provide bias for 15m / 1h / 4h with confidence and a one-line reason.
@@ -575,21 +581,31 @@ Bias is ${direction}. Watch RSI **${rsiText}** and the EMA 5/21 stack for confir
   const tpPctLong = [1.01, 1.02, 1.03], tpPctShort = [0.99, 0.98, 0.97];
   const fmtP = (v) => v.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 });
 
-  let signalRow;
-  if (direction === "neutral") {
-    // Watch with explicit triggers — much more useful than a flat row
-    const longTrigger  = price * 1.005;
-    const shortTrigger = price * 0.995;
-    signalRow = `| Action | Long Trigger | Short Trigger | Bias Lean |
-| :--- | :--- | :--- | :--- |
-| 🟡 WATCH | <span class="signal-tp">break $${fmtP(longTrigger)}</span> | <span class="signal-sl">break $${fmtP(shortTrigger)}</span> | ${lean === "bullish" ? "🟢 leans bullish" : lean === "bearish" ? "🔴 leans bearish" : "balanced"} |`;
-  } else {
-    const slMult = direction === "bullish" ? slPctLong : slPctShort;
-    const tpMults = direction === "bullish" ? tpPctLong : tpPctShort;
-    signalRow = `| Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
+  /* Always render the main Action / Entry / SL / TPs table as the primary
+     signal — even on WATCH (the numbers track the LEAN so they're still
+     coherent). The Long Trigger / Short Trigger / Bias Lean table is then
+     appended below to give the user the trigger-based scenario. */
+  // For WATCH, use the lean to pick directional numbers; default to bullish
+  // when lean is also neutral so we still produce a complete row.
+  const numberSide = direction === "bullish" ? "bullish"
+                   : direction === "bearish" ? "bearish"
+                   : (lean === "bearish" ? "bearish" : "bullish");
+  const slMult = numberSide === "bullish" ? slPctLong : slPctShort;
+  const tpMults = numberSide === "bullish" ? tpPctLong : tpPctShort;
+
+  const primarySignalRow = `| Action | Entry | Stop Loss | Targets (TP1, TP2, TP3) |
 | :--- | :--- | :--- | :--- |
 | ${signalEmoji} | <span class="signal-entry">$${formattedPrice}</span> | <span class="signal-sl">$${fmtP(price * slMult)}</span> | <span class="signal-tp">$${fmtP(price * tpMults[0])}, $${fmtP(price * tpMults[1])}, $${fmtP(price * tpMults[2])}</span> |`;
-  }
+
+  // Trigger table — always shown so the user has explicit invalidation/
+  // confirmation prices regardless of direction call.
+  const longTrigger  = price * 1.005;
+  const shortTrigger = price * 0.995;
+  const triggerRow = `| Action | Long Trigger | Short Trigger | Bias Lean |
+| :--- | :--- | :--- | :--- |
+| ${signalEmoji} | <span class="signal-tp">break $${fmtP(longTrigger)}</span> | <span class="signal-sl">break $${fmtP(shortTrigger)}</span> | ${lean === "bullish" ? "🟢 leans bullish" : lean === "bearish" ? "🔴 leans bearish" : "balanced"} |`;
+
+  const signalRow = `${primarySignalRow}\n\n${triggerRow}`;
 
   /* ── MULTI-TIMEFRAME SIGNALS ──
      We don't have native 15m/1h/4h candles in the snapshot (CG returns
