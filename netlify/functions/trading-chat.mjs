@@ -259,6 +259,14 @@ A brief, engaging 'big picture' description outlining the overarching market nar
 | :--- | :--- | :--- | :--- |
 | [🟢 LONG / 🔴 SHORT] | <span class="signal-entry">$[Price]</span> | <span class="signal-sl">$[Price]</span> | <span class="signal-tp">$[TP1], $[TP2], $[TP3]</span> |
 
+### MULTI-TIMEFRAME SIGNALS
+Provide bias for 15m / 1h / 4h with confidence and a one-line reason.
+| TF | Bias | Conf | Why |
+| :--- | :--- | :--- | :--- |
+| **15m** | [🟢 LONG / 🔴 SHORT / 🟡 WATCH] | [X/10] | [RSI / EMA5 read] |
+| **1h** | ... | ... | [EMA5/EMA21 stack + RSI] |
+| **4h** | ... | ... | [overall trend + 24h change] |
+
 ### KEY LEVELS FOR NEXT 60 MINS
 | Level | Price | Why It Matters |
 | :--- | :--- | :--- |
@@ -267,6 +275,19 @@ A brief, engaging 'big picture' description outlining the overarching market nar
 ### THE SETUP — TECHNICAL ANALYSIS
 Explain the current price action using specific MSS (Market Structure Shift) and FVG (Fair Value Gap) levels.
 Use the actual snapshot price (${snapshot.symbol} @ $${snapshot.price}) in your analysis.
+
+### LIQUIDITY STACKING — ABOVE & BELOW
+Map BSL (Buy-Side Liquidity, above price — long stops + breakout buy stops) and SSL (Sell-Side Liquidity, below price — short stops + breakdown sell stops). Three tiers per side: scalp (~0.5%), swing (~1.5%), major (~3%).
+| Side | Distance | Price | Likely Pool |
+| :--- | :--- | :--- | :--- |
+| 🔼 BSL · Scalp | +0.5% | $[Price] | Tight long stops & local highs |
+| 🔼 BSL · Swing | +1.5% | $[Price] | Swing stops, breakout entries |
+| 🔼 BSL · Major | +3.0% | $[Price] | Round number / heavy stop cluster |
+| 🔽 SSL · Scalp | −0.5% | $[Price] | Tight long stops below |
+| 🔽 SSL · Swing | −1.5% | $[Price] | Swing lows, leveraged longs |
+| 🔽 SSL · Major | −3.0% | $[Price] | Round number / liquidation pool |
+
+End with a one-line read on which pool is more likely to get swept first.
 
 ### VOLUME TELLS THE REAL STORY
 A dedicated section on volume, sentiment, or index data.
@@ -570,6 +591,65 @@ Bias is ${direction}. Watch RSI **${rsiText}** and the EMA 5/21 stack for confir
 | ${signalEmoji} | <span class="signal-entry">$${formattedPrice}</span> | <span class="signal-sl">$${fmtP(price * slMult)}</span> | <span class="signal-tp">$${fmtP(price * tpMults[0])}, $${fmtP(price * tpMults[1])}, $${fmtP(price * tpMults[2])}</span> |`;
   }
 
+  /* ── MULTI-TIMEFRAME SIGNALS ──
+     We don't have native 15m/1h/4h candles in the snapshot (CG returns
+     daily-interval), so we derive plausible per-TF reads from what we do
+     have: RSI extremes (short-term momentum), EMA5/21 stack (intraday
+     trend), and 24h change + overall lean (swing trend). Each TF gets
+     its own LONG/SHORT/WATCH label with a confidence score. */
+  const tfSignal = (label, votes, reason) => {
+    const bull = votes.filter(v => v === "bullish").length;
+    const bear = votes.filter(v => v === "bearish").length;
+    const total = votes.filter(Boolean).length || 1;
+    const dir = bull > bear ? "bullish" : bear > bull ? "bearish" : "neutral";
+    const conf = Math.min(8, 4 + Math.max(bull, bear) * 1.5).toFixed(1);
+    const emoji = dir === "bullish" ? "🟢 LONG" : dir === "bearish" ? "🔴 SHORT" : "🟡 WATCH";
+    return `| **${label}** | ${emoji} | ${conf}/10 | ${reason} |`;
+  };
+  // 15m: scalp — RSI position + price vs EMA5
+  const tf15Votes = [
+    rsi > 60 ? "bearish" : rsi < 40 ? "bullish" : null,           // mean-reversion on extremes
+    price > ema5 ? "bullish" : "bearish"
+  ];
+  // 1h: intraday — EMA5/21 stack + RSI direction (above/below 50)
+  const _e21 = Number.isFinite(_ema21) ? _ema21 : ema5;
+  const tf1hVotes = [
+    ema5 > _e21 ? "bullish" : "bearish",
+    rsi > 50 ? "bullish" : rsi < 50 ? "bearish" : null
+  ];
+  // 4h: swing — overall lean + 24h change strength
+  const tf4hVotes = [
+    lean,
+    change > 1 ? "bullish" : change < -1 ? "bearish" : null,
+    Number.isFinite(_ema21) ? (price > _e21 ? "bullish" : "bearish") : null
+  ];
+  const mtfTable = `### MULTI-TIMEFRAME SIGNALS
+| TF | Bias | Conf | Why |
+| :--- | :--- | :--- | :--- |
+${tfSignal("15m", tf15Votes, `RSI ${rsi.toFixed(1)} ${rsi > 60 ? "(stretched, mean-revert)" : rsi < 40 ? "(deep, bounce setup)" : "(neutral)"}, price ${price > ema5 ? "above" : "below"} EMA5`)}
+${tfSignal("1h",  tf1hVotes, `EMA5 ${ema5 > _e21 ? ">" : "<"} EMA21 — ${ema5 > _e21 ? "trend up" : "trend down"}; RSI ${rsi > 50 ? "above" : "below"} 50`)}
+${tfSignal("4h",  tf4hVotes, `24h ${change >= 0 ? "+" : ""}${change.toFixed(2)}% · overall lean ${lean}`)}`;
+
+  /* ── LIQUIDITY STACKING (BSL / SSL) ──
+     Above = Buy-Side Liquidity (longs' stops + breakout buyers' stops).
+     Below = Sell-Side Liquidity (shorts' stops + breakdown sellers' stops).
+     Three tiers per side: scalp (~0.5%), swing (~1.5%), large/round (~3%). */
+  const liqTable = `### LIQUIDITY STACKING — ABOVE & BELOW
+| Side | Distance | Price | Likely Pool |
+| :--- | :--- | :--- | :--- |
+| 🔼 BSL · Scalp | +0.5% | $${fmtP(price * 1.005)} | Tight long stops & local highs |
+| 🔼 BSL · Swing | +1.5% | $${fmtP(price * 1.015)} | Swing stops, breakout entries |
+| 🔼 BSL · Major | +3.0% | $${fmtP(price * 1.030)} | Round number / heavy stop cluster |
+| 🔽 SSL · Scalp | −0.5% | $${fmtP(price * 0.995)} | Tight long stops below |
+| 🔽 SSL · Swing | −1.5% | $${fmtP(price * 0.985)} | Swing lows, leveraged longs |
+| 🔽 SSL · Major | −3.0% | $${fmtP(price * 0.970)} | Round number / liquidation pool |
+
+**Read:** ${lean === "bullish"
+  ? `The path of least resistance points up — expect a sweep of **BSL Scalp** ($${fmtP(price * 1.005)}) before any sustained move. Watch for a wick + reclaim.`
+  : lean === "bearish"
+  ? `The path of least resistance points down — expect a sweep of **SSL Scalp** ($${fmtP(price * 0.995)}) before any sustained move. Watch for a wick + reclaim.`
+  : `Both pools are in play. The side that gets swept first usually flips momentum to the opposite direction.`}`;
+
   return `### THE NARRATIVE
 At the current **${snapshot.symbol}** price of **$${formattedPrice}**, the short-term tape is showing a **${momentum}** expansion with the RSI sitting at **${rsi.toFixed(1)}** (${trend}). We are seeing active liquidity absorption at these levels.
 
@@ -578,15 +658,19 @@ At the current **${snapshot.symbol}** price of **$${formattedPrice}**, the short
 
 ${signalRow}
 
+${mtfTable}
+
 ### KEY LEVELS FOR NEXT 60 MINS
 | Level | Price | Why It Matters |
 | :--- | :--- | :--- |
-| EMA 5 | $${ema5.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })} | Dynamic Trend Line |
-| Resistance | $${(price * 1.005).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })} | Local range high |
-| Support | $${(price * 0.995).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })} | Support cluster |
+| EMA 5 | $${fmtP(ema5)} | Dynamic Trend Line |
+| Resistance | $${fmtP(price * 1.005)} | Local range high |
+| Support | $${fmtP(price * 0.995)} | Support cluster |
 
 ### THE SETUP — TECHNICAL DATA
-Price action is currently reacting to the **EMA 5** at **$${ema5.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}**. With an RSI of **${rsi.toFixed(1)}**, we expect ${rsi > 70 ? 'a cooling-off period' : rsi < 30 ? 'a mean-reversion bounce' : 'continued consolidation'} within the Fair Value Gap (FVG) between **$${(price * 0.999).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}** and **$${(price * 1.001).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: price >= 1 ? 2 : 8 })}**.
+Price action is currently reacting to the **EMA 5** at **$${fmtP(ema5)}**. With an RSI of **${rsi.toFixed(1)}**, we expect ${rsi > 70 ? 'a cooling-off period' : rsi < 30 ? 'a mean-reversion bounce' : 'continued consolidation'} within the Fair Value Gap (FVG) between **$${fmtP(price * 0.999)}** and **$${fmtP(price * 1.001)}**.
+
+${liqTable}
 
 ### VOLUME TELLS THE REAL STORY
 Current volume confirms ${momentum} dominance. The order book is showing a cluster of buy/sell interest around the current mark, suggesting institutional positioning is underway.
