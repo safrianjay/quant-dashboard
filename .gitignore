@@ -3,3 +3,5 @@ serve.py
 .claude/
 .netlify/
 node_modules/
+package-lock.json
+.env
